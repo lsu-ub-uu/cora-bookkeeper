@@ -20,6 +20,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>epc-release</id>
+            <name>EPC Releases</name>
+            <url>http://epc.ub.uu.se/nexus/content/repositories/epc-release</url>
+        </repository>
+        <snapshotRepository>
+            <id>epc-snapshot</id>
+            <name>Internal Snapshots</name>
+            <url>http://epc.ub.uu.se/nexus/content/repositories/epc-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
     <repositories>
         <repository>
             <id>epc-release</id>
