@@ -6,7 +6,7 @@ package epc.metadataformat;
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
- * @since
+ * @since 0.1
  *
  */
 public abstract class MetadataElement {
