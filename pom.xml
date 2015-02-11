@@ -13,6 +13,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <testng.version>6.8.8</testng.version>
+    <compile.source>1.8</compile.source>
   </properties>
 
   <dependencies>
@@ -23,4 +24,16 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${compile.source}</source>
+          <target>${compile.source}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
