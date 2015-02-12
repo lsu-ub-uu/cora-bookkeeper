@@ -7,12 +7,13 @@
     <packaging>jar</packaging>
     <name>metadataformat</name>
     <url>http://maven.apache.org</url>
+    <parent>
+        <groupId>epc.commons</groupId>
+        <artifactId>master-pom</artifactId>
+        <version>1.8-SNAPSHOT</version>
+    </parent>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testng.version>6.8.8</testng.version>
-        <compile.source>1.8</compile.source>
-        <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-        <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
     </properties>
     <dependencies>
         <dependency>
@@ -22,108 +23,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <distributionManagement>
-        <repository>
-            <id>epc-release</id>
-            <name>EPC Releases</name>
-            <url>http://epc.ub.uu.se/nexus/content/repositories/epc-release</url>
-        </repository>
-        <snapshotRepository>
-            <id>epc-snapshot</id>
-            <name>Internal Snapshots</name>
-            <url>http://epc.ub.uu.se/nexus/content/repositories/epc-snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
-    <repositories>
-        <repository>
-            <id>epc-release</id>
-            <name>EPC Nexus Release Repository</name>
-            <url>http://epc.ub.uu.se/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>epc-snapshot</id>
-            <name>EPC Nexus Snapshot Repository</name>
-            <url>http://epc.ub.uu.se/nexus/content/groups/public-snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <updatePolicy>daily</updatePolicy>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>epc-release</id>
-            <name>EPC Nexus Release Repository</name>
-            <url>http://epc.ub.uu.se/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>epc-snapshot</id>
-            <name>EPC Nexus Snapshot Repository</name>
-            <url>http://epc.ub.uu.se/nexus/content/groups/public-snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <updatePolicy>daily</updatePolicy>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>${compile.source}</source>
-                    <target>${compile.source}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <profiles>
-        <profile>
-            <id>server</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.7.2.201409121644</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <destFile>${sonar.jacoco.reportPath}</destFile>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.sonar</groupId>
-                        <artifactId>sonar-maven3-plugin</artifactId>
-                        <version>4.4</version>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
