@@ -5,7 +5,7 @@ import java.util.Map;
 
 import epc.metadataformat.TextElement;
 
-public class TestTextData {
+public class TestDataTextElement {
 	public static Map<String, TextElement> createTestTextElements(){
 		Map<String, TextElement> textElements = new HashMap<>();
 		

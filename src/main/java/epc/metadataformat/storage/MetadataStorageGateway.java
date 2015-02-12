@@ -1,7 +1,6 @@
 package epc.metadataformat.storage;
 
-import epc.metadataformat.MetadataHolder;
-import epc.metadataformat.TextElement;
+import epc.metadataformat.CoherentMetadata;
 
 /**
  * MetadataStorageGateway is the gateway interface from the metadata system to
@@ -16,8 +15,6 @@ import epc.metadataformat.TextElement;
  */
 public interface MetadataStorageGateway {
 
-	public void storeText(String textId, TextElement textElement);
-
-	public MetadataHolder loadAllMetadata();
+	public CoherentMetadata loadAllMetadata();
 
 }

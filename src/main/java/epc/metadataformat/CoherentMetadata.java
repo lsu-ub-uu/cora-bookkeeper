@@ -3,7 +3,7 @@ package epc.metadataformat;
 import java.util.Map;
 
 /**
- * MetadataHolder is a class that works as a container arround all metadata in
+ * CoherentMetadata is a class that works as a container arround all metadata in
  * the system. It can hold texts, metadataElemnts, Collections, Presentations
  * etc. This holder makes it possible to get a version of all metadata that can
  * be fetched in one transaction as to get a consistent state, from storage.
@@ -13,14 +13,14 @@ import java.util.Map;
  * @since 0.1
  *
  */
-public class MetadataHolder {
+public class CoherentMetadata {
 
-	private Map<String, MetadataElement> metadataElements;
 	private Map<String, TextElement> textElements;
+	private Map<String, MetadataElement> metadataElements;
 
-	public MetadataHolder(Map<String, TextElement> texts,
+	public CoherentMetadata(Map<String, TextElement> textElements,
 			Map<String, MetadataElement> metadataElements) {
-		this.textElements = texts;
+		this.textElements = textElements;
 		this.metadataElements = metadataElements;
 	}
 
@@ -36,4 +36,9 @@ public class MetadataHolder {
 	public Map<String, TextElement> getTextElements() {
 		return textElements;
 	}
+
+	public String getTextTranslation(String languageId, String textId) {
+		return textElements.get(textId).getTranslationByLanguage(languageId);
+	}
+
 }

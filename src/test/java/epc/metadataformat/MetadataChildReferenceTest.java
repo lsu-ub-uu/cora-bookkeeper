@@ -4,18 +4,18 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-public class MetadataChildTest {
+public class MetadataChildReferenceTest {
 	@Test
 	public void testInit() {
-		MetadataChildReference metadataChild = new MetadataChildReference("childReference", 1,
+		MetadataChildReference metadataChildReference = new MetadataChildReference("childReference", 1,
 				MetadataChildReference.UNLIMITED);
-		assertEquals(metadataChild.getReference(), "childReference",
+		assertEquals(metadataChildReference.getReference(), "childReference",
 				"ChildReference should be the value set in the constructor");
 
-		assertEquals(metadataChild.getRepeatMin(), 1,
+		assertEquals(metadataChildReference.getRepeatMin(), 1,
 				"RepeatMin should be the value set in the constructor");
 
-		assertEquals(metadataChild.getRepeatMax(), Integer.MAX_VALUE,
+		assertEquals(metadataChildReference.getRepeatMax(), Integer.MAX_VALUE,
 				"RepeatMax should be the value set in the constructor");
 
 	}

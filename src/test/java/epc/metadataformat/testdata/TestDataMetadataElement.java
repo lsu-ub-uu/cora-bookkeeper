@@ -5,7 +5,7 @@ import java.util.Map;
 
 import epc.metadataformat.MetadataElement;
 
-public class TestMetadataElementData {
+public class TestDataMetadataElement {
 	public static Map<String, MetadataElement> createTestMetadataElements(){
 		Map<String, MetadataElement> metadataElements = new HashMap<>();
 		return metadataElements;
