@@ -5,7 +5,7 @@ import epc.metadataformat.storage.MetadataCache;
 
 public class GetMetadata implements GetMetadataInputBoundry {
 
-	private MetadataCache metadataCache;
+	private final MetadataCache metadataCache;
 
 	public GetMetadata(MetadataCache metadataCache) {
 		this.metadataCache = metadataCache;

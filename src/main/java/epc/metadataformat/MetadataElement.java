@@ -9,7 +9,7 @@ package epc.metadataformat;
  * @since 0.1
  *
  */
-public abstract class MetadataElement {
+public class MetadataElement {
 	private final String id;
 	private final String dataId;
 	private final String textId;

@@ -15,8 +15,8 @@ import java.util.Map;
  */
 public class CoherentMetadata {
 
-	private Map<String, TextElement> textElements;
-	private Map<String, MetadataElement> metadataElements;
+	private final Map<String, TextElement> textElements;
+	private final Map<String, MetadataElement> metadataElements;
 
 	public CoherentMetadata(Map<String, TextElement> textElements,
 			Map<String, MetadataElement> metadataElements) {

@@ -13,12 +13,10 @@ import epc.metadataformat.CoherentMetadata;
  */
 public class MetadataCache {
 
-	private final MetadataStorageGateway metadataStorageGateway;
-	private CoherentMetadata coherentMetadata;
+	private final CoherentMetadata coherentMetadata;
 
 	public MetadataCache(MetadataStorageGateway metadataStorageGateway) {
-		this.metadataStorageGateway = metadataStorageGateway;
-		coherentMetadata = this.metadataStorageGateway.loadAllMetadata();
+		coherentMetadata = metadataStorageGateway.loadAllMetadata();
 	}
 
 	public String getTextTranslation(String languageId, String textId) {

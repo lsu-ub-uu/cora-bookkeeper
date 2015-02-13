@@ -12,7 +12,7 @@ import epc.metadataformat.CoherentMetadata;
  *
  */
 public class MetadataInMemoryStorage implements MetadataStorageGateway {
-	private CoherentMetadata coherentMetadata;
+	private final CoherentMetadata coherentMetadata;
 
 	public MetadataInMemoryStorage(CoherentMetadata coherentMetadata) {
 		this.coherentMetadata = coherentMetadata;
