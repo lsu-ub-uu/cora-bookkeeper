@@ -15,6 +15,11 @@ import epc.metadataformat.CoherentMetadata;
  */
 public interface MetadataStorageGateway {
 
+	/**
+	 * getAllMetadata returns all metadata in the system as one coherent unit
+	 * 
+	 * @return A CoherentMetadata loaded with all metadata in the system.
+	 */
 	public CoherentMetadata getAllMetadata();
 
 }

@@ -8,19 +8,17 @@ import org.testng.annotations.Test;
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.testdata.TestDataMetadataInMemoryStorage;
 
-public class MetadataInMemoryTest {
-	
+public class MetadataInMemoryStorageTest {
+
 	@Test
 	public void testInit() {
 		MetadataInMemoryStorage metadataStorageGateway = new MetadataInMemoryStorage();
 		assertNotNull(metadataStorageGateway.getAllMetadata());
 	}
 
-	@Test
+	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithNull() {
-		MetadataInMemoryStorage metadataStorageGateway = new MetadataInMemoryStorage(
-				null);
-		assertNotNull(metadataStorageGateway.getAllMetadata());
+		new MetadataInMemoryStorage(null);
 	}
 
 	@Test
