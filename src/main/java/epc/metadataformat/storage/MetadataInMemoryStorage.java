@@ -12,14 +12,19 @@ import epc.metadataformat.CoherentMetadata;
  *
  */
 public class MetadataInMemoryStorage implements MetadataStorageGateway {
-	private final CoherentMetadata coherentMetadata;
+	private CoherentMetadata coherentMetadata = new CoherentMetadata();
 
+	public MetadataInMemoryStorage() {
+	}
+	
 	public MetadataInMemoryStorage(CoherentMetadata coherentMetadata) {
-		this.coherentMetadata = coherentMetadata;
+		if (null != coherentMetadata) {
+			this.coherentMetadata = coherentMetadata;
+		}
 	}
 
 	@Override
-	public CoherentMetadata loadAllMetadata() {
+	public CoherentMetadata getAllMetadata() {
 		return coherentMetadata;
 	}
 

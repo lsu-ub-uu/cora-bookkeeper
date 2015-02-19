@@ -9,17 +9,29 @@ import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.testdata.TestDataMetadataInMemoryStorage;
 
 public class MetadataInMemoryTest {
+	
 	@Test
 	public void testInit() {
+		MetadataInMemoryStorage metadataStorageGateway = new MetadataInMemoryStorage();
+		assertNotNull(metadataStorageGateway.getAllMetadata());
+	}
 
+	@Test
+	public void testInitWithNull() {
+		MetadataInMemoryStorage metadataStorageGateway = new MetadataInMemoryStorage(
+				null);
+		assertNotNull(metadataStorageGateway.getAllMetadata());
+	}
+
+	@Test
+	public void testInitWithTestData() {
 		MetadataStorageGateway metadataStorageGateway = TestDataMetadataInMemoryStorage
 				.createMetadataInMemoryStorageContainingTestData();
 		CoherentMetadata coherentMetadata = metadataStorageGateway
-				.loadAllMetadata();
+				.getAllMetadata();
 		assertNotNull(coherentMetadata, "Metadata should be present");
 		assertEquals(coherentMetadata.getTextTranslation("sv", "textId"),
 				"Testar en text");
-
 	}
 
 }

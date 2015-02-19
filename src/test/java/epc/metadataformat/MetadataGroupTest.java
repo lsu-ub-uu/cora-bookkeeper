@@ -28,7 +28,7 @@ public class MetadataGroupTest {
 		assertEquals(metadataGroup.getDeffTextId(), "deffTextId",
 				"DeffTextId should have the value set in the constructor");
 
-		assertEquals(metadataGroup.getAttributeReference(), attributeReference,
+		assertEquals(metadataGroup.getAttributeReferences(), attributeReference,
 				"AttributeReference should be the same list as the one set in the constructor");
 
 		assertEquals(metadataGroup.getChildReferences(), childReferences,

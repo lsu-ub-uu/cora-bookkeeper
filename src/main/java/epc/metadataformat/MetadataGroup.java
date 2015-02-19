@@ -23,7 +23,7 @@ public class MetadataGroup extends MetadataElement {
 		this.childReferences = childReferences;
 	}
 
-	public List<String> getAttributeReference() {
+	public List<String> getAttributeReferences() {
 		return attributeReference;
 	}
 

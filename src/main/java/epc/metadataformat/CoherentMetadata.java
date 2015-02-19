@@ -1,9 +1,10 @@
 package epc.metadataformat;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * CoherentMetadata is a class that works as a container arround all metadata in
+ * CoherentMetadata is a class that works as a container around all metadata in
  * the system. It can hold texts, metadataElemnts, Collections, Presentations
  * etc. This holder makes it possible to get a version of all metadata that can
  * be fetched in one transaction as to get a consistent state, from storage.
@@ -15,19 +16,25 @@ import java.util.Map;
  */
 public class CoherentMetadata {
 
-	private final Map<String, TextElement> textElements;
-	private final Map<String, MetadataElement> metadataElements;
+	private Map<String, TextElement> textElements = new HashMap<>();
+	private Map<String, MetadataElement> metadataElements = new HashMap<>();
+
+	public CoherentMetadata() {
+	}
 
 	public CoherentMetadata(Map<String, TextElement> textElements,
 			Map<String, MetadataElement> metadataElements) {
+		if (null == textElements) {
+			throw new IllegalArgumentException("textElements must not be null");
+		}
+		if (null == metadataElements) {
+			throw new IllegalArgumentException(
+					"metadataElements must not be null");
+		}
 		this.textElements = textElements;
 		this.metadataElements = metadataElements;
-	}
 
-	/**
-	 * texts metadataElements collections presentations
-	 * 
-	 */
+	}
 
 	public Map<String, MetadataElement> getMetadataElements() {
 		return metadataElements;

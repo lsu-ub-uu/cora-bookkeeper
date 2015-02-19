@@ -15,6 +15,6 @@ import epc.metadataformat.CoherentMetadata;
  */
 public interface MetadataStorageGateway {
 
-	public CoherentMetadata loadAllMetadata();
+	public CoherentMetadata getAllMetadata();
 
 }

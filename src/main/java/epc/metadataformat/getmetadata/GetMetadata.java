@@ -1,20 +1,23 @@
 package epc.metadataformat.getmetadata;
 
 import epc.metadataformat.CoherentMetadata;
-import epc.metadataformat.storage.MetadataCache;
+import epc.metadataformat.storage.MetadataStorageGateway;
 
 public class GetMetadata implements GetMetadataInputBoundry {
 
-	private final MetadataCache metadataCache;
 
-	public GetMetadata(MetadataCache metadataCache) {
-		this.metadataCache = metadataCache;
+	private MetadataStorageGateway metadataStorageGateway;
+
+	public GetMetadata(MetadataStorageGateway metadataStorageGateway) {
+		this.metadataStorageGateway = metadataStorageGateway;
+		if(null==metadataStorageGateway){
+			throw new IllegalArgumentException("metadataStorageGateway must not be null");
+		}
 	}
 
 	@Override
 	public CoherentMetadata getAllMetadata() {
-		return metadataCache.getAllMetadata();
+		return metadataStorageGateway.getAllMetadata();
 	}
-
 
 }

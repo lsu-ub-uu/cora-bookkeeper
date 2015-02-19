@@ -11,6 +11,21 @@ import epc.metadataformat.testdata.TestDataTextElement;
 
 public class MetadataCacheTest {
 	@Test
+	public void testInit() {
+		MetadataCache metadataCache = new MetadataCache();
+		Assert.assertNotNull(metadataCache.getAllMetadata(),
+				"getAllMetadata should return a CoherentMetadata object when initialized");
+	}
+	@Test
+	public void testInitWithNull(){
+		MetadataCache metadataCache = new MetadataCache(null);
+		Assert.assertNotNull(metadataCache.getAllMetadata(),
+				"getAllMetadata should return a CoherentMetadata object when "
+				+ "initialized with null");
+		
+	}
+
+	@Test
 	public void testInitLoadMetadataFromStorage() {
 
 		CoherentMetadata coherentMetadata = new CoherentMetadata(

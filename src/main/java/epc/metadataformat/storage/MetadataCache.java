@@ -14,7 +14,10 @@ import epc.metadataformat.CoherentMetadata;
  */
 public class MetadataCache {
 
-	private final CoherentMetadata coherentMetadata;
+	private CoherentMetadata coherentMetadata = new CoherentMetadata();
+
+	public MetadataCache() {
+	}
 
 	/**
 	 * Constructor, loads all metadata into this cache using the injected
@@ -23,7 +26,9 @@ public class MetadataCache {
 	 * @param metadataStorageGateway
 	 */
 	public MetadataCache(MetadataStorageGateway metadataStorageGateway) {
-		coherentMetadata = metadataStorageGateway.loadAllMetadata();
+		if (null != metadataStorageGateway) {
+			coherentMetadata = metadataStorageGateway.getAllMetadata();
+		}
 	}
 
 	/**
