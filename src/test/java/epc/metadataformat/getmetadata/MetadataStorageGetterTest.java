@@ -6,11 +6,11 @@ import org.testng.annotations.Test;
 import epc.metadataformat.storage.MetadataStorageGateway;
 import epc.metadataformat.testdata.TestDataMetadataInMemoryStorage;
 
-public class GetMetadataTest {
+public class MetadataStorageGetterTest {
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithNull() throws Exception {
-		new GetMetadata(null);
+		new MetadataStorageGetter(null);
 	}
 
 	@Test
@@ -19,7 +19,7 @@ public class GetMetadataTest {
 		MetadataStorageGateway metadataStorageGateway = TestDataMetadataInMemoryStorage
 				.createMetadataInMemoryStorageContainingTestData();
 
-		GetMetadataInputBoundry metadataGetter = new GetMetadata(
+		MetadataStorageGetterInputBoundry metadataGetter = new MetadataStorageGetter(
 				metadataStorageGateway);
 
 		Assert.assertEquals(metadataGetter.getAllMetadata(),

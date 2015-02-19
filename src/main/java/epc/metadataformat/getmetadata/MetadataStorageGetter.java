@@ -3,12 +3,12 @@ package epc.metadataformat.getmetadata;
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.storage.MetadataStorageGateway;
 
-public class GetMetadata implements GetMetadataInputBoundry {
+public class MetadataStorageGetter implements MetadataStorageGetterInputBoundry {
 
 
-	private MetadataStorageGateway metadataStorageGateway;
+	private final MetadataStorageGateway metadataStorageGateway;
 
-	public GetMetadata(MetadataStorageGateway metadataStorageGateway) {
+	public MetadataStorageGetter(MetadataStorageGateway metadataStorageGateway) {
 		this.metadataStorageGateway = metadataStorageGateway;
 		if(null==metadataStorageGateway){
 			throw new IllegalArgumentException("metadataStorageGateway must not be null");

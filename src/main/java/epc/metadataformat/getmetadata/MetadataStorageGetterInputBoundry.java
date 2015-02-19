@@ -8,10 +8,10 @@ import epc.metadataformat.CoherentMetadata;
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
- * @since
+ * @since 
  *
  */
-public interface GetMetadataInputBoundry {
+public interface MetadataStorageGetterInputBoundry {
 	/**
 	 * getAllMetadata returns all metadata for the whole system, as a
 	 * CoherentMetadata populated with metadataFormat, Presentation, Collections
