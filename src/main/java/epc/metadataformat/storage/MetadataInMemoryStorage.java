@@ -19,6 +19,7 @@ public class MetadataInMemoryStorage implements MetadataStorageGateway {
 	 * storage.
 	 */
 	public MetadataInMemoryStorage() {
+		//This constructor makes it possible to uses the default CoherentMetadata
 	}
 
 	/**

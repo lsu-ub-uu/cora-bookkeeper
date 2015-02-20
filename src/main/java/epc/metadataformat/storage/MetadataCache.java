@@ -16,7 +16,12 @@ public class MetadataCache {
 
 	private CoherentMetadata coherentMetadata = new CoherentMetadata();
 
+	/**
+	 * This default constructor uses the default CoherentMetadata as cache
+	 */
 	public MetadataCache() {
+		// This constructor makes it possible to uses the default
+		// CoherentMetadata as cache
 	}
 
 	/**

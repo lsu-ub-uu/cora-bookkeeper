@@ -19,9 +19,13 @@ public class CoherentMetadata {
 	private Map<String, TextElement> textElements = new HashMap<>();
 	private Map<String, MetadataElement> metadataElements = new HashMap<>();
 
+	/**
+	 * This empty constructor uses the default maps to store texts and metadata
+	 */
 	public CoherentMetadata() {
+		//This constructor makes it possible to uses the default maps 
 	}
-
+	
 	public CoherentMetadata(Map<String, TextElement> textElements,
 			Map<String, MetadataElement> metadataElements) {
 		if (null == textElements) {
