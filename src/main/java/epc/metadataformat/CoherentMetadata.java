@@ -1,7 +1,5 @@
 package epc.metadataformat;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * CoherentMetadata is a class that works as a container around all metadata in
@@ -16,8 +14,8 @@ import java.util.Map;
  */
 public class CoherentMetadata {
 
-	private Map<String, TextElement> textElements = new HashMap<>();
-	private Map<String, MetadataElement> metadataElements = new HashMap<>();
+	private TextHolder textHolder = new TextHolder();
+	private MetadataHolder metadataHolder = new MetadataHolder();
 
 	/**
 	 * This empty constructor uses the default maps to store texts and metadata
@@ -26,30 +24,30 @@ public class CoherentMetadata {
 		//This constructor makes it possible to uses the default maps 
 	}
 	
-	public CoherentMetadata(Map<String, TextElement> textElements,
-			Map<String, MetadataElement> metadataElements) {
-		if (null == textElements) {
-			throw new IllegalArgumentException("textElements must not be null");
+	public CoherentMetadata(TextHolder textHolder,
+			MetadataHolder metadataHolder) {
+		if (null == textHolder) {
+			throw new IllegalArgumentException("textHolder must not be null");
 		}
-		if (null == metadataElements) {
+		if (null == metadataHolder) {
 			throw new IllegalArgumentException(
-					"metadataElements must not be null");
+					"metadataHolder must not be null");
 		}
-		this.textElements = textElements;
-		this.metadataElements = metadataElements;
+		this.textHolder = textHolder;
+		this.metadataHolder = metadataHolder;
 
 	}
 
-	public Map<String, MetadataElement> getMetadataElements() {
-		return metadataElements;
+	public MetadataHolder getMetadataElements() {
+		return metadataHolder;
 	}
 
-	public Map<String, TextElement> getTextElements() {
-		return textElements;
+	public TextHolder getTextElements() {
+		return textHolder;
 	}
 
 	public String getTextTranslation(String languageId, String textId) {
-		return textElements.get(textId).getTranslationByLanguage(languageId);
+		return textHolder.getTextElement(textId).getTranslationByLanguage(languageId);
 	}
 
 }

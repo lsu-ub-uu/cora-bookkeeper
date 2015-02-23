@@ -1,23 +1,22 @@
 package epc.metadataformat.testdata;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import epc.metadataformat.TextElement;
+import epc.metadataformat.TextHolder;
+import epc.metadataformat.TranslationHolder;
 
 public class TestDataTextElement {
-	public static Map<String, TextElement> createTestTextElements(){
-		Map<String, TextElement> textElements = new HashMap<>();
+	public static TextHolder createTestTextElements(){
+		TextHolder textHolder = new TextHolder();
 		
 		
-		Map<String, String> translations = new HashMap<>();
-		translations.put("sv", "Testar en text");
-		translations.put("en", "Testing with a text");
-		TextElement textElement = new TextElement("textId", translations);
+		TranslationHolder translationHolder = new TranslationHolder();
+		translationHolder.addTranslation("sv", "Testar en text");
+		translationHolder.addTranslation("en", "Testing with a text");
+		TextElement textElement = new TextElement("textId", translationHolder);
 		
-		textElements.put("textId", textElement);
+		textHolder.addTextElement(textElement);
 		
 		
-		return textElements;
+		return textHolder;
 	}
 }

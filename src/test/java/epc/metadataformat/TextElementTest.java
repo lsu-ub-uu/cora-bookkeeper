@@ -2,23 +2,20 @@ package epc.metadataformat;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.annotations.Test;
 
 public class TextElementTest {
 	@Test
 	public void testInit() {
-		Map<String, String> translations = new HashMap<>();
-		translations.put("sv", "Testar en text");
-		translations.put("en", "Testing with a text");
-		TextElement textElement = new TextElement("textId", translations);
+		TranslationHolder translationHolder = new TranslationHolder();
+		translationHolder.addTranslation("sv", "Testar en text");
+		translationHolder.addTranslation("en", "Testing with a text");
+		TextElement textElement = new TextElement("textId", translationHolder);
 		
 		assertEquals(textElement.getId(), "textId",
 				"TextId should be the same as the one set in the constructor");
 
-		assertEquals(textElement.getTranslations(), translations,
+		assertEquals(textElement.getTranslations(), translationHolder,
 				"Translations should be the same as the one set in the constructor");
 		
 		assertEquals(textElement.getTranslationByLanguage("sv"),

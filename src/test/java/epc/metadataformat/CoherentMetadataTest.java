@@ -2,8 +2,6 @@ package epc.metadataformat;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.Map;
-
 import org.testng.annotations.Test;
 
 import epc.metadataformat.testdata.TestDataMetadataElement;
@@ -18,16 +16,15 @@ public class CoherentMetadataTest {
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithTextElementsNull() throws Exception {
-		Map<String, MetadataElement> metadataElements = TestDataMetadataElement
+		MetadataHolder metadataHolder = TestDataMetadataElement
 				.createTestMetadataElements();
-		new CoherentMetadata(null, metadataElements);
+		new CoherentMetadata(null, metadataHolder);
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithMetadataElementsNull() throws Exception {
-		Map<String, TextElement> textElements = TestDataTextElement
-				.createTestTextElements();
-		new CoherentMetadata(textElements, null);
+		TextHolder textHolder = TestDataTextElement.createTestTextElements();
+		new CoherentMetadata(textHolder, null);
 	}
 
 	// @Test
@@ -38,17 +35,16 @@ public class CoherentMetadataTest {
 
 	@Test
 	public void testInit() {
-		Map<String, TextElement> textElements = TestDataTextElement
-				.createTestTextElements();
-		Map<String, MetadataElement> metadataElements = TestDataMetadataElement
+		TextHolder textHolder = TestDataTextElement.createTestTextElements();
+		MetadataHolder metadataHolder = TestDataMetadataElement
 				.createTestMetadataElements();
-		CoherentMetadata coherentMetadata = new CoherentMetadata(textElements,
-				metadataElements);
+		CoherentMetadata coherentMetadata = new CoherentMetadata(textHolder,
+				metadataHolder);
 
-		assertEquals(coherentMetadata.getTextElements(), textElements,
+		assertEquals(coherentMetadata.getTextElements(), textHolder,
 				"TextElements should be the same as the one set in the constructor");
 
-		assertEquals(coherentMetadata.getMetadataElements(), metadataElements,
+		assertEquals(coherentMetadata.getMetadataElements(), metadataHolder,
 				"MetadataElements should be the same as the one set in the constructor");
 
 	}

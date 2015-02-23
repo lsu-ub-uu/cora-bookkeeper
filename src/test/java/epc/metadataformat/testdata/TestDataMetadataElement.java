@@ -1,13 +1,10 @@
 package epc.metadataformat.testdata;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import epc.metadataformat.MetadataElement;
+import epc.metadataformat.MetadataHolder;
 
 public class TestDataMetadataElement {
-	public static Map<String, MetadataElement> createTestMetadataElements(){
-		Map<String, MetadataElement> metadataElements = new HashMap<>();
-		return metadataElements;
+	public static MetadataHolder createTestMetadataElements(){
+		MetadataHolder metadataHolder = new MetadataHolder();
+		return metadataHolder;
 	}
 }

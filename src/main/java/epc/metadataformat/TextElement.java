@@ -1,6 +1,5 @@
 package epc.metadataformat;
 
-import java.util.Map;
 
 /**
  * TextElement holds information about a text and the translation of that text
@@ -13,23 +12,23 @@ import java.util.Map;
 public class TextElement {
 
 	private final String id;
-	private final Map<String, String> translations;
+	private final TranslationHolder translationHolder;
 
-	public TextElement(String id, Map<String, String> translations) {
+	public TextElement(String id, TranslationHolder translationHolder) {
 		this.id = id;
-		this.translations = translations;
+		this.translationHolder = translationHolder;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public Map<String, String> getTranslations() {
-		return translations;
+	public TranslationHolder getTranslations() {
+		return translationHolder;
 	}
 
 	public String getTranslationByLanguage(String language) {
-		return translations.get(language);
+		return translationHolder.getTranslation(language);
 	}
 
 }

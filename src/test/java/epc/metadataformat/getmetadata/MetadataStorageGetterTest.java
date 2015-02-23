@@ -19,7 +19,7 @@ public class MetadataStorageGetterTest {
 		MetadataStorageGateway metadataStorageGateway = TestDataMetadataInMemoryStorage
 				.createMetadataInMemoryStorageContainingTestData();
 
-		MetadataStorageGetterInputBoundry metadataGetter = new MetadataStorageGetter(
+		MetadataStorageGetterInputBoundary metadataGetter = new MetadataStorageGetter(
 				metadataStorageGateway);
 
 		Assert.assertEquals(metadataGetter.getAllMetadata(),

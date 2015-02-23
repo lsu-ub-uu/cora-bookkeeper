@@ -1,20 +1,17 @@
 package epc.metadataformat.testdata;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import epc.metadataformat.CoherentMetadata;
-import epc.metadataformat.MetadataElement;
-import epc.metadataformat.TextElement;
+import epc.metadataformat.MetadataHolder;
+import epc.metadataformat.TextHolder;
 import epc.metadataformat.storage.MetadataInMemoryStorage;
 
 public class TestDataMetadataInMemoryStorage {
 	public static MetadataInMemoryStorage createMetadataInMemoryStorageNoTestData() {
 
-		Map<String, TextElement> textElements = new HashMap<>();
-		Map<String, MetadataElement> metadataElements = new HashMap<>();
-		CoherentMetadata coherentMetadata = new CoherentMetadata(textElements ,
-				metadataElements );
+		TextHolder textHolder = new TextHolder();
+		MetadataHolder metadataHolder = new MetadataHolder();
+		CoherentMetadata coherentMetadata = new CoherentMetadata(textHolder,
+				metadataHolder);
 
 		return new MetadataInMemoryStorage(coherentMetadata);
 

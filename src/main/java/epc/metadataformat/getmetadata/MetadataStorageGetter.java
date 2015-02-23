@@ -3,7 +3,7 @@ package epc.metadataformat.getmetadata;
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.storage.MetadataStorageGateway;
 
-public class MetadataStorageGetter implements MetadataStorageGetterInputBoundry {
+public class MetadataStorageGetter implements MetadataStorageGetterInputBoundary {
 
 
 	private final MetadataStorageGateway metadataStorageGateway;
