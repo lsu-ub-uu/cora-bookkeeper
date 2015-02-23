@@ -1,5 +1,6 @@
 package epc.metadataformat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,15 +13,12 @@ import java.util.List;
  */
 public class MetadataGroup extends MetadataElement {
 
-	private final List<String> attributeReference;
-	private final List<MetadataChildReference> childReferences;
+	private final List<String> attributeReference = new ArrayList<>();
+	private final List<MetadataChildReference> childReferences = new ArrayList<>();
 
 	public MetadataGroup(String id, String dataId, String textId,
-			String deffTextId, List<String> attributeReference,
-			List<MetadataChildReference> childReferences) {
+			String deffTextId) {
 		super(id, dataId, textId, deffTextId);
-		this.attributeReference = attributeReference;
-		this.childReferences = childReferences;
 	}
 
 	public List<String> getAttributeReferences() {
@@ -29,6 +27,15 @@ public class MetadataGroup extends MetadataElement {
 
 	public List<MetadataChildReference> getChildReferences() {
 		return childReferences;
+	}
+
+	public void addAttributeReference(String attributeReferenceId) {
+		attributeReference.add(attributeReferenceId);
+		
+	}
+
+	public void addChildReference(MetadataChildReference metadataChildReference) {
+		childReferences.add(metadataChildReference);
 	}
 
 }
