@@ -20,6 +20,6 @@ public interface MetadataStorageGateway {
 	 * 
 	 * @return A CoherentMetadata loaded with all metadata in the system.
 	 */
-	public CoherentMetadata getAllMetadata();
+	CoherentMetadata getAllMetadata();
 
 }
