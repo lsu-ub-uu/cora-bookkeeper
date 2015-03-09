@@ -8,28 +8,26 @@ import org.testng.annotations.Test;
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.testdata.TestDataMetadataInMemoryStorage;
 
-public class MetadataInMemoryStorageTest {
+public class MetadataStorageInMemoryTest {
 
 	@Test
 	public void testInit() {
-		MetadataInMemoryStorage metadataStorageGateway = new MetadataInMemoryStorage();
-		assertNotNull(metadataStorageGateway.getAllMetadata());
+		MetadataStorageInMemory metadataMemoryGateway = new MetadataStorageInMemory();
+		assertNotNull(metadataMemoryGateway.getAllMetadata());
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithNull() {
-		new MetadataInMemoryStorage(null);
+		MetadataStorageInMemory.usingCoherentMetadata(null);
 	}
 
 	@Test
 	public void testInitWithTestData() {
-		MetadataStorageGateway metadataStorageGateway = TestDataMetadataInMemoryStorage
-				.createMetadataInMemoryStorageContainingTestData();
-		CoherentMetadata coherentMetadata = metadataStorageGateway
-				.getAllMetadata();
+		MetadataStorage metadataStorage = TestDataMetadataInMemoryStorage
+				.createMetadataStorageInMemoryContainingTestData();
+		CoherentMetadata coherentMetadata = metadataStorage.getAllMetadata();
 		assertNotNull(coherentMetadata, "Metadata should be present");
-		assertEquals(coherentMetadata.getTextTranslation("sv", "textId"),
-				"Testar en text");
+		assertEquals(coherentMetadata.getTextTranslation("sv", "textId"), "Testar en text");
 	}
 
 }

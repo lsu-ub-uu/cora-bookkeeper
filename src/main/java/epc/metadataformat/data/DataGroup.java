@@ -11,16 +11,20 @@ public class DataGroup implements DataElement {
 	private Map<String, String> attributes = new HashMap<>();
 	private List<DataElement> children = new ArrayList<>();
 
-	public DataGroup(String dataId) {
+	public static DataGroup withDataId(String dataId) {
+		return new DataGroup(dataId);
+	}
+
+	private DataGroup(String dataId) {
 		this.dataId = dataId;
 	}
 
+	@Override
 	public String getDataId() {
 		return dataId;
 	}
 
-	public void addAttributeByIdWithValue(String attributeId,
-			String attributeValue) {
+	public void addAttributeByIdWithValue(String attributeId, String attributeValue) {
 		attributes.put(attributeId, attributeValue);
 	}
 

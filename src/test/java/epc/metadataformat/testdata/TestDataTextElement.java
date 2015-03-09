@@ -12,7 +12,7 @@ public class TestDataTextElement {
 		TranslationHolder translationHolder = new TranslationHolder();
 		translationHolder.addTranslation("sv", "Testar en text");
 		translationHolder.addTranslation("en", "Testing with a text");
-		TextElement textElement = new TextElement("textId", translationHolder);
+		TextElement textElement = TextElement.withIdAndTranslationHolder("textId", translationHolder);
 		
 		textHolder.addTextElement(textElement);
 		

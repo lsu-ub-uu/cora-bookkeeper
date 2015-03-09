@@ -11,20 +11,19 @@ public class CoherentMetadataTest {
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithNull() throws Exception {
-		new CoherentMetadata(null, null);
+		CoherentMetadata.usingTextHolderAndMetadataHolder(null, null);
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithTextElementsNull() throws Exception {
-		MetadataHolder metadataHolder = TestDataMetadataElement
-				.createTestMetadataElements();
-		new CoherentMetadata(null, metadataHolder);
+		MetadataHolder metadataHolder = TestDataMetadataElement.createTestMetadataElements();
+		CoherentMetadata.usingTextHolderAndMetadataHolder(null, metadataHolder);
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithMetadataElementsNull() throws Exception {
 		TextHolder textHolder = TestDataTextElement.createTestTextElements();
-		new CoherentMetadata(textHolder, null);
+		CoherentMetadata.usingTextHolderAndMetadataHolder(textHolder, null);
 	}
 
 	// @Test
@@ -36,10 +35,9 @@ public class CoherentMetadataTest {
 	@Test
 	public void testInit() {
 		TextHolder textHolder = TestDataTextElement.createTestTextElements();
-		MetadataHolder metadataHolder = TestDataMetadataElement
-				.createTestMetadataElements();
-		CoherentMetadata coherentMetadata = new CoherentMetadata(textHolder,
-				metadataHolder);
+		MetadataHolder metadataHolder = TestDataMetadataElement.createTestMetadataElements();
+		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextHolderAndMetadataHolder(
+				textHolder, metadataHolder);
 
 		assertEquals(coherentMetadata.getTextElements(), textHolder,
 				"TextElements should be the same as the one set in the constructor");

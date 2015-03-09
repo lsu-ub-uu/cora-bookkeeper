@@ -10,7 +10,7 @@ public class TextElementTest {
 		TranslationHolder translationHolder = new TranslationHolder();
 		translationHolder.addTranslation("sv", "Testar en text");
 		translationHolder.addTranslation("en", "Testing with a text");
-		TextElement textElement = new TextElement("textId", translationHolder);
+		TextElement textElement = TextElement.withIdAndTranslationHolder("textId", translationHolder);
 		
 		assertEquals(textElement.getId(), "textId",
 				"TextId should be the same as the one set in the constructor");

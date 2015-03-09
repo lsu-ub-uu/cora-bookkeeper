@@ -16,8 +16,12 @@ public class MetadataGroup extends MetadataElement {
 	private final List<String> attributeReference = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
 
-	public MetadataGroup(String id, String dataId, String textId,
-			String deffTextId) {
+	public static MetadataGroup withIdAndDataIdAndTextIdAndDeffTextId(String id, String dataId,
+			String textId, String deffTextId) {
+		return new MetadataGroup(id, dataId, textId, deffTextId);
+	}
+
+	private MetadataGroup(String id, String dataId, String textId, String deffTextId) {
 		super(id, dataId, textId, deffTextId);
 	}
 
@@ -31,7 +35,7 @@ public class MetadataGroup extends MetadataElement {
 
 	public void addAttributeReference(String attributeReferenceId) {
 		attributeReference.add(attributeReferenceId);
-		
+
 	}
 
 	public void addChildReference(MetadataChildReference metadataChildReference) {

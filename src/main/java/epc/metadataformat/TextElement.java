@@ -1,6 +1,5 @@
 package epc.metadataformat;
 
-
 /**
  * TextElement holds information about a text and the translation of that text
  * 
@@ -14,7 +13,12 @@ public class TextElement {
 	private final String id;
 	private final TranslationHolder translationHolder;
 
-	public TextElement(String id, TranslationHolder translationHolder) {
+	public static TextElement withIdAndTranslationHolder(String id,
+			TranslationHolder translationHolder) {
+		return new TextElement(id, translationHolder);
+	}
+
+	private TextElement(String id, TranslationHolder translationHolder) {
 		this.id = id;
 		this.translationHolder = translationHolder;
 	}

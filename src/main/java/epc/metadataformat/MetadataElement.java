@@ -1,8 +1,8 @@
 package epc.metadataformat;
 
 /**
- * MetadataElement is an abstract class that holds the common attributes
- * assosiated with metadataElements
+ * MetadataElement is an abstract class that holds the common attributes assosiated with
+ * metadataElements
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -10,13 +10,13 @@ package epc.metadataformat;
  *
  */
 public class MetadataElement {
+
 	private final String id;
 	private final String dataId;
 	private final String textId;
 	private final String deffTextId;
 
-	public MetadataElement(String id, String dataId, String textId,
-			String deffTextId) {
+	protected MetadataElement(String id, String dataId, String textId, String deffTextId) {
 		this.id = id;
 		this.dataId = dataId;
 		this.textId = textId;

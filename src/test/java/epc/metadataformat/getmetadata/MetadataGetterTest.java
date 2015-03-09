@@ -3,27 +3,26 @@ package epc.metadataformat.getmetadata;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import epc.metadataformat.storage.MetadataStorageGateway;
+import epc.metadataformat.storage.MetadataStorage;
 import epc.metadataformat.testdata.TestDataMetadataInMemoryStorage;
 
-public class MetadataStorageGetterTest {
+public class MetadataGetterTest {
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInitWithNull() throws Exception {
-		new MetadataStorageGetter(null);
+		MetadataGetterImp.usingMetadataStorage(null);
 	}
 
 	@Test
 	public void testInitWithTestData() {
 
-		MetadataStorageGateway metadataStorageGateway = TestDataMetadataInMemoryStorage
-				.createMetadataInMemoryStorageContainingTestData();
+		MetadataStorage metadataStorage = TestDataMetadataInMemoryStorage
+				.createMetadataStorageInMemoryContainingTestData();
 
-		MetadataStorageGetterInputBoundary metadataGetter = new MetadataStorageGetter(
-				metadataStorageGateway);
+		MetadataGetter metadataGetter = MetadataGetterImp.usingMetadataStorage(metadataStorage);
 
 		Assert.assertEquals(metadataGetter.getAllMetadata(),
-				metadataStorageGateway.getAllMetadata(),
+				metadataStorage.getAllMetadata(),
 				"Returned testData for should be the complete metadata");
 	}
 

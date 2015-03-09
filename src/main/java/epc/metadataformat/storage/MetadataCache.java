@@ -3,9 +3,8 @@ package epc.metadataformat.storage;
 import epc.metadataformat.CoherentMetadata;
 
 /**
- * MetadataLoader loads metadata from storage using an injected
- * MetadataStorageGateway. This cache automatically populates itself on startup
- * using the MetadataStorageGateway.
+ * MetadataLoader loads metadata from storage using an injected MetadataStorage. This cache
+ * automatically populates itself on startup using the MetadataStorage.
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -24,21 +23,18 @@ public class MetadataCache {
 		// CoherentMetadata as cache
 	}
 
-	/**
-	 * Constructor, loads all metadata into this cache using the injected
-	 * MetadataStorageGateway
-	 * 
-	 * @param metadataStorageGateway
-	 */
-	public MetadataCache(MetadataStorageGateway metadataStorageGateway) {
-		if (null != metadataStorageGateway) {
-			coherentMetadata = metadataStorageGateway.getAllMetadata();
+	public static MetadataCache usingMetadataStorage(MetadataStorage metadataStorage) {
+		return new MetadataCache(metadataStorage);
+	}
+
+	private MetadataCache(MetadataStorage metadataStorage) {
+		if (null != metadataStorage) {
+			coherentMetadata = metadataStorage.getAllMetadata();
 		}
 	}
 
 	/**
-	 * getTextTranslation returns the requested text using the requested
-	 * language
+	 * getTextTranslation returns the requested text using the requested language
 	 * 
 	 * @param languageId
 	 *            A String with languageI such as "sv"
@@ -51,9 +47,8 @@ public class MetadataCache {
 	}
 
 	/**
-	 * getAllMetadata returns all metadata for the whole system, as a
-	 * CoherentMetadata populated with metadataFormat, Presentation, Collections
-	 * and Texts
+	 * getAllMetadata returns all metadata for the whole system, as a CoherentMetadata populated
+	 * with metadataFormat, Presentation, Collections and Texts
 	 * 
 	 * @return A CoherentMetadata with all metadata for the entire system
 	 */

@@ -1,11 +1,10 @@
 package epc.metadataformat;
 
-
 /**
- * CoherentMetadata is a class that works as a container around all metadata in
- * the system. It can hold texts, metadataElemnts, Collections, Presentations
- * etc. This holder makes it possible to get a version of all metadata that can
- * be fetched in one transaction as to get a consistent state, from storage.
+ * CoherentMetadata is a class that works as a container around all metadata in the system. It can
+ * hold texts, metadataElemnts, Collections, Presentations etc. This holder makes it possible to get
+ * a version of all metadata that can be fetched in one transaction as to get a consistent state,
+ * from storage.
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -21,21 +20,26 @@ public class CoherentMetadata {
 	 * This empty constructor uses the default maps to store texts and metadata
 	 */
 	public CoherentMetadata() {
-		//This constructor makes it possible to uses the default maps 
+		// This constructor makes it possible to uses the default maps
 	}
-	
-	public CoherentMetadata(TextHolder textHolder,
+
+	public static CoherentMetadata usingTextHolderAndMetadataHolder(TextHolder textHolder,
 			MetadataHolder metadataHolder) {
-		if (null == textHolder) {
-			throw new IllegalArgumentException("textHolder must not be null");
-		}
-		if (null == metadataHolder) {
-			throw new IllegalArgumentException(
-					"metadataHolder must not be null");
-		}
+		return new CoherentMetadata(textHolder, metadataHolder);
+	}
+
+	private CoherentMetadata(TextHolder textHolder, MetadataHolder metadataHolder) {
+		throwErrorIfConstructorArgumentIsNull(textHolder);
+		throwErrorIfConstructorArgumentIsNull(metadataHolder);
 		this.textHolder = textHolder;
 		this.metadataHolder = metadataHolder;
 
+	}
+
+	private void throwErrorIfConstructorArgumentIsNull(Object argument) {
+		if (null == argument) {
+			throw new IllegalArgumentException("Constructor argument must not be null");
+		}
 	}
 
 	public MetadataHolder getMetadataElements() {

@@ -18,7 +18,7 @@ public class MetadataCacheTest {
 	}
 	@Test
 	public void testInitWithNull(){
-		MetadataCache metadataCache = new MetadataCache(null);
+		MetadataCache metadataCache = MetadataCache.usingMetadataStorage(null);
 		Assert.assertNotNull(metadataCache.getAllMetadata(),
 				"getAllMetadata should return a CoherentMetadata object when "
 				+ "initialized with null");
@@ -28,14 +28,11 @@ public class MetadataCacheTest {
 	@Test
 	public void testInitLoadMetadataFromStorage() {
 
-		CoherentMetadata coherentMetadata = new CoherentMetadata(
-				TestDataTextElement.createTestTextElements(),
-				TestDataMetadataElement.createTestMetadataElements());
+		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextHolderAndMetadataHolder(TestDataTextElement.createTestTextElements(), TestDataMetadataElement.createTestMetadataElements());
 
-		MetadataStorageGateway metadataInMemoryStorage = new MetadataInMemoryStorage(
-				coherentMetadata);
+		MetadataStorage metadataInMemoryStorage = MetadataStorageInMemory.usingCoherentMetadata(coherentMetadata);
 
-		MetadataCache metadataCache = new MetadataCache(metadataInMemoryStorage);
+		MetadataCache metadataCache = MetadataCache.usingMetadataStorage(metadataInMemoryStorage);
 
 		// Map<String, String> translations = new HashMap<>();
 		// translations.put("sv", "Testar en text");

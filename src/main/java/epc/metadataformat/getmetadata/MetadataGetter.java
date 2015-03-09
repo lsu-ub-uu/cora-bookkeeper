@@ -11,7 +11,7 @@ import epc.metadataformat.CoherentMetadata;
  * @since 
  *
  */
-public interface MetadataStorageGetterInputBoundary {
+public interface MetadataGetter {
 	/**
 	 * getAllMetadata returns all metadata for the whole system, as a
 	 * CoherentMetadata populated with metadataFormat, Presentation, Collections

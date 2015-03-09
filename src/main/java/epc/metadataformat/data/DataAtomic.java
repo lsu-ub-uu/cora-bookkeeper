@@ -5,11 +5,16 @@ public class DataAtomic implements DataElement {
 	private String dataId;
 	private String value;
 
-	public DataAtomic(String dataId, String value) {
+	public static DataAtomic withDataIdAndValue(String dataId, String value) {
+		return new DataAtomic(dataId, value);
+	}
+
+	private DataAtomic(String dataId, String value) {
 		this.dataId = dataId;
 		this.value = value;
 	}
 
+	@Override
 	public String getDataId() {
 		return dataId;
 	}

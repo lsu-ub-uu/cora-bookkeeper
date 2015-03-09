@@ -12,7 +12,7 @@ public class TextHolderTest {
 		translationHolder.addTranslation("sv", "En text på svenska");
 		translationHolder.addTranslation("en", "A text in english");
 
-		TextElement textElement = new TextElement("textId", translationHolder);
+		TextElement textElement = TextElement.withIdAndTranslationHolder("textId", translationHolder);
 
 		textHolder.addTextElement(textElement);
 

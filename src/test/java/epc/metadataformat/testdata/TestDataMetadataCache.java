@@ -1,14 +1,14 @@
 package epc.metadataformat.testdata;
 
 import epc.metadataformat.storage.MetadataCache;
-import epc.metadataformat.storage.MetadataStorageGateway;
+import epc.metadataformat.storage.MetadataStorage;
 
 public class TestDataMetadataCache {
 
 	public static MetadataCache createMetadataCacheUsingInMemoryStorageContiningTestData() {
-		MetadataStorageGateway metadataStorageGateway = TestDataMetadataInMemoryStorage
-				.createMetadataInMemoryStorageContainingTestData();
-		MetadataCache metadataCache = new MetadataCache(metadataStorageGateway);
+		MetadataStorage metadataStorage = TestDataMetadataInMemoryStorage
+				.createMetadataStorageInMemoryContainingTestData();
+		MetadataCache metadataCache = MetadataCache.usingMetadataStorage(metadataStorage);
 		return metadataCache;
 	}
 }
