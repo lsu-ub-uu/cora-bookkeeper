@@ -3,7 +3,7 @@ package epc.metadataformat.getmetadata;
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.storage.MetadataStorage;
 
-public class MetadataGetterImp implements MetadataGetter {
+public final class MetadataGetterImp implements MetadataGetter {
 
 	private final MetadataStorage metadataStorage;
 

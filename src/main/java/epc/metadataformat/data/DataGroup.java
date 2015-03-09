@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataGroup implements DataElement {
+public final class DataGroup implements DataElement {
 
 	private final String dataId;
 	private Map<String, String> attributes = new HashMap<>();

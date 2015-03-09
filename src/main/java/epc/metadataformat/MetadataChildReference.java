@@ -8,7 +8,7 @@ package epc.metadataformat;
  * @since 0.1
  *
  */
-public class MetadataChildReference {
+public final class MetadataChildReference {
 
 	public static final int UNLIMITED = Integer.MAX_VALUE;
 

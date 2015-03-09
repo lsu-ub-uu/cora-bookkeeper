@@ -8,7 +8,7 @@ package epc.metadataformat;
  * @since 0.1
  *
  */
-public class TextVariable extends MetadataElement {
+public final class TextVariable extends MetadataElement {
 
 	private final String regularExpression;
 

@@ -1,6 +1,6 @@
 package epc.metadataformat.data;
 
-public class DataAtomic implements DataElement {
+public final class DataAtomic implements DataElement {
 
 	private String dataId;
 	private String value;

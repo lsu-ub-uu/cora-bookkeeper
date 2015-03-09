@@ -8,7 +8,7 @@ package epc.metadataformat;
  * @since 0.1
  *
  */
-public class TextElement {
+public final class TextElement {
 
 	private final String id;
 	private final TranslationHolder translationHolder;

@@ -11,7 +11,7 @@ import java.util.List;
  * @since 0.1
  *
  */
-public class MetadataGroup extends MetadataElement {
+public final class MetadataGroup extends MetadataElement {
 
 	private final List<String> attributeReference = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
