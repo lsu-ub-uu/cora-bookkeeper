@@ -20,6 +20,14 @@ public class DataGroupTest {
 		assertEquals(dataGroup.getAttribute("attributeId"), "attributeValue"
 				,"Attribute should be the same as the one added to the group");
 	}
+	@Test
+	public void testGetAttributes(){
+		DataGroup dataGroup = new DataGroup("dataId");
+		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
+		assertEquals(dataGroup.getAttributes().get("attributeId"), "attributeValue"
+				,"Attribute should be the same as the one added to the group");
+		
+	}
 	
 	@Test
 	public void testAddChild(){

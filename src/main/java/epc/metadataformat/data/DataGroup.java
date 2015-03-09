@@ -13,7 +13,6 @@ public class DataGroup implements DataElement {
 
 	public DataGroup(String dataId) {
 		this.dataId = dataId;
-
 	}
 
 	public String getDataId() {
@@ -37,4 +36,7 @@ public class DataGroup implements DataElement {
 		return children;
 	}
 
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
 }
