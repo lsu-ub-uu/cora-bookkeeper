@@ -16,6 +16,16 @@ public final class MetadataChildReference {
 	private final int repeatMin;
 	private final int repeatMax;
 
+	private boolean secret = false;
+
+	private boolean readOnly = false;
+
+	private String repeatMinKey = "";
+
+	private String secretKey;
+
+	private String readOnlyKey;
+
 	public static MetadataChildReference withReferenceIdAndRepeatMinAndRepeatMax(String reference,
 			int repeatMin, int repeatMax) {
 		return new MetadataChildReference(reference, repeatMin, repeatMax);
@@ -37,6 +47,47 @@ public final class MetadataChildReference {
 
 	public Object getRepeatMax() {
 		return repeatMax;
+	}
+
+	public void setSecret(boolean secret) {
+		this.secret = secret;
+	}
+
+	public boolean isSecret() {
+		return secret;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public boolean getReadOnly() {
+		return readOnly;
+	}
+
+	public void setRepeatMinKey(String repeatMinKey) {
+		this.repeatMinKey = repeatMinKey;
+	}
+
+	public String getRepeatMinKey() {
+		return repeatMinKey;
+	}
+
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
+
+	public String getSecretKey() {
+		return secretKey;
+	}
+
+	public void setReadOnlyKey(String readOnlyKey) {
+		this.readOnlyKey = readOnlyKey;
+
+	}
+
+	public String getReadOnlyKey() {
+		return readOnlyKey;
 	}
 
 }
