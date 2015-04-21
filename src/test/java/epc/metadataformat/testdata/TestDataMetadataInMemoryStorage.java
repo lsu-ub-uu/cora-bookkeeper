@@ -3,6 +3,7 @@ package epc.metadataformat.testdata;
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.MetadataHolder;
 import epc.metadataformat.TextHolder;
+import epc.metadataformat.presentation.PresentationHolder;
 import epc.metadataformat.storage.MetadataStorageInMemory;
 
 public class TestDataMetadataInMemoryStorage {
@@ -10,7 +11,9 @@ public class TestDataMetadataInMemoryStorage {
 
 		TextHolder textHolder = new TextHolder();
 		MetadataHolder metadataHolder = new MetadataHolder();
-		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextHolderAndMetadataHolder(textHolder, metadataHolder);
+		PresentationHolder presentationHolder = new PresentationHolder();
+		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextMetadataPresentationHolders(
+				textHolder, metadataHolder, presentationHolder);
 
 		return MetadataStorageInMemory.usingCoherentMetadata(coherentMetadata);
 
@@ -18,7 +21,10 @@ public class TestDataMetadataInMemoryStorage {
 
 	public static MetadataStorageInMemory createMetadataStorageInMemoryContainingTestData() {
 
-		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextHolderAndMetadataHolder(TestDataTextElement.createTestTextElements(), TestDataMetadataElement.createTestMetadataElements());
+		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextMetadataPresentationHolders(
+				TestDataTextElement.createTestTextElements(),
+				TestDataMetadataElement.createTestMetadataElements(),
+				TestDataPresentationElement.createTestPresentationElements());
 
 		return MetadataStorageInMemory.usingCoherentMetadata(coherentMetadata);
 

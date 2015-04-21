@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 
 import epc.metadataformat.CoherentMetadata;
 import epc.metadataformat.testdata.TestDataMetadataElement;
+import epc.metadataformat.testdata.TestDataPresentationElement;
 import epc.metadataformat.testdata.TestDataTextElement;
 
 public class MetadataCacheTest {
@@ -16,21 +17,26 @@ public class MetadataCacheTest {
 		Assert.assertNotNull(metadataCache.getAllMetadata(),
 				"getAllMetadata should return a CoherentMetadata object when initialized");
 	}
+
 	@Test
-	public void testInitWithNull(){
+	public void testInitWithNull() {
 		MetadataCache metadataCache = MetadataCache.usingMetadataStorage(null);
 		Assert.assertNotNull(metadataCache.getAllMetadata(),
 				"getAllMetadata should return a CoherentMetadata object when "
-				+ "initialized with null");
-		
+						+ "initialized with null");
+
 	}
 
 	@Test
 	public void testInitLoadMetadataFromStorage() {
 
-		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextHolderAndMetadataHolder(TestDataTextElement.createTestTextElements(), TestDataMetadataElement.createTestMetadataElements());
+		CoherentMetadata coherentMetadata = CoherentMetadata.usingTextMetadataPresentationHolders(
+				TestDataTextElement.createTestTextElements(),
+				TestDataMetadataElement.createTestMetadataElements(),
+				TestDataPresentationElement.createTestPresentationElements());
 
-		MetadataStorage metadataInMemoryStorage = MetadataStorageInMemory.usingCoherentMetadata(coherentMetadata);
+		MetadataStorage metadataInMemoryStorage = MetadataStorageInMemory
+				.usingCoherentMetadata(coherentMetadata);
 
 		MetadataCache metadataCache = MetadataCache.usingMetadataStorage(metadataInMemoryStorage);
 
@@ -45,12 +51,10 @@ public class MetadataCacheTest {
 		// .getTextElements();
 		// TextElement textElementOut = textElements.get("textId");
 
-		assertEquals(metadataCache.getTextTranslation("sv", "textId"),
-				"Testar en text",
+		assertEquals(metadataCache.getTextTranslation("sv", "textId"), "Testar en text",
 				"The translated text should be the same as the one stored");
 
 		Assert.assertEquals(metadataCache.getTextTranslation("en", "textId"),
-				"Testing with a text",
-				"The translated text should be the same as the one stored");
+				"Testing with a text", "The translated text should be the same as the one stored");
 	}
 }
