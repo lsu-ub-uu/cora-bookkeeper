@@ -9,18 +9,18 @@ package epc.metadataformat;
  * @since 0.1
  *
  */
-public class MetadataElement {
+public abstract class MetadataElement {
 
 	private final String id;
 	private final String dataId;
 	private final String textId;
-	private final String deffTextId;
+	private final String defTextId;
 
-	protected MetadataElement(String id, String dataId, String textId, String deffTextId) {
+	protected MetadataElement(String id, String dataId, String textId, String defTextId) {
 		this.id = id;
 		this.dataId = dataId;
 		this.textId = textId;
-		this.deffTextId = deffTextId;
+		this.defTextId = defTextId;
 	}
 
 	public String getId() {
@@ -35,7 +35,7 @@ public class MetadataElement {
 		return textId;
 	}
 
-	public String getDeffTextId() {
-		return deffTextId;
+	public String getDefTextId() {
+		return defTextId;
 	}
 }

@@ -19,7 +19,7 @@ public class MetadataGroupTest {
 		assertEquals(metadataGroup.getTextId(), "textId",
 				"TextId should have the value set in the constructor");
 
-		assertEquals(metadataGroup.getDeffTextId(), "deffTextId",
+		assertEquals(metadataGroup.getDefTextId(), "deffTextId",
 				"DeffTextId should have the value set in the constructor");
 
 		assertNotNull(metadataGroup.getAttributeReferences(),

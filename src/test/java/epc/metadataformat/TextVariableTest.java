@@ -20,7 +20,7 @@ public class TextVariableTest {
 		assertEquals(textVar.getTextId(), "textId",
 				"TextId should have the value set in the constructor");
 		
-		assertEquals(textVar.getDeffTextId(), "deffTextId",
+		assertEquals(textVar.getDefTextId(), "deffTextId",
 				"DeffTextId should have the value set in the constructor");
 		
 		assertEquals(textVar.getRegularExpression(), regularExpression,

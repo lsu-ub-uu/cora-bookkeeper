@@ -17,7 +17,7 @@ public class CoherentMetadata {
 
 	private TextHolder textHolder = new TextHolder();
 	private MetadataHolder metadataHolder = new MetadataHolder();
-	private PresentationHolder presentationHolder;
+	private PresentationHolder presentationHolder = new PresentationHolder();
 
 	/**
 	 * This empty constructor uses the default maps to store texts and metadata
@@ -26,9 +26,8 @@ public class CoherentMetadata {
 		// This constructor makes it possible to uses the default maps
 	}
 
-	public static CoherentMetadata usingTextMetadataPresentationHolders(
-			TextHolder textHolder, MetadataHolder metadataHolder,
-			PresentationHolder presentationHolder) {
+	public static CoherentMetadata usingTextMetadataPresentationHolders(TextHolder textHolder,
+			MetadataHolder metadataHolder, PresentationHolder presentationHolder) {
 		return new CoherentMetadata(textHolder, metadataHolder, presentationHolder);
 	}
 
