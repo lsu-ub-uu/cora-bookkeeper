@@ -1,11 +1,12 @@
 package epc.metadataformat.storage;
 
-import epc.metadataformat.CoherentMetadata;
+import java.util.Collection;
+
+import epc.metadataformat.data.DataGroup;
 
 /**
- * MetadataStorage is the gateway interface from the metadata system to
- * the storage system. This interface makes the storage details decoupled from
- * the logic surrounding the metadata.
+ * MetadataStorage is the gateway interface from the metadata system to the storage system. This
+ * interface makes the storage details decoupled from the logic surrounding the metadata.
  * 
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
@@ -15,11 +16,11 @@ import epc.metadataformat.CoherentMetadata;
  */
 public interface MetadataStorage {
 
-	/**
-	 * getAllMetadata returns all metadata in the system as one coherent unit
-	 * 
-	 * @return A CoherentMetadata loaded with all metadata in the system.
-	 */
-	CoherentMetadata getAllMetadata();
+	Collection<DataGroup> getMetadataElements();
 
+	Collection<DataGroup> getPresentationElements();
+
+	Collection<DataGroup> getTexts();
+
+	Collection<DataGroup> getRecordTypes();
 }
