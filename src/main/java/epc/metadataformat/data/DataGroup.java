@@ -43,4 +43,31 @@ public final class DataGroup implements DataElement {
 	public Map<String, String> getAttributes() {
 		return attributes;
 	}
+
+	public boolean containsChildWithDataId(String dataId) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement.getDataId().equals(dataId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getFirstAtomicValueWithDataId(String dataId) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement instanceof DataAtomic && dataElement.getDataId().equals(dataId)) {
+				return ((DataAtomic) dataElement).getValue();
+			}
+		}
+		throw new DataMissingException("Atomic value not found for dataId:" + dataId);
+	}
+
+	public DataGroup getFirstGroupWithDataId(String dataId) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement instanceof DataGroup && dataElement.getDataId().equals(dataId)) {
+				return ((DataGroup) dataElement);
+			}
+		}
+		throw new DataMissingException("Group not found for dataId:" + dataId);
+	}
 }
