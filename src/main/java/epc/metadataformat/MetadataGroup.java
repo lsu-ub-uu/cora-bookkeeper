@@ -12,8 +12,8 @@ import java.util.List;
  *
  */
 public final class MetadataGroup extends MetadataElement {
-
-	private final List<String> attributeReference = new ArrayList<>();
+	
+	private final List<String> attributeReferences = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
 
 	public static MetadataGroup withIdAndDataIdAndTextIdAndDeffTextId(String id, String dataId,
@@ -26,7 +26,7 @@ public final class MetadataGroup extends MetadataElement {
 	}
 
 	public List<String> getAttributeReferences() {
-		return attributeReference;
+		return attributeReferences;
 	}
 
 	public List<MetadataChildReference> getChildReferences() {
@@ -34,7 +34,7 @@ public final class MetadataGroup extends MetadataElement {
 	}
 
 	public void addAttributeReference(String attributeReferenceId) {
-		attributeReference.add(attributeReferenceId);
+		attributeReferences.add(attributeReferenceId);
 
 	}
 
