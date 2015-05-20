@@ -1,4 +1,4 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 /**
  * MetadataElement is an abstract class that holds the common attributes assosiated with

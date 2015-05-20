@@ -1,6 +1,6 @@
 package epc.metadataformat.testdata;
 
-import epc.metadataformat.MetadataHolder;
+import epc.metadataformat.metadata.MetadataHolder;
 
 public class TestDataMetadataElement {
 	public static MetadataHolder createTestMetadataElements(){

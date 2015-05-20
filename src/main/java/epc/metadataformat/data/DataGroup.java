@@ -28,7 +28,7 @@ public final class DataGroup implements DataElement {
 		attributes.put(attributeId, attributeValue);
 	}
 
-	public Object getAttribute(String attributeId) {
+	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
 	}
 

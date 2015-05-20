@@ -1,4 +1,5 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
+
 
 /**
  * TextVariable is the class that handles metadata for a RegularExpression variable

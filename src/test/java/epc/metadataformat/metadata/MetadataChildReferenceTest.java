@@ -1,4 +1,4 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -56,13 +56,13 @@ public class MetadataChildReferenceTest {
 	@Test
 	public void testReadOnlyTrue() {
 		metadataChildReference.setReadOnly(true);
-		assertTrue(metadataChildReference.getReadOnly());
+		assertTrue(metadataChildReference.isReadOnly());
 	}
 
 	@Test
 	public void testReadOnlyFalse() {
 		metadataChildReference.setReadOnly(false);
-		assertFalse(metadataChildReference.getReadOnly());
+		assertFalse(metadataChildReference.isReadOnly());
 	}
 
 	@Test

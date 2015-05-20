@@ -1,4 +1,4 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

@@ -1,4 +1,4 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 import java.util.HashMap;
 import java.util.Map;

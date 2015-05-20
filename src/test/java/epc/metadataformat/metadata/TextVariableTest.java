@@ -1,8 +1,10 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
+
+import epc.metadataformat.metadata.TextVariable;
 
 public class TextVariableTest {
 	@Test

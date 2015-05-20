@@ -1,4 +1,4 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public final class MetadataGroup extends MetadataElement {
 	private final List<String> attributeReferences = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
 
-	public static MetadataGroup withIdAndDataIdAndTextIdAndDeffTextId(String id, String dataId,
+	public static MetadataGroup withIdAndDataIdAndTextIdAndDefTextId(String id, String dataId,
 			String textId, String deffTextId) {
 		return new MetadataGroup(id, dataId, textId, deffTextId);
 	}

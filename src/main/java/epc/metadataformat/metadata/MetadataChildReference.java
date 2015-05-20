@@ -1,4 +1,4 @@
-package epc.metadataformat;
+package epc.metadataformat.metadata;
 
 /**
  * MetadataChildReference is used to hold information about a child in metadata groups.
@@ -22,9 +22,9 @@ public final class MetadataChildReference {
 
 	private String repeatMinKey = "";
 
-	private String secretKey;
+	private String secretKey = "";
 
-	private String readOnlyKey;
+	private String readOnlyKey = "";
 
 	public static MetadataChildReference withReferenceIdAndRepeatMinAndRepeatMax(String reference,
 			int repeatMin, int repeatMax) {
@@ -61,7 +61,7 @@ public final class MetadataChildReference {
 		this.readOnly = readOnly;
 	}
 
-	public boolean getReadOnly() {
+	public boolean isReadOnly() {
 		return readOnly;
 	}
 
