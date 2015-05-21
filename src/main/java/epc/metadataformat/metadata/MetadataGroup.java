@@ -11,18 +11,18 @@ import java.util.List;
  * @since 0.1
  *
  */
-public final class MetadataGroup extends MetadataElement {
-	
+public class MetadataGroup extends MetadataElement {
+
 	private final List<String> attributeReferences = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
 
 	public static MetadataGroup withIdAndDataIdAndTextIdAndDefTextId(String id, String dataId,
-			String textId, String deffTextId) {
-		return new MetadataGroup(id, dataId, textId, deffTextId);
+			String textId, String defTextId) {
+		return new MetadataGroup(id, dataId, textId, defTextId);
 	}
 
-	private MetadataGroup(String id, String dataId, String textId, String deffTextId) {
-		super(id, dataId, textId, deffTextId);
+	protected MetadataGroup(String id, String dataId, String textId, String defTextId) {
+		super(id, dataId, textId, defTextId);
 	}
 
 	public List<String> getAttributeReferences() {

@@ -8,10 +8,10 @@ import org.testng.annotations.Test;
 public class MetadataGroupTest {
 	@Test
 	public void testInit() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id", "dataId", "textId", "deffTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id",
+				"dataId", "textId", "defTextId");
 
-		assertEquals(metadataGroup.getId(), "id",
-				"Id should have the value set in the constructor");
+		assertEquals(metadataGroup.getId(), "id", "Id should have the value set in the constructor");
 
 		assertEquals(metadataGroup.getDataId(), "dataId",
 				"DataId should have the value set in the constructor");
@@ -19,8 +19,8 @@ public class MetadataGroupTest {
 		assertEquals(metadataGroup.getTextId(), "textId",
 				"TextId should have the value set in the constructor");
 
-		assertEquals(metadataGroup.getDefTextId(), "deffTextId",
-				"DeffTextId should have the value set in the constructor");
+		assertEquals(metadataGroup.getDefTextId(), "defTextId",
+				"DefTextId should have the value set in the constructor");
 
 		assertNotNull(metadataGroup.getAttributeReferences(),
 				"attributeReferences should not be null for a new metadataGroup");
@@ -31,20 +31,22 @@ public class MetadataGroupTest {
 
 	@Test
 	public void testAddAttributeReference() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id", "dataId", "textId", "deffTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id",
+				"dataId", "textId", "defTextId");
 		metadataGroup.addAttributeReference("attributeReference");
 		assertEquals(metadataGroup.getAttributeReferences().iterator().next(),
-				"attributeReference",
-				"AttributeReference should be the same as the one added");
+				"attributeReference", "AttributeReference should be the same as the one added");
 	}
 
 	@Test
 	public void testAddChildReference() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id", "dataId", "textId", "deffTextId");
-		MetadataChildReference metadataChildReference = MetadataChildReference.withReferenceIdAndRepeatMinAndRepeatMax("aChildReference", 1, MetadataChildReference.UNLIMITED);
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id",
+				"dataId", "textId", "defTextId");
+		MetadataChildReference metadataChildReference = MetadataChildReference
+				.withReferenceIdAndRepeatMinAndRepeatMax("aChildReference", 1,
+						MetadataChildReference.UNLIMITED);
 		metadataGroup.addChildReference(metadataChildReference);
-		assertEquals(metadataGroup.getChildReferences().iterator().next(),
-				metadataChildReference,
+		assertEquals(metadataGroup.getChildReferences().iterator().next(), metadataChildReference,
 				"MetadataChildReference should be the same as the one added.");
 	}
 }

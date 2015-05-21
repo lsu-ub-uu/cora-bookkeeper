@@ -17,9 +17,9 @@ public class DataGroupToMetadataConverterFactoryTest {
 	}
 
 	@Test(expectedExceptions = DataConversionException.class)
-	public void testFactorUnknownType() {
+	public void testFactorWrongType() {
 		DataGroup dataGroup = DataGroup.withDataId("metadata");
-		dataGroup.addAttributeByIdWithValue("type", "groupUNKNOWN");
+		dataGroup.addAttributeByIdWithValue("type", "groupNOT");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.fromDataGroup(dataGroup);
 		converterFactory.factor();
@@ -36,6 +36,56 @@ public class DataGroupToMetadataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorGroupChild() {
+		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "groupChild");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToMetadataGroupChildConverter);
+	}
+
+	@Test
+	public void testFactorCollectionItem() {
+		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "collectionItem");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToCollectionItemConverter);
+	}
+
+	@Test
+	public void testFactorCollectionVariable() {
+		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "collectionVariable");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToCollectionVariableConverter);
+	}
+
+	@Test
+	public void testFactorCollectionVariableChild() {
+		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "collectionVariableChild");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToCollectionVariableChildConverter);
+	}
+
+	@Test
+	public void testFactorItemCollection() {
+		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToItemCollectionConverter);
+	}
+
+	@Test
 	public void testFactorTextVariable() {
 		DataGroup dataGroup = DataGroup.withDataId("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "textVariable");
@@ -44,4 +94,5 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroupToMetadataConverter converter = converterFactory.factor();
 		assertTrue(converter instanceof DataGroupToTextVariableConverter);
 	}
+
 }

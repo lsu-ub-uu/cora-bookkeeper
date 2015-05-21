@@ -15,17 +15,18 @@ public final class DataGroupToTextVariableConverter implements DataGroupToMetada
 		this.dataGroup = dataGroup;
 	}
 
+	@Override
 	public TextVariable toMetadata() {
 		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
 
 		String id = recordInfo.getFirstAtomicValueWithDataId("id");
 		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
 		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String deffTextId = dataGroup.getFirstAtomicValueWithDataId("deffTextId");
+		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
 		String regularExpression = dataGroup.getFirstAtomicValueWithDataId("regEx");
 
-		return TextVariable.withIdAndDataIdAndTextIdAndDeffTextIdAndRegularExpression(id, dataId,
-				textId, deffTextId, regularExpression);
+		return TextVariable.withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression(id, dataId,
+				textId, defTextId, regularExpression);
 	}
 
 }

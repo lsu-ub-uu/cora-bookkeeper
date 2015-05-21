@@ -45,10 +45,10 @@ public class DataGroupToMetadataGroupConverterTest {
 		childReference.addChild(DataAtomic.withDataIdAndValue("readOnlyKey", "READONLY_KEY"));
 		childReferences.addChild(childReference);
 
-		DataGroupToMetadataGroupConverter converter = DataGroupToMetadataGroupConverter
+		DataGroupToMetadataConverter converter = DataGroupToMetadataGroupConverter
 				.fromDataGroup(dataGroup);
 
-		MetadataGroup metadataGroup = converter.toMetadata();
+		MetadataGroup metadataGroup = (MetadataGroup) converter.toMetadata();
 		assertEquals(metadataGroup.getId(), "otherId");
 		assertEquals(metadataGroup.getDataId(), "other");
 		assertEquals(metadataGroup.getTextId(), "otherTextId");

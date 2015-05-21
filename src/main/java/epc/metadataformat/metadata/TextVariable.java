@@ -1,6 +1,5 @@
 package epc.metadataformat.metadata;
 
-
 /**
  * TextVariable is the class that handles metadata for a RegularExpression variable
  * 
@@ -13,14 +12,14 @@ public final class TextVariable extends MetadataElement {
 
 	private final String regularExpression;
 
-	public static TextVariable withIdAndDataIdAndTextIdAndDeffTextIdAndRegularExpression(String id,
-			String dataId, String textId, String deffTextId, String regularExpression) {
-		return new TextVariable(id, dataId, textId, deffTextId, regularExpression);
+	public static TextVariable withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression(String id,
+			String dataId, String textId, String defTextId, String regularExpression) {
+		return new TextVariable(id, dataId, textId, defTextId, regularExpression);
 	}
 
-	private TextVariable(String id, String dataId, String textId, String deffTextId,
+	private TextVariable(String id, String dataId, String textId, String defTextId,
 			String regularExpression) {
-		super(id, dataId, textId, deffTextId);
+		super(id, dataId, textId, defTextId);
 		this.regularExpression = regularExpression;
 	}
 

@@ -41,11 +41,11 @@ public final class MetadataChildReference {
 		return referenceId;
 	}
 
-	public Object getRepeatMin() {
+	public int getRepeatMin() {
 		return repeatMin;
 	}
 
-	public Object getRepeatMax() {
+	public int getRepeatMax() {
 		return repeatMax;
 	}
 

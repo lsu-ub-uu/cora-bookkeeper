@@ -8,10 +8,11 @@ public class MetadataHolderTest {
 	public void testInit() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		String regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
-		MetadataElement textElement = TextVariable.withIdAndDataIdAndTextIdAndDeffTextIdAndRegularExpression("id", "dataId", "textId", "deffTextId",
-				regularExpression);
+		MetadataElement textElement = TextVariable
+				.withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression("id", "dataId", "textId",
+						"defTextId", regularExpression);
 		metadataHolder.addMetadataElement(textElement);
-		Assert.assertEquals(metadataHolder.getMetadataElement("id"), textElement, 
+		Assert.assertEquals(metadataHolder.getMetadataElement("id"), textElement,
 				"textElement should be the same one that was entered");
 	}
 }

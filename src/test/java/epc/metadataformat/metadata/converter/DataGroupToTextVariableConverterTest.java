@@ -21,7 +21,7 @@ public class DataGroupToTextVariableConverterTest {
 
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("dataId", "other"));
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("deffTextId", "otherDeffTextId"));
+		dataGroup.addChild(DataAtomic.withDataIdAndValue("defTextId", "otherDefTextId"));
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
 
@@ -32,7 +32,7 @@ public class DataGroupToTextVariableConverterTest {
 		assertEquals(textVariable.getId(), "otherId");
 		assertEquals(textVariable.getDataId(), "other");
 		assertEquals(textVariable.getTextId(), "otherTextId");
-		assertEquals(textVariable.getDefTextId(), "otherDeffTextId");
+		assertEquals(textVariable.getDefTextId(), "otherDefTextId");
 		assertEquals(textVariable.getRegularExpression(),
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}");
 	}

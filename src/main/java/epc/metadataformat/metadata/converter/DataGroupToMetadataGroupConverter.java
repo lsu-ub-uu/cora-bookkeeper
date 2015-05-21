@@ -19,6 +19,7 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 		this.dataGroup = dataGroup;
 	}
 
+	@Override
 	public MetadataGroup toMetadata() {
 		createMetadataGroupWithBasicInfo();
 		convertAttributeReferences();
