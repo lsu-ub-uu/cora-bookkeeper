@@ -20,6 +20,7 @@ public class ValidationAnswerTest {
 	public void testInit() {
 		ValidationAnswer answer = new ValidationAnswer();
 		assertEquals(answer.dataIsValid(), true, "A new ValidationAnswer is valid");
+		assertEquals(answer.dataIsInvalid(), false, "A new ValidationAnswer is valid");
 	}
 
 	@Test
