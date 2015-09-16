@@ -51,7 +51,7 @@ class DataGroupValidator implements DataElementValidator {
 		String metadataDataId = metadataGroup.getDataId();
 		String dataDataId = dataGroup.getDataId();
 		if (!metadataDataId.equals(dataDataId)) {
-			validationAnswer.addErrorMessage("DataGroup should have dataId: "
+			validationAnswer.addErrorMessage("DataGroup should have name(dataId): "
 					+ metadataGroup.getDataId() + " it does not.");
 		}
 	}
