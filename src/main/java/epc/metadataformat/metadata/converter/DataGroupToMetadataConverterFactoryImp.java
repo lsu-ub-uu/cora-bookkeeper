@@ -41,6 +41,8 @@ public final class DataGroupToMetadataConverterFactoryImp implements
 				return DataGroupToItemCollectionConverter.fromDataGroup(dataGroup);
 			case "textVariable":
 				return DataGroupToTextVariableConverter.fromDataGroup(dataGroup);
+			default:
+				//No default case. If it isn't in the switch clause, we will throw an exception
 		}
 
 		throw DataConversionException.withMessage("No converter found for DataGroup with type:"
