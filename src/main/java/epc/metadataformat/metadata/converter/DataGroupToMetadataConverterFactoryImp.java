@@ -26,27 +26,23 @@ public final class DataGroupToMetadataConverterFactoryImp implements
 
 	private DataGroupToMetadataConverter createConverterBasedOnMetadataType() {
 		String type = dataGroup.getAttributes().get("type");
-		if ("group".equals(type)) {
-			return DataGroupToMetadataGroupConverter.fromDataGroup(dataGroup);
+		switch (type) {
+			case "group":
+				return DataGroupToMetadataGroupConverter.fromDataGroup(dataGroup);
+			case "groupChild":
+				return DataGroupToMetadataGroupChildConverter.fromDataGroup(dataGroup);
+			case "collectionItem":
+				return DataGroupToCollectionItemConverter.fromDataGroup(dataGroup);
+			case "collectionVariable":
+				return DataGroupToCollectionVariableConverter.fromDataGroup(dataGroup);
+			case "collectionVariableChild":
+				return DataGroupToCollectionVariableChildConverter.fromDataGroup(dataGroup);
+			case "itemCollection":
+				return DataGroupToItemCollectionConverter.fromDataGroup(dataGroup);
+			case "textVariable":
+				return DataGroupToTextVariableConverter.fromDataGroup(dataGroup);
 		}
-		if ("groupChild".equals(type)) {
-			return DataGroupToMetadataGroupChildConverter.fromDataGroup(dataGroup);
-		}
-		if ("collectionItem".equals(type)) {
-			return DataGroupToCollectionItemConverter.fromDataGroup(dataGroup);
-		}
-		if ("collectionVariable".equals(type)) {
-			return DataGroupToCollectionVariableConverter.fromDataGroup(dataGroup);
-		}
-		if ("collectionVariableChild".equals(type)) {
-			return DataGroupToCollectionVariableChildConverter.fromDataGroup(dataGroup);
-		}
-		if ("itemCollection".equals(type)) {
-			return DataGroupToItemCollectionConverter.fromDataGroup(dataGroup);
-		}
-		if ("textVariable".equals(type)) {
-			return DataGroupToTextVariableConverter.fromDataGroup(dataGroup);
-		}
+
 		throw DataConversionException.withMessage("No converter found for DataGroup with type:"
 				+ type);
 	}
