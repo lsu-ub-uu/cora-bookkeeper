@@ -2,7 +2,9 @@ package epc.metadataformat.metadata;
 
 public enum MetadataTypes {
 
-	METADATA_GROUP("metadataGroup"), METADATA_TEXTVARIABLE("metadataTextVariable");
+	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
+			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
+					"metadataCollectionItem");
 	private MetadataTypes(String type) {
 		this.type = type;
 	}
