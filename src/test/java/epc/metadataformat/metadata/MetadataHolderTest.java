@@ -9,7 +9,7 @@ public class MetadataHolderTest {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		String regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
 		MetadataElement textElement = TextVariable
-				.withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression("id", "dataId", "textId",
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id", "nameInData", "textId",
 						"defTextId", regularExpression);
 		metadataHolder.addMetadataElement(textElement);
 		Assert.assertEquals(metadataHolder.getMetadataElement("id"), textElement,

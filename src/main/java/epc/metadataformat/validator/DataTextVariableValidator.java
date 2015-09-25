@@ -17,7 +17,7 @@ public class DataTextVariableValidator implements DataElementValidator {
 		DataAtomic dataAtomic = (DataAtomic) dataElement;
 		ValidationAnswer validationAnswer = new ValidationAnswer();
 		if (!dataIsValidAccordingToRegEx(dataAtomic)) {
-			validationAnswer.addErrorMessage("TextVariable with dataId:" + dataAtomic.getDataId()
+			validationAnswer.addErrorMessage("TextVariable with nameInData:" + dataAtomic.getNameInData()
 					+ " is NOT valid, regular expression(" + textVariable.getRegularExpression()
 					+ ") does not match:" + dataAtomic.getValue());
 		}

@@ -16,13 +16,13 @@ public class MetadataGroup extends MetadataElement {
 	private final List<String> attributeReferences = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
 
-	public static MetadataGroup withIdAndDataIdAndTextIdAndDefTextId(String id, String dataId,
+	public static MetadataGroup withIdAndNameInDataAndTextIdAndDefTextId(String id, String nameInData,
 			String textId, String defTextId) {
-		return new MetadataGroup(id, dataId, textId, defTextId);
+		return new MetadataGroup(id, nameInData, textId, defTextId);
 	}
 
-	protected MetadataGroup(String id, String dataId, String textId, String defTextId) {
-		super(id, dataId, textId, defTextId);
+	protected MetadataGroup(String id, String nameInData, String textId, String defTextId) {
+		super(id, nameInData, textId, defTextId);
 	}
 
 	public List<String> getAttributeReferences() {

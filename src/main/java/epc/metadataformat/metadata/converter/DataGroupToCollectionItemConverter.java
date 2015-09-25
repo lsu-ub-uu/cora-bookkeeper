@@ -17,13 +17,13 @@ public final class DataGroupToCollectionItemConverter implements DataGroupToMeta
 
 	@Override
 	public CollectionItem toMetadata() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithDataId("id");
-		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
-		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 
-		return new CollectionItem(id, dataId, textId, defTextId);
+		return new CollectionItem(id, nameInData, textId, defTextId);
 	}
 
 }

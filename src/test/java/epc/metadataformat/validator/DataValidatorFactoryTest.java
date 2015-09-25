@@ -15,8 +15,8 @@ public class DataValidatorFactoryTest {
 	@Test
 	public void testFactorDataValidatorMetadataGroup() {
 		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId(
-				"metadataGroupId", "dataId", "textId", "defTextId"));
+		metadataHolder.addMetadataElement(MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
+				"metadataGroupId", "nameInData", "textId", "defTextId"));
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("metadataGroupId");
 		assertTrue(dataGroupValidator instanceof DataGroupValidator);
@@ -25,7 +25,7 @@ public class DataValidatorFactoryTest {
 	@Test
 	public void testFactorDataValidatorMetadataGroupChild() {
 		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(new MetadataGroupChild("metadataGroupChildId", "dataId",
+		metadataHolder.addMetadataElement(new MetadataGroupChild("metadataGroupChildId", "nameInData",
 				"textId", "defTextId", "metadataGroupId"));
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory
@@ -37,8 +37,8 @@ public class DataValidatorFactoryTest {
 	public void testFactorDataValidatorMetadataTextVariable() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(TextVariable
-				.withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression("textVariableId",
-						"dataId", "textId", "defTextId",
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("textVariableId",
+						"nameInData", "textId", "defTextId",
 						"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
@@ -49,7 +49,7 @@ public class DataValidatorFactoryTest {
 	@Test
 	public void testFactorDataValidatorMetadataCollectionVariable() {
 		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(new CollectionVariable("collectionVariableId", "dataId",
+		metadataHolder.addMetadataElement(new CollectionVariable("collectionVariableId", "nameInData",
 				"textId", "defTextId", "collectionId"));
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
@@ -62,7 +62,7 @@ public class DataValidatorFactoryTest {
 	public void testFactorDataValidatorMetadataCollectionVariableChild() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(new CollectionVariableChild("collectionVariableId",
-				"dataId", "textId", "defTextId", "collectionId", "scollectionId"));
+				"nameInData", "textId", "defTextId", "collectionId", "scollectionId"));
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory

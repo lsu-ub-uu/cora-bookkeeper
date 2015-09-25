@@ -19,16 +19,16 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 
 	@Override
 	public ItemCollection toMetadata() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithDataId("id");
-		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
-		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 
-		ItemCollection itemCollection = new ItemCollection(id, dataId, textId, defTextId);
+		ItemCollection itemCollection = new ItemCollection(id, nameInData, textId, defTextId);
 
 		DataGroup collectionItemReferences = dataGroup
-				.getFirstGroupWithDataId("collectionItemReferences");
+				.getFirstGroupWithNameInData("collectionItemReferences");
 		for (DataElement dataElement : collectionItemReferences.getChildren()) {
 			itemCollection.addItemReference(((DataAtomic) dataElement).getValue());
 		}

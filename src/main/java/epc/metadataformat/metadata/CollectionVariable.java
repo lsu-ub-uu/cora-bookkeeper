@@ -30,9 +30,9 @@ public class CollectionVariable extends MetadataElement {
 
 	private String refCollectionId;
 
-	public CollectionVariable(String id, String dataId, String textId, String defTextId,
+	public CollectionVariable(String id, String nameInData, String textId, String defTextId,
 			String refCollectionId) {
-		super(id, dataId, textId, defTextId);
+		super(id, nameInData, textId, defTextId);
 		this.refCollectionId = refCollectionId;
 	}
 

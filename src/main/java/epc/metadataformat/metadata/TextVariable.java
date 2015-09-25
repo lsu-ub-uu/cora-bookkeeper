@@ -12,14 +12,14 @@ public final class TextVariable extends MetadataElement {
 
 	private final String regularExpression;
 
-	public static TextVariable withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression(String id,
-			String dataId, String textId, String defTextId, String regularExpression) {
-		return new TextVariable(id, dataId, textId, defTextId, regularExpression);
+	public static TextVariable withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(String id,
+			String nameInData, String textId, String defTextId, String regularExpression) {
+		return new TextVariable(id, nameInData, textId, defTextId, regularExpression);
 	}
 
-	private TextVariable(String id, String dataId, String textId, String defTextId,
+	private TextVariable(String id, String nameInData, String textId, String defTextId,
 			String regularExpression) {
-		super(id, dataId, textId, defTextId);
+		super(id, nameInData, textId, defTextId);
 		this.regularExpression = regularExpression;
 	}
 

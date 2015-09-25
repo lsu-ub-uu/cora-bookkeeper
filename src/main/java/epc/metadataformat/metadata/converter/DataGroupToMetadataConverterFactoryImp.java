@@ -17,11 +17,11 @@ public final class DataGroupToMetadataConverterFactoryImp implements
 
 	@Override
 	public DataGroupToMetadataConverter factor() {
-		if ("metadata".equals(dataGroup.getDataId())) {
+		if ("metadata".equals(dataGroup.getNameInData())) {
 			return createConverterBasedOnMetadataType();
 		}
-		throw DataConversionException.withMessage("No converter found for DataGroup with dataId:"
-				+ dataGroup.getDataId());
+		throw DataConversionException.withMessage("No converter found for DataGroup with nameInData:"
+				+ dataGroup.getNameInData());
 	}
 
 	private DataGroupToMetadataConverter createConverterBasedOnMetadataType() {

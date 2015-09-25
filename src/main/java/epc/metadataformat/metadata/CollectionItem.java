@@ -32,9 +32,9 @@ public class CollectionItem extends MetadataElement {
 	 * constructor
 	 * 
 	 * @param id
-	 * @param dataId
+	 * @param nameInData
 	 */
-	public CollectionItem(String id, String dataId, String textId, String defTextId) {
-		super(id, dataId, textId, defTextId);
+	public CollectionItem(String id, String nameInData, String textId, String defTextId) {
+		super(id, nameInData, textId, defTextId);
 	}
 }

@@ -19,23 +19,23 @@ public final class DataGroupToMetadataGroupChildConverter implements DataGroupTo
 
 	@Override
 	public MetadataGroupChild toMetadata() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithDataId("id");
-		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
-		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
-		String parentId = dataGroup.getFirstAtomicValueWithDataId("parentId");
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String parentId = dataGroup.getFirstAtomicValueWithNameInData("parentId");
 
-		MetadataGroupChild metadataGroupChild = new MetadataGroupChild(id, dataId, textId,
+		MetadataGroupChild metadataGroupChild = new MetadataGroupChild(id, nameInData, textId,
 				defTextId, parentId);
 
-		DataGroup attributeReferences = dataGroup.getFirstGroupWithDataId("attributeReferences");
+		DataGroup attributeReferences = dataGroup.getFirstGroupWithNameInData("attributeReferences");
 		for (DataElement dataElement : attributeReferences.getChildren()) {
 			metadataGroupChild.addAttributeReference(((DataAtomic) dataElement).getValue());
 		}
 
 		// TODO: add childReferences using childReference converter
-		DataGroup childReferences = dataGroup.getFirstGroupWithDataId("childReferences");
+		DataGroup childReferences = dataGroup.getFirstGroupWithNameInData("childReferences");
 		for (DataElement dataElement : childReferences.getChildren()) {
 			DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 					.fromDataGroup((DataGroup) dataElement);

@@ -29,14 +29,14 @@ public class DataCollectionVariableValidator implements DataElementValidator {
 		for (String ref : col.getCollectionItemReferences()) {
 			CollectionItem colItem = (CollectionItem) metadataHolder.getMetadataElement(ref);
 
-			if (data.getValue().equals(colItem.getDataId())) {
+			if (data.getValue().equals(colItem.getNameInData())) {
 				valueFoundInCollection = true;
 				break;
 			}
 		}
 		if (!valueFoundInCollection) {
 			validationAnswer.addErrorMessage("Data value:" + data.getValue()
-					+ " NOT found in collection:" + col.getDataId());
+					+ " NOT found in collection:" + col.getNameInData());
 		}
 		return validationAnswer;
 	}

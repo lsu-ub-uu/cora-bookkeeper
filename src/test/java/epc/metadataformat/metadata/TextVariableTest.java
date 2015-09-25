@@ -9,13 +9,13 @@ public class TextVariableTest {
 	public void testRegExVariableInit() {
 		String regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
 		TextVariable textVar = TextVariable
-				.withIdAndDataIdAndTextIdAndDefTextIdAndRegularExpression("id", "dataId", "textId",
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id", "nameInData", "textId",
 						"defTextId", regularExpression);
 
 		assertEquals(textVar.getId(), "id", "Id should have the value set in the constructor");
 
-		assertEquals(textVar.getDataId(), "dataId",
-				"DataId should have the value set in the constructor");
+		assertEquals(textVar.getNameInData(), "nameInData",
+				"NameInData should have the value set in the constructor");
 
 		assertEquals(textVar.getTextId(), "textId",
 				"TextId should have the value set in the constructor");

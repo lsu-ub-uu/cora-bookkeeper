@@ -14,37 +14,37 @@ import epc.metadataformat.metadata.MetadataGroupChild;
 public class DataGroupToMetadataGroupChildConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "groupChild");
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "otherId"));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("dataId", "other"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("parentId", "parentMetadataId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("parentId", "parentMetadataId"));
 
-		DataGroup attributeReferences = DataGroup.withDataId("attributeReferences");
-		attributeReferences.addChild(DataAtomic.withDataIdAndValue("ref", "attribute1"));
-		attributeReferences.addChild(DataAtomic.withDataIdAndValue("ref", "attribute2"));
-		attributeReferences.addChild(DataAtomic.withDataIdAndValue("ref", "attribute3"));
+		DataGroup attributeReferences = DataGroup.withNameInData("attributeReferences");
+		attributeReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
+		attributeReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
+		attributeReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
 		dataGroup.addChild(attributeReferences);
 
 		// TODO: add childReferences
-		DataGroup childReferences = DataGroup.withDataId("childReferences");
+		DataGroup childReferences = DataGroup.withNameInData("childReferences");
 		dataGroup.addChild(childReferences);
 
-		DataGroup childReference = DataGroup.withDataId("childReference");
-		childReference.addChild(DataAtomic.withDataIdAndValue("ref", "otherMetadata"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("repeatMin", "0"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("repeatMinKey", "SOME_KEY"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("repeatMax", "15"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("secret", "true"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("secretKey", "SECRET_KEY"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("readOnly", "true"));
-		childReference.addChild(DataAtomic.withDataIdAndValue("readOnlyKey", "READONLY_KEY"));
+		DataGroup childReference = DataGroup.withNameInData("childReference");
+		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("secret", "true"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("secretKey", "SECRET_KEY"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnly", "true"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnlyKey", "READONLY_KEY"));
 		childReferences.addChild(childReference);
 
 		DataGroupToMetadataGroupChildConverter converter = DataGroupToMetadataGroupChildConverter
@@ -52,7 +52,7 @@ public class DataGroupToMetadataGroupChildConverterTest {
 		MetadataGroupChild metadataGroupChild = converter.toMetadata();
 
 		assertEquals(metadataGroupChild.getId(), "otherId");
-		assertEquals(metadataGroupChild.getDataId(), "other");
+		assertEquals(metadataGroupChild.getNameInData(), "other");
 		assertEquals(metadataGroupChild.getTextId(), "otherTextId");
 		assertEquals(metadataGroupChild.getDefTextId(), "otherDefTextId");
 

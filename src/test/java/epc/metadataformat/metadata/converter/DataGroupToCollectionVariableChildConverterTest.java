@@ -11,26 +11,26 @@ import epc.metadataformat.metadata.CollectionVariableChild;
 public class DataGroupToCollectionVariableChildConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionVar");
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "otherId"));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("dataId", "other"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("refCollectionId", "refCollection"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("refParentId", "refParentId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("finalValue", "finalValue"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refCollectionId", "refCollection"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "refParentId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("finalValue", "finalValue"));
 
 		DataGroupToCollectionVariableChildConverter converter = DataGroupToCollectionVariableChildConverter
 				.fromDataGroup(dataGroup);
 		CollectionVariableChild collectionVariableChild = converter.toMetadata();
 
 		assertEquals(collectionVariableChild.getId(), "otherId");
-		assertEquals(collectionVariableChild.getDataId(), "other");
+		assertEquals(collectionVariableChild.getNameInData(), "other");
 		assertEquals(collectionVariableChild.getTextId(), "otherTextId");
 		assertEquals(collectionVariableChild.getDefTextId(), "otherDefTextId");
 		assertEquals(collectionVariableChild.getRefCollectionId(), "refCollection");

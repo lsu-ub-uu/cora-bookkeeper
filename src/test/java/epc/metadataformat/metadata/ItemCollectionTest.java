@@ -7,13 +7,13 @@ public class ItemCollectionTest {
 	@Test
 	public void testInit() {
 
-		ItemCollection itemCollection = new ItemCollection("id", "dataId", "textId", "defTextId");
+		ItemCollection itemCollection = new ItemCollection("id", "nameInData", "textId", "defTextId");
 		itemCollection.addItemReference("item1Ref");
 		Assert.assertEquals(itemCollection.getId(), "id",
 				"Id should have the value set in the constructor");
 
-		Assert.assertEquals(itemCollection.getDataId(), "dataId",
-				"DataId should have the value set in the constructor");
+		Assert.assertEquals(itemCollection.getNameInData(), "nameInData",
+				"NameInData should have the value set in the constructor");
 
 		Assert.assertEquals(itemCollection.getTextId(), "textId",
 				"TextId should have the value set in the constructor");

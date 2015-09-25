@@ -18,16 +18,16 @@ public final class DataGroupToCollectionVariableChildConverter implements
 
 	@Override
 	public CollectionVariableChild toMetadata() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithDataId("id");
-		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
-		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
-		String refCollectionId = dataGroup.getFirstAtomicValueWithDataId("refCollectionId");
-		String refParentId = dataGroup.getFirstAtomicValueWithDataId("refParentId");
-		String finalValue = dataGroup.getFirstAtomicValueWithDataId("finalValue");
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String refCollectionId = dataGroup.getFirstAtomicValueWithNameInData("refCollectionId");
+		String refParentId = dataGroup.getFirstAtomicValueWithNameInData("refParentId");
+		String finalValue = dataGroup.getFirstAtomicValueWithNameInData("finalValue");
 
-		CollectionVariableChild collectionVariableChild = new CollectionVariableChild(id, dataId,
+		CollectionVariableChild collectionVariableChild = new CollectionVariableChild(id, nameInData,
 				textId, defTextId, refCollectionId, refParentId);
 		collectionVariableChild.setFinalValue(finalValue);
 		return collectionVariableChild;

@@ -24,7 +24,7 @@ public class DataRecordTest {
 
 	@Test
 	public void testDataGroup() {
-		DataGroup dataGroup = DataGroup.withDataId("dataId");
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
 		dataRecord.setDataGroup(dataGroup);
 		assertEquals(dataRecord.getDataGroup(), dataGroup);
 	}

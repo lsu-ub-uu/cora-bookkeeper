@@ -9,15 +9,15 @@ import org.testng.annotations.Test;
 public class MetadataGroupChildTest {
 	@Test
 	public void testInit() {
-		MetadataGroupChild metadataGroupChild = new MetadataGroupChild("id", "dataId", "textId",
+		MetadataGroupChild metadataGroupChild = new MetadataGroupChild("id", "nameInData", "textId",
 				"defTextId", "refParentId");
 		metadataGroupChild.addAttributeReference("namePartType");
 
 		assertEquals(metadataGroupChild.getId(), "id",
 				"Id should have the value set in the constructor");
 
-		assertEquals(metadataGroupChild.getDataId(), "dataId",
-				"DataId should have the value set in the constructor");
+		assertEquals(metadataGroupChild.getNameInData(), "nameInData",
+				"NameInData should have the value set in the constructor");
 
 		assertEquals(metadataGroupChild.getTextId(), "textId",
 				"TextId should have the value set in the constructor");

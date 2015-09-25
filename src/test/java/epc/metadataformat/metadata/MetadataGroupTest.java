@@ -8,13 +8,13 @@ import org.testng.annotations.Test;
 public class MetadataGroupTest {
 	@Test
 	public void testInit() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id",
-				"dataId", "textId", "defTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
+				"nameInData", "textId", "defTextId");
 
 		assertEquals(metadataGroup.getId(), "id", "Id should have the value set in the constructor");
 
-		assertEquals(metadataGroup.getDataId(), "dataId",
-				"DataId should have the value set in the constructor");
+		assertEquals(metadataGroup.getNameInData(), "nameInData",
+				"NameInData should have the value set in the constructor");
 
 		assertEquals(metadataGroup.getTextId(), "textId",
 				"TextId should have the value set in the constructor");
@@ -31,8 +31,8 @@ public class MetadataGroupTest {
 
 	@Test
 	public void testAddAttributeReference() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id",
-				"dataId", "textId", "defTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
+				"nameInData", "textId", "defTextId");
 		metadataGroup.addAttributeReference("attributeReference");
 		assertEquals(metadataGroup.getAttributeReferences().iterator().next(),
 				"attributeReference", "AttributeReference should be the same as the one added");
@@ -40,8 +40,8 @@ public class MetadataGroupTest {
 
 	@Test
 	public void testAddChildReference() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId("id",
-				"dataId", "textId", "defTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
+				"nameInData", "textId", "defTextId");
 		MetadataChildReference metadataChildReference = MetadataChildReference
 				.withReferenceIdAndRepeatMinAndRepeatMax("aChildReference", 1,
 						MetadataChildReference.UNLIMITED);

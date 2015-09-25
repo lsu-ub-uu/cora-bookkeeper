@@ -12,13 +12,13 @@ package epc.metadataformat.metadata;
 public abstract class MetadataElement {
 
 	private final String id;
-	private final String dataId;
+	private final String nameInData;
 	private final String textId;
 	private final String defTextId;
 
-	protected MetadataElement(String id, String dataId, String textId, String defTextId) {
+	protected MetadataElement(String id, String nameInData, String textId, String defTextId) {
 		this.id = id;
-		this.dataId = dataId;
+		this.nameInData = nameInData;
 		this.textId = textId;
 		this.defTextId = defTextId;
 	}
@@ -27,8 +27,8 @@ public abstract class MetadataElement {
 		return id;
 	}
 
-	public String getDataId() {
-		return dataId;
+	public String getNameInData() {
+		return nameInData;
 	}
 
 	public String getTextId() {

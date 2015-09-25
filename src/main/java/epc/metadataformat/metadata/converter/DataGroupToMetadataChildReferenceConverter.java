@@ -18,42 +18,42 @@ public final class DataGroupToMetadataChildReferenceConverter {
 
 	public MetadataChildReference toMetadata() {
 		createMetadataChildReferenceWithBasicInfo();
-		if (dataGroup.containsChildWithDataId("repeatMinKey")) {
-			childReference.setRepeatMinKey(dataGroup.getFirstAtomicValueWithDataId("repeatMinKey"));
+		if (dataGroup.containsChildWithNameInData("repeatMinKey")) {
+			childReference.setRepeatMinKey(dataGroup.getFirstAtomicValueWithNameInData("repeatMinKey"));
 		}
-		if (dataGroup.containsChildWithDataId("secret")) {
-			childReference.setSecret(getFirstAtomicValueWithDataIdAsBoolean("secret"));
+		if (dataGroup.containsChildWithNameInData("secret")) {
+			childReference.setSecret(getFirstAtomicValueWithNameInDataAsBoolean("secret"));
 		}
-		if (dataGroup.containsChildWithDataId("secretKey")) {
-			childReference.setSecretKey(dataGroup.getFirstAtomicValueWithDataId("secretKey"));
+		if (dataGroup.containsChildWithNameInData("secretKey")) {
+			childReference.setSecretKey(dataGroup.getFirstAtomicValueWithNameInData("secretKey"));
 		}
-		if (dataGroup.containsChildWithDataId("readOnly")) {
-			childReference.setReadOnly(getFirstAtomicValueWithDataIdAsBoolean("readOnly"));
+		if (dataGroup.containsChildWithNameInData("readOnly")) {
+			childReference.setReadOnly(getFirstAtomicValueWithNameInDataAsBoolean("readOnly"));
 		}
-		if (dataGroup.containsChildWithDataId("readOnlyKey")) {
-			childReference.setReadOnlyKey(dataGroup.getFirstAtomicValueWithDataId("readOnlyKey"));
+		if (dataGroup.containsChildWithNameInData("readOnlyKey")) {
+			childReference.setReadOnlyKey(dataGroup.getFirstAtomicValueWithNameInData("readOnlyKey"));
 		}
 		return childReference;
 	}
 
 	private void createMetadataChildReferenceWithBasicInfo() {
-		String reference = dataGroup.getFirstAtomicValueWithDataId("ref");
-		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithDataId("repeatMin"));
+		String reference = dataGroup.getFirstAtomicValueWithNameInData("ref");
+		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithNameInData("repeatMin"));
 		int repeatMax = getRepeatMax();
 		childReference = MetadataChildReference.withReferenceIdAndRepeatMinAndRepeatMax(reference,
 				repeatMin, repeatMax);
 	}
 
 	private int getRepeatMax() {
-		String repeatMaxString = dataGroup.getFirstAtomicValueWithDataId("repeatMax");
+		String repeatMaxString = dataGroup.getFirstAtomicValueWithNameInData("repeatMax");
 		if ("X".equalsIgnoreCase(repeatMaxString)) {
 			return Integer.MAX_VALUE;
 		}
 		return Integer.valueOf(repeatMaxString);
 	}
 
-	private boolean getFirstAtomicValueWithDataIdAsBoolean(String dataId) {
-		String value = dataGroup.getFirstAtomicValueWithDataId(dataId);
+	private boolean getFirstAtomicValueWithNameInDataAsBoolean(String nameInData) {
+		String value = dataGroup.getFirstAtomicValueWithNameInData(nameInData);
 		if ("true".equals(value)) {
 			return true;
 		} else if ("false".equals(value)) {

@@ -17,14 +17,14 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 
 	@Override
 	public CollectionVariable toMetadata() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithDataId("id");
-		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
-		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
-		String refCollectionId = dataGroup.getFirstAtomicValueWithDataId("refCollectionId");
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String refCollectionId = dataGroup.getFirstAtomicValueWithNameInData("refCollectionId");
 
-		return new CollectionVariable(id, dataId, textId, defTextId, refCollectionId);
+		return new CollectionVariable(id, nameInData, textId, defTextId, refCollectionId);
 	}
 
 }

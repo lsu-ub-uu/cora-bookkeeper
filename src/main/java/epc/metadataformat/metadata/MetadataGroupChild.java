@@ -4,9 +4,9 @@ public class MetadataGroupChild extends MetadataGroup {
 
 	private String parentId;
 
-	public MetadataGroupChild(String id, String dataId, String textId, String defTextId,
+	public MetadataGroupChild(String id, String nameInData, String textId, String defTextId,
 			String parentId) {
-		super(id, dataId, textId, defTextId);
+		super(id, nameInData, textId, defTextId);
 		this.parentId = parentId;
 
 	}

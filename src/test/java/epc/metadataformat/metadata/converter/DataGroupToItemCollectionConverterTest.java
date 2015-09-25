@@ -13,21 +13,21 @@ import epc.metadataformat.metadata.ItemCollection;
 public class DataGroupToItemCollectionConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "otherId"));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("dataId", "other"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("defTextId", "otherDefTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
 
-		DataGroup collectionItemReferences = DataGroup.withDataId("collectionItemReferences");
-		collectionItemReferences.addChild(DataAtomic.withDataIdAndValue("ref", "choice1"));
-		collectionItemReferences.addChild(DataAtomic.withDataIdAndValue("ref", "choice2"));
-		collectionItemReferences.addChild(DataAtomic.withDataIdAndValue("ref", "choice3"));
+		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
+		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "choice1"));
+		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "choice2"));
+		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "choice3"));
 		dataGroup.addChild(collectionItemReferences);
 
 		DataGroupToItemCollectionConverter converter = DataGroupToItemCollectionConverter
@@ -35,7 +35,7 @@ public class DataGroupToItemCollectionConverterTest {
 		ItemCollection itemCollection = converter.toMetadata();
 
 		assertEquals(itemCollection.getId(), "otherId");
-		assertEquals(itemCollection.getDataId(), "other");
+		assertEquals(itemCollection.getNameInData(), "other");
 		assertEquals(itemCollection.getTextId(), "otherTextId");
 		assertEquals(itemCollection.getDefTextId(), "otherDefTextId");
 

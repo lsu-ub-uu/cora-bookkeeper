@@ -2,21 +2,21 @@ package epc.metadataformat.data;
 
 public final class DataAtomic implements DataElement {
 
-	private String dataId;
+	private String nameInData;
 	private String value;
 
-	public static DataAtomic withDataIdAndValue(String dataId, String value) {
-		return new DataAtomic(dataId, value);
+	public static DataAtomic withNameInDataAndValue(String nameInData, String value) {
+		return new DataAtomic(nameInData, value);
 	}
 
-	private DataAtomic(String dataId, String value) {
-		this.dataId = dataId;
+	private DataAtomic(String nameInData, String value) {
+		this.nameInData = nameInData;
 		this.value = value;
 	}
 
 	@Override
-	public String getDataId() {
-		return dataId;
+	public String getNameInData() {
+		return nameInData;
 	}
 
 	public String getValue() {

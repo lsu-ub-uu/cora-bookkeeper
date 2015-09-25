@@ -5,9 +5,9 @@ public class CollectionVariableChild extends CollectionVariable {
 	private String refParentId;
 	private String finalValue;
 
-	public CollectionVariableChild(String id, String dataId, String textId, String defTextId,
+	public CollectionVariableChild(String id, String nameInData, String textId, String defTextId,
 			String refCollectionId, String refParentId) {
-		super(id, dataId, textId, defTextId, refCollectionId);
+		super(id, nameInData, textId, defTextId, refCollectionId);
 		this.refParentId = refParentId;
 
 	}

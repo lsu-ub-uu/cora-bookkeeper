@@ -37,11 +37,11 @@ public class ItemCollection extends MetadataElement {
 	 * constructor
 	 * 
 	 * @param id
-	 * @param dataId
+	 * @param nameInData
 	 */
-	public ItemCollection(String id, String dataId, String textId,
+	public ItemCollection(String id, String nameInData, String textId,
 			String defTextId) {
-		super(id, dataId, textId, defTextId);
+		super(id, nameInData, textId, defTextId);
 	}
 
 	public java.util.Collection<String> getCollectionItemReferences() {

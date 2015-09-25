@@ -11,24 +11,24 @@ import epc.metadataformat.metadata.CollectionVariable;
 public class DataGroupToCollectionVariableConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = DataGroup.withDataId("metadata");
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionVar");
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "otherId"));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("dataId", "other"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("refCollectionId", "refCollection"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refCollectionId", "refCollection"));
 
 		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
 				.fromDataGroup(dataGroup);
 		CollectionVariable collectionVariable = converter.toMetadata();
 
 		assertEquals(collectionVariable.getId(), "otherId");
-		assertEquals(collectionVariable.getDataId(), "other");
+		assertEquals(collectionVariable.getNameInData(), "other");
 		assertEquals(collectionVariable.getTextId(), "otherTextId");
 		assertEquals(collectionVariable.getDefTextId(), "otherDefTextId");
 		assertEquals(collectionVariable.getRefCollectionId(), "refCollection");

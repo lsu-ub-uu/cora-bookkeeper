@@ -26,8 +26,8 @@ public class DataCollectionVariableChildValidatorTest {
 		DataCollectionVariableChildValidator validator = new DataCollectionVariableChildValidator(
 				metadataHolder, collectionVariableChild);
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("collectionVarDataId",
-				"choice1DataId");
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1NameInData");
 		assertTrue(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to true");
 	}
@@ -42,8 +42,8 @@ public class DataCollectionVariableChildValidatorTest {
 		DataCollectionVariableChildValidator validator = new DataCollectionVariableChildValidator(
 				metadataHolder, collectionVariableChild);
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("collectionVarDataId",
-				"choice1ERRORDataId");
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1ERRORNameInData");
 		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to false");
 	}
@@ -54,13 +54,13 @@ public class DataCollectionVariableChildValidatorTest {
 		CollectionVariableChild collectionVariableChild = (CollectionVariableChild) metadataHolder
 				.getMetadataElement("collectionChildVarId");
 
-		collectionVariableChild.setFinalValue("choice2DataId");
+		collectionVariableChild.setFinalValue("choice2NameInData");
 
 		DataCollectionVariableChildValidator validator = new DataCollectionVariableChildValidator(
 				metadataHolder, collectionVariableChild);
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("collectionVarDataId",
-				"choice2DataId");
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice2NameInData");
 		assertTrue(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to true");
 	}
@@ -72,13 +72,13 @@ public class DataCollectionVariableChildValidatorTest {
 		CollectionVariableChild collectionVariableChild = (CollectionVariableChild) metadataHolder
 				.getMetadataElement("collectionChildVarId");
 
-		collectionVariableChild.setFinalValue("choice2DataId");
+		collectionVariableChild.setFinalValue("choice2NameInData");
 
 		DataCollectionVariableChildValidator validator = new DataCollectionVariableChildValidator(
 				metadataHolder, collectionVariableChild);
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("collectionVarDataId",
-				"choice1ERRORDataId");
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1ERRORNameInData");
 		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to false");
 	}
@@ -90,13 +90,13 @@ public class DataCollectionVariableChildValidatorTest {
 		CollectionVariableChild collectionVariableChild = (CollectionVariableChild) metadataHolder
 				.getMetadataElement("collectionChildVarId");
 
-		collectionVariableChild.setFinalValue("choice2DataId");
+		collectionVariableChild.setFinalValue("choice2NameInData");
 
 		DataCollectionVariableChildValidator validator = new DataCollectionVariableChildValidator(
 				metadataHolder, collectionVariableChild);
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("collectionVarDataId",
-				"choice1DataId");
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1NameInData");
 		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to false");
 	}
@@ -106,19 +106,19 @@ public class DataCollectionVariableChildValidatorTest {
 
 		// collection groupTypen
 		CollectionVariable colVar = new CollectionVariable("collectionVarId",
-				"collectionVarDataId", "collectionVarTextId", "collectionVarDefTextId",
+				"collectionVarNameInData", "collectionVarTextId", "collectionVarDefTextId",
 				"collectionId");
 		metadataHolder.addMetadataElement(colVar);
 
-		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1DataId", "choice1TextId",
+		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData", "choice1TextId",
 				"choice1DefTextId");
 		metadataHolder.addMetadataElement(choice1);
 
-		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2DataId", "choice2TextId",
+		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData", "choice2TextId",
 				"choice2DefTextId");
 		metadataHolder.addMetadataElement(choice2);
 
-		ItemCollection collection = new ItemCollection("collectionId", "collectionDataId",
+		ItemCollection collection = new ItemCollection("collectionId", "collectionNameInData",
 				"CollectionTextId", "collectionDefTextId");
 		metadataHolder.addMetadataElement(collection);
 		collection.addItemReference("choice1Id");
@@ -126,7 +126,7 @@ public class DataCollectionVariableChildValidatorTest {
 
 		// child
 		CollectionVariableChild colChildVar = new CollectionVariableChild("collectionChildVarId",
-				"collectionChildVarDataId", "collectionChildVarTextId",
+				"collectionChildVarNameInData", "collectionChildVarTextId",
 				"collectionChildVarDefTextId", "collectionId", "collectionVarId");
 
 		metadataHolder.addMetadataElement(colChildVar);

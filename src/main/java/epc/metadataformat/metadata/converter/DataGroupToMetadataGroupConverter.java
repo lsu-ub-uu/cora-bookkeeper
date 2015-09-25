@@ -28,19 +28,19 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 	}
 
 	private void createMetadataGroupWithBasicInfo() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithDataId("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithDataId("id");
-		String dataId = dataGroup.getFirstAtomicValueWithDataId("dataId");
-		String textId = dataGroup.getFirstAtomicValueWithDataId("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithDataId("defTextId");
-		metadataGroup = MetadataGroup.withIdAndDataIdAndTextIdAndDefTextId(id, dataId, textId,
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData, textId,
 				defTextId);
 	}
 
 	private void convertAttributeReferences() {
-		if (dataGroup.containsChildWithDataId("attributeReferences")) {
+		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
-					.getFirstGroupWithDataId("attributeReferences");
+					.getFirstGroupWithNameInData("attributeReferences");
 			for (DataElement attributeReference : attributeReferences.getChildren()) {
 				metadataGroup.addAttributeReference(((DataAtomic) attributeReference).getValue());
 			}
@@ -48,7 +48,7 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 	}
 
 	private void convertChildReferences() {
-		DataGroup childReferences = dataGroup.getFirstGroupWithDataId("childReferences");
+		DataGroup childReferences = dataGroup.getFirstGroupWithNameInData("childReferences");
 		for (DataElement childReferenceElement : childReferences.getChildren()) {
 			convertChildReference((DataGroup) childReferenceElement);
 		}
