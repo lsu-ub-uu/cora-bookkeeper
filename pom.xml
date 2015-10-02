@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>epc.metadataformat</groupId>
 	<artifactId>metadataformat</artifactId>
@@ -21,6 +22,79 @@
 		<developerConnection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</developerConnection>
 		<url>https://git.epc.ub.uu.se/epc/metadataformat.git</url>
 	</scm>
+
+	<organization>
+		<name>Library systems unit, Uppsala University Library, Sweden</name>
+		<url>http://ub.uu.se</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>uwek</id>
+			<name>Uwe Klosa</name>
+			<email>uwe.klosa@ub.uu.se</email>
+			<organization>Library systems unit, Uppsala University Library</organization>
+			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>madeleine</id>
+			<name>Madeleine Kennbäck</name>
+			<email>madeleine.kennback@ub.uu.se</email>
+			<organization>Library systems unit, Uppsala University Library</organization>
+			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>mimmi</id>
+			<name>Mimmi Sundin</name>
+			<email>mimmi.sundin@ub.uu.se</email>
+			<organization>Library systems unit, Uppsala University Library</organization>
+			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>olov</id>
+			<name>Olov McKie</name>
+			<email>olov.mckie@ub.uu.se</email>
+			<organization>Library systems unit, Uppsala University Library</organization>
+			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Marcus Lindström</name>
+			<email>marcus.lindstrom@ub.uu.se</email>
+			<organization>Library systems unit, Uppsala University Library</organization>
+			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
+			<roles>
+				<role>system administrator</role>
+			</roles>
+			<timezone>+1</timezone>
+		</contributor>
+		<contributor>
+			<name>Stefan Andersson</name>
+			<email>stefan.andersson@ub.uu.se</email>
+			<organization>Library systems unit, Uppsala University Library</organization>
+			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
+			<roles>
+				<role>information specialist</role>
+			</roles>
+			<timezone>+1</timezone>
+		</contributor>
+	</contributors>
 
 	<repositories>
 		<repository>
@@ -47,6 +121,20 @@
 			</snapshots>
 		</repository>
 	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>epc-release</id>
+			<name>EPC Releases</name>
+			<url>http://epc.ub.uu.se/nexus/content/repositories/epc-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>epc-snapshot</id>
+			<name>Internal Snapshots</name>
+			<url>http://epc.ub.uu.se/nexus/content/repositories/epc-snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.testng</groupId>
