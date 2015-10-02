@@ -8,13 +8,11 @@
 
 	<name>Metadataformat</name>
 
-	<parent>
-		<groupId>epc.commons</groupId>
-		<artifactId>master-pom</artifactId>
-		<version>1.8-SNAPSHOT</version>
-	</parent>
-
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<compile.source>1.8</compile.source>
+		<sonar-plugin.version>2.6</sonar-plugin.version>
+		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<testng.version>6.8.8</testng.version>
 	</properties>
 
@@ -57,4 +55,31 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${compile.source}</source>
+					<target>${compile.source}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sonar-maven-plugin</artifactId>
+						<version>${sonar-plugin.version}</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
