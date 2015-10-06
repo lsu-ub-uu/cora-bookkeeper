@@ -2,99 +2,24 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>se.uu.ub.cora</groupId>
+
+	<parent>
+		<groupId>se.uu.ub.cora</groupId>
+		<artifactId>cora-parent</artifactId>
+		<version>0.2-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>metadataformat</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Metadataformat</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<compile.source>1.8</compile.source>
-		<sonar-plugin.version>2.6</sonar-plugin.version>
-		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-		<testng.version>6.8.8</testng.version>
-	</properties>
-
 	<scm>
 		<connection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</connection>
 		<developerConnection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</developerConnection>
 		<url>https://git.epc.ub.uu.se/epc/metadataformat.git</url>
 	</scm>
-
-	<organization>
-		<name>Library systems unit, Uppsala University Library, Sweden</name>
-		<url>http://ub.uu.se</url>
-	</organization>
-	<developers>
-		<developer>
-			<id>uwek</id>
-			<name>Uwe Klosa</name>
-			<email>uwe.klosa@ub.uu.se</email>
-			<organization>Library systems unit, Uppsala University Library</organization>
-			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
-			<id>madeleine</id>
-			<name>Madeleine Kennbäck</name>
-			<email>madeleine.kennback@ub.uu.se</email>
-			<organization>Library systems unit, Uppsala University Library</organization>
-			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
-			<id>mimmi</id>
-			<name>Mimmi Sundin</name>
-			<email>mimmi.sundin@ub.uu.se</email>
-			<organization>Library systems unit, Uppsala University Library</organization>
-			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
-			<id>olov</id>
-			<name>Olov McKie</name>
-			<email>olov.mckie@ub.uu.se</email>
-			<organization>Library systems unit, Uppsala University Library</organization>
-			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
-	<contributors>
-		<contributor>
-			<name>Marcus Lindström</name>
-			<email>marcus.lindstrom@ub.uu.se</email>
-			<organization>Library systems unit, Uppsala University Library</organization>
-			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
-			<roles>
-				<role>system administrator</role>
-			</roles>
-			<timezone>+1</timezone>
-		</contributor>
-		<contributor>
-			<name>Stefan Andersson</name>
-			<email>stefan.andersson@ub.uu.se</email>
-			<organization>Library systems unit, Uppsala University Library</organization>
-			<organizationUrl>http://epc.ub.uu.se</organizationUrl>
-			<roles>
-				<role>information specialist</role>
-			</roles>
-			<timezone>+1</timezone>
-		</contributor>
-	</contributors>
 
 	<repositories>
 		<repository>
@@ -122,19 +47,6 @@
 		</repository>
 	</repositories>
 
-	<distributionManagement>
-		<repository>
-			<id>epc-release</id>
-			<name>EPC Releases</name>
-			<url>http://epc.ub.uu.se/nexus/content/repositories/epc-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>epc-snapshot</id>
-			<name>Internal Snapshots</name>
-			<url>http://epc.ub.uu.se/nexus/content/repositories/epc-snapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -143,31 +55,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>${compile.source}</source>
-					<target>${compile.source}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<profiles>
-		<profile>
-			<id>sonar</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>sonar-maven-plugin</artifactId>
-						<version>${sonar-plugin.version}</version>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>
