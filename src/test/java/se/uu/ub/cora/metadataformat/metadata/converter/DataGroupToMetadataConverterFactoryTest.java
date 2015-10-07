@@ -5,17 +5,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataConversionException;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToCollectionItemConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToCollectionVariableChildConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToCollectionVariableConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToItemCollectionConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToMetadataConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToMetadataConverterFactory;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToMetadataConverterFactoryImp;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToMetadataGroupChildConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToMetadataGroupConverter;
-import se.uu.ub.cora.metadataformat.metadata.converter.DataGroupToTextVariableConverter;
 
 public class DataGroupToMetadataConverterFactoryTest {
 	@Test(expectedExceptions = DataConversionException.class)
@@ -104,6 +93,16 @@ public class DataGroupToMetadataConverterFactoryTest {
 				.fromDataGroup(dataGroup);
 		DataGroupToMetadataConverter converter = converterFactory.factor();
 		assertTrue(converter instanceof DataGroupToTextVariableConverter);
+	}
+
+	@Test
+	public void testFactorDataToDataLink() {
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "dataToDataLink");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToDataToDataLinkConverter);
 	}
 
 }

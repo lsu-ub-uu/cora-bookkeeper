@@ -2,8 +2,8 @@ package se.uu.ub.cora.metadataformat.metadata.converter;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 
-public final class DataGroupToMetadataConverterFactoryImp implements
-		DataGroupToMetadataConverterFactory {
+public final class DataGroupToMetadataConverterFactoryImp
+		implements DataGroupToMetadataConverterFactory {
 
 	public static DataGroupToMetadataConverterFactoryImp fromDataGroup(DataGroup dataGroup) {
 		return new DataGroupToMetadataConverterFactoryImp(dataGroup);
@@ -20,8 +20,8 @@ public final class DataGroupToMetadataConverterFactoryImp implements
 		if ("metadata".equals(dataGroup.getNameInData())) {
 			return createConverterBasedOnMetadataType();
 		}
-		throw DataConversionException.withMessage("No converter found for DataGroup with nameInData:"
-				+ dataGroup.getNameInData());
+		throw DataConversionException.withMessage(
+				"No converter found for DataGroup with nameInData:" + dataGroup.getNameInData());
 	}
 
 	private DataGroupToMetadataConverter createConverterBasedOnMetadataType() {
@@ -47,7 +47,10 @@ public final class DataGroupToMetadataConverterFactoryImp implements
 		if ("textVariable".equals(type)) {
 			return DataGroupToTextVariableConverter.fromDataGroup(dataGroup);
 		}
-		throw DataConversionException.withMessage("No converter found for DataGroup with type:"
-				+ type);
+		if ("dataToDataLink".equals(type)) {
+			return DataGroupToDataToDataLinkConverter.fromDataGroup(dataGroup);
+		}
+		throw DataConversionException
+				.withMessage("No converter found for DataGroup with type:" + type);
 	}
 }
