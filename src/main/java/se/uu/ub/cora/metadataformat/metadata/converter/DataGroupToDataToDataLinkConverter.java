@@ -3,7 +3,7 @@ package se.uu.ub.cora.metadataformat.metadata.converter;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
 
-public class DataGroupToDataToDataLinkConverter implements DataGroupToMetadataConverter {
+public final class DataGroupToDataToDataLinkConverter implements DataGroupToMetadataConverter {
 
 	private DataGroup dataGroup;
 

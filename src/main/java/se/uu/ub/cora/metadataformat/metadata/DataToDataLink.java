@@ -1,6 +1,6 @@
 package se.uu.ub.cora.metadataformat.metadata;
 
-public class DataToDataLink extends MetadataElement {
+public final class DataToDataLink extends MetadataElement {
 
 	private String targetRecordType;
 

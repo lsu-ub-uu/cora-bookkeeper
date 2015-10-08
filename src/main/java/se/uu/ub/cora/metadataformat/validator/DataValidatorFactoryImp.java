@@ -38,7 +38,7 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 					(CollectionVariable) metadataElement);
 		}
 		if (metadataElement instanceof DataToDataLink) {
-			return new DataDataToDataLinkValidator((DataToDataLink) metadataElement);
+			return new DataDataToDataLinkValidator();
 		}
 		throw DataValidationException
 				.withMessage("No validator created for element with id: " + elementId);

@@ -18,7 +18,7 @@ public class DataDataToDataLinkValidatorTest {
 	public void setUp() {
 		dataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType("id",
 				"nameInData", "textId", "defTextId", "targetRecordType");
-		dataLinkValidator = new DataDataToDataLinkValidator(dataLink);
+		dataLinkValidator = new DataDataToDataLinkValidator();
 		linkDataTest = DataGroup.withNameInData("nameInData");
 	}
 
