@@ -24,7 +24,7 @@ public class DataDataToDataLinkValidatorTest {
 
 	@Test
 	public void testValidate() {
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("id", "someId"));
+		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("targetRecordId", "someId"));
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
 		assertTrue(validationAnswer.dataIsValid());
 	}
@@ -37,14 +37,14 @@ public class DataDataToDataLinkValidatorTest {
 
 	@Test
 	public void testValidateEmptyId() {
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("id", ""));
+		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("targetRecordId", ""));
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
 	public void testValidateExtraChild() {
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("id", "someId"));
+		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("targetRecordId", "someId"));
 		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("extraChild", "extraValue"));
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
 		assertTrue(validationAnswer.dataIsInvalid());

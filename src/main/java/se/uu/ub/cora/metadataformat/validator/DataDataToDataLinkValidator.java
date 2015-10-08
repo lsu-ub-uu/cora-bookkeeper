@@ -24,7 +24,7 @@ public class DataDataToDataLinkValidator implements DataElementValidator {
 	private void validateId() {
 		if (childIdMissingOrEmpty()) {
 			validationAnswer.addErrorMessage("DataToDataLink with nameInData:"
-					+ data.getNameInData() + " must have an nonempty id as child.");
+					+ data.getNameInData() + " must have an nonempty targetRecordId as child.");
 		}
 	}
 
@@ -33,17 +33,17 @@ public class DataDataToDataLinkValidator implements DataElementValidator {
 	}
 
 	private boolean childIdIsEmpty() {
-		return data.getFirstAtomicValueWithNameInData("id").isEmpty();
+		return data.getFirstAtomicValueWithNameInData("targetRecordId").isEmpty();
 	}
 
 	private boolean childIdIsMissing() {
-		return !data.containsChildWithNameInData("id");
+		return !data.containsChildWithNameInData("targetRecordId");
 	}
 
 	private void validateNoExtraChildren() {
 		if (linkHasOneChild()) {
 			validationAnswer.addErrorMessage("DataToDataLink with nameInData:"
-					+ data.getNameInData() + " can only have id as child.");
+					+ data.getNameInData() + " can only have targetRecordId as child.");
 		}
 	}
 
