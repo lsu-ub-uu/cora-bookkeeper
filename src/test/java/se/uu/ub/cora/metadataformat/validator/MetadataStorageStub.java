@@ -10,9 +10,11 @@ import se.uu.ub.cora.metadataformat.storage.MetadataStorage;
 
 public class MetadataStorageStub implements MetadataStorage {
 
+	private List<DataGroup> dataGroups;
+
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
-		List<DataGroup> dataGroups = new ArrayList<>();
+		dataGroups = new ArrayList<>();
 
 		// textVar2
 		DataGroup textVar2 = DataGroup.withNameInData("metadata");
@@ -39,9 +41,10 @@ public class MetadataStorageStub implements MetadataStorage {
 
 		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupTypeVar"));
 		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("textId", "groupTypeVarText"));
-		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("defTextId", "groupTypeVarDefText"));
-		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("refCollectionId",
-				"groupTypeCollection"));
+		groupTypeVar
+				.addChild(DataAtomic.withNameInDataAndValue("defTextId", "groupTypeVarDefText"));
+		groupTypeVar.addChild(
+				DataAtomic.withNameInDataAndValue("refCollectionId", "groupTypeCollection"));
 		dataGroups.add(groupTypeVar);
 
 		// groupType1
@@ -75,16 +78,16 @@ public class MetadataStorageStub implements MetadataStorage {
 		groupTypeCollection.addAttributeByIdWithValue("type", "itemCollection");
 
 		DataGroup groupTypeCollectionRecordInfo = DataGroup.withNameInData("recordInfo");
-		groupTypeCollectionRecordInfo.addChild(DataAtomic.withNameInDataAndValue("id",
-				"groupTypeCollection"));
+		groupTypeCollectionRecordInfo
+				.addChild(DataAtomic.withNameInDataAndValue("id", "groupTypeCollection"));
 		groupTypeCollection.addChild(groupTypeCollectionRecordInfo);
 
 		groupTypeCollection
 				.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupTypeCollection"));
-		groupTypeCollection.addChild(DataAtomic.withNameInDataAndValue("textId",
-				"groupTypeCollectionText"));
-		groupTypeCollection.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-				"groupTypeCollectionDefText"));
+		groupTypeCollection
+				.addChild(DataAtomic.withNameInDataAndValue("textId", "groupTypeCollectionText"));
+		groupTypeCollection.addChild(
+				DataAtomic.withNameInDataAndValue("defTextId", "groupTypeCollectionDefText"));
 
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
 		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "groupType1"));
@@ -131,12 +134,17 @@ public class MetadataStorageStub implements MetadataStorage {
 		DataGroup childReference = DataGroup.withNameInData("childReference");
 		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "textVarId"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
-		// childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
+		// childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey",
+		// "SOME_KEY"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
-		// childReference.addChild(DataAtomic.withNameInDataAndValue("secret", "true"));
-		// childReference.addChild(DataAtomic.withNameInDataAndValue("secretKey", "SECRET_KEY"));
-		// childReference.addChild(DataAtomic.withNameInDataAndValue("readOnly", "true"));
-		// childReference.addChild(DataAtomic.withNameInDataAndValue("readOnlyKey", "READONLY_KEY"));
+		// childReference.addChild(DataAtomic.withNameInDataAndValue("secret",
+		// "true"));
+		// childReference.addChild(DataAtomic.withNameInDataAndValue("secretKey",
+		// "SECRET_KEY"));
+		// childReference.addChild(DataAtomic.withNameInDataAndValue("readOnly",
+		// "true"));
+		// childReference.addChild(DataAtomic.withNameInDataAndValue("readOnlyKey",
+		// "READONLY_KEY"));
 		childReferences.addChild(childReference);
 
 		dataGroups.add(group);
@@ -152,8 +160,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "collectionVar2"));
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("textId", "collectionVarText"));
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("defTextId", "collectionVarDefText"));
-		colVar2.addChild(DataAtomic
-				.withNameInDataAndValue("refCollectionId", "authorityTypeCollection"));
+		colVar2.addChild(
+				DataAtomic.withNameInDataAndValue("refCollectionId", "authorityTypeCollection"));
 		dataGroups.add(colVar2);
 
 		// itemCollection
@@ -165,11 +173,12 @@ public class MetadataStorageStub implements MetadataStorage {
 				.addChild(DataAtomic.withNameInDataAndValue("id", "authorityTypeCollection"));
 		authority.addChild(authorityRecordInfo);
 
-		authority.addChild(DataAtomic.withNameInDataAndValue("nameInData", "authorityTypeCollection"));
-		authority
-				.addChild(DataAtomic.withNameInDataAndValue("textId", "authorityTypeCollectionTextId"));
-		authority.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-				"authorityTypeCollectionDefTextId"));
+		authority.addChild(
+				DataAtomic.withNameInDataAndValue("nameInData", "authorityTypeCollection"));
+		authority.addChild(
+				DataAtomic.withNameInDataAndValue("textId", "authorityTypeCollectionTextId"));
+		authority.addChild(
+				DataAtomic.withNameInDataAndValue("defTextId", "authorityTypeCollectionDefTextId"));
 
 		DataGroup authorityItemReferences = DataGroup.withNameInData("collectionItemReferences");
 		authorityItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "person"));
@@ -214,9 +223,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		organisationItem.addChild(organisationRecordInfo);
 
 		organisationItem.addChild(DataAtomic.withNameInDataAndValue("nameInData", "organisation"));
-		organisationItem.addChild(DataAtomic.withNameInDataAndValue("textId", "organisationTextId"));
-		organisationItem.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-				"organisationDefTextId"));
+		organisationItem
+				.addChild(DataAtomic.withNameInDataAndValue("textId", "organisationTextId"));
+		organisationItem
+				.addChild(DataAtomic.withNameInDataAndValue("defTextId", "organisationDefTextId"));
 		dataGroups.add(organisationItem);
 
 		// placeItem
@@ -232,7 +242,67 @@ public class MetadataStorageStub implements MetadataStorage {
 		placeItem.addChild(DataAtomic.withNameInDataAndValue("defTextId", "placeDefTextId"));
 		dataGroups.add(placeItem);
 
+		addDataToDataMetadata();
 		return dataGroups;
+	}
+
+	private void addDataToDataMetadata() {
+		/**
+		 * {"name":"metadata","attributes":{"type":"dataToDataLink"},"children":
+		 * [{"name":"recordInfo","children":[{"name":"id","value":"testLink"}]},
+		 * {"name":"nameInData","value":"testLink"},{"name":"textId","value":
+		 * "testLinkText"},{"name":"defTextId","value":"testLinkDefText"},{
+		 * "name":"targetRecordType","value":"someRecordType"}]}
+		 */
+		// dataToDataLink
+		DataGroup testLinkGroup = DataGroup.withNameInData("metadata");
+		testLinkGroup.addAttributeByIdWithValue("type", "dataToDataLink");
+
+		DataGroup testLinkGroupRecordInfo = DataGroup.withNameInData("recordInfo");
+		testLinkGroupRecordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "testLink"));
+		testLinkGroup.addChild(testLinkGroupRecordInfo);
+
+		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "testLink"));
+		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "testLinkTextId"));
+		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "testLinkDefText"));
+
+		testLinkGroup.addChild(
+				DataAtomic.withNameInDataAndValue("targetRecordType", "targetRecordType1"));
+		dataGroups.add(testLinkGroup);
+
+		/**
+		 * {"name":"metadata","attributes":{"type":"group"},"children":[{"name":
+		 * "recordInfo","children":[{"name":"id","value":"bush"}]},{"name":
+		 * "textId","value":"bushText"},{"name":"defTextId","value":
+		 * "bushDefText"},{"name":"nameInData","value":"bush"},{"name":
+		 * "childReferences","children":[{"name":"childReference","children":[{
+		 * "name":"ref","value":"recordInfo"},{"name":"repeatMin","value":"1"},{
+		 * "name":"repeatMax","value":"1"}]},{"name":"childReference","children"
+		 * :[{"name":"ref","value":"testLink"},{"name":"repeatMin","value":"1"},
+		 * {"name":"repeatMax","value":"5"}]}]}]}
+		 */
+		// group
+		DataGroup bushGroup = DataGroup.withNameInData("metadata");
+		bushGroup.addAttributeByIdWithValue("type", "group");
+
+		DataGroup groupRecordInfo = DataGroup.withNameInData("recordInfo");
+		groupRecordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "bush"));
+		bushGroup.addChild(groupRecordInfo);
+
+		bushGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "bush"));
+		bushGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "bushTextId"));
+		bushGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "bushDefText"));
+
+		DataGroup childReferences = DataGroup.withNameInData("childReferences");
+		bushGroup.addChild(childReferences);
+
+		DataGroup childReference = DataGroup.withNameInData("childReference");
+		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "testLink"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
+		childReferences.addChild(childReference);
+
+		dataGroups.add(bushGroup);
 	}
 
 	@Override
