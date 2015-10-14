@@ -5,48 +5,49 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.metadataformat.data.DataAtomic;
-import se.uu.ub.cora.metadataformat.data.DataGroup;
+import se.uu.ub.cora.metadataformat.data.DataRecordLink;
 import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
 
 public class DataDataToDataLinkValidatorTest {
 	private DataToDataLink dataLink;
-	private DataDataToDataLinkValidator dataLinkValidator;
-	private DataGroup linkDataTest;
+	private DataRecordLinkValidator dataLinkValidator;
 
 	@BeforeMethod
 	public void setUp() {
 		dataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType("id",
 				"nameInData", "textId", "defTextId", "targetRecordType");
-		dataLinkValidator = new DataDataToDataLinkValidator();
-		linkDataTest = DataGroup.withNameInData("nameInData");
+		dataLinkValidator = new DataRecordLinkValidator();
 	}
 
 	@Test
 	public void testValidate() {
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("targetRecordId", "someId"));
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"nameInData", "targetRecordType", "targetRecordId");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
-	public void testValidateMissingId() {
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
+	public void testValidateEmptyNameInData() {
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("",
+				"targetRecordType", "targetRecordId");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
-	public void testValidateEmptyId() {
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("targetRecordId", ""));
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
+	public void testValidateEmptyRecordType() {
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "", "targetRecordId");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
-	public void testValidateExtraChild() {
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("targetRecordId", "someId"));
-		linkDataTest.addChild(DataAtomic.withNameInDataAndValue("extraChild", "extraValue"));
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(linkDataTest);
+	public void testValidateEmptyRecordId() {
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "targetRecordType", "");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
