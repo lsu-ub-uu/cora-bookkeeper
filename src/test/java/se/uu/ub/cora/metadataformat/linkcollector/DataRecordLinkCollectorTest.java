@@ -1,4 +1,4 @@
-package se.uu.ub.cora.metadataformat.datalink;
+package se.uu.ub.cora.metadataformat.linkcollector;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -7,17 +7,18 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
+import se.uu.ub.cora.metadataformat.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.metadataformat.storage.MetadataStorage;
 import se.uu.ub.cora.metadataformat.validator.MetadataStorageStub;
 
-public class DataLinkCollectorTest {
+public class DataRecordLinkCollectorTest {
 	private MetadataStorage metadataStorage;
-	private DataLinkCollector linkCollector;
+	private DataRecordLinkCollector linkCollector;
 
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageStub();
-		linkCollector = new DataLinkCollector(metadataStorage);
+		linkCollector = new DataRecordLinkCollector(metadataStorage);
 	}
 
 	@Test

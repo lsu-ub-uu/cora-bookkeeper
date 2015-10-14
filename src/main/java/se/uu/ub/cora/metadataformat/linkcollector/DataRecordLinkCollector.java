@@ -1,13 +1,13 @@
-package se.uu.ub.cora.metadataformat.datalink;
+package se.uu.ub.cora.metadataformat.linkcollector;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.storage.MetadataStorage;
 
-public class DataLinkCollector {
+public class DataRecordLinkCollector {
 
 	private MetadataStorage metadataStorage;
 
-	public DataLinkCollector(MetadataStorage metadataStorage) {
+	public DataRecordLinkCollector(MetadataStorage metadataStorage) {
 		this.metadataStorage = metadataStorage;
 	}
 
