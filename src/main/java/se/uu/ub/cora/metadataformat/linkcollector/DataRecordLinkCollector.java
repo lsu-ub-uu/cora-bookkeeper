@@ -4,7 +4,7 @@ import se.uu.ub.cora.metadataformat.data.DataGroup;
 
 public interface DataRecordLinkCollector {
 
-	DataGroup collectLinks(String recordType, String RecordId, String metadataId,
-			DataGroup dataGroup);
+	DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
+			String fromRecordId);
 
 }
