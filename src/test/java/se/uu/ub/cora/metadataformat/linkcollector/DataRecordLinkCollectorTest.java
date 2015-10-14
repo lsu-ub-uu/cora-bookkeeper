@@ -7,7 +7,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
-import se.uu.ub.cora.metadataformat.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.metadataformat.storage.MetadataStorage;
 import se.uu.ub.cora.metadataformat.validator.MetadataStorageStub;
 
@@ -18,7 +17,7 @@ public class DataRecordLinkCollectorTest {
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageStub();
-		linkCollector = new DataRecordLinkCollector(metadataStorage);
+		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
 	}
 
 	@Test
