@@ -24,7 +24,6 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 		getMetadataFromStorage();
 
 		DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
-		// TODO: call top level group collector here
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
 				fromRecordType, fromRecordId);
 		List<DataGroup> collectedLinks = collector.collectLinks(metadataId, dataGroup);
