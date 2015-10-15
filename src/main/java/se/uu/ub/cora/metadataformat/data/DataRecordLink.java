@@ -1,6 +1,6 @@
 package se.uu.ub.cora.metadataformat.data;
 
-public class DataRecordLink implements DataElement {
+public final class DataRecordLink implements DataElement {
 	private String nameInData;
 	private String recordType;
 	private String recordId;
