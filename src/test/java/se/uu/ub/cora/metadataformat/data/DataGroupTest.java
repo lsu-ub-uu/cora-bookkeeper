@@ -6,11 +6,6 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.metadataformat.data.DataAtomic;
-import se.uu.ub.cora.metadataformat.data.DataElement;
-import se.uu.ub.cora.metadataformat.data.DataGroup;
-import se.uu.ub.cora.metadataformat.data.DataMissingException;
-
 public class DataGroupTest {
 	@Test
 	public void testInit() {
@@ -112,4 +107,21 @@ public class DataGroupTest {
 		dataGroup.getFirstGroupWithNameInData("childId");
 	}
 
+	@Test
+	public void testGetFirstChildWithNameInData() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("some", "value"));
+		DataElement child = DataGroup.withNameInData("groupId2");
+		dataGroup.addChild(child);
+		DataElement childOut = dataGroup.getFirstChildWithNameInData("groupId2");
+		assertEquals(childOut, child);
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testGetFirstChildWithIdNotFound() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		DataElement child = DataGroup.withNameInData("groupId2");
+		dataGroup.addChild(child);
+		dataGroup.getFirstChildWithNameInData("groupId2_NOTFOUND");
+	}
 }

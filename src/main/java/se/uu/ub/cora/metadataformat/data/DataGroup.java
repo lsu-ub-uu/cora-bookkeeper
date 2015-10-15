@@ -44,30 +44,42 @@ public final class DataGroup implements DataElement {
 		return attributes;
 	}
 
-	public boolean containsChildWithNameInData(String nameInData) {
+	public boolean containsChildWithNameInData(String childNameInData) {
 		for (DataElement dataElement : getChildren()) {
-			if (dataElement.getNameInData().equals(nameInData)) {
+			if (dataElement.getNameInData().equals(childNameInData)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public String getFirstAtomicValueWithNameInData(String nameInData) {
+	public String getFirstAtomicValueWithNameInData(String childNameInData) {
 		for (DataElement dataElement : getChildren()) {
-			if (dataElement instanceof DataAtomic && dataElement.getNameInData().equals(nameInData)) {
+			if (dataElement instanceof DataAtomic
+					&& dataElement.getNameInData().equals(childNameInData)) {
 				return ((DataAtomic) dataElement).getValue();
 			}
 		}
-		throw new DataMissingException("Atomic value not found for nameInData:" + nameInData);
+		throw new DataMissingException(
+				"Atomic value not found for childNameInData:" + childNameInData);
 	}
 
-	public DataGroup getFirstGroupWithNameInData(String nameInData) {
+	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
 		for (DataElement dataElement : getChildren()) {
-			if (dataElement instanceof DataGroup && dataElement.getNameInData().equals(nameInData)) {
+			if (dataElement instanceof DataGroup
+					&& dataElement.getNameInData().equals(childNameInData)) {
 				return ((DataGroup) dataElement);
 			}
 		}
-		throw new DataMissingException("Group not found for nameInData:" + nameInData);
+		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
+	}
+
+	public DataElement getFirstChildWithNameInData(String childNameInData) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement.getNameInData().equals(childNameInData)) {
+				return dataElement;
+			}
+		}
+		throw new DataMissingException("Element not found for childNameInData:" + childNameInData);
 	}
 }

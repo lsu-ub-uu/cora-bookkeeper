@@ -56,7 +56,7 @@ public class DataValidatorFactoryTest {
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("dataToDataLinkId");
-		assertTrue(dataGroupValidator instanceof DataDataToDataLinkValidator);
+		assertTrue(dataGroupValidator instanceof DataRecordLinkValidator);
 	}
 
 	@Test

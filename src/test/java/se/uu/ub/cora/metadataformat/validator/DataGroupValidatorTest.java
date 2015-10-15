@@ -1,21 +1,21 @@
 package se.uu.ub.cora.metadataformat.validator;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.data.DataAtomic;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
+import se.uu.ub.cora.metadataformat.data.DataRecordLink;
 import se.uu.ub.cora.metadataformat.metadata.CollectionItem;
 import se.uu.ub.cora.metadataformat.metadata.CollectionVariable;
+import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
 import se.uu.ub.cora.metadataformat.metadata.ItemCollection;
 import se.uu.ub.cora.metadataformat.metadata.MetadataChildReference;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroup;
 import se.uu.ub.cora.metadataformat.metadata.MetadataHolder;
 import se.uu.ub.cora.metadataformat.metadata.TextVariable;
-import se.uu.ub.cora.metadataformat.validator.DataElementValidator;
-import se.uu.ub.cora.metadataformat.validator.DataValidatorFactory;
-import se.uu.ub.cora.metadataformat.validator.DataValidatorFactoryImp;
 
 public class DataGroupValidatorTest {
 	@Test
@@ -69,7 +69,8 @@ public class DataGroupValidatorTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textVarNameInDataERROR", "10:10"));
 
 		assertEquals(dataElementValidator.validateData(dataGroup).dataIsValid(), false,
-				"The group should be validate to false, as it has an " + "child with wrong nameInData");
+				"The group should be validate to false, as it has an "
+						+ "child with wrong nameInData");
 	}
 
 	@Test
@@ -128,6 +129,38 @@ public class DataGroupValidatorTest {
 				.withReferenceIdAndRepeatMinAndRepeatMax("textVarId", 1, 1);
 
 		group.addChildReference(textChild);
+		return metadataHolder;
+	}
+
+	@Test
+	public void testOneGroupNoAttributesOneRecordLinkChildValidData() {
+		MetadataHolder metadataHolder = createOneGroupNoAttributesOneRecordLinkChild();
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupId");
+
+		DataGroup dataGroup = DataGroup.withNameInData("groupNameInData");
+		dataGroup.addChild(DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"recordLinkNameInData", "recordLinkTargetRecordType", "someRecordLinkId"));
+
+		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid());
+	}
+
+	private MetadataHolder createOneGroupNoAttributesOneRecordLinkChild() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataGroup group = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("groupId",
+				"groupNameInData", "groupTextId", "groupDefTextId");
+		metadataHolder.addMetadataElement(group);
+
+		DataToDataLink recordLink = DataToDataLink
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType("recordLinkId",
+						"recordLinkNameInData", "recordLinkTextId", "recordLinkDefTextId",
+						"recordLinkTargetRecordType");
+		metadataHolder.addMetadataElement(recordLink);
+
+		MetadataChildReference linkChild = MetadataChildReference
+				.withReferenceIdAndRepeatMinAndRepeatMax("recordLinkId", 1, 1);
+
+		group.addChildReference(linkChild);
 		return metadataHolder;
 	}
 
@@ -207,12 +240,12 @@ public class DataGroupValidatorTest {
 				"collectionId");
 		metadataHolder.addMetadataElement(colVar2);
 
-		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData", "choice1TextId",
-				"choice1DefTextId");
+		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",
+				"choice1TextId", "choice1DefTextId");
 		metadataHolder.addMetadataElement(choice1);
 
-		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData", "choice2TextId",
-				"choice2DefTextId");
+		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData",
+				"choice2TextId", "choice2DefTextId");
 		metadataHolder.addMetadataElement(choice2);
 
 		ItemCollection collection = new ItemCollection("collectionId", "collectionNameInData",
@@ -276,12 +309,12 @@ public class DataGroupValidatorTest {
 				"collectionId");
 		metadataHolder.addMetadataElement(colVar2);
 
-		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData", "choice1TextId",
-				"choice1DefTextId");
+		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",
+				"choice1TextId", "choice1DefTextId");
 		metadataHolder.addMetadataElement(choice1);
 
-		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData", "choice2TextId",
-				"choice2DefTextId");
+		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData",
+				"choice2TextId", "choice2DefTextId");
 		metadataHolder.addMetadataElement(choice2);
 
 		ItemCollection collection = new ItemCollection("collectionId", "collectionNameInData",
@@ -506,12 +539,12 @@ public class DataGroupValidatorTest {
 				"groupTypeVarText", "groupTypeVarDefText", "groupTypeCollection");
 		metadataHolder.addMetadataElement(colVar);
 
-		CollectionItem groupType1 = new CollectionItem("groupType1", "groupType1",
-				"groupType1Text", "groupType1DefText");
+		CollectionItem groupType1 = new CollectionItem("groupType1", "groupType1", "groupType1Text",
+				"groupType1DefText");
 		metadataHolder.addMetadataElement(groupType1);
 
-		CollectionItem groupType2 = new CollectionItem("groupType2", "groupType2",
-				"groupType2Text", "groupType2DefText");
+		CollectionItem groupType2 = new CollectionItem("groupType2", "groupType2", "groupType2Text",
+				"groupType2DefText");
 		metadataHolder.addMetadataElement(groupType2);
 
 		ItemCollection groupTypeCollection = new ItemCollection("groupTypeCollection",
@@ -527,8 +560,8 @@ public class DataGroupValidatorTest {
 		metadataHolder.addMetadataElement(textVar);
 
 		// group
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("group",
-				"group", "groupTextId", "groupDefTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
+				"group", "group", "groupTextId", "groupDefTextId");
 		metadataHolder.addMetadataElement(metadataGroup);
 
 		MetadataChildReference groupChild = MetadataChildReference
@@ -571,12 +604,12 @@ public class DataGroupValidatorTest {
 				"groupTypeVarText", "groupTypeVarDefText", "groupTypeCollection");
 		metadataHolder.addMetadataElement(colVar);
 
-		CollectionItem groupType1 = new CollectionItem("groupType1", "groupType1",
-				"groupType1Text", "groupType1DefText");
+		CollectionItem groupType1 = new CollectionItem("groupType1", "groupType1", "groupType1Text",
+				"groupType1DefText");
 		metadataHolder.addMetadataElement(groupType1);
 
-		CollectionItem groupType2 = new CollectionItem("groupType2", "groupType2",
-				"groupType2Text", "groupType2DefText");
+		CollectionItem groupType2 = new CollectionItem("groupType2", "groupType2", "groupType2Text",
+				"groupType2DefText");
 		metadataHolder.addMetadataElement(groupType2);
 
 		ItemCollection groupTypeCollection = new ItemCollection("groupTypeCollection",
@@ -604,8 +637,8 @@ public class DataGroupValidatorTest {
 		metadataHolder.addMetadataElement(textVar3);
 
 		// group
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("group",
-				"group", "groupTextId", "groupDefTextId");
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
+				"group", "group", "groupTextId", "groupDefTextId");
 		metadataHolder.addMetadataElement(metadataGroup);
 
 		// attribute references
