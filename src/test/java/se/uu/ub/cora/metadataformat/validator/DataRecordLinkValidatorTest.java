@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
 import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
 
-public class DataDataToDataLinkValidatorTest {
+public class DataRecordLinkValidatorTest {
 	private DataToDataLink dataLink;
 	private DataRecordLinkValidator dataLinkValidator;
 
@@ -16,7 +16,7 @@ public class DataDataToDataLinkValidatorTest {
 	public void setUp() {
 		dataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType("id",
 				"nameInData", "textId", "defTextId", "targetRecordType");
-		dataLinkValidator = new DataRecordLinkValidator();
+		dataLinkValidator = new DataRecordLinkValidator(dataLink);
 	}
 
 	@Test
@@ -25,6 +25,14 @@ public class DataDataToDataLinkValidatorTest {
 				"nameInData", "targetRecordType", "targetRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
+	}
+
+	@Test
+	public void testValidateRecordType() {
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"nameInData", "notMyRecordType", "targetRecordId");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test

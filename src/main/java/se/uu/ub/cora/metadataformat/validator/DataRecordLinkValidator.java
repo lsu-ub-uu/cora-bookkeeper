@@ -2,14 +2,16 @@ package se.uu.ub.cora.metadataformat.validator;
 
 import se.uu.ub.cora.metadataformat.data.DataElement;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
+import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
 
 public class DataRecordLinkValidator implements DataElementValidator {
 
 	private ValidationAnswer validationAnswer;
 	private DataRecordLink data;
+	private DataToDataLink dataLink;
 
-	public DataRecordLinkValidator() {
-		// will take a DataToDataLink when implementing support for path
+	public DataRecordLinkValidator(DataToDataLink dataLink) {
+		this.dataLink = dataLink;
 	}
 
 	@Override
@@ -17,21 +19,26 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		validationAnswer = new ValidationAnswer();
 		data = (DataRecordLink) dataElement;
 		validateNoEmptyValues();
+		validateTargetRecordType();
 		return validationAnswer;
 	}
 
 	private void validateNoEmptyValues() {
 		if (nameInDataIsEmpty()) {
-			validationAnswer.addErrorMessage("DataRecordLink with must have a nonempty nameInData");
+			validationAnswer.addErrorMessage("DataRecordLink must have a nonempty nameInData");
 		}
 		if (recordTypeIsEmpty()) {
-			validationAnswer.addErrorMessage("DataRecordLink with nameInData:"
-					+ data.getNameInData() + " must have an nonempty recordType as child.");
+			validationAnswer.addErrorMessage(
+					createNameInDataMessagePart() + " must have an nonempty recordType as child.");
 		}
 		if (recordIdIsEmpty()) {
-			validationAnswer.addErrorMessage("DataRecordLink with nameInData:"
-					+ data.getNameInData() + " must have an nonempty recordId as child.");
+			validationAnswer.addErrorMessage(
+					createNameInDataMessagePart() + " must have an nonempty recordId as child.");
 		}
+	}
+
+	private String createNameInDataMessagePart() {
+		return "DataRecordLink with nameInData:" + data.getNameInData();
 	}
 
 	private boolean nameInDataIsEmpty() {
@@ -44,6 +51,17 @@ public class DataRecordLinkValidator implements DataElementValidator {
 
 	private boolean recordIdIsEmpty() {
 		return data.getRecordId().isEmpty();
+	}
+
+	private void validateTargetRecordType() {
+		if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
+			validationAnswer.addErrorMessage(createNameInDataMessagePart()
+					+ " must have an recordType:" + dataLink.getTargetRecordType());
+		}
+	}
+
+	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
+		return !data.getRecordType().equals(dataLink.getTargetRecordType());
 	}
 
 }
