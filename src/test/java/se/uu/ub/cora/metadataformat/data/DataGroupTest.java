@@ -15,6 +15,7 @@ public class DataGroupTest {
 				"NameInData should be the same as the one set in the constructor.");
 	}
 
+	@Test
 	public void testInitWithRepeatId() {
 		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
 		dataGroup.setRepeatId("gh");
