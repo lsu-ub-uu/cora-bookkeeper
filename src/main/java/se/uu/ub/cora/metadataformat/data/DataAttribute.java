@@ -1,6 +1,6 @@
 package se.uu.ub.cora.metadataformat.data;
 
-public final class DataAttribute implements DataElement {
+public final class DataAttribute {
 
 	private String nameInData;
 	private String value;
@@ -14,7 +14,6 @@ public final class DataAttribute implements DataElement {
 		this.value = value;
 	}
 
-	@Override
 	public String getNameInData() {
 		return nameInData;
 	}
