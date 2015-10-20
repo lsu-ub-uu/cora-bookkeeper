@@ -4,6 +4,7 @@ public final class DataAtomic implements DataElement {
 
 	private String nameInData;
 	private String value;
+	private String repeatId;
 
 	public static DataAtomic withNameInDataAndValue(String nameInData, String value) {
 		return new DataAtomic(nameInData, value);
@@ -21,6 +22,14 @@ public final class DataAtomic implements DataElement {
 
 	public String getValue() {
 		return value;
+	}
+
+	public void setRepeatId(String repeatId) {
+		this.repeatId = repeatId;
+	}
+
+	public String getRepeatId() {
+		return repeatId;
 	}
 
 }

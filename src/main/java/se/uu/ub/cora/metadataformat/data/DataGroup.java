@@ -10,6 +10,7 @@ public final class DataGroup implements DataElement {
 	private final String nameInData;
 	private Map<String, String> attributes = new HashMap<>();
 	private List<DataElement> children = new ArrayList<>();
+	private String repeatId;
 
 	public static DataGroup withNameInData(String nameInData) {
 		return new DataGroup(nameInData);
@@ -81,5 +82,13 @@ public final class DataGroup implements DataElement {
 			}
 		}
 		throw new DataMissingException("Element not found for childNameInData:" + childNameInData);
+	}
+
+	public void setRepeatId(String repeatId) {
+		this.repeatId = repeatId;
+	}
+
+	public String getRepeatId() {
+		return repeatId;
 	}
 }

@@ -7,9 +7,21 @@ import org.testng.annotations.Test;
 public class DataRecordLinkTest {
 	@Test
 	public void testInit() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
 		assertEquals(dataRecordLink.getNameInData(), "nameInData");
 		assertEquals(dataRecordLink.getRecordType(), "recordType");
 		assertEquals(dataRecordLink.getRecordId(), "recordId");
+	}
+
+	@Test
+	public void testInitWithRepeatId() {
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
+		dataRecordLink.setRepeatId("one");
+		assertEquals(dataRecordLink.getNameInData(), "nameInData");
+		assertEquals(dataRecordLink.getRecordType(), "recordType");
+		assertEquals(dataRecordLink.getRecordId(), "recordId");
+		assertEquals(dataRecordLink.getRepeatId(), "one");
 	}
 }
