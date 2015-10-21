@@ -16,6 +16,15 @@ public class DataGroupTest {
 	}
 
 	@Test
+	public void testInitWithRepeatId() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		dataGroup.setRepeatId("gh");
+		assertEquals(dataGroup.getNameInData(), "nameInData",
+				"NameInData should be the same as the one set in the constructor.");
+		assertEquals(dataGroup.getRepeatId(), "gh");
+	}
+
+	@Test
 	public void testAddAttribute() {
 		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");

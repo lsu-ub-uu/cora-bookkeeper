@@ -11,12 +11,10 @@ import se.uu.ub.cora.metadataformat.data.DataAtomic;
 import se.uu.ub.cora.metadataformat.data.DataElement;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.storage.MetadataStorage;
-import se.uu.ub.cora.metadataformat.validator.DataValidator;
-import se.uu.ub.cora.metadataformat.validator.DataValidatorImp;
 
 /**
- * ValidateDataTest tests that the ValidateData class correctly validates data based on the
- * metadataFormat
+ * ValidateDataTest tests that the ValidateData class correctly validates data
+ * based on the metadataFormat
  * 
  * @author olov
  * 
@@ -58,8 +56,12 @@ public class DataValidatorTest {
 	public void testValidateMetadataGroup() {
 		DataGroup dataGroup = DataGroup.withNameInData("group");
 		dataGroup.addAttributeByIdWithValue("groupTypeVar", "groupType1");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textVarNameInData", "10:10"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textVarNameInData", "11:11"));
+		DataAtomic child1 = DataAtomic.withNameInDataAndValue("textVarNameInData", "10:10");
+		child1.setRepeatId("4");
+		dataGroup.addChild(child1);
+		DataAtomic child2 = DataAtomic.withNameInDataAndValue("textVarNameInData", "11:11");
+		child2.setRepeatId("3");
+		dataGroup.addChild(child2);
 		assertTrue(dataValidator.validateData("group", dataGroup).dataIsValid(),
 				"The group should be validate to true");
 	}

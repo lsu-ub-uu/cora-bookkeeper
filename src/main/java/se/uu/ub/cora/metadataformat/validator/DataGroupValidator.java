@@ -20,8 +20,10 @@
 package se.uu.ub.cora.metadataformat.validator;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import se.uu.ub.cora.metadataformat.data.DataAtomic;
 import se.uu.ub.cora.metadataformat.data.DataElement;
@@ -48,13 +50,13 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	/**
-	 * validateData validates that the entered dataGroup is correct according to this validators
-	 * metadataGroup
+	 * validateData validates that the entered dataGroup is correct according to
+	 * this validators metadataGroup
 	 * 
 	 * @param dataGroup
 	 *            A DataGroup to validate
-	 * @return A ValidationAnswer with information if the dataGroup has valid data and if not a list
-	 *         of errors
+	 * @return A ValidationAnswer with information if the dataGroup has valid
+	 *         data and if not a list of errors
 	 */
 	@Override
 	public ValidationAnswer validateData(DataElement dataGroup) {
@@ -63,6 +65,7 @@ class DataGroupValidator implements DataElementValidator {
 		validateNameInData();
 		validateAttributes();
 		validateChildren();
+
 		return validationAnswer;
 	}
 
@@ -87,7 +90,8 @@ class DataGroupValidator implements DataElementValidator {
 		}
 	}
 
-	private void validateDataContainsAttributeReferenceWithCorrectData(String mdAttributeReference) {
+	private void validateDataContainsAttributeReferenceWithCorrectData(
+			String mdAttributeReference) {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
 
 		Map<String, String> dataAttributes = dataGroup.getAttributes();
@@ -97,8 +101,8 @@ class DataGroupValidator implements DataElementValidator {
 					dataAttributes);
 			validateAttribute(mdAttributeReference, dataElement);
 		} else {
-			validationAnswer.addErrorMessage("Attribute with nameInData: " + nameInData
-					+ " does not exist in data.");
+			validationAnswer.addErrorMessage(
+					"Attribute with nameInData: " + nameInData + " does not exist in data.");
 		}
 	}
 
@@ -136,8 +140,8 @@ class DataGroupValidator implements DataElementValidator {
 
 	private void validateNameInDataFromDataAttributeIsSpecifiedInMetadata(String dataNameInData) {
 		if (!isNameInDataFromDataSpecifiedInMetadata(dataNameInData)) {
-			validationAnswer.addErrorMessage("Data attribute with id: " + dataNameInData
-					+ " does not exist in metadata.");
+			validationAnswer.addErrorMessage(
+					"Data attribute with id: " + dataNameInData + " does not exist in metadata.");
 		}
 	}
 
@@ -167,35 +171,73 @@ class DataGroupValidator implements DataElementValidator {
 	private void validateDataContainsRequiredChildReferenceWithCorrectValue(
 			MetadataChildReference childReference) {
 		String referenceId = childReference.getReferenceId();
-		int childrenFound = validateAndCountChildrenWithReferenceId(referenceId);
+		boolean mayBeRepeated = childReference.getRepeatMax() > 1;
+
+		int childrenFound = validateAndCountChildrenWithReferenceId(referenceId, mayBeRepeated);
 		validateRepeatMinAndMax(childReference, childrenFound);
 	}
 
-	private void validateRepeatMinAndMax(MetadataChildReference childReference, int childrenFound) {
-		String referenceId = childReference.getReferenceId();
-		if (childrenFound < childReference.getRepeatMin()) {
-			validationAnswer.addErrorMessage("Did not find enough data children with referenceId: "
-					+ referenceId + ".");
-		}
-		if (childrenFound > childReference.getRepeatMax()) {
-			validationAnswer.addErrorMessage("Found too many data children with referenceId: "
-					+ referenceId + ".");
-		}
-	}
-
-	private int validateAndCountChildrenWithReferenceId(String referenceId) {
-		DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
+	private int validateAndCountChildrenWithReferenceId(String referenceId, boolean mayBeRepeated) {
 		int childrenFound = 0;
+		Set<String> repeatIds = new HashSet<>();
 		for (DataElement childData : dataGroup.getChildren()) {
 			if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
 				childrenFound++;
-				validateChildElementData(childValidator, childData);
+				validateRepeatId(mayBeRepeated, repeatIds, childData);
+				validateChildElementData(referenceId, childData);
 			}
 		}
 		return childrenFound;
 	}
 
-	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData, String referenceId) {
+	private void validateRepeatId(boolean mayBeRepeated, Set<String> repeatIds,
+			DataElement childData) {
+		if (mayBeRepeated) {
+			validateRepeatId(repeatIds, childData);
+		} else {
+			validateNoRepeatId(childData);
+		}
+	}
+
+	private void validateRepeatId(Set<String> repeatIds, DataElement childData) {
+		String repeatId = childData.getRepeatId();
+		if (repeatId == null || repeatId.isEmpty()) {
+			validationAnswer.addErrorMessage(
+					createIdentifiedErrorMessage(childData) + " must have non empty repeatId");
+		} else {
+			validateUniqueRepeatId(repeatIds, childData);
+		}
+	}
+
+	private String createIdentifiedErrorMessage(DataElement childData) {
+		return "Repeatable child " + childData.getNameInData() + " in group "
+				+ dataGroup.getNameInData();
+	}
+
+	private void validateUniqueRepeatId(Set<String> repeatIds, DataElement childData) {
+		String repeatId = childData.getRepeatId();
+		if (repeatIds.contains(repeatId)) {
+			validationAnswer.addErrorMessage(createIdentifiedErrorMessage(childData)
+					+ " must have unique repeatId: " + repeatId);
+		} else {
+			repeatIds.add(repeatId);
+		}
+	}
+
+	private void validateRepeatMinAndMax(MetadataChildReference childReference, int childrenFound) {
+		String referenceId = childReference.getReferenceId();
+		if (childrenFound < childReference.getRepeatMin()) {
+			validationAnswer.addErrorMessage(
+					"Did not find enough data children with referenceId: " + referenceId + ".");
+		}
+		if (childrenFound > childReference.getRepeatMax()) {
+			validationAnswer.addErrorMessage(
+					"Found too many data children with referenceId: " + referenceId + ".");
+		}
+	}
+
+	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
+			String referenceId) {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
 		if (childElement.getNameInData().equals(childData.getNameInData())) {
 			return true;
@@ -203,7 +245,16 @@ class DataGroupValidator implements DataElementValidator {
 		return false;
 	}
 
-	private void validateChildElementData(DataElementValidator childValidator, DataElement childData) {
+	private void validateNoRepeatId(DataElement childData) {
+		String repeatId = childData.getRepeatId();
+		if (repeatId != null) {
+			validationAnswer.addErrorMessage(
+					createIdentifiedErrorMessage(childData) + " can not have a repeatId");
+		}
+	}
+
+	private void validateChildElementData(String referenceId, DataElement childData) {
+		DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
 		ValidationAnswer va = childValidator.validateData(childData);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
@@ -220,7 +271,8 @@ class DataGroupValidator implements DataElementValidator {
 	private boolean isChildDataSpecifiedInMetadataGroup(DataElement childData) {
 		Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
 		for (MetadataChildReference childReference : childReferences) {
-			if (isChildDataSpecifiedByChildReferenceId(childData, childReference.getReferenceId())) {
+			if (isChildDataSpecifiedByChildReferenceId(childData,
+					childReference.getReferenceId())) {
 				return true;
 			}
 		}
