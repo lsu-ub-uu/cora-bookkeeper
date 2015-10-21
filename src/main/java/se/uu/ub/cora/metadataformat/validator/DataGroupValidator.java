@@ -164,14 +164,20 @@ class DataGroupValidator implements DataElementValidator {
 		for (DataElement childData : dataGroup.getChildren()) {
 			if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
 				childrenFound++;
-				if (mayBeRepeated) {
-					validateRepeatId(repeatIds, childData);
-				}
-				DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
-				validateChildElementData(childValidator, childData);
+				validateRepeatId(mayBeRepeated, repeatIds, childData);
+				validateChildElementData(referenceId, childData);
 			}
 		}
 		return childrenFound;
+	}
+
+	private void validateRepeatId(boolean mayBeRepeated, Set<String> repeatIds,
+			DataElement childData) {
+		if (mayBeRepeated) {
+			validateRepeatId(repeatIds, childData);
+		} else {
+			validateNoRepeatId(childData);
+		}
 	}
 
 	private void validateRepeatId(Set<String> repeatIds, DataElement childData) {
@@ -220,8 +226,16 @@ class DataGroupValidator implements DataElementValidator {
 		return false;
 	}
 
-	private void validateChildElementData(DataElementValidator childValidator,
-			DataElement childData) {
+	private void validateNoRepeatId(DataElement childData) {
+		String repeatId = childData.getRepeatId();
+		if (repeatId != null) {
+			validationAnswer.addErrorMessage(
+					createIdentifiedErrorMessage(childData) + " can not have a repeatId");
+		}
+	}
+
+	private void validateChildElementData(String referenceId, DataElement childData) {
+		DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
 		ValidationAnswer va = childValidator.validateData(childData);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}

@@ -599,7 +599,6 @@ public class DataGroupValidatorTest {
 		child2.setRepeatId("two");
 		dataGroup.addChild(child2);
 		DataAtomic child3 = DataAtomic.withNameInDataAndValue("textVarNameInData2", "10:10");
-		child3.setRepeatId("three");
 		dataGroup.addChild(child3);
 		DataAtomic child4 = DataAtomic.withNameInDataAndValue("textVarNameInData3", "10:10");
 		child4.setRepeatId("four");
@@ -765,4 +764,44 @@ public class DataGroupValidatorTest {
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsInvalid());
 	}
+
+	@Test
+	public void testRepeatIdWhereNotExpected() {
+		MetadataHolder metadataHolder = createMetadataGroupWithOneChild();
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupOne");
+
+		DataGroup dataGroup = DataGroup.withNameInData("groupOne");
+
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("textVarNameInData", "10:10");
+		dataAtomic.setRepeatId("1");
+		dataGroup.addChild(dataAtomic);
+
+		assertTrue(dataElementValidator.validateData(dataGroup).dataIsInvalid());
+	}
+
+	private MetadataHolder createMetadataGroupWithOneChild() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+
+		// child
+		TextVariable textVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("textVarId",
+						"textVarNameInData", "textVarTextId", "textVarDefTextId",
+						"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}");
+		metadataHolder.addMetadataElement(textVar);
+
+		// group
+		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
+				"groupOne", "groupOne", "groupTextId", "groupDefTextId");
+		metadataHolder.addMetadataElement(metadataGroup);
+
+		MetadataChildReference groupChild = MetadataChildReference
+				.withReferenceIdAndRepeatMinAndRepeatMax("textVarId", 1, 1);
+
+		// child references
+		metadataGroup.addChildReference(groupChild);
+
+		return metadataHolder;
+	}
+
 }
