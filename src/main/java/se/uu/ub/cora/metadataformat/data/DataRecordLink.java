@@ -24,6 +24,7 @@ public final class DataRecordLink implements DataElement {
 	private String recordType;
 	private String recordId;
 	private String repeatId;
+	private String linkedRepeatId;
 
 	public static DataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
 			String recordType, String recordId) {
@@ -36,7 +37,6 @@ public final class DataRecordLink implements DataElement {
 		this.recordId = recordId;
 	}
 
-	@Override
 	public String getNameInData() {
 		return nameInData;
 	}
@@ -55,6 +55,14 @@ public final class DataRecordLink implements DataElement {
 
 	public String getRepeatId() {
 		return repeatId;
+	}
+
+	public void setLinkedRepeatId(String linkedRepeatId) {
+		this.linkedRepeatId = linkedRepeatId;
+	}
+
+	public String getLinkedRepeatId() {
+		return linkedRepeatId;
 	}
 
 }
