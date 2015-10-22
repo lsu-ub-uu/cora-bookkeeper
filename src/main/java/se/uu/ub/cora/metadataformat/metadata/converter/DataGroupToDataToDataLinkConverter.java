@@ -44,8 +44,16 @@ public final class DataGroupToDataToDataLinkConverter implements DataGroupToMeta
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 		String targetRecordType = dataGroup.getFirstAtomicValueWithNameInData("targetRecordType");
 
-		return DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(id,
-				nameInData, textId, defTextId, targetRecordType);
+		DataToDataLink dataToDataLink = DataToDataLink
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(id, nameInData, textId,
+						defTextId, targetRecordType);
+		addLinkedPathIfExists(dataToDataLink);
+		return dataToDataLink;
 	}
 
+	private void addLinkedPathIfExists(DataToDataLink dataToDataLink) {
+		if (dataGroup.containsChildWithNameInData("linkedPath")) {
+			dataToDataLink.setLinkedPath(dataGroup.getFirstGroupWithNameInData("linkedPath"));
+		}
+	}
 }

@@ -19,8 +19,11 @@
 
 package se.uu.ub.cora.metadataformat.metadata;
 
+import se.uu.ub.cora.metadataformat.data.DataGroup;
+
 public final class DataToDataLink extends MetadataElement {
 	private String targetRecordType;
+	private DataGroup linkedPath;
 
 	public static DataToDataLink withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(
 			String id, String nameInData, String textId, String defTextId,
@@ -36,6 +39,14 @@ public final class DataToDataLink extends MetadataElement {
 
 	public String getTargetRecordType() {
 		return targetRecordType;
+	}
+
+	public void setLinkedPath(DataGroup linkedPath) {
+		this.linkedPath = linkedPath;
+	}
+
+	public DataGroup getLinkedPath() {
+		return linkedPath;
 	}
 
 }
