@@ -26,30 +26,51 @@ import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
 public class DataRecordLinkValidator implements DataElementValidator {
 
 	private ValidationAnswer validationAnswer;
-	private DataRecordLink data;
-	private DataToDataLink dataLink;
+	private DataRecordLink dataRecordLink;
+	private DataToDataLink dataToDataLink;
 
 	public DataRecordLinkValidator(DataToDataLink dataLink) {
-		this.dataLink = dataLink;
+		this.dataToDataLink = dataLink;
 	}
 
 	@Override
 	public ValidationAnswer validateData(DataElement dataElement) {
 		validationAnswer = new ValidationAnswer();
-		data = (DataRecordLink) dataElement;
-		validateNoEmptyValues();
-		validateTargetRecordType();
+		dataRecordLink = (DataRecordLink) dataElement;
+		validateNameInData();
+		validateRecordType();
+		validateRecordId();
+		validateLinkedPath();
+		validateLinkedRepeatId();
 		return validationAnswer;
 	}
 
-	private void validateNoEmptyValues() {
+	private void validateNameInData() {
 		if (nameInDataIsEmpty()) {
 			validationAnswer.addErrorMessage("DataRecordLink must have a nonempty nameInData");
 		}
+	}
+
+	private void validateRecordType() {
 		if (recordTypeIsEmpty()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " must have an nonempty recordType as child.");
 		}
+		if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
+			validationAnswer.addErrorMessage(createNameInDataMessagePart()
+					+ " must have an recordType:" + dataToDataLink.getTargetRecordType());
+		}
+	}
+
+	private boolean recordTypeIsEmpty() {
+		return dataRecordLink.getRecordType().isEmpty();
+	}
+
+	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
+		return !dataRecordLink.getRecordType().equals(dataToDataLink.getTargetRecordType());
+	}
+
+	private void validateRecordId() {
 		if (recordIdIsEmpty()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " must have an nonempty recordId as child.");
@@ -57,30 +78,95 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private String createNameInDataMessagePart() {
-		return "DataRecordLink with nameInData:" + data.getNameInData();
+		return "DataRecordLink with nameInData:" + dataRecordLink.getNameInData();
 	}
 
 	private boolean nameInDataIsEmpty() {
-		return data.getNameInData().isEmpty();
-	}
-
-	private boolean recordTypeIsEmpty() {
-		return data.getRecordType().isEmpty();
+		return dataRecordLink.getNameInData().isEmpty();
 	}
 
 	private boolean recordIdIsEmpty() {
-		return data.getRecordId().isEmpty();
+		return dataRecordLink.getRecordId().isEmpty();
 	}
 
-	private void validateTargetRecordType() {
-		if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
-			validationAnswer.addErrorMessage(createNameInDataMessagePart()
-					+ " must have an recordType:" + dataLink.getTargetRecordType());
+	private void validateLinkedPath() {
+		if (dataShouldContainALinkedPath()) {
+			validateLinkedPathIsSameAsSpecifiedInMetadata();
+		} else {
+			validateDoesNotHaveLinkedPath();
 		}
 	}
 
-	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
-		return !data.getRecordType().equals(dataLink.getTargetRecordType());
+	private void validateLinkedPathIsSameAsSpecifiedInMetadata() {
+		if (linkedPathIsMissing()) {
+			validationAnswer
+					.addErrorMessage(createNameInDataMessagePart() + " should have a linkedPath");
+		} else {
+			if (notSameAsSpecifiedPath()) {
+				validationAnswer.addErrorMessage(createNameInDataMessagePart()
+						+ " should have a linkedPath as " + "specified in metadata");
+			}
+		}
+	}
+
+	private boolean linkedPathIsMissing() {
+		return dataRecordLink.getLinkedPath() == null;
+	}
+
+	private boolean notSameAsSpecifiedPath() {
+		// TODO Auto-generated method stub
+
+		return false;
+	}
+
+	private void validateDoesNotHaveLinkedPath() {
+		if (thereIsALinkedPath()) {
+			validationAnswer.addErrorMessage(
+					createNameInDataMessagePart() + " should not have a linkedPath");
+		}
+	}
+
+	private boolean thereIsALinkedPath() {
+		return !linkedPathIsMissing();
+	}
+
+	private boolean dataShouldContainALinkedPath() {
+		return dataToDataLink.getLinkedPath() != null;
+	}
+
+	private void validateLinkedRepeatId() {
+		if (dataShouldContainALinkedRepeatId()) {
+			validateHasLinkedRepeatId();
+		} else {
+			validateDoesNotHaveLinkedRepeatId();
+		}
+	}
+
+	private boolean dataShouldContainALinkedRepeatId() {
+		return dataToDataLink.getLinkedPath() != null;
+	}
+
+	private void validateHasLinkedRepeatId() {
+		if (linkedRepeatIdIsMissingOrEmpty()) {
+			validationAnswer.addErrorMessage(
+					createNameInDataMessagePart() + " should have a linkedRepeatId");
+		}
+	}
+
+	private boolean linkedRepeatIdIsMissingOrEmpty() {
+		return dataRecordLink.getLinkedRepeatId() == null
+				|| dataRecordLink.getLinkedRepeatId().isEmpty();
+	}
+
+	private void validateDoesNotHaveLinkedRepeatId() {
+		if (thereIsANonEmptyLinkedRepeatId()) {
+			validationAnswer.addErrorMessage(
+					createNameInDataMessagePart() + " should not have a linkedRepeatId");
+		}
+	}
+
+	private boolean thereIsANonEmptyLinkedRepeatId() {
+		return !linkedRepeatIdIsMissingOrEmpty();
 	}
 
 }

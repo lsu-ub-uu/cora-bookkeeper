@@ -25,6 +25,7 @@ public final class DataRecordLink implements DataElement {
 	private String recordId;
 	private String repeatId;
 	private String linkedRepeatId;
+	private DataGroup linkedPath;
 
 	public static DataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
 			String recordType, String recordId) {
@@ -63,6 +64,15 @@ public final class DataRecordLink implements DataElement {
 
 	public String getLinkedRepeatId() {
 		return linkedRepeatId;
+	}
+
+	public void setLinkedPath(DataGroup linkedPath) {
+		this.linkedPath = linkedPath;
+
+	}
+
+	public DataGroup getLinkedPath() {
+		return linkedPath;
 	}
 
 }
