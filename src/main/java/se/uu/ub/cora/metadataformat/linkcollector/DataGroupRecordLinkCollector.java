@@ -21,7 +21,9 @@ package se.uu.ub.cora.metadataformat.linkcollector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
+import se.uu.ub.cora.metadataformat.data.DataAtomic;
 import se.uu.ub.cora.metadataformat.data.DataElement;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
@@ -38,6 +40,7 @@ public class DataGroupRecordLinkCollector {
 	private String fromRecordId;
 	private List<DataGroup> linkList;
 	private DataGroup dataGroup;
+	private DataGroup totalPath;
 
 	public DataGroupRecordLinkCollector(MetadataHolder metadataHolder, String fromRecordType,
 			String fromRecordId) {
@@ -80,15 +83,15 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void findDataGroupAndCollectLinks(MetadataElement childMetadataElement) {
-		for (DataElement dataElement : dataGroup.getChildren()) {
-			collectLinksFromDataGroupChild(childMetadataElement, dataElement);
+		for (DataElement childDataElement : dataGroup.getChildren()) {
+			collectLinksFromDataGroupChild(childMetadataElement, childDataElement);
 		}
 	}
 
 	private void collectLinksFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement dataElement) {
-		if (childDataIsSpecifiedByMetadata(childMetadataElement, dataElement)) {
-			createLinkOrParseChildGroup(childMetadataElement, dataElement);
+			DataElement childDataElement) {
+		if (childDataIsSpecifiedByMetadata(childMetadataElement, childDataElement)) {
+			createLinkOrParseChildGroup(childMetadataElement, childDataElement);
 		}
 	}
 
@@ -100,37 +103,143 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,
-			DataElement dataElement) {
+			DataElement childDataElement) {
+		DataGroup pathCopy = null == totalPath ? null : copyPath(totalPath);
 		if (isDataToDataLink(childMetadataElement)) {
-			collectRecordToRecordLink(dataElement);
+			collectRecordToRecordLink((DataToDataLink) childMetadataElement, childDataElement,
+					pathCopy);
 		} else {
-			// go through subGroup
+			// TODO: go through subGroup
+			DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(
+					metadataHolder, fromRecordType, fromRecordId);
+
+			List<DataGroup> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
+					(DataGroup) childDataElement, pathCopy);
+			linkList.addAll(collectedLinks);
 		}
+	}
+
+	private DataGroup copyPath(DataGroup pathToCopy) {
+		DataGroup pathCopy = DataGroup.withNameInData("linkedPath");
+		pathCopy.addChild(DataAtomic.withNameInDataAndValue("nameInData",
+				pathToCopy.getFirstAtomicValueWithNameInData("nameInData")));
+		if (pathToCopy.containsChildWithNameInData("repeatId")) {
+			pathCopy.addChild(DataAtomic.withNameInDataAndValue("repeatId",
+					pathToCopy.getFirstAtomicValueWithNameInData("repeatId")));
+		}
+		if (pathToCopy.containsChildWithNameInData("attributes")) {
+			DataGroup attributes = DataGroup.withNameInData("attributes");
+			pathCopy.addChild(attributes);
+			for (DataElement attributeToCopy : pathToCopy.getFirstGroupWithNameInData("attributes")
+					.getChildren()) {
+				DataGroup attribute = DataGroup.withNameInData("attribute");
+				for (DataElement attributePart : ((DataGroup) attributeToCopy).getChildren()) {
+
+					attribute.addChild(
+							DataAtomic.withNameInDataAndValue(attributePart.getNameInData(),
+									((DataAtomic) attributePart).getValue()));
+				}
+			}
+		}
+		if (pathToCopy.containsChildWithNameInData("linkedPath")) {
+			pathCopy.addChild(copyPath(pathToCopy.getFirstGroupWithNameInData("linkedPath")));
+		}
+		return pathCopy;
+	}
+
+	private List<DataGroup> collectSubLinks(String metadataId, DataGroup dataGroup,
+			DataGroup parentPath) {
+
+		DataGroup currentPath = DataGroup.withNameInData("linkedPath");
+		currentPath.addChild(
+				DataAtomic.withNameInDataAndValue("nameInData", dataGroup.getNameInData()));
+		if (!dataGroup.getAttributes().isEmpty()) {
+			DataGroup attributes = DataGroup.withNameInData("attributes");
+			currentPath.addChild(attributes);
+			for (Entry<String, String> entry : dataGroup.getAttributes().entrySet()) {
+				DataGroup attribute = DataGroup.withNameInData("attribute");
+				attributes.addChild(attribute);
+				attribute.addChild(
+						DataAtomic.withNameInDataAndValue("attributeName", entry.getKey()));
+				attribute.addChild(
+						DataAtomic.withNameInDataAndValue("attributeValue", entry.getValue()));
+			}
+		}
+		if (dataGroup.getRepeatId() != null) {
+			currentPath.addChild(
+					DataAtomic.withNameInDataAndValue("repeatId", dataGroup.getRepeatId()));
+		}
+		if (null != parentPath) {
+			// find lowest path
+			DataGroup lowestPath = findLowestPath(parentPath);
+			totalPath = parentPath;
+			lowestPath.addChild(currentPath);
+		} else {
+			totalPath = currentPath;
+		}
+
+		this.dataGroup = dataGroup;
+		linkList = new ArrayList<>();
+
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
+		collectLinksFromDataGroupUsingMetadataChildren(metadataChildReferences);
+
+		return linkList;
+	}
+
+	private DataGroup findLowestPath(DataGroup parentPath) {
+		if (parentPath.containsChildWithNameInData("linkedPath")) {
+			return findLowestPath(parentPath.getFirstGroupWithNameInData("linkedPath"));
+		}
+		return parentPath;
 	}
 
 	private boolean isDataToDataLink(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof DataToDataLink;
 	}
 
-	private void collectRecordToRecordLink(DataElement dataElement) {
+	private void collectRecordToRecordLink(DataToDataLink recordLink, DataElement dataElement,
+			DataGroup parentPath) {
+		DataGroup currentPath = DataGroup.withNameInData("linkedPath");
+		currentPath.addChild(
+				DataAtomic.withNameInDataAndValue("nameInData", dataElement.getNameInData()));
+
+		if (dataElement.getRepeatId() != null) {
+			currentPath.addChild(
+					DataAtomic.withNameInDataAndValue("repeatId", dataElement.getRepeatId()));
+		}
+		if (null != parentPath) {
+			// find lowest path
+			DataGroup lowestPath = findLowestPath(parentPath);
+			totalPath = parentPath;
+			lowestPath.addChild(currentPath);
+		} else {
+			totalPath = currentPath;
+		}
 		// create link
 		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
 		linkList.add(recordToRecordLink);
-		createFromPart(recordToRecordLink);
-		createToPart(dataElement, recordToRecordLink);
+		createFromPart(dataElement, recordToRecordLink);
+		createToPart(recordLink, dataElement, recordToRecordLink);
 	}
 
-	private void createFromPart(DataGroup recordToRecordLink) {
+	private void createFromPart(DataElement dataElement, DataGroup recordToRecordLink) {
 		DataRecordLink from = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("from",
 				fromRecordType, fromRecordId);
 		recordToRecordLink.addChild(from);
+		from.setLinkedRepeatId(dataElement.getRepeatId());
+		from.setLinkedPath(totalPath);
 	}
 
-	private void createToPart(DataElement dataElement, DataGroup recordToRecordLink) {
+	private void createToPart(DataToDataLink recordLink, DataElement dataElement,
+			DataGroup recordToRecordLink) {
 		DataRecordLink dataRecordLink = (DataRecordLink) dataElement;
 		DataRecordLink to = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("to",
 				dataRecordLink.getRecordType(), dataRecordLink.getRecordId());
 		recordToRecordLink.addChild(to);
+		to.setLinkedPath(recordLink.getLinkedPath());
+		to.setLinkedRepeatId(dataRecordLink.getLinkedRepeatId());
 	}
 
 }
