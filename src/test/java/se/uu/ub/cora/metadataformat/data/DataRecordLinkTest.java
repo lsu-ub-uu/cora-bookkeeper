@@ -40,4 +40,13 @@ public class DataRecordLinkTest {
 		assertEquals(dataRecordLink.getLinkedRepeatId(), "x1");
 	}
 
+	@Test
+	public void testInitWithLinkedPath() {
+		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
+		assertEquals(dataRecordLink.getNameInData(), "nameInData");
+		assertEquals(dataRecordLink.getRecordType(), "recordType");
+		assertEquals(dataRecordLink.getRecordId(), "recordId");
+		assertEquals(dataRecordLink.getLinkedPath().getNameInData(), "linkedPath");
+	}
+
 }
