@@ -35,6 +35,11 @@ import se.uu.ub.cora.metadataformat.metadata.MetadataHolder;
 
 public class DataGroupRecordLinkCollector {
 
+	private static final String ATTRIBUTE = "attribute";
+	private static final String ATTRIBUTES = "attributes";
+	private static final String NAME_IN_DATA = "nameInData";
+	private static final String REPEAT_ID = "repeatId";
+	private static final String LINKED_PATH = "linkedPath";
 	private MetadataHolder metadataHolder;
 	private String fromRecordType;
 	private String fromRecordId;
@@ -109,66 +114,78 @@ public class DataGroupRecordLinkCollector {
 			collectRecordToRecordLink((DataToDataLink) childMetadataElement, childDataElement,
 					pathCopy);
 		} else {
-			// TODO: go through subGroup
-			DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(
-					metadataHolder, fromRecordType, fromRecordId);
-
-			List<DataGroup> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
-					(DataGroup) childDataElement, pathCopy);
-			linkList.addAll(collectedLinks);
+			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, pathCopy);
 		}
 	}
 
 	private DataGroup copyPath(DataGroup pathToCopy) {
-		DataGroup pathCopy = DataGroup.withNameInData("linkedPath");
-		pathCopy.addChild(DataAtomic.withNameInDataAndValue("nameInData",
-				pathToCopy.getFirstAtomicValueWithNameInData("nameInData")));
-		if (pathToCopy.containsChildWithNameInData("repeatId")) {
-			pathCopy.addChild(DataAtomic.withNameInDataAndValue("repeatId",
-					pathToCopy.getFirstAtomicValueWithNameInData("repeatId")));
-		}
-		if (pathToCopy.containsChildWithNameInData("attributes")) {
-			DataGroup attributes = DataGroup.withNameInData("attributes");
-			pathCopy.addChild(attributes);
-			for (DataElement attributeToCopy : pathToCopy.getFirstGroupWithNameInData("attributes")
-					.getChildren()) {
-				DataGroup attribute = DataGroup.withNameInData("attribute");
-				for (DataElement attributePart : ((DataGroup) attributeToCopy).getChildren()) {
+		DataGroup pathCopy = DataGroup.withNameInData(LINKED_PATH);
+		pathCopy.addChild(DataAtomic.withNameInDataAndValue(NAME_IN_DATA,
+				pathToCopy.getFirstAtomicValueWithNameInData(NAME_IN_DATA)));
+		copyRepeatId(pathToCopy, pathCopy);
+		copyAttributes(pathToCopy, pathCopy);
+		copyLinkedPath(pathToCopy, pathCopy);
+		return pathCopy;
+	}
 
-					attribute.addChild(
-							DataAtomic.withNameInDataAndValue(attributePart.getNameInData(),
-									((DataAtomic) attributePart).getValue()));
-				}
+	private void copyRepeatId(DataGroup pathToCopy, DataGroup pathCopy) {
+		if (pathToCopy.containsChildWithNameInData(REPEAT_ID)) {
+			pathCopy.addChild(DataAtomic.withNameInDataAndValue(REPEAT_ID,
+					pathToCopy.getFirstAtomicValueWithNameInData(REPEAT_ID)));
+		}
+	}
+
+	private void copyAttributes(DataGroup pathToCopy, DataGroup pathCopy) {
+		if (pathToCopy.containsChildWithNameInData(ATTRIBUTES)) {
+			DataGroup attributes = DataGroup.withNameInData(ATTRIBUTES);
+			pathCopy.addChild(attributes);
+			for (DataElement attributeToCopy : pathToCopy.getFirstGroupWithNameInData(ATTRIBUTES)
+					.getChildren()) {
+				copyAttribute(attributes, attributeToCopy);
 			}
 		}
-		if (pathToCopy.containsChildWithNameInData("linkedPath")) {
-			pathCopy.addChild(copyPath(pathToCopy.getFirstGroupWithNameInData("linkedPath")));
+	}
+
+	private void copyAttribute(DataGroup attributes, DataElement attributeToCopy) {
+		DataGroup attribute = DataGroup.withNameInData(ATTRIBUTE);
+		attributes.addChild(attribute);
+		for (DataElement attributePart : ((DataGroup) attributeToCopy).getChildren()) {
+			attribute.addChild(DataAtomic.withNameInDataAndValue(attributePart.getNameInData(),
+					((DataAtomic) attributePart).getValue()));
 		}
-		return pathCopy;
+	}
+
+	private void copyLinkedPath(DataGroup pathToCopy, DataGroup pathCopy) {
+		if (pathToCopy.containsChildWithNameInData(LINKED_PATH)) {
+			pathCopy.addChild(copyPath(pathToCopy.getFirstGroupWithNameInData(LINKED_PATH)));
+		}
+	}
+
+	private void collectLinksFromSubGroup(MetadataElement childMetadataElement,
+			DataGroup childDataElement, DataGroup pathCopy) {
+		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
+				fromRecordType, fromRecordId);
+
+		List<DataGroup> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
+				childDataElement, pathCopy);
+		linkList.addAll(collectedLinks);
 	}
 
 	private List<DataGroup> collectSubLinks(String metadataId, DataGroup dataGroup,
 			DataGroup parentPath) {
 
-		DataGroup currentPath = DataGroup.withNameInData("linkedPath");
+		extendTotalPathWithThisDataGroupsInformation(dataGroup, parentPath);
+
+		return collectLinks(metadataId, dataGroup);
+	}
+
+	private void extendTotalPathWithThisDataGroupsInformation(DataGroup dataGroup,
+			DataGroup parentPath) {
+		DataGroup currentPath = DataGroup.withNameInData(LINKED_PATH);
 		currentPath.addChild(
-				DataAtomic.withNameInDataAndValue("nameInData", dataGroup.getNameInData()));
-		if (!dataGroup.getAttributes().isEmpty()) {
-			DataGroup attributes = DataGroup.withNameInData("attributes");
-			currentPath.addChild(attributes);
-			for (Entry<String, String> entry : dataGroup.getAttributes().entrySet()) {
-				DataGroup attribute = DataGroup.withNameInData("attribute");
-				attributes.addChild(attribute);
-				attribute.addChild(
-						DataAtomic.withNameInDataAndValue("attributeName", entry.getKey()));
-				attribute.addChild(
-						DataAtomic.withNameInDataAndValue("attributeValue", entry.getValue()));
-			}
-		}
-		if (dataGroup.getRepeatId() != null) {
-			currentPath.addChild(
-					DataAtomic.withNameInDataAndValue("repeatId", dataGroup.getRepeatId()));
-		}
+				DataAtomic.withNameInDataAndValue(NAME_IN_DATA, dataGroup.getNameInData()));
+		extendPathWithAttributes(dataGroup, currentPath);
+		extendPathWithRepeatId(dataGroup, currentPath);
 		if (null != parentPath) {
 			// find lowest path
 			DataGroup lowestPath = findLowestPath(parentPath);
@@ -177,20 +194,33 @@ public class DataGroupRecordLinkCollector {
 		} else {
 			totalPath = currentPath;
 		}
+	}
 
-		this.dataGroup = dataGroup;
-		linkList = new ArrayList<>();
+	private void extendPathWithAttributes(DataGroup dataGroup, DataGroup currentPath) {
+		if (!dataGroup.getAttributes().isEmpty()) {
+			DataGroup attributes = DataGroup.withNameInData(ATTRIBUTES);
+			currentPath.addChild(attributes);
+			for (Entry<String, String> entry : dataGroup.getAttributes().entrySet()) {
+				DataGroup attribute = DataGroup.withNameInData(ATTRIBUTE);
+				attributes.addChild(attribute);
+				attribute.addChild(
+						DataAtomic.withNameInDataAndValue("attributeName", entry.getKey()));
+				attribute.addChild(
+						DataAtomic.withNameInDataAndValue("attributeValue", entry.getValue()));
+			}
+		}
+	}
 
-		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
-		collectLinksFromDataGroupUsingMetadataChildren(metadataChildReferences);
-
-		return linkList;
+	private void extendPathWithRepeatId(DataGroup dataGroup, DataGroup currentPath) {
+		if (dataGroup.getRepeatId() != null) {
+			currentPath.addChild(
+					DataAtomic.withNameInDataAndValue(REPEAT_ID, dataGroup.getRepeatId()));
+		}
 	}
 
 	private DataGroup findLowestPath(DataGroup parentPath) {
-		if (parentPath.containsChildWithNameInData("linkedPath")) {
-			return findLowestPath(parentPath.getFirstGroupWithNameInData("linkedPath"));
+		if (parentPath.containsChildWithNameInData(LINKED_PATH)) {
+			return findLowestPath(parentPath.getFirstGroupWithNameInData(LINKED_PATH));
 		}
 		return parentPath;
 	}
@@ -201,13 +231,13 @@ public class DataGroupRecordLinkCollector {
 
 	private void collectRecordToRecordLink(DataToDataLink recordLink, DataElement dataElement,
 			DataGroup parentPath) {
-		DataGroup currentPath = DataGroup.withNameInData("linkedPath");
+		DataGroup currentPath = DataGroup.withNameInData(LINKED_PATH);
 		currentPath.addChild(
-				DataAtomic.withNameInDataAndValue("nameInData", dataElement.getNameInData()));
+				DataAtomic.withNameInDataAndValue(NAME_IN_DATA, dataElement.getNameInData()));
 
 		if (dataElement.getRepeatId() != null) {
 			currentPath.addChild(
-					DataAtomic.withNameInDataAndValue("repeatId", dataElement.getRepeatId()));
+					DataAtomic.withNameInDataAndValue(REPEAT_ID, dataElement.getRepeatId()));
 		}
 		if (null != parentPath) {
 			// find lowest path

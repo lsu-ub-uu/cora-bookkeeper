@@ -267,6 +267,10 @@ public class DataGroupRecordLinkCollectorTest {
 		assertTrue(fromLinkedPath.containsChildWithNameInData("repeatId"));
 		assertEquals(fromLinkedPath.getFirstAtomicValueWithNameInData("nameInData"), "topGroup");
 		assertTrue(fromLinkedPath.containsChildWithNameInData("attributes"));
+		DataGroup attributes = fromLinkedPath.getFirstGroupWithNameInData("attributes");
+		DataGroup attribute = attributes.getFirstGroupWithNameInData("attribute");
+		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeName"), "attribute1");
+		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeValue"), "attrValue");
 		assertTrue(fromLinkedPath.containsChildWithNameInData("linkedPath"));
 
 		DataGroup fromLinkedPathSub1 = fromLinkedPath.getFirstGroupWithNameInData("linkedPath");
