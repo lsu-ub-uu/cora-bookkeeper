@@ -61,13 +61,12 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testLinkedRepeatIdAndLinkedPath() {
+	public void testLinkedRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
 		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
 				"nameInData", "targetRecordType", "targetRecordId");
 		dataRecordLink.setLinkedRepeatId("x1");
-		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
@@ -85,13 +84,47 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testLinkedMissingLinkedPath() {
+	public void testLinkedEmptyRepeatId() {
+		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
+
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"nameInData", "targetRecordType", "targetRecordId");
+		dataRecordLink.setLinkedRepeatId("");
+
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	@Test
+	public void testLinkedRepeatIdShouldNotExist() {
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"nameInData", "targetRecordType", "targetRecordId");
+		dataRecordLink.setLinkedRepeatId("x1");
+
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	@Test
+	public void testLinkedLinkedPath() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
 		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
 				"nameInData", "targetRecordType", "targetRecordId");
 		dataRecordLink.setLinkedRepeatId("x1");
-		// dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
+
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertTrue(validationAnswer.dataIsValid());
+	}
+
+	@Test
+	public void testLinkedLinkedPathSholdNeverExist() {
+		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
+
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"nameInData", "targetRecordType", "targetRecordId");
+		dataRecordLink.setLinkedRepeatId("x1");
+		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());

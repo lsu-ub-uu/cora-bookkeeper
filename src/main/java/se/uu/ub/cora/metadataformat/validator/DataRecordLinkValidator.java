@@ -40,7 +40,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		validateNameInData();
 		validateRecordType();
 		validateRecordId();
-		validateLinkedPath();
+		validateNoLinkedPath();
 		validateLinkedRepeatId();
 		return validationAnswer;
 	}
@@ -89,37 +89,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		return dataRecordLink.getRecordId().isEmpty();
 	}
 
-	private void validateLinkedPath() {
-		if (dataShouldContainALinkedPath()) {
-			validateLinkedPathIsSameAsSpecifiedInMetadata();
-		} else {
-			validateDoesNotHaveLinkedPath();
-		}
-	}
-
-	private void validateLinkedPathIsSameAsSpecifiedInMetadata() {
-		if (linkedPathIsMissing()) {
-			validationAnswer
-					.addErrorMessage(createNameInDataMessagePart() + " should have a linkedPath");
-		} else {
-			if (notSameAsSpecifiedPath()) {
-				validationAnswer.addErrorMessage(createNameInDataMessagePart()
-						+ " should have a linkedPath as " + "specified in metadata");
-			}
-		}
-	}
-
-	private boolean linkedPathIsMissing() {
-		return dataRecordLink.getLinkedPath() == null;
-	}
-
-	private boolean notSameAsSpecifiedPath() {
-		// TODO Auto-generated method stub
-
-		return false;
-	}
-
-	private void validateDoesNotHaveLinkedPath() {
+	private void validateNoLinkedPath() {
 		if (thereIsALinkedPath()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " should not have a linkedPath");
@@ -127,11 +97,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean thereIsALinkedPath() {
-		return !linkedPathIsMissing();
-	}
-
-	private boolean dataShouldContainALinkedPath() {
-		return dataToDataLink.getLinkedPath() != null;
+		return !(dataRecordLink.getLinkedPath() == null);
 	}
 
 	private void validateLinkedRepeatId() {
@@ -159,14 +125,14 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateDoesNotHaveLinkedRepeatId() {
-		if (thereIsANonEmptyLinkedRepeatId()) {
+		if (linkedRepeatIdIsNotNull()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " should not have a linkedRepeatId");
 		}
 	}
 
-	private boolean thereIsANonEmptyLinkedRepeatId() {
-		return !linkedRepeatIdIsMissingOrEmpty();
+	private boolean linkedRepeatIdIsNotNull() {
+		return dataRecordLink.getLinkedRepeatId() != null;
 	}
 
 }

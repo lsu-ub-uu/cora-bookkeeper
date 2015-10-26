@@ -110,26 +110,4 @@ public final class DataGroup implements DataElement {
 	public String getRepeatId() {
 		return repeatId;
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (null == obj) {
-			return false;
-		}
-		if (!this.getClass().equals(obj.getClass())) {
-			return false;
-		}
-		DataGroup that = (DataGroup) obj;
-		if (this.getNameInData() == null && that.getNameInData() != null) {
-			return false;
-		}
-		if (this.getNameInData() != null && !this.getNameInData().equals(that.getNameInData())) {
-			return false;
-		}
-		return true;
-	}
-
-	// @Override
-	// public boolean equals(Object other)
-
 }
