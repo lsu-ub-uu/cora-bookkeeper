@@ -38,6 +38,7 @@ public class DataGroupRecordLinkCollector {
 	private String fromRecordId;
 	private List<DataGroup> linkList;
 	private DataGroup dataGroup;
+	private DataGroup elementPath;
 
 	public DataGroupRecordLinkCollector(MetadataHolder metadataHolder, String fromRecordType,
 			String fromRecordId) {
@@ -46,16 +47,21 @@ public class DataGroupRecordLinkCollector {
 		this.fromRecordId = fromRecordId;
 	}
 
-	public List<DataGroup> collectLinks(String metadataId, DataGroup dataGroup) {
-
+	public List<DataGroup> collectLinks(String metadataGroupId, DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 		linkList = new ArrayList<>();
 
-		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
+		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
+				metadataGroupId);
 		collectLinksFromDataGroupUsingMetadataChildren(metadataChildReferences);
 
 		return linkList;
+	}
+
+	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder
+				.getMetadataElement(metadataGroupId);
+		return metadataGroup.getChildReferences();
 	}
 
 	private void collectLinksFromDataGroupUsingMetadataChildren(
@@ -69,30 +75,30 @@ public class DataGroupRecordLinkCollector {
 			MetadataChildReference metadataChildReference) {
 		MetadataElement childMetadataElement = metadataHolder
 				.getMetadataElement(metadataChildReference.getReferenceId());
-		if (isMetadataElementConcerningLinks(childMetadataElement)) {
-			findDataGroupAndCollectLinks(childMetadataElement);
+		if (metadataElementConcernsLinks(childMetadataElement)) {
+			collectLinksFromDataGroupChildren(childMetadataElement);
 		}
 	}
 
-	private boolean isMetadataElementConcerningLinks(MetadataElement childMetadataElement) {
+	private boolean metadataElementConcernsLinks(MetadataElement childMetadataElement) {
 		return isDataToDataLink(childMetadataElement)
 				|| childMetadataElement instanceof MetadataGroup;
 	}
 
-	private void findDataGroupAndCollectLinks(MetadataElement childMetadataElement) {
-		for (DataElement dataElement : dataGroup.getChildren()) {
-			collectLinksFromDataGroupChild(childMetadataElement, dataElement);
+	private void collectLinksFromDataGroupChildren(MetadataElement childMetadataElement) {
+		for (DataElement childDataElement : dataGroup.getChildren()) {
+			collectLinksFromDataGroupChild(childMetadataElement, childDataElement);
 		}
 	}
 
 	private void collectLinksFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement dataElement) {
-		if (childDataIsSpecifiedByMetadata(childMetadataElement, dataElement)) {
-			createLinkOrParseChildGroup(childMetadataElement, dataElement);
+			DataElement childDataElement) {
+		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
+			createLinkOrParseChildGroup(childMetadataElement, childDataElement);
 		}
 	}
 
-	private boolean childDataIsSpecifiedByMetadata(MetadataElement childMetadataElement,
+	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
 			DataElement dataElement) {
 		String dataNameInData = dataElement.getNameInData();
 		String metadataNameInData = childMetadataElement.getNameInData();
@@ -100,37 +106,64 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,
-			DataElement dataElement) {
+			DataElement childDataElement) {
+		DataGroup childPath = createChildPath(childDataElement);
+
 		if (isDataToDataLink(childMetadataElement)) {
-			collectRecordToRecordLink(dataElement);
+			createRecordToRecordLink((DataToDataLink) childMetadataElement, childDataElement,
+					childPath);
 		} else {
-			// go through subGroup
+			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, childPath);
 		}
+	}
+
+	private DataGroup createChildPath(DataElement childDataElement) {
+		DataGroup pathCopy = PathCopier.copyPath(elementPath);
+		return PathExtender.extendPathWithElementInformation(pathCopy,
+				childDataElement);
+	}
+
+	private void createRecordToRecordLink(DataToDataLink recordLink, DataElement dataElement,
+			DataGroup fromPath) {
+		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
+		recordToRecordLink.addChild(createFromPart(dataElement, fromPath));
+		recordToRecordLink.addChild(createToPart((DataRecordLink) dataElement, recordLink));
+		linkList.add(recordToRecordLink);
+	}
+
+	private DataRecordLink createFromPart(DataElement dataElement, DataGroup fromPath) {
+		DataRecordLink from = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("from",
+				fromRecordType, fromRecordId);
+		from.setLinkedRepeatId(dataElement.getRepeatId());
+		from.setLinkedPath(fromPath);
+		return from;
+	}
+
+	private DataRecordLink createToPart(DataRecordLink dataRecordLink, DataToDataLink recordLink) {
+		DataRecordLink to = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("to",
+				dataRecordLink.getRecordType(), dataRecordLink.getRecordId());
+		to.setLinkedPath(recordLink.getLinkedPath());
+		to.setLinkedRepeatId(dataRecordLink.getLinkedRepeatId());
+		return to;
+	}
+
+	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup,
+			DataGroup pathCopy) {
+		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
+				fromRecordType, fromRecordId);
+
+		List<DataGroup> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
+				subGroup, pathCopy);
+		linkList.addAll(collectedLinks);
+	}
+
+	private List<DataGroup> collectSubLinks(String metadataId, DataGroup subGroup, DataGroup path) {
+		elementPath = path;
+		return collectLinks(metadataId, subGroup);
 	}
 
 	private boolean isDataToDataLink(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof DataToDataLink;
-	}
-
-	private void collectRecordToRecordLink(DataElement dataElement) {
-		// create link
-		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
-		linkList.add(recordToRecordLink);
-		createFromPart(recordToRecordLink);
-		createToPart(dataElement, recordToRecordLink);
-	}
-
-	private void createFromPart(DataGroup recordToRecordLink) {
-		DataRecordLink from = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("from",
-				fromRecordType, fromRecordId);
-		recordToRecordLink.addChild(from);
-	}
-
-	private void createToPart(DataElement dataElement, DataGroup recordToRecordLink) {
-		DataRecordLink dataRecordLink = (DataRecordLink) dataElement;
-		DataRecordLink to = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("to",
-				dataRecordLink.getRecordType(), dataRecordLink.getRecordId());
-		recordToRecordLink.addChild(to);
 	}
 
 }
