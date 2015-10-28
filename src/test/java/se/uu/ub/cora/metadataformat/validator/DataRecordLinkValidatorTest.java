@@ -15,31 +15,31 @@ public class DataRecordLinkValidatorTest {
 
 	@BeforeMethod
 	public void setUp() {
-		dataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType("id",
-				"nameInData", "textId", "defTextId", "targetRecordType");
+		dataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
+				"nameInData", "textId", "defTextId", "linkedRecordType");
 		dataLinkValidator = new DataRecordLinkValidator(dataLink);
 	}
 
 	@Test
 	public void testValidate() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
 	public void testValidateRecordType() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "notMyRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "notMyRecordType", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
 	public void testValidateEmptyNameInData() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("",
-				"targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("",
+				"linkedRecordType", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
@@ -47,7 +47,7 @@ public class DataRecordLinkValidatorTest {
 	@Test
 	public void testValidateEmptyRecordType() {
 		DataRecordLink dataRecordLink = DataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "", "targetRecordId");
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
@@ -55,7 +55,7 @@ public class DataRecordLinkValidatorTest {
 	@Test
 	public void testValidateEmptyRecordId() {
 		DataRecordLink dataRecordLink = DataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "targetRecordType", "");
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "linkedRecordType", "");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
@@ -64,8 +64,8 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 		dataRecordLink.setLinkedRepeatId("x1");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -76,8 +76,8 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedMissingRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
@@ -87,8 +87,8 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedEmptyRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 		dataRecordLink.setLinkedRepeatId("");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -97,8 +97,8 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testLinkedRepeatIdShouldNotExist() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 		dataRecordLink.setLinkedRepeatId("x1");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -109,8 +109,8 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedLinkedPath() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 		dataRecordLink.setLinkedRepeatId("x1");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -121,8 +121,8 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedLinkedPathSholdNeverExist() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"nameInData", "targetRecordType", "targetRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"nameInData", "linkedRecordType", "linkedRecordId");
 		dataRecordLink.setLinkedRepeatId("x1");
 		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 

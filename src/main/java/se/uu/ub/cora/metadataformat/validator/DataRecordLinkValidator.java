@@ -58,16 +58,16 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		}
 		if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
 			validationAnswer.addErrorMessage(createNameInDataMessagePart()
-					+ " must have an recordType:" + dataToDataLink.getTargetRecordType());
+					+ " must have an recordType:" + dataToDataLink.getLinkedRecordType());
 		}
 	}
 
 	private boolean recordTypeIsEmpty() {
-		return dataRecordLink.getRecordType().isEmpty();
+		return dataRecordLink.getLinkedRecordType().isEmpty();
 	}
 
 	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
-		return !dataRecordLink.getRecordType().equals(dataToDataLink.getTargetRecordType());
+		return !dataRecordLink.getLinkedRecordType().equals(dataToDataLink.getLinkedRecordType());
 	}
 
 	private void validateRecordId() {
@@ -86,7 +86,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean recordIdIsEmpty() {
-		return dataRecordLink.getRecordId().isEmpty();
+		return dataRecordLink.getLinkedRecordId().isEmpty();
 	}
 
 	private void validateNoLinkedPath() {

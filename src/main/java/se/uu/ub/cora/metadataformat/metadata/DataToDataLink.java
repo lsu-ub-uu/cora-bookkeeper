@@ -22,23 +22,23 @@ package se.uu.ub.cora.metadataformat.metadata;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 
 public final class DataToDataLink extends MetadataElement {
-	private String targetRecordType;
+	private String linkedRecordType;
 	private DataGroup linkedPath;
 
-	public static DataToDataLink withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(
+	public static DataToDataLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
 			String id, String nameInData, String textId, String defTextId,
-			String targetRecordType) {
-		return new DataToDataLink(id, nameInData, textId, defTextId, targetRecordType);
+			String linkedRecordType) {
+		return new DataToDataLink(id, nameInData, textId, defTextId, linkedRecordType);
 	}
 
 	private DataToDataLink(String id, String nameInData, String textId, String defTextId,
-			String targetRecordType) {
+			String linkedRecordType) {
 		super(id, nameInData, textId, defTextId);
-		this.targetRecordType = targetRecordType;
+		this.linkedRecordType = linkedRecordType;
 	}
 
-	public String getTargetRecordType() {
-		return targetRecordType;
+	public String getLinkedRecordType() {
+		return linkedRecordType;
 	}
 
 	public void setLinkedPath(DataGroup linkedPath) {

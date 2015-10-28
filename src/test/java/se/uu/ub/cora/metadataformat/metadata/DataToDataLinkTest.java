@@ -12,8 +12,8 @@ public class DataToDataLinkTest {
 
 	@BeforeMethod
 	public void setUp() {
-		dataToDataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(
-				"id", "nameInData", "textId", "defTextId", "targetRecordType");
+		dataToDataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
+				"id", "nameInData", "textId", "defTextId", "linkedRecordType");
 	}
 
 	@Test
@@ -22,7 +22,7 @@ public class DataToDataLinkTest {
 		assertEquals(dataToDataLink.getNameInData(), "nameInData");
 		assertEquals(dataToDataLink.getTextId(), "textId");
 		assertEquals(dataToDataLink.getDefTextId(), "defTextId");
-		assertEquals(dataToDataLink.getTargetRecordType(), "targetRecordType");
+		assertEquals(dataToDataLink.getLinkedRecordType(), "linkedRecordType");
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class DataToDataLinkTest {
 		assertEquals(dataToDataLink.getNameInData(), "nameInData");
 		assertEquals(dataToDataLink.getTextId(), "textId");
 		assertEquals(dataToDataLink.getDefTextId(), "defTextId");
-		assertEquals(dataToDataLink.getTargetRecordType(), "targetRecordType");
+		assertEquals(dataToDataLink.getLinkedRecordType(), "linkedRecordType");
 		assertEquals(dataToDataLink.getLinkedPath().getNameInData(), "linkedPath");
 	}
 

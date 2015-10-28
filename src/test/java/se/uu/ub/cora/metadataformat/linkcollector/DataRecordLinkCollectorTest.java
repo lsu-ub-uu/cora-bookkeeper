@@ -38,7 +38,7 @@ public class DataRecordLinkCollectorTest {
 		// data
 		DataGroup dataGroup = DataGroup.withNameInData("bush");
 		DataRecordLink dataTestLink = DataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("testLink", "bush", "bush1");
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "bush", "bush1");
 		dataGroup.addChild(dataTestLink);
 
 		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",

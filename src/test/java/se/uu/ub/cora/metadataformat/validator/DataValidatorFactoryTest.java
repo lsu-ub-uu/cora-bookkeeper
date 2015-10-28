@@ -51,7 +51,7 @@ public class DataValidatorFactoryTest {
 	public void testFactorDataValidatorMetadataDataToDataLink() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(
-				DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(
+				DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
 						"dataToDataLinkId", "nameInData", "textId", "defTextId", "someRecordType"));
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
