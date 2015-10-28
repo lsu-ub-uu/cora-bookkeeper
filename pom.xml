@@ -28,11 +28,11 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>metadataformat</artifactId>
+	<artifactId>bookkeeper</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Metadataformat</name>
+	<name>Bookkeeper</name>
 
 	<scm>
 		<connection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</connection>
