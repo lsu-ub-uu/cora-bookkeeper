@@ -252,7 +252,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		 * [{"name":"recordInfo","children":[{"name":"id","value":"testLink"}]},
 		 * {"name":"nameInData","value":"testLink"},{"name":"textId","value":
 		 * "testLinkText"},{"name":"defTextId","value":"testLinkDefText"},{
-		 * "name":"targetRecordType","value":"someRecordType"}]}
+		 * "name":"linkedRecordType","value":"someRecordType"}]}
 		 */
 		// dataToDataLink
 		DataGroup testLinkGroup = DataGroup.withNameInData("metadata");
@@ -267,7 +267,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "testLinkDefText"));
 
 		testLinkGroup.addChild(
-				DataAtomic.withNameInDataAndValue("targetRecordType", "targetRecordType1"));
+				DataAtomic.withNameInDataAndValue("linkedRecordType", "linkedRecordType1"));
 		dataGroups.add(testLinkGroup);
 
 		/**

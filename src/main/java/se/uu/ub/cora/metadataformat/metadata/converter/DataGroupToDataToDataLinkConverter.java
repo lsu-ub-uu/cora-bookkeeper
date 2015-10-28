@@ -42,11 +42,11 @@ public final class DataGroupToDataToDataLinkConverter implements DataGroupToMeta
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
-		String targetRecordType = dataGroup.getFirstAtomicValueWithNameInData("targetRecordType");
+		String linkedRecordType = dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
 
 		DataToDataLink dataToDataLink = DataToDataLink
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType(id, nameInData, textId,
-						defTextId, targetRecordType);
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id, nameInData, textId,
+						defTextId, linkedRecordType);
 		addLinkedPathIfExists(dataToDataLink);
 		return dataToDataLink;
 	}

@@ -32,7 +32,7 @@ public class DataGroupToDataToDataLinkConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("targetRecordType", "someRecordType"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
 		return dataGroup;
 	}
 
@@ -44,7 +44,7 @@ public class DataGroupToDataToDataLinkConverterTest {
 		assertEquals(dataToDataLink.getNameInData(), "other");
 		assertEquals(dataToDataLink.getTextId(), "otherTextId");
 		assertEquals(dataToDataLink.getDefTextId(), "otherDefTextId");
-		assertEquals(dataToDataLink.getTargetRecordType(), "someRecordType");
+		assertEquals(dataToDataLink.getLinkedRecordType(), "someRecordType");
 	}
 
 	@Test

@@ -40,7 +40,7 @@ public class PathExtenderTest {
 
 	@Test
 	public void testExtendPathUsingDataRecordLink() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
 				"someData", "someRecordType", "someRecordId");
 
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,

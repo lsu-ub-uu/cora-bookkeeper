@@ -139,8 +139,8 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupId");
 
 		DataGroup dataGroup = DataGroup.withNameInData("groupNameInData");
-		dataGroup.addChild(DataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				"recordLinkNameInData", "recordLinkTargetRecordType", "someRecordLinkId"));
+		dataGroup.addChild(DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"recordLinkNameInData", "recordLinkLinkedRecordType", "someRecordLinkId"));
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid());
 	}
@@ -152,9 +152,9 @@ public class DataGroupValidatorTest {
 		metadataHolder.addMetadataElement(group);
 
 		DataToDataLink recordLink = DataToDataLink
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndTargetRecordType("recordLinkId",
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("recordLinkId",
 						"recordLinkNameInData", "recordLinkTextId", "recordLinkDefTextId",
-						"recordLinkTargetRecordType");
+						"recordLinkLinkedRecordType");
 		metadataHolder.addMetadataElement(recordLink);
 
 		MetadataChildReference linkChild = MetadataChildReference

@@ -132,7 +132,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private DataRecordLink createFromPart(DataElement dataElement, DataGroup fromPath) {
-		DataRecordLink from = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("from",
+		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("from",
 				fromRecordType, fromRecordId);
 		from.setLinkedRepeatId(dataElement.getRepeatId());
 		from.setLinkedPath(fromPath);
@@ -140,8 +140,8 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private DataRecordLink createToPart(DataRecordLink dataRecordLink, DataToDataLink recordLink) {
-		DataRecordLink to = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("to",
-				dataRecordLink.getRecordType(), dataRecordLink.getRecordId());
+		DataRecordLink to = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("to",
+				dataRecordLink.getLinkedRecordType(), dataRecordLink.getLinkedRecordId());
 		to.setLinkedPath(recordLink.getLinkedPath());
 		to.setLinkedRepeatId(dataRecordLink.getLinkedRepeatId());
 		return to;

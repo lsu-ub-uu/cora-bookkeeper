@@ -10,24 +10,24 @@ public class DataRecordLinkTest {
 
 	@BeforeMethod
 	public void setUp() {
-		dataRecordLink = DataRecordLink.withNameInDataAndRecordTypeAndRecordId("nameInData",
-				"recordType", "recordId");
+		dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData",
+				"linkedRecordType", "linkedRecordId");
 
 	}
 
 	@Test
 	public void testInit() {
 		assertEquals(dataRecordLink.getNameInData(), "nameInData");
-		assertEquals(dataRecordLink.getRecordType(), "recordType");
-		assertEquals(dataRecordLink.getRecordId(), "recordId");
+		assertEquals(dataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(dataRecordLink.getLinkedRecordId(), "linkedRecordId");
 	}
 
 	@Test
 	public void testInitWithRepeatId() {
 		dataRecordLink.setRepeatId("one");
 		assertEquals(dataRecordLink.getNameInData(), "nameInData");
-		assertEquals(dataRecordLink.getRecordType(), "recordType");
-		assertEquals(dataRecordLink.getRecordId(), "recordId");
+		assertEquals(dataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(dataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertEquals(dataRecordLink.getRepeatId(), "one");
 	}
 
@@ -35,8 +35,8 @@ public class DataRecordLinkTest {
 	public void testInitWithLinkedRepeatId() {
 		dataRecordLink.setLinkedRepeatId("x1");
 		assertEquals(dataRecordLink.getNameInData(), "nameInData");
-		assertEquals(dataRecordLink.getRecordType(), "recordType");
-		assertEquals(dataRecordLink.getRecordId(), "recordId");
+		assertEquals(dataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(dataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertEquals(dataRecordLink.getLinkedRepeatId(), "x1");
 	}
 
@@ -44,8 +44,8 @@ public class DataRecordLinkTest {
 	public void testInitWithLinkedPath() {
 		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 		assertEquals(dataRecordLink.getNameInData(), "nameInData");
-		assertEquals(dataRecordLink.getRecordType(), "recordType");
-		assertEquals(dataRecordLink.getRecordId(), "recordId");
+		assertEquals(dataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(dataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertEquals(dataRecordLink.getLinkedPath().getNameInData(), "linkedPath");
 	}
 

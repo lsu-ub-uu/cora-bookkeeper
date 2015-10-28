@@ -21,33 +21,33 @@ package se.uu.ub.cora.metadataformat.data;
 
 public final class DataRecordLink implements DataElement {
 	private String nameInData;
-	private String recordType;
-	private String recordId;
+	private String linkedRecordType;
+	private String linkedRecordId;
 	private String repeatId;
 	private String linkedRepeatId;
 	private DataGroup linkedPath;
 
-	public static DataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
-			String recordType, String recordId) {
-		return new DataRecordLink(nameInData, recordType, recordId);
+	public static DataRecordLink withNameInDataAndLinkedRecordTypeAndLinkedRecordId(String nameInData,
+																					String linkedRecordType, String linkedRecordId) {
+		return new DataRecordLink(nameInData, linkedRecordType, linkedRecordId);
 	}
 
-	private DataRecordLink(String nameInData, String recordType, String recordId) {
+	private DataRecordLink(String nameInData, String linkedRecordType, String linkedRecordId) {
 		this.nameInData = nameInData;
-		this.recordType = recordType;
-		this.recordId = recordId;
+		this.linkedRecordType = linkedRecordType;
+		this.linkedRecordId = linkedRecordId;
 	}
 
 	public String getNameInData() {
 		return nameInData;
 	}
 
-	public String getRecordType() {
-		return recordType;
+	public String getLinkedRecordType() {
+		return linkedRecordType;
 	}
 
-	public String getRecordId() {
-		return recordId;
+	public String getLinkedRecordId() {
+		return linkedRecordId;
 	}
 
 	public void setRepeatId(String repeatId) {
