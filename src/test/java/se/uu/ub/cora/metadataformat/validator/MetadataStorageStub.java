@@ -248,15 +248,15 @@ public class MetadataStorageStub implements MetadataStorage {
 
 	private void addDataToDataMetadata() {
 		/**
-		 * {"name":"metadata","attributes":{"type":"dataToDataLink"},"children":
+		 * {"name":"metadata","attributes":{"type":"recordLink"},"children":
 		 * [{"name":"recordInfo","children":[{"name":"id","value":"testLink"}]},
 		 * {"name":"nameInData","value":"testLink"},{"name":"textId","value":
 		 * "testLinkText"},{"name":"defTextId","value":"testLinkDefText"},{
 		 * "name":"linkedRecordType","value":"someRecordType"}]}
 		 */
-		// dataToDataLink
+		// recordLink
 		DataGroup testLinkGroup = DataGroup.withNameInData("metadata");
-		testLinkGroup.addAttributeByIdWithValue("type", "dataToDataLink");
+		testLinkGroup.addAttributeByIdWithValue("type", "recordLink");
 
 		DataGroup testLinkGroupRecordInfo = DataGroup.withNameInData("recordInfo");
 		testLinkGroupRecordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "testLink"));

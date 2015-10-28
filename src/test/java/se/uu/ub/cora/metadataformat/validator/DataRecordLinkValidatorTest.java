@@ -7,15 +7,15 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 
 public class DataRecordLinkValidatorTest {
-	private DataToDataLink dataLink;
+	private RecordLink dataLink;
 	private DataRecordLinkValidator dataLinkValidator;
 
 	@BeforeMethod
 	public void setUp() {
-		dataLink = DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
+		dataLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
 				"nameInData", "textId", "defTextId", "linkedRecordType");
 		dataLinkValidator = new DataRecordLinkValidator(dataLink);
 	}

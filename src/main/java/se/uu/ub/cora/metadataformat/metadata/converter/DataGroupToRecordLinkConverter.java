@@ -20,22 +20,22 @@
 package se.uu.ub.cora.metadataformat.metadata.converter;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 
-public final class DataGroupToDataToDataLinkConverter implements DataGroupToMetadataConverter {
+public final class DataGroupToRecordLinkConverter implements DataGroupToMetadataConverter {
 
 	private DataGroup dataGroup;
 
-	public static DataGroupToDataToDataLinkConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToDataToDataLinkConverter(dataGroup);
+	public static DataGroupToRecordLinkConverter fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupToRecordLinkConverter(dataGroup);
 	}
 
-	private DataGroupToDataToDataLinkConverter(DataGroup dataGroup) {
+	private DataGroupToRecordLinkConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
 	@Override
-	public DataToDataLink toMetadata() {
+	public RecordLink toMetadata() {
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
@@ -44,16 +44,16 @@ public final class DataGroupToDataToDataLinkConverter implements DataGroupToMeta
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 		String linkedRecordType = dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
 
-		DataToDataLink dataToDataLink = DataToDataLink
+		RecordLink recordLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id, nameInData, textId,
 						defTextId, linkedRecordType);
-		addLinkedPathIfExists(dataToDataLink);
-		return dataToDataLink;
+		addLinkedPathIfExists(recordLink);
+		return recordLink;
 	}
 
-	private void addLinkedPathIfExists(DataToDataLink dataToDataLink) {
+	private void addLinkedPathIfExists(RecordLink recordLink) {
 		if (dataGroup.containsChildWithNameInData("linkedPath")) {
-			dataToDataLink.setLinkedPath(dataGroup.getFirstGroupWithNameInData("linkedPath"));
+			recordLink.setLinkedPath(dataGroup.getFirstGroupWithNameInData("linkedPath"));
 		}
 	}
 }

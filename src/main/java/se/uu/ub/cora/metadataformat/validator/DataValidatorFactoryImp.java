@@ -21,7 +21,7 @@ package se.uu.ub.cora.metadataformat.validator;
 
 import se.uu.ub.cora.metadataformat.metadata.CollectionVariable;
 import se.uu.ub.cora.metadataformat.metadata.CollectionVariableChild;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 import se.uu.ub.cora.metadataformat.metadata.MetadataElement;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroup;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroupChild;
@@ -56,8 +56,8 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 			return new DataCollectionVariableValidator(metadataHolder,
 					(CollectionVariable) metadataElement);
 		}
-		if (metadataElement instanceof DataToDataLink) {
-			return new DataRecordLinkValidator((DataToDataLink) metadataElement);
+		if (metadataElement instanceof RecordLink) {
+			return new DataRecordLinkValidator((RecordLink) metadataElement);
 		}
 		throw DataValidationException
 				.withMessage("No validator created for element with id: " + elementId);

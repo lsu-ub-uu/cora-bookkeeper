@@ -21,18 +21,18 @@ package se.uu.ub.cora.metadataformat.metadata;
 
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 
-public final class DataToDataLink extends MetadataElement {
+public final class RecordLink extends MetadataElement {
 	private String linkedRecordType;
 	private DataGroup linkedPath;
 
-	public static DataToDataLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
+	public static RecordLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
 			String id, String nameInData, String textId, String defTextId,
 			String linkedRecordType) {
-		return new DataToDataLink(id, nameInData, textId, defTextId, linkedRecordType);
+		return new RecordLink(id, nameInData, textId, defTextId, linkedRecordType);
 	}
 
-	private DataToDataLink(String id, String nameInData, String textId, String defTextId,
-			String linkedRecordType) {
+	private RecordLink(String id, String nameInData, String textId, String defTextId,
+					   String linkedRecordType) {
 		super(id, nameInData, textId, defTextId);
 		this.linkedRecordType = linkedRecordType;
 	}

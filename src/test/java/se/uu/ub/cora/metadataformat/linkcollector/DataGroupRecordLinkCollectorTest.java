@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.metadataformat.data.DataAtomic;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 import se.uu.ub.cora.metadataformat.metadata.MetadataChildReference;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroup;
 import se.uu.ub.cora.metadataformat.metadata.MetadataHolder;
@@ -75,7 +75,7 @@ public class DataGroupRecordLinkCollectorTest {
 	private void addMetadataForOneGroupWithOneLink(String id) {
 		addMetadataForOneGroupWithNoLink(id);
 
-		DataToDataLink recordLink = DataToDataLink
+		RecordLink recordLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id + "Link",
 						id + "Link", id + "LinkTextId", id + "LinkDefTextId", "linkedRecordType");
 		metadataHolder.addMetadataElement(recordLink);
@@ -175,7 +175,7 @@ public class DataGroupRecordLinkCollectorTest {
 	private void addMetadataForOneGroupWithOneLinkWithPath() {
 		addMetadataForOneGroupWithOneLink("test");
 
-		DataToDataLink recordLink = (DataToDataLink) metadataHolder.getMetadataElement("testLink");
+		RecordLink recordLink = (RecordLink) metadataHolder.getMetadataElement("testLink");
 
 		DataGroup linkedPath = DataGroup.withNameInData("linkedPath");
 		recordLink.setLinkedPath(linkedPath);

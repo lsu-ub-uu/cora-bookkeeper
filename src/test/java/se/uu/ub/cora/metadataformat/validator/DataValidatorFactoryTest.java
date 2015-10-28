@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.metadata.CollectionVariable;
 import se.uu.ub.cora.metadataformat.metadata.CollectionVariableChild;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroup;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroupChild;
 import se.uu.ub.cora.metadataformat.metadata.MetadataHolder;
@@ -48,14 +48,14 @@ public class DataValidatorFactoryTest {
 	}
 
 	@Test
-	public void testFactorDataValidatorMetadataDataToDataLink() {
+	public void testFactorDataValidatorMetadataRecordLink() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(
-				DataToDataLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
-						"dataToDataLinkId", "nameInData", "textId", "defTextId", "someRecordType"));
+				RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
+						"recordLinkId", "nameInData", "textId", "defTextId", "someRecordType"));
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("dataToDataLinkId");
+		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("recordLinkId");
 		assertTrue(dataGroupValidator instanceof DataRecordLinkValidator);
 	}
 

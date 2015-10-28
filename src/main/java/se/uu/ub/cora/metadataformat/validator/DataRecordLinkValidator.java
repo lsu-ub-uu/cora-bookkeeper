@@ -21,16 +21,16 @@ package se.uu.ub.cora.metadataformat.validator;
 
 import se.uu.ub.cora.metadataformat.data.DataElement;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 
 public class DataRecordLinkValidator implements DataElementValidator {
 
 	private ValidationAnswer validationAnswer;
 	private DataRecordLink dataRecordLink;
-	private DataToDataLink dataToDataLink;
+	private RecordLink recordLink;
 
-	public DataRecordLinkValidator(DataToDataLink dataLink) {
-		this.dataToDataLink = dataLink;
+	public DataRecordLinkValidator(RecordLink dataLink) {
+		this.recordLink = dataLink;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		}
 		if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
 			validationAnswer.addErrorMessage(createNameInDataMessagePart()
-					+ " must have an recordType:" + dataToDataLink.getLinkedRecordType());
+					+ " must have an recordType:" + recordLink.getLinkedRecordType());
 		}
 	}
 
@@ -67,7 +67,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
-		return !dataRecordLink.getLinkedRecordType().equals(dataToDataLink.getLinkedRecordType());
+		return !dataRecordLink.getLinkedRecordType().equals(recordLink.getLinkedRecordType());
 	}
 
 	private void validateRecordId() {
@@ -109,7 +109,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean dataShouldContainALinkedRepeatId() {
-		return dataToDataLink.getLinkedPath() != null;
+		return recordLink.getLinkedPath() != null;
 	}
 
 	private void validateHasLinkedRepeatId() {

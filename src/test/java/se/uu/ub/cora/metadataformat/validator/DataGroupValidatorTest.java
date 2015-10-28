@@ -10,7 +10,7 @@ import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
 import se.uu.ub.cora.metadataformat.metadata.CollectionItem;
 import se.uu.ub.cora.metadataformat.metadata.CollectionVariable;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 import se.uu.ub.cora.metadataformat.metadata.ItemCollection;
 import se.uu.ub.cora.metadataformat.metadata.MetadataChildReference;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroup;
@@ -151,7 +151,7 @@ public class DataGroupValidatorTest {
 				"groupNameInData", "groupTextId", "groupDefTextId");
 		metadataHolder.addMetadataElement(group);
 
-		DataToDataLink recordLink = DataToDataLink
+		RecordLink recordLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("recordLinkId",
 						"recordLinkNameInData", "recordLinkTextId", "recordLinkDefTextId",
 						"recordLinkLinkedRecordType");

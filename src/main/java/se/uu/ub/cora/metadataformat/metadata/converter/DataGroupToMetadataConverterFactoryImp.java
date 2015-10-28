@@ -66,8 +66,8 @@ public final class DataGroupToMetadataConverterFactoryImp
 		if ("textVariable".equals(type)) {
 			return DataGroupToTextVariableConverter.fromDataGroup(dataGroup);
 		}
-		if ("dataToDataLink".equals(type)) {
-			return DataGroupToDataToDataLinkConverter.fromDataGroup(dataGroup);
+		if ("recordLink".equals(type)) {
+			return DataGroupToRecordLinkConverter.fromDataGroup(dataGroup);
 		}
 		throw DataConversionException
 				.withMessage("No converter found for DataGroup with type:" + type);

@@ -96,13 +96,13 @@ public class DataGroupToMetadataConverterFactoryTest {
 	}
 
 	@Test
-	public void testFactorDataToDataLink() {
+	public void testFactorRecordLink() {
 		DataGroup dataGroup = DataGroup.withNameInData("metadata");
-		dataGroup.addAttributeByIdWithValue("type", "dataToDataLink");
+		dataGroup.addAttributeByIdWithValue("type", "recordLink");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.fromDataGroup(dataGroup);
 		DataGroupToMetadataConverter converter = converterFactory.factor();
-		assertTrue(converter instanceof DataGroupToDataToDataLinkConverter);
+		assertTrue(converter instanceof DataGroupToRecordLinkConverter);
 	}
 
 }

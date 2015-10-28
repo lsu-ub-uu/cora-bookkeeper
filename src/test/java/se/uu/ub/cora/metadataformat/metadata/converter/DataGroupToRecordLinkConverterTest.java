@@ -7,22 +7,22 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.metadataformat.data.DataAtomic;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 
-public class DataGroupToDataToDataLinkConverterTest {
-	private DataGroupToDataToDataLinkConverter converter;
+public class DataGroupToRecordLinkConverterTest {
+	private DataGroupToRecordLinkConverter converter;
 	private DataGroup dataGroup;
 
 	@BeforeMethod
 	public void setUp() {
-		dataGroup = createDataGroupContainingDataToDataLink();
-		converter = DataGroupToDataToDataLinkConverter.fromDataGroup(dataGroup);
+		dataGroup = createDataGroupContainingRecordLink();
+		converter = DataGroupToRecordLinkConverter.fromDataGroup(dataGroup);
 
 	}
 
-	private DataGroup createDataGroupContainingDataToDataLink() {
+	private DataGroup createDataGroupContainingRecordLink() {
 		DataGroup dataGroup = DataGroup.withNameInData("metadata");
-		dataGroup.addAttributeByIdWithValue("type", "dataToDataLink");
+		dataGroup.addAttributeByIdWithValue("type", "recordLink");
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 
 		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
@@ -38,22 +38,22 @@ public class DataGroupToDataToDataLinkConverterTest {
 
 	@Test
 	public void testToMetadata() {
-		DataToDataLink dataToDataLink = converter.toMetadata();
+		RecordLink recordLink = converter.toMetadata();
 
-		assertEquals(dataToDataLink.getId(), "otherId");
-		assertEquals(dataToDataLink.getNameInData(), "other");
-		assertEquals(dataToDataLink.getTextId(), "otherTextId");
-		assertEquals(dataToDataLink.getDefTextId(), "otherDefTextId");
-		assertEquals(dataToDataLink.getLinkedRecordType(), "someRecordType");
+		assertEquals(recordLink.getId(), "otherId");
+		assertEquals(recordLink.getNameInData(), "other");
+		assertEquals(recordLink.getTextId(), "otherTextId");
+		assertEquals(recordLink.getDefTextId(), "otherDefTextId");
+		assertEquals(recordLink.getLinkedRecordType(), "someRecordType");
 	}
 
 	@Test
 	public void testToMetadataWithLinkedPath() {
 		dataGroup.addChild(DataGroup.withNameInData("linkedPath"));
 
-		DataToDataLink dataToDataLink = converter.toMetadata();
+		RecordLink recordLink = converter.toMetadata();
 
-		assertEquals(dataToDataLink.getLinkedPath().getNameInData(), "linkedPath");
+		assertEquals(recordLink.getLinkedPath().getNameInData(), "linkedPath");
 	}
 
 }

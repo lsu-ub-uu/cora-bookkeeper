@@ -25,7 +25,7 @@ import java.util.List;
 import se.uu.ub.cora.metadataformat.data.DataElement;
 import se.uu.ub.cora.metadataformat.data.DataGroup;
 import se.uu.ub.cora.metadataformat.data.DataRecordLink;
-import se.uu.ub.cora.metadataformat.metadata.DataToDataLink;
+import se.uu.ub.cora.metadataformat.metadata.RecordLink;
 import se.uu.ub.cora.metadataformat.metadata.MetadataChildReference;
 import se.uu.ub.cora.metadataformat.metadata.MetadataElement;
 import se.uu.ub.cora.metadataformat.metadata.MetadataGroup;
@@ -81,7 +81,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private boolean metadataElementConcernsLinks(MetadataElement childMetadataElement) {
-		return isDataToDataLink(childMetadataElement)
+		return isRecordLink(childMetadataElement)
 				|| childMetadataElement instanceof MetadataGroup;
 	}
 
@@ -109,8 +109,8 @@ public class DataGroupRecordLinkCollector {
 			DataElement childDataElement) {
 		DataGroup childPath = createChildPath(childDataElement);
 
-		if (isDataToDataLink(childMetadataElement)) {
-			createRecordToRecordLink((DataToDataLink) childMetadataElement, childDataElement,
+		if (isRecordLink(childMetadataElement)) {
+			createRecordToRecordLink((RecordLink) childMetadataElement, childDataElement,
 					childPath);
 		} else {
 			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, childPath);
@@ -123,7 +123,7 @@ public class DataGroupRecordLinkCollector {
 				childDataElement);
 	}
 
-	private void createRecordToRecordLink(DataToDataLink recordLink, DataElement dataElement,
+	private void createRecordToRecordLink(RecordLink recordLink, DataElement dataElement,
 			DataGroup fromPath) {
 		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
 		recordToRecordLink.addChild(createFromPart(dataElement, fromPath));
@@ -139,7 +139,7 @@ public class DataGroupRecordLinkCollector {
 		return from;
 	}
 
-	private DataRecordLink createToPart(DataRecordLink dataRecordLink, DataToDataLink recordLink) {
+	private DataRecordLink createToPart(DataRecordLink dataRecordLink, RecordLink recordLink) {
 		DataRecordLink to = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("to",
 				dataRecordLink.getLinkedRecordType(), dataRecordLink.getLinkedRecordId());
 		to.setLinkedPath(recordLink.getLinkedPath());
@@ -162,8 +162,8 @@ public class DataGroupRecordLinkCollector {
 		return collectLinks(metadataId, subGroup);
 	}
 
-	private boolean isDataToDataLink(MetadataElement childMetadataElement) {
-		return childMetadataElement instanceof DataToDataLink;
+	private boolean isRecordLink(MetadataElement childMetadataElement) {
+		return childMetadataElement instanceof RecordLink;
 	}
 
 }
