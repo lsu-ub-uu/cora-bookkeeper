@@ -24,8 +24,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * ValidationAnswer is a class to deliver a validation answer, it contains a boolean with the
- * validation status and a list with errors if the data was not valid
+ * ValidationAnswer is a class to deliver a validation answer, it contains a
+ * boolean with the validation status and a list with errors if the data was not
+ * valid
  * 
  * @author olov
  * 
@@ -35,7 +36,8 @@ public class ValidationAnswer {
 	private List<String> errorMessages = new ArrayList<>();
 
 	/**
-	 * addErrorMessage, adds the entered errorMessage to the internal list of error messages
+	 * addErrorMessage, adds the entered errorMessage to the internal list of
+	 * error messages
 	 * 
 	 * @param errorMessage
 	 *            A String with an errorMessage to add to the internal list
@@ -67,7 +69,15 @@ public class ValidationAnswer {
 	}
 
 	public Collection<String> getErrorMessages() {
-		return errorMessages;
+		return copyErrorMessages();
+	}
+
+	private List<String> copyErrorMessages() {
+		List<String> errorMessagesOut = new ArrayList<>();
+		for (String message : errorMessages) {
+			errorMessagesOut.add(message);
+		}
+		return errorMessagesOut;
 	}
 
 	public void addErrorMessages(Collection<String> errorMessagesIn) {

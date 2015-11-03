@@ -25,11 +25,11 @@ import java.util.List;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 public class DataGroupRecordLinkCollector {
 
@@ -54,8 +54,7 @@ public class DataGroupRecordLinkCollector {
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
 		collectLinksFromDataGroupUsingMetadataChildren(metadataChildReferences);
-
-		return linkList;
+		return copyLinkList();
 	}
 
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
@@ -81,8 +80,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private boolean metadataElementConcernsLinks(MetadataElement childMetadataElement) {
-		return isRecordLink(childMetadataElement)
-				|| childMetadataElement instanceof MetadataGroup;
+		return isRecordLink(childMetadataElement) || childMetadataElement instanceof MetadataGroup;
 	}
 
 	private void collectLinksFromDataGroupChildren(MetadataElement childMetadataElement) {
@@ -119,8 +117,7 @@ public class DataGroupRecordLinkCollector {
 
 	private DataGroup createChildPath(DataElement childDataElement) {
 		DataGroup pathCopy = PathCopier.copyPath(elementPath);
-		return PathExtender.extendPathWithElementInformation(pathCopy,
-				childDataElement);
+		return PathExtender.extendPathWithElementInformation(pathCopy, childDataElement);
 	}
 
 	private void createRecordToRecordLink(RecordLink recordLink, DataElement dataElement,
@@ -132,8 +129,8 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private DataRecordLink createFromPart(DataElement dataElement, DataGroup fromPath) {
-		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("from",
-				fromRecordType, fromRecordId);
+		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				"from", fromRecordType, fromRecordId);
 		from.setLinkedRepeatId(dataElement.getRepeatId());
 		from.setLinkedPath(fromPath);
 		return from;
@@ -166,4 +163,9 @@ public class DataGroupRecordLinkCollector {
 		return childMetadataElement instanceof RecordLink;
 	}
 
+	private List<DataGroup> copyLinkList() {
+		List<DataGroup> listOut = new ArrayList<>();
+		listOut.addAll(linkList);
+		return listOut;
+	}
 }
