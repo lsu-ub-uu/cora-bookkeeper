@@ -28,6 +28,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class DataCollectionVariableChildValidatorTest {
@@ -62,7 +63,10 @@ public class DataCollectionVariableChildValidatorTest {
 
 		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
 				"choice1ERRORNameInData");
-		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
+
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Assert.assertFalse(validationAnswer.dataIsValid(),
 				"The collection variable should be validated to false");
 	}
 
@@ -97,7 +101,10 @@ public class DataCollectionVariableChildValidatorTest {
 
 		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
 				"choice1ERRORNameInData");
-		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
+
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Assert.assertFalse(validationAnswer.dataIsValid(),
 				"The collection variable should be validated to false");
 	}
 
@@ -115,7 +122,9 @@ public class DataCollectionVariableChildValidatorTest {
 
 		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
 				"choice1NameInData");
-		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Assert.assertFalse(validationAnswer.dataIsValid(),
 				"The collection variable should be validated to false");
 	}
 

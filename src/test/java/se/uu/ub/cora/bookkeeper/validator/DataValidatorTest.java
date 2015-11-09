@@ -27,6 +27,7 @@ import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -49,7 +50,9 @@ public class DataValidatorTest {
 	@Test
 	public void testValidateWhereMetadataIdNotPresentInMetadata() {
 		DataElement data = DataAtomic.withNameInDataAndValue("anId", "12:12");
-		assertFalse(dataValidator.validateData("doesNotExist", data).dataIsValid(),
+		ValidationAnswer validationAnswer = dataValidator.validateData("doesNotExist", data);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertFalse(validationAnswer.dataIsValid(),
 				"The regular expression should be validated to false");
 	}
 

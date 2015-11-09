@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
@@ -27,6 +26,8 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class DataCollectionVariableValidatorTest {
@@ -61,7 +62,10 @@ public class DataCollectionVariableValidatorTest {
 
 		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
 				"choice1ERRORNameInData");
-		Assert.assertFalse(validator.validateData(dataAtomic).dataIsValid(),
+
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		assertFalse(validationAnswer.dataIsValid(),
 				"The collection variable should be validated to false");
 	}
 

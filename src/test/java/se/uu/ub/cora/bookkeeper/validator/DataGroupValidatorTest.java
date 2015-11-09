@@ -233,8 +233,7 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testOneGroupOneAttributeOneTextChildExtraAttribute() {
-		//TODO: No limit to number of attributes, this test only checks that the second attribute is the wrong nameInData
+	public void testOneGroupOneAttributeOneTextChildInvalidExtraAttribute() {
 		MetadataHolder metadataHolder = createOneGroupOneAttributeOneTextChild();
 		createSecondCollectionVariable(metadataHolder);
 
@@ -243,13 +242,13 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
-		dataGroup.addAttributeByIdWithValue("col2NameInData", "choice1NameInData");
+		dataGroup.addAttributeByIdWithValue("_INVALID_NameInData", "choice1NameInData");
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("text1NameInData", "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
-				"The group should not be valid as it has an extra attribute");
+				"The group should not be valid as it has an attribute that doesn't exist in metadata");
 	}
 
 	private void createSecondCollectionVariable(final MetadataHolder metadataHolder)
@@ -288,7 +287,7 @@ public class DataGroupValidatorTest {
 		dataGroup2.addChild(dataGroup);
 
 		assertTrue(dataElementValidator.validateData(dataGroup2).dataIsValid(),
-				"The group should be validate to true, as it has " + "valid data");
+				"The group should be valid as it has valid data");
 
 	}
 

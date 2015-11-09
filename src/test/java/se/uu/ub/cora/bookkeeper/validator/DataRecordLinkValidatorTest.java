@@ -25,6 +25,7 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class DataRecordLinkValidatorTest {
@@ -51,6 +52,7 @@ public class DataRecordLinkValidatorTest {
 		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
 				"nameInData", "notMyRecordType", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -59,6 +61,7 @@ public class DataRecordLinkValidatorTest {
 		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("",
 				"linkedRecordType", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -67,6 +70,7 @@ public class DataRecordLinkValidatorTest {
 		DataRecordLink dataRecordLink = DataRecordLink
 				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "", "linkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 2);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -75,6 +79,7 @@ public class DataRecordLinkValidatorTest {
 		DataRecordLink dataRecordLink = DataRecordLink
 				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "linkedRecordType", "");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -98,6 +103,7 @@ public class DataRecordLinkValidatorTest {
 				"nameInData", "linkedRecordType", "linkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -110,6 +116,7 @@ public class DataRecordLinkValidatorTest {
 		dataRecordLink.setLinkedRepeatId("");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -120,6 +127,7 @@ public class DataRecordLinkValidatorTest {
 		dataRecordLink.setLinkedRepeatId("x1");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -136,7 +144,7 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testLinkedLinkedPathSholdNeverExist() {
+	public void testLinkedLinkedPathShouldNeverExist() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
 		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
@@ -145,6 +153,7 @@ public class DataRecordLinkValidatorTest {
 		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 }
