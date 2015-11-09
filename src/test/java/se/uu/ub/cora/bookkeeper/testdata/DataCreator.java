@@ -32,13 +32,13 @@ public class DataCreator
     public static void addRecordLinkChildReferenceToGroup(String id, MetadataGroup group, MetadataHolder metadataHolder)
     {
         RecordLink recordLink = RecordLink
-                .withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("recordLink" +id,
-                        "recordLink" +id, "recordLinkText" +id, "recordLinkDefText" +id,
+                .withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id +"Id",
+                        id + "NameInData", id + "Text", id +"DefText",
                         "recordLinkLinkedRecordType");
         metadataHolder.addMetadataElement(recordLink);
 
         MetadataChildReference linkChild = MetadataChildReference
-                .withReferenceIdAndRepeatMinAndRepeatMax("recordLink" +id, 1, 1);
+                .withReferenceIdAndRepeatMinAndRepeatMax(id + "Id", 1, 1);
 
         group.addChildReference(linkChild);
     }
@@ -70,11 +70,11 @@ public class DataCreator
 
     public static void addDefaultCollectionTwoChoices(String id, MetadataGroup group, MetadataHolder metadataHolder)
     {
-        CollectionVariable colVar = new CollectionVariable(id + "CollectionVar",
-                id + "CollectionVarNameInData", id + "CollectionVarText", id + "CollectionVarDefText",
+        CollectionVariable colVar = new CollectionVariable(id + "Id",
+                id + "NameInData", id + "Text", id + "DefText",
                 "collectionId");
         metadataHolder.addMetadataElement(colVar);
-        group.addAttributeReference(id + "CollectionVar");
+        group.addAttributeReference(id + "Id");
 
         if(metadataHolder.getMetadataElement("choice1Id") == null) {
             CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",

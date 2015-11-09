@@ -29,9 +29,20 @@ public final class DataAtomic implements DataElement {
 		return new DataAtomic(nameInData, value);
 	}
 
+	public static DataAtomic withNameInDataAndValueAndRepeatId(String nameInData, String value, String repeatId)
+	{
+		return new DataAtomic(nameInData, value, repeatId);
+	}
+
 	private DataAtomic(String nameInData, String value) {
 		this.nameInData = nameInData;
 		this.value = value;
+	}
+
+	private DataAtomic(String nameInData, String value, String repeatId) {
+		this.nameInData = nameInData;
+		this.value = value;
+		this.repeatId = repeatId;
 	}
 
 	@Override
