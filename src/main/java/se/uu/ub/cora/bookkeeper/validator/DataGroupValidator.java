@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -52,7 +53,7 @@ class DataGroupValidator implements DataElementValidator {
 	/**
 	 * validateData validates that the entered dataGroup is correct according to
 	 * this validators metadataGroup
-	 * 
+	 *
 	 * @param dataGroup
 	 *            A DataGroup to validate
 	 * @return A ValidationAnswer with information if the dataGroup has valid
@@ -239,10 +240,55 @@ class DataGroupValidator implements DataElementValidator {
 	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
 			String referenceId) {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
-		if (childElement.getNameInData().equals(childData.getNameInData())) {
-			return true;
+		return childElement.getNameInData().equals(childData.getNameInData()) &&
+				checkAttributesMatch(childData, childElement);
+	}
+
+	private boolean checkAttributesMatch(final DataElement childData, final MetadataElement metadataChildElement)
+	{
+		if(metadataChildElement instanceof MetadataGroup) {
+			return checkAttributesMatchForMetadataGroup(childData,
+					((MetadataGroup) metadataChildElement).getAttributeReferences());
 		}
-		return false;
+		return true;
+	}
+
+	private boolean checkAttributesMatchForMetadataGroup(final DataElement childData, final List<String> attributeReferences)
+	{
+		boolean attributesCorrect = true;
+
+		for (String mdAttributeReference : attributeReferences) {
+            attributesCorrect = attributesCorrect && checkDataContainsAttributeReferenceWithCorrectData(childData, mdAttributeReference);
+        }
+		return attributesCorrect;
+	}
+
+	private boolean checkDataContainsAttributeReferenceWithCorrectData(final DataElement childData, final String mdAttributeReference)
+	{
+        Map<String, String> dataAttributes = ((DataGroup) childData).getAttributes();
+        if (dataAttributesContainsMdAttributeReference(dataAttributes, mdAttributeReference)) {
+            return checkAttributeValue(mdAttributeReference, dataAttributes);
+        }
+        return false;
+	}
+
+	private boolean dataAttributesContainsMdAttributeReference(final Map<String, String> dataAttributes, final String mdAttributeReference)
+	{
+		return dataAttributes.containsKey(getNameInDataForAttributeReference(mdAttributeReference));
+	}
+
+	private boolean checkAttributeValue(final String mdAttributeReference, final Map<String, String> dataAttributes)
+	{
+		DataAtomic dataElement = createDataAtomicFromAttribute(mdAttributeReference,
+                dataAttributes);
+		return validateAttributeValue(mdAttributeReference, dataElement);
+	}
+
+	private boolean validateAttributeValue(final String mdAttributeReference, final DataAtomic dataElement)
+	{
+		DataElementValidator attributeValidator = dataValidatorFactoryImp
+				.factor(mdAttributeReference);
+		return attributeValidator.validateData(dataElement).dataIsValid();
 	}
 
 	private void validateNoRepeatId(DataElement childData) {
