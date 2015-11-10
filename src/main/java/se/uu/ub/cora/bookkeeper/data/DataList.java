@@ -22,31 +22,31 @@ package se.uu.ub.cora.bookkeeper.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class RecordList {
-	private String containRecordsOfType;
-	private List<DataRecord> records = new ArrayList<>();
+public final class DataList {
+	private String containDataOfType;
+	private List<Data> dataList = new ArrayList<>();
 	private String totalNo;
 	private String fromNo;
 	private String toNo;
 
-	public static RecordList withContainRecordsOfType(String containsRecordTypes) {
-		return new RecordList(containsRecordTypes);
+	public static DataList withContainDataOfType(String containsDataOfType) {
+		return new DataList(containsDataOfType);
 	}
 
-	private RecordList(String containRecordsOfType) {
-		this.containRecordsOfType = containRecordsOfType;
+	private DataList(String containDataOfType) {
+		this.containDataOfType = containDataOfType;
 	}
 
-	public String getContainRecordsOfType() {
-		return containRecordsOfType;
+	public String getContainDataOfType() {
+		return containDataOfType;
 	}
 
-	public void addRecord(DataRecord record) {
-		records.add(record);
+	public void addData(Data data) {
+		dataList.add(data);
 	}
 
-	public List<DataRecord> getRecords() {
-		return records;
+	public List<Data> getDataList() {
+		return dataList;
 	}
 
 	public void setTotalNo(String totalNo) {
