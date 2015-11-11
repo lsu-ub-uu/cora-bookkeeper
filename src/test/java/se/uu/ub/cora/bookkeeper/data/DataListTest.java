@@ -19,47 +19,56 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.List;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
-public class RecordListTest {
+public class DataListTest {
 	@Test
 	public void testInit() {
-		String containsRecordTypes = "metadata";
-		RecordList recordList = RecordList.withContainRecordsOfType(containsRecordTypes);
-		assertEquals(recordList.getContainRecordsOfType(), "metadata");
+		String containsDataOfType = "metadata";
+		DataList dataList = DataList.withContainDataOfType(containsDataOfType);
+		assertEquals(dataList.getContainDataOfType(), "metadata");
 	}
 
 	@Test
 	public void testAddRecord() {
-		RecordList recordList = RecordList.withContainRecordsOfType("metadata");
+		DataList dataList = DataList.withContainDataOfType("metadata");
 		DataRecord record = new DataRecord();
-		recordList.addRecord(record);
-		List<DataRecord> records = recordList.getRecords();
+		dataList.addData(record);
+		List<Data> records = dataList.getDataList();
 		assertEquals(records.get(0), record);
 	}
 
 	@Test
+	public void testAddGroup() {
+		DataList dataList = DataList.withContainDataOfType("someGroup");
+		DataGroup group = DataGroup.withNameInData("nameInData");
+		dataList.addData(group);
+		List<Data> groups = dataList.getDataList();
+		assertEquals(groups.get(0), group);
+	}
+
+	@Test
 	public void testTotalNo() {
-		RecordList recordList = RecordList.withContainRecordsOfType("metadata");
-		recordList.setTotalNo("2");
-		assertEquals(recordList.getTotalNo(), "2");
+		DataList dataList = DataList.withContainDataOfType("metadata");
+		dataList.setTotalNo("2");
+		assertEquals(dataList.getTotalNo(), "2");
 	}
 
 	@Test
 	public void testFromNo() {
-		RecordList recordList = RecordList.withContainRecordsOfType("metadata");
-		recordList.setFromNo("0");
-		assertEquals(recordList.getFromNo(), "0");
+		DataList dataList = DataList.withContainDataOfType("metadata");
+		dataList.setFromNo("0");
+		assertEquals(dataList.getFromNo(), "0");
 	}
 
 	@Test
 	public void testToNo() {
-		RecordList recordList = RecordList.withContainRecordsOfType("metadata");
-		recordList.setToNo("2");
-		assertEquals(recordList.getToNo(), "2");
+		DataList dataList = DataList.withContainDataOfType("metadata");
+		dataList.setToNo("2");
+		assertEquals(dataList.getToNo(), "2");
 	}
 }

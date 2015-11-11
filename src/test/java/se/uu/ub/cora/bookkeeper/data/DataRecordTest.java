@@ -19,13 +19,13 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class DataRecordTest {
 	private DataRecord dataRecord;
@@ -33,6 +33,11 @@ public class DataRecordTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		dataRecord = new DataRecord();
+	}
+
+	@Test
+	public void testRecordIsData() {
+		assertTrue(dataRecord instanceof Data);
 	}
 
 	@Test

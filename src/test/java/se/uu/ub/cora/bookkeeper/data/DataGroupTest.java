@@ -19,11 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.Test;
 
 public class DataGroupTest {
 	@Test
@@ -32,6 +32,12 @@ public class DataGroupTest {
 
 		assertEquals(dataGroup.getNameInData(), "nameInData",
 				"NameInData should be the same as the one set in the constructor.");
+	}
+
+	@Test
+	public void testGroupIsData() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		assertTrue(dataGroup instanceof Data);
 	}
 
 	@Test
