@@ -19,24 +19,26 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
+import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 public class DataGroupRecordLinkCollectorTest {
 	private MetadataHolder metadataHolder;
@@ -60,17 +62,24 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	private void addMetadataForOneGroupWithNoLink(String id) {
+		metadataHolder
+				.addMetadataElement(addMetadataForOneGroupWithNoLinkUsingIdAndNameInData(id, id));
+	}
+
+	private MetadataGroup addMetadataForOneGroupWithNoLinkUsingIdAndNameInData(String id,
+			String nameInData) {
 		MetadataGroup group = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id + "Group",
-				id + "Group", id + "GroupTextId", id + "GroupDefTextId");
-		metadataHolder.addMetadataElement(group);
+				nameInData + "Group", id + "GroupTextId", id + "GroupDefTextId");
+		return group;
 	}
 
 	@Test
 	public void testOneGroupWithOneLink() {
 		addMetadataForOneGroupWithOneLink("test");
 		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"testLink", "linkedRecordType", "linkedRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "linkedRecordType",
+						"linkedRecordId");
 		dataGroup.addChild(dataRecordLink);
 
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
@@ -105,8 +114,9 @@ public class DataGroupRecordLinkCollectorTest {
 	public void testOneGroupWithOneLinkAndOtherChildren() {
 		createMetadataForOneGroupWithOneLinkAndOtherChildren();
 		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"testLink", "linkedRecordType", "linkedRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "linkedRecordType",
+						"linkedRecordId");
 		dataGroup.addChild(dataRecordLink);
 		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("textVar", "some text");
 		dataGroup.addChild(dataAtomic);
@@ -157,8 +167,9 @@ public class DataGroupRecordLinkCollectorTest {
 	public void testOneGroupWithOneLinkWithPath() {
 		addMetadataForOneGroupWithOneLinkWithPath();
 		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"testLink", "linkedRecordType", "linkedRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "linkedRecordType",
+						"linkedRecordId");
 		dataGroup.addChild(dataRecordLink);
 		dataRecordLink.setLinkedRepeatId("e3");
 		dataRecordLink.setRepeatId("i2");
@@ -206,8 +217,9 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup topDataGroup = DataGroup.withNameInData("topGroup");
 		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
 		topDataGroup.addChild(dataGroup);
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"testLink", "linkedRecordType", "linkedRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "linkedRecordType",
+						"linkedRecordId");
 		dataGroup.addChild(dataRecordLink);
 
 		List<DataGroup> linkList = linkCollector.collectLinks("topGroup", topDataGroup);
@@ -266,8 +278,9 @@ public class DataGroupRecordLinkCollectorTest {
 		toptopDataGroup.addChild(topDataGroup);
 		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
 		topDataGroup.addChild(dataGroup);
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"testLink", "linkedRecordType", "linkedRecordId");
+		DataRecordLink dataRecordLink = DataRecordLink
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "linkedRecordType",
+						"linkedRecordId");
 		dataGroup.addChild(dataRecordLink);
 
 		List<DataGroup> linkList = linkCollector.collectLinks("toptopGroup", toptopDataGroup);
@@ -320,13 +333,17 @@ public class DataGroupRecordLinkCollectorTest {
 		addMetadataForOneGroupWithNoLink("toptop");
 		addChildReferenceParentIdChildIdMinMax("toptopGroup", "topGroup", 1, 2);
 
-		// DataAttribute attribute1 =
-		// DataAttribute.withNameInDataAndValue("attribute1", "attrValue");
-		TextVariable attribute1 = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("attribute1",
-						"attribute1", "textId", "defTextId", "attrValue");
+		// TextVariable attribute1 = TextVariable
+		// .withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("attribute1",
+		// "attribute1", "textId", "defTextId", "attrValue");
 
-		metadataHolder.addMetadataElement(attribute1);
+		// metadataHolder.addMetadataElement(attribute1);
+
+		CollectionVariableChild collectionVariableChild = new CollectionVariableChild("attribute1",
+				"attribute1", "textId", "defTextId", "itemCollectionId", "collectionVariableId");
+		metadataHolder.addMetadataElement(collectionVariableChild);
+
+		collectionVariableChild.setFinalValue("attrValue");
 
 		MetadataGroup toptopGroup = (MetadataGroup) metadataHolder.getMetadataElement("topGroup");
 		toptopGroup.addAttributeReference("attribute1");

@@ -30,6 +30,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 
 public class DataGroupRecordLinkCollector {
 
@@ -98,9 +99,10 @@ public class DataGroupRecordLinkCollector {
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
 			DataElement dataElement) {
-		String dataNameInData = dataElement.getNameInData();
-		String metadataNameInData = childMetadataElement.getNameInData();
-		return dataNameInData.equals(metadataNameInData);
+		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		ValidationAnswer validationAnswer = metadataMatchData
+				.metadataSpecifiesData(childMetadataElement, dataElement);
+		return validationAnswer.dataIsValid();
 	}
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,

@@ -19,8 +19,15 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
+import java.util.Collections;
+import java.util.Map;
+
 public interface DataElement {
 	String getNameInData();
 
 	String getRepeatId();
+
+	default Map<String, String> getAttributes() {
+		return Collections.emptyMap();
+	}
 }

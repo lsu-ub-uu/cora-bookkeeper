@@ -19,9 +19,12 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * MetadataElement is an abstract class that holds the common attributes assosiated with
- * metadataElements
+ * MetadataElement is an abstract class that holds the common attributes
+ * associated with metadataElements
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -56,5 +59,9 @@ public abstract class MetadataElement {
 
 	public String getDefTextId() {
 		return defTextId;
+	}
+
+	public List<String> getAttributeReferences() {
+		return Collections.emptyList();
 	}
 }
