@@ -17,7 +17,7 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.bookkeeper.linkcollector;
+package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
 import java.util.Map;
@@ -28,9 +28,6 @@ import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.validator.DataElementValidator;
-import se.uu.ub.cora.bookkeeper.validator.DataValidatorFactoryImp;
-import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 
 public final class MetadataMatchData {
 
