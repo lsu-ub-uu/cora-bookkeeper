@@ -19,7 +19,12 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
@@ -31,10 +36,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 public class DataGroupValidatorTest {
 
@@ -51,8 +52,7 @@ public class DataGroupValidatorTest {
 				"The group should not be valid as the nameInData is invalid");
 	}
 
-	private DataElementValidator createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator()
-	{
+	private DataElementValidator createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator() {
 		MetadataHolder metadataHolder = createOneGroupNoAttributesOneTextChild();
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		return dataValidatorFactory.factor("testGroupId");
@@ -91,7 +91,8 @@ public class DataGroupValidatorTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textNameInDataERROR", "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 2, "Two messages, missing child and has unknown child");
+		assertEquals(validationAnswer.getErrorMessages().size(), 2,
+				"Two messages, missing child and has unknown child");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not be valid, as it has a child with wrong nameInData");
 	}
@@ -114,7 +115,8 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
-//		dataGroup.addChild(DataAtomic.withNameInDataAndValue("text1NameInData", "10:10"));
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("text1NameInData",
+		// "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
@@ -204,8 +206,6 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
-//		 dataGroup.addAttributeByIdWithValue("col1NameInData",
-//		 "choice1NameInData");
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("text1NameInData", "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
@@ -233,12 +233,10 @@ public class DataGroupValidatorTest {
 				"The group should not be valid as it has an attribute that doesn't exist in metadata");
 	}
 
-	private void createSecondCollectionVariable(final MetadataHolder metadataHolder)
-	{
-		//Extra metadata collection for this test only
-		CollectionVariable colVar2 = new CollectionVariable("col2Id",
-				"col2NameInData", "col2TextId", "col2DefTextId",
-				"collectionId");
+	private void createSecondCollectionVariable(final MetadataHolder metadataHolder) {
+		// Extra metadata collection for this test only
+		CollectionVariable colVar2 = new CollectionVariable("col2Id", "col2NameInData",
+				"col2TextId", "col2DefTextId", "collectionId");
 		metadataHolder.addMetadataElement(colVar2);
 	}
 
@@ -344,14 +342,14 @@ public class DataGroupValidatorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
 				"The group should be validate to true");
 	}
 
-	private DataElementValidator createMetadataForOneSimpleGroupReturnDataElementValidator()
-	{
+	private DataElementValidator createMetadataForOneSimpleGroupReturnDataElementValidator() {
 		MetadataHolder metadataHolder = createMetadataForOneSimpleGroup();
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		return dataValidatorFactory.factor("testGroupId");
@@ -367,7 +365,8 @@ public class DataGroupValidatorTest {
 		DataCreator.addDefaultCollectionTwoChoices("col1", metadataGroup, metadataHolder);
 
 		// child
-		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text1", metadataGroup, metadataHolder);
+		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text1", metadataGroup,
+				metadataHolder);
 
 		return metadataHolder;
 	}
@@ -378,11 +377,13 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertFalse(validationAnswer.dataIsValid(), "The group should not validate as attribute value is invalid");
+		assertFalse(validationAnswer.dataIsValid(),
+				"The group should not validate as attribute value is invalid");
 	}
 
 	@Test
@@ -390,8 +391,10 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
-//		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		// dataGroup.addAttributeByIdWithValue("col1NameInData",
+		// "choice1NameInData");
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
@@ -406,7 +409,8 @@ public class DataGroupValidatorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addAttributeByIdWithValue("col2NameInData", "choice1NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
 
 		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid(),
 				"The group should be validate to false as it has an extra attribute");
@@ -418,7 +422,8 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "66:66", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "66:66", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 
@@ -435,8 +440,10 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "01:11", "1"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "01:11", "1"));
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
 				"The group should be valid");
@@ -449,11 +456,13 @@ public class DataGroupValidatorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addAttributeByIdWithValue("col2NameInData", "choice1NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertFalse(validationAnswer.dataIsValid(), "The group should not be valid because one attribute is wrong");
+		assertFalse(validationAnswer.dataIsValid(),
+				"The group should not be valid because one attribute is wrong");
 	}
 
 	@Test
@@ -462,7 +471,8 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1_WRONG_NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
@@ -475,7 +485,8 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("unknownNameInData", "10:10", "0"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("unknownNameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 2,
@@ -492,11 +503,15 @@ public class DataGroupValidatorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		// 1-x,1-1,0-x
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "one"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "two"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "one"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "two"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("text2NameInData", "10:10"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text3NameInData", "10:10", "four"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text3NameInData", "10:10", "five"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text3NameInData", "10:10", "four"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text3NameInData", "10:10", "five"));
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
 				"The group should be validate to true");
@@ -512,9 +527,11 @@ public class DataGroupValidatorTest {
 		DataCreator.addDefaultCollectionTwoChoices("col1", metadataGroup, metadataHolder);
 
 		// children
-		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text1", metadataGroup, metadataHolder);
+		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text1", metadataGroup,
+				metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text2", metadataGroup, metadataHolder);
-		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text3", metadataGroup, metadataHolder);
+		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text3", metadataGroup,
+				metadataHolder);
 
 		return metadataHolder;
 	}
@@ -525,7 +542,8 @@ public class DataGroupValidatorTest {
 		// group
 		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);
 		// child
-		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text1", metadataGroup, metadataHolder);
+		DataCreator.addUnlimitedTextVarChildReferenceToGroup("text1", metadataGroup,
+				metadataHolder);
 
 		return metadataHolder;
 	}
@@ -558,7 +576,8 @@ public class DataGroupValidatorTest {
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertFalse(validationAnswer.dataIsValid(), "The group should be validate to false - has no repeatId");
+		assertFalse(validationAnswer.dataIsValid(),
+				"The group should be validate to false - has no repeatId");
 	}
 
 	@Test
@@ -569,7 +588,8 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", ""));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", ""));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
@@ -584,12 +604,15 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "1"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:20", "1"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "1"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:20", "1"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertFalse(validationAnswer.dataIsValid(), "The group should be validate to false - same repeatId");
+		assertFalse(validationAnswer.dataIsValid(),
+				"The group should be validate to false - same repeatId");
 	}
 
 	@Test
@@ -600,7 +623,8 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "1"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValueAndRepeatId("text1NameInData", "10:10", "1"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
@@ -617,14 +641,14 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testTwoGroupsWithSameAttributeDifferentValues()
-	{
+	public void testTwoGroupsWithSameAttributeDifferentValues() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = DataGroup.withNameInData("parentGroupNameInData");
 
-		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear", "text1NameInData"));
+		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
+				"text1NameInData"));
 		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "deathYear",
 				"text2NameInData"));
 		dataParent.addChild(DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
@@ -637,53 +661,57 @@ public class DataGroupValidatorTest {
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
-	private DataGroup createDataGroupWithTextChildAndOneAttribute(final String attributeName, final String attributeValue, final String childGroupNameInData)
-	{
+	private DataGroup createDataGroupWithTextChildAndOneAttribute(final String attributeName,
+			final String attributeValue, final String childGroupNameInData) {
 		DataGroup childGroup1 = DataGroup.withNameInData("testGroup");
 		childGroup1.addAttributeByIdWithValue(attributeName, attributeValue);
 		childGroup1.addChild(DataAtomic.withNameInDataAndValue(childGroupNameInData, "10:10"));
 		return childGroup1;
 	}
 
-	private void createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(final MetadataHolder metadataHolder)
-	{
+	private void createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(
+			final MetadataHolder metadataHolder) {
 		MetadataGroup parent = DataCreator.createMetaDataGroup("parent", metadataHolder);
-		MetadataGroup group1 = DataCreator.createMetaDataGroupWithIdAndNameInNData("test1", "testGroup", metadataHolder);
-		MetadataGroup group2 = DataCreator.createMetaDataGroupWithIdAndNameInNData("test2", "testGroup", metadataHolder);
+		MetadataGroup group1 = DataCreator.createMetaDataGroupWithIdAndNameInNData("test1",
+				"testGroup", metadataHolder);
+		MetadataGroup group2 = DataCreator.createMetaDataGroupWithIdAndNameInNData("test2",
+				"testGroup", metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group1, metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text2", group2, metadataHolder);
 
-		//Parent collection, contains two types of dates
-		CollectionVariable colVar = new CollectionVariable("dateTypeId", "dateType", "Text", "DefText",
-				"dateTypeCollectionId");
+		// Parent collection, contains two types of dates
+		CollectionVariable colVar = new CollectionVariable("dateTypeId", "dateType", "Text",
+				"DefText", "dateTypeCollectionId");
 		metadataHolder.addMetadataElement(colVar);
 
-		CollectionItem choice1 = new CollectionItem("birthYearId", "birthYear", "textId", "defTextId");
+		CollectionItem choice1 = new CollectionItem("birthYearId", "birthYear", "textId",
+				"defTextId");
 		metadataHolder.addMetadataElement(choice1);
 
-		CollectionItem choice2 = new CollectionItem("deathYearId", "deathYear", "textId", "defTextId");
+		CollectionItem choice2 = new CollectionItem("deathYearId", "deathYear", "textId",
+				"defTextId");
 		metadataHolder.addMetadataElement(choice2);
 
-		ItemCollection collection = new ItemCollection("dateTypeCollectionId", "dateTypeCollectionNameInData",
-				"CollectionTextId", "collectionDefTextId");
+		ItemCollection collection = new ItemCollection("dateTypeCollectionId",
+				"dateTypeCollectionNameInData", "CollectionTextId", "collectionDefTextId");
 		metadataHolder.addMetadataElement(collection);
 		collection.addItemReference("birthYearId");
 		collection.addItemReference("deathYearId");
 
-		//Two child collections, holds one item each
-		CollectionVariableChild birthColVar = new CollectionVariableChild("birthDateTypeId", "dateType", "Text", "DefText",
-				"birthDateTypeCollectionId", "dateTypeId");
+		// Two child collections, holds one item each
+		CollectionVariableChild birthColVar = new CollectionVariableChild("birthDateTypeId",
+				"dateType", "Text", "DefText", "birthDateTypeCollectionId", "dateTypeId");
 		metadataHolder.addMetadataElement(birthColVar);
-		CollectionVariableChild deathColVar = new CollectionVariableChild("deathDateTypeId", "dateType", "Text",
-				"DefText", "deathDateTypeCollectionId", "dateTypeId");
+		CollectionVariableChild deathColVar = new CollectionVariableChild("deathDateTypeId",
+				"dateType", "Text", "DefText", "deathDateTypeCollectionId", "dateTypeId");
 		metadataHolder.addMetadataElement(deathColVar);
 
-		ItemCollection birthCollection = new ItemCollection("birthDateTypeCollectionId", "birthDateTypeCollectionNameInData",
-				"CollectionTextId", "collectionDefTextId");
+		ItemCollection birthCollection = new ItemCollection("birthDateTypeCollectionId",
+				"birthDateTypeCollectionNameInData", "CollectionTextId", "collectionDefTextId");
 		metadataHolder.addMetadataElement(birthCollection);
 		birthCollection.addItemReference("birthYearId");
-		ItemCollection deathCollection = new ItemCollection("deathDateTypeCollectionId", "deathDateTypeCollectionNameInData",
-				"CollectionTextId", "collectionDefTextId");
+		ItemCollection deathCollection = new ItemCollection("deathDateTypeCollectionId",
+				"deathDateTypeCollectionNameInData", "CollectionTextId", "collectionDefTextId");
 		metadataHolder.addMetadataElement(deathCollection);
 		deathCollection.addItemReference("deathYearId");
 
@@ -696,13 +724,13 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testTwoGroupsWithSameAttributeSameValueInData()
-	{
+	public void testTwoGroupsWithSameAttributeSameValueInData() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = DataGroup.withNameInData("parentGroupNameInData");
-		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear", "text1NameInData"));
+		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
+				"text1NameInData"));
 		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
 				"text2NameInData"));
 		dataParent.addChild(DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
@@ -717,8 +745,7 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testTwoGroupsWithoutRelevantAttribute()
-	{
+	public void testTwoGroupsWithoutRelevantAttribute() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
@@ -740,16 +767,17 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testTwoGroupsWithAttributesNotFoundInMetadata()
-	{
+	public void testTwoGroupsWithAttributesNotFoundInMetadata() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = DataGroup.withNameInData("parentGroupNameInData");
-		DataGroup childGroup2 = createDataGroupWithTextChildAndOneAttribute("dateType", "deathYear", "text2NameInData");
+		DataGroup childGroup2 = createDataGroupWithTextChildAndOneAttribute("dateType", "deathYear",
+				"text2NameInData");
 		childGroup2.addAttributeByIdWithValue("extraAttribute", "value");
 
-		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear", "text1NameInData"));
+		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
+				"text1NameInData"));
 		dataParent.addChild(childGroup2);
 		dataParent.addChild(DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
@@ -759,43 +787,45 @@ public class DataGroupValidatorTest {
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
 		assertEquals(validationAnswer.getErrorMessages().size(), 2);
-		assertFalse(validationAnswer.dataIsValid(), "Should not be valid, since we have an extra attribute in group 2");
+		assertFalse(validationAnswer.dataIsValid(),
+				"Should not be valid, since we have an extra attribute in group 2");
 	}
 
 	@Test
-	public void testGroupValidationThreeLevels()
-	{
+	public void testGroupValidationThreeLevels() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 
-		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder, false);
+		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder,
+				false);
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataElementValidator = dataValidatorFactory.factor("grandParentGroupId");
+		DataElementValidator dataElementValidator = dataValidatorFactory
+				.factor("grandParentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGrandParent);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
-	public void testGroupValidationThreeLevelsErrorInChild()
-	{
+	public void testGroupValidationThreeLevelsErrorInChild() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 
 		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder, true);
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataElementValidator = dataValidatorFactory.factor("grandParentGroupId");
+		DataElementValidator dataElementValidator = dataValidatorFactory
+				.factor("grandParentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGrandParent);
 		assertFalse(validationAnswer.dataIsValid());
 	}
 
-	private DataGroup createGroupsInThreeLevelsWithMatchingData(final MetadataHolder metadataHolder, final boolean addExtraChildToData)
-	{
+	private DataGroup createGroupsInThreeLevelsWithMatchingData(final MetadataHolder metadataHolder,
+			final boolean addExtraChildToData) {
 		MetadataGroup grandParent = DataCreator.createMetaDataGroup("grandParent", metadataHolder);
 		MetadataGroup parent = DataCreator.createMetaDataGroup("parent", metadataHolder);
-		MetadataGroup child = DataCreator.createMetaDataGroupWithIdAndNameInNData("test1", "testGroup",
-				metadataHolder);
+		MetadataGroup child = DataCreator.createMetaDataGroupWithIdAndNameInNData("test1",
+				"testGroup", metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", child, metadataHolder);
 		DataCreator.addDataGroupAsMetadataChildReferenceToParent(parent, grandParent);
 		DataCreator.addDataGroupAsMetadataChildReferenceToParent(child, parent);
@@ -809,7 +839,7 @@ public class DataGroupValidatorTest {
 				"choice2NameInData", "text1NameInData");
 		dataParent.addChild(dataChild);
 
-		if(addExtraChildToData) {
+		if (addExtraChildToData) {
 			dataChild.addAttributeByIdWithValue("extraAttribute", "value");
 		}
 

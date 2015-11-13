@@ -21,15 +21,10 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -63,98 +58,16 @@ class DataGroupValidator implements DataElementValidator {
 	public ValidationAnswer validateData(DataElement dataGroup) {
 		this.dataGroup = (DataGroup) dataGroup;
 		validationAnswer = new ValidationAnswer();
-		validateNameInData();
-		validateAttributes();
+		validateNameInDataAndAttributes(dataGroup);
 		validateChildren();
-
 		return validationAnswer;
 	}
 
-	private void validateNameInData() {
-		String metadataNameInData = metadataGroup.getNameInData();
-		String dataNameInData = dataGroup.getNameInData();
-		if (!metadataNameInData.equals(dataNameInData)) {
-			validationAnswer.addErrorMessage("DataGroup should have name(nameInData): "
-					+ metadataGroup.getNameInData() + " it does not.");
-		}
-	}
-
-	private void validateAttributes() {
-		validateDataContainsAllRequiredAttributesWithCorrectValues();
-		validateDataContainsNoUnspecifiedAttributes();
-	}
-
-	private void validateDataContainsAllRequiredAttributesWithCorrectValues() {
-		Collection<String> mdAttributeReferences = metadataGroup.getAttributeReferences();
-		for (String mdAttributeReference : mdAttributeReferences) {
-			validateDataContainsAttributeReferenceWithCorrectData(mdAttributeReference);
-		}
-	}
-
-	private void validateDataContainsAttributeReferenceWithCorrectData(
-			String mdAttributeReference) {
-		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
-
-		Map<String, String> dataAttributes = dataGroup.getAttributes();
-		boolean dataAttributesContainsValueForAttribute = dataAttributes.containsKey(nameInData);
-		if (dataAttributesContainsValueForAttribute) {
-			DataAtomic dataElement = createDataAtomicFromAttribute(mdAttributeReference,
-					dataAttributes);
-			validateAttribute(mdAttributeReference, dataElement);
-		} else {
-			validationAnswer.addErrorMessage(
-					"Attribute with nameInData: " + nameInData + " does not exist in data.");
-		}
-	}
-
-	private DataAtomic createDataAtomicFromAttribute(String mdAttributeReference,
-			Map<String, String> dataAttributes) {
-		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
-		String value = dataAttributes.get(nameInData);
-		return DataAtomic.withNameInDataAndValue(nameInData, value);
-	}
-
-	private void validateAttribute(String mdAttributeReference, DataAtomic dataElement) {
-		DataElementValidator attributeValidator = dataValidatorFactoryImp
-				.factor(mdAttributeReference);
-		ValidationAnswer aValidationAnswer = attributeValidator.validateData(dataElement);
-		addMessagesFromAnswerToTotalValidationAnswer(aValidationAnswer);
-	}
-
-	private void addMessagesFromAnswerToTotalValidationAnswer(ValidationAnswer aValidationAnswer) {
-		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
-	}
-
-	private String getNameInDataForAttributeReference(String mdAttributeReference) {
-		CollectionVariable mdAttribute = (CollectionVariable) metadataHolder
-				.getMetadataElement(mdAttributeReference);
-		return mdAttribute.getNameInData();
-	}
-
-	private void validateDataContainsNoUnspecifiedAttributes() {
-		Map<String, String> dAttributes = dataGroup.getAttributes();
-		for (Entry<String, String> attribute : dAttributes.entrySet()) {
-			String nameInDataFromDataAttribute = attribute.getKey();
-			validateNameInDataFromDataAttributeIsSpecifiedInMetadata(nameInDataFromDataAttribute);
-		}
-	}
-
-	private void validateNameInDataFromDataAttributeIsSpecifiedInMetadata(String dataNameInData) {
-		if (!isNameInDataFromDataSpecifiedInMetadata(dataNameInData)) {
-			validationAnswer.addErrorMessage(
-					"Data attribute with id: " + dataNameInData + " does not exist in metadata.");
-		}
-	}
-
-	private boolean isNameInDataFromDataSpecifiedInMetadata(String dataNameInData) {
-		Collection<String> mdAttributeReferences = metadataGroup.getAttributeReferences();
-		for (String mdAttributeReference : mdAttributeReferences) {
-			String metadataNameInData = getNameInDataForAttributeReference(mdAttributeReference);
-			if (dataNameInData.equals(metadataNameInData)) {
-				return true;
-			}
-		}
-		return false;
+	private void validateNameInDataAndAttributes(DataElement dataGroup) {
+		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(metadataGroup,
+				dataGroup);
+		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
 
 	private void validateChildren() {
@@ -240,83 +153,11 @@ class DataGroupValidator implements DataElementValidator {
 	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
 			String referenceId) {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
-		return childElement.getNameInData().equals(childData.getNameInData()) &&
-				checkAttributesMatch(childData, childElement);
-	}
+		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
+}
+		
 
-	private boolean checkAttributesMatch(final DataElement childData, final MetadataElement metadataChildElement)
-	{
-		if(metadataChildElement instanceof MetadataGroup) {
-			List<String> attributeReferences = ((MetadataGroup) metadataChildElement).getAttributeReferences();
-			boolean allRequiredAttributes = checkDataContainsAllRequiredAttributesWithCorrectValues(childData,
-					attributeReferences);
-			boolean noUnspecifiedAttributes = checkDataContainsNoUnspecifiedAttributes(childData, attributeReferences);
-			return allRequiredAttributes && noUnspecifiedAttributes;
-		}
-		return true;
-	}
-
-	private boolean checkDataContainsAllRequiredAttributesWithCorrectValues(final DataElement childData, final List<String> attributeReferences)
-	{
-		boolean attributesCorrect = true;
-
-		for (String mdAttributeReference : attributeReferences) {
-            attributesCorrect = attributesCorrect && checkDataContainsAttributeReferenceWithCorrectData(childData, mdAttributeReference);
-        }
-		return attributesCorrect;
-	}
-
-	private boolean checkDataContainsAttributeReferenceWithCorrectData(final DataElement childData, final String mdAttributeReference)
-	{
-        Map<String, String> dataAttributes = ((DataGroup) childData).getAttributes();
-        if (dataAttributesContainsMdAttributeReference(dataAttributes, mdAttributeReference)) {
-            return checkAttributeValue(mdAttributeReference, dataAttributes);
-        }
-        return false;
-	}
-
-	private boolean dataAttributesContainsMdAttributeReference(final Map<String, String> dataAttributes, final String mdAttributeReference)
-	{
-		return dataAttributes.containsKey(getNameInDataForAttributeReference(mdAttributeReference));
-	}
-
-	private boolean checkAttributeValue(final String mdAttributeReference, final Map<String, String> dataAttributes)
-	{
-		DataAtomic dataElement = createDataAtomicFromAttribute(mdAttributeReference,
-                dataAttributes);
-		return validateAttributeValue(mdAttributeReference, dataElement);
-	}
-
-	private boolean validateAttributeValue(final String mdAttributeReference, final DataAtomic dataElement)
-	{
-		DataElementValidator attributeValidator = dataValidatorFactoryImp
-				.factor(mdAttributeReference);
-		return attributeValidator.validateData(dataElement).dataIsValid();
-	}
-
-
-	private boolean checkDataContainsNoUnspecifiedAttributes(final DataElement childData, final List<String> attributeReferences)
-	{
-		Map<String, String> attributes = ((DataGroup) childData).getAttributes();
-		boolean attributesSpecifiedByMetadata = true;
-		for (Entry<String, String> attribute : attributes.entrySet()) {
-			String nameInDataFromDataAttribute = attribute.getKey();
-			attributesSpecifiedByMetadata = attributesSpecifiedByMetadata && checkAttributeReferenceContainsDataAttribute(attributeReferences, nameInDataFromDataAttribute);
-		}
-
-		return attributesSpecifiedByMetadata;
-	}
-
-	private boolean checkAttributeReferenceContainsDataAttribute(final List<String> attributeReferences, final String nameInDataFromDataAttribute)
-	{
-		for (String attributeReference : attributeReferences) {
-			if(nameInDataFromDataAttribute.equals(getNameInDataForAttributeReference(attributeReference))) {
-				return true;
-			}
-		}
-		return false;
-
-	}
 
 	private void validateNoRepeatId(DataElement childData) {
 		String repeatId = childData.getRepeatId();
@@ -330,6 +171,10 @@ class DataGroupValidator implements DataElementValidator {
 		DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
 		ValidationAnswer va = childValidator.validateData(childData);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
+	}
+
+	private void addMessagesFromAnswerToTotalValidationAnswer(ValidationAnswer aValidationAnswer) {
+		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
 	}
 
 	private void validateDataContainsNoUnspecifiedChildren() {
