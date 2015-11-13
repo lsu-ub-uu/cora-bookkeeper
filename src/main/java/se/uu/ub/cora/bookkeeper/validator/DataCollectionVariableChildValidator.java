@@ -42,7 +42,8 @@ public class DataCollectionVariableChildValidator extends DataCollectionVariable
 			// there is a final value, check if it is ok
 
 			if (!finalValue.equals(data.getValue())) {
-				validationAnswer.addErrorMessage("Value is not finalValue");
+				validationAnswer.addErrorMessage(
+						"Value:" + data.getValue() + " is not finalValue:" + finalValue);
 			}
 			return validationAnswer;
 		}

@@ -21,8 +21,10 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 public enum MetadataTypes {
 	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
-			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK("metadataRecordLink");
+			"metadataCollectionVariable"), COLLECTIONVARIABLECHILD(
+					"metadataCollectionVariableChild"), ITEMCOLLECTION(
+							"metadataItemCollection"), COLLECTIONITEM(
+									"metadataCollectionItem"), RECORDLINK("metadataRecordLink");
 
 	private MetadataTypes(String type) {
 		this.type = type;
