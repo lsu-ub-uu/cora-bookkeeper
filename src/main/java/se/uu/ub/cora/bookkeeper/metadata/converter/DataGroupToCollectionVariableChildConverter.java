@@ -22,8 +22,8 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 
-public final class DataGroupToCollectionVariableChildConverter implements
-		DataGroupToMetadataConverter {
+public final class DataGroupToCollectionVariableChildConverter
+		implements DataGroupToMetadataConverter {
 
 	private DataGroup dataGroup;
 
@@ -44,11 +44,17 @@ public final class DataGroupToCollectionVariableChildConverter implements
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 		String refCollectionId = dataGroup.getFirstAtomicValueWithNameInData("refCollectionId");
 		String refParentId = dataGroup.getFirstAtomicValueWithNameInData("refParentId");
-		String finalValue = dataGroup.getFirstAtomicValueWithNameInData("finalValue");
 
-		CollectionVariableChild collectionVariableChild = new CollectionVariableChild(id, nameInData,
-				textId, defTextId, refCollectionId, refParentId);
-		collectionVariableChild.setFinalValue(finalValue);
+		CollectionVariableChild collectionVariableChild = new CollectionVariableChild(id,
+				nameInData, textId, defTextId, refCollectionId, refParentId);
+		convertFinalValue(collectionVariableChild);
 		return collectionVariableChild;
+	}
+
+	private void convertFinalValue(CollectionVariableChild collectionVariableChild) {
+		if (dataGroup.containsChildWithNameInData("finalValue")) {
+			String finalValue = dataGroup.getFirstAtomicValueWithNameInData("finalValue");
+			collectionVariableChild.setFinalValue(finalValue);
+		}
 	}
 }
