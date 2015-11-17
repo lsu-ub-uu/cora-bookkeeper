@@ -19,30 +19,30 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
 public class DataCollectionVariableValidatorTest {
-	// * valid
-	// * invalid
-	// * missing
-	// * extra
+	private MetadataHolder metadataHolder;
+
+	@BeforeMethod
+	public void setUp() {
+		metadataHolder = new MetadataHolder();
+	}
+
 	@Test
 	public void testValidateValidData() {
-		MetadataHolder metadataHolder = createCollectionVariable();
-		CollectionVariable collectionVariable = (CollectionVariable) metadataHolder
-				.getMetadataElement("collectionVarId");
-
-		DataCollectionVariableValidator validator = new DataCollectionVariableValidator(
-				metadataHolder, collectionVariable);
+		DataCollectionVariableValidator validator = createCollectionVariableInValidator();
 
 		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
 				"choice1NameInData");
@@ -50,40 +50,23 @@ public class DataCollectionVariableValidatorTest {
 				"The collection variable should be validated to true");
 	}
 
-	@Test
-	public void testValidateInvalidData() {
-
-		MetadataHolder metadataHolder = createCollectionVariable();
-		CollectionVariable collectionVariable = (CollectionVariable) metadataHolder
-				.getMetadataElement("collectionVarId");
-
-		DataCollectionVariableValidator validator = new DataCollectionVariableValidator(
-				metadataHolder, collectionVariable);
-
-		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
-				"choice1ERRORNameInData");
-
-		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertFalse(validationAnswer.dataIsValid(),
-				"The collection variable should be validated to false");
+	private DataCollectionVariableValidator createCollectionVariableInValidator() {
+		CollectionVariable collectionVariable = createCollectionVariable();
+		return new DataCollectionVariableValidator(metadataHolder, collectionVariable);
 	}
 
-	private MetadataHolder createCollectionVariable() {
-		MetadataHolder metadataHolder = new MetadataHolder();
-
-		// collection groupType
-		CollectionVariable colVar = new CollectionVariable("collectionVarId",
+	private CollectionVariable createCollectionVariable() {
+		CollectionVariable collectionVariable = new CollectionVariable("collectionVarId",
 				"collectionVarNameInData", "collectionVarTextId", "collectionVarDefTextId",
 				"collectionId");
-		metadataHolder.addMetadataElement(colVar);
+		metadataHolder.addMetadataElement(collectionVariable);
 
-		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData", "choice1TextId",
-				"choice1DefTextId");
+		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",
+				"choice1TextId", "choice1DefTextId");
 		metadataHolder.addMetadataElement(choice1);
 
-		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData", "choice2TextId",
-				"choice2DefTextId");
+		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData",
+				"choice2TextId", "choice2DefTextId");
 		metadataHolder.addMetadataElement(choice2);
 
 		ItemCollection collection = new ItemCollection("collectionId", "collectionNameInData",
@@ -91,7 +74,63 @@ public class DataCollectionVariableValidatorTest {
 		metadataHolder.addMetadataElement(collection);
 		collection.addItemReference("choice1Id");
 		collection.addItemReference("choice2Id");
-
-		return metadataHolder;
+		return collectionVariable;
 	}
+
+	@Test
+	public void testValidateInvalidData() {
+		DataCollectionVariableValidator validator = createCollectionVariableInValidator();
+
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1ERRORNameInData");
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+
+		assertDataInvalidWithOnlyOneErrorMessage(validationAnswer);
+	}
+
+	private void assertDataInvalidWithOnlyOneErrorMessage(ValidationAnswer validationAnswer) {
+		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		assertFalse(validationAnswer.dataIsValid(),
+				"The collection variable should be validated to false");
+	}
+
+	@Test
+	public void testValidateFinalValueValidData() {
+		DataCollectionVariableValidator validator = createCollectionVariableWithFinalValue();
+
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice2NameInData");
+
+		assertTrue(validator.validateData(dataAtomic).dataIsValid(),
+				"The collection variable should be validated to true");
+	}
+
+	private DataCollectionVariableValidator createCollectionVariableWithFinalValue() {
+		CollectionVariable collectionVariable = createCollectionVariable();
+		collectionVariable.setFinalValue("choice2NameInData");
+		return new DataCollectionVariableValidator(metadataHolder, collectionVariable);
+	}
+
+	@Test
+	public void testValidateFinalValueInvalidData() {
+		DataCollectionVariableValidator validator = createCollectionVariableWithFinalValue();
+
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1ERRORNameInData");
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+
+		assertDataInvalidWithOnlyOneErrorMessage(validationAnswer);
+	}
+
+	@Test
+	public void testValidateFinalValueWrongChoiceData() {
+		DataCollectionVariableValidator validator = createCollectionVariableWithFinalValue();
+
+		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("collectionVarNameInData",
+				"choice1NameInData");
+		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
+
+		assertDataInvalidWithOnlyOneErrorMessage(validationAnswer);
+	}
+
 }

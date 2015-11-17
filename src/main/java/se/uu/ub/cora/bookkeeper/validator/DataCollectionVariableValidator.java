@@ -30,6 +30,7 @@ public class DataCollectionVariableValidator implements DataElementValidator {
 
 	protected MetadataHolder metadataHolder;
 	protected CollectionVariable collectionVariable;
+	private String dataValue;
 
 	public DataCollectionVariableValidator(MetadataHolder metadataHolder,
 			CollectionVariable collectionVariable) {
@@ -40,24 +41,63 @@ public class DataCollectionVariableValidator implements DataElementValidator {
 	@Override
 	public ValidationAnswer validateData(DataElement dataElement) {
 		DataAtomic data = (DataAtomic) dataElement;
+		dataValue = data.getValue();
+		if (finalValueIsDefinedInMetadata()) {
+			return validateDataValueIsFinalValue();
+		}
+		return validateDataValueExistsInReferredCollection();
+	}
+
+	private boolean finalValueIsDefinedInMetadata() {
+		return null != collectionVariable.getFinalValue();
+	}
+
+	private ValidationAnswer validateDataValueIsFinalValue() {
+		if (dataValueIsFinalValue()) {
+			return new ValidationAnswer();
+		}
+		return createErrorMessageForFinalValue();
+	}
+
+	private boolean dataValueIsFinalValue() {
+		return collectionVariable.getFinalValue().equals(dataValue);
+	}
+
+	private ValidationAnswer createErrorMessageForFinalValue() {
 		ValidationAnswer validationAnswer = new ValidationAnswer();
-		ItemCollection col = (ItemCollection) metadataHolder.getMetadataElement(collectionVariable
-				.getRefCollectionId());
-
-		boolean valueFoundInCollection = false;
-		for (String ref : col.getCollectionItemReferences()) {
-			CollectionItem colItem = (CollectionItem) metadataHolder.getMetadataElement(ref);
-
-			if (data.getValue().equals(colItem.getNameInData())) {
-				valueFoundInCollection = true;
-				break;
-			}
-		}
-		if (!valueFoundInCollection) {
-			validationAnswer.addErrorMessage("Data value:" + data.getValue()
-					+ " NOT found in collection:" + col.getNameInData());
-		}
+		validationAnswer.addErrorMessage(
+				"Value:" + dataValue + " is not finalValue:" + collectionVariable.getFinalValue());
 		return validationAnswer;
 	}
 
+	private ValidationAnswer validateDataValueExistsInReferredCollection() {
+		ItemCollection referredCollection = (ItemCollection) metadataHolder
+				.getMetadataElement(collectionVariable.getRefCollectionId());
+		if (dataValueFoundInReferredCollection(referredCollection)) {
+			return new ValidationAnswer();
+		}
+		return createErrorMessageForReferredCollection(referredCollection);
+	}
+
+	private boolean dataValueFoundInReferredCollection(ItemCollection referredCollection) {
+		for (String ref : referredCollection.getCollectionItemReferences()) {
+			if (collectionItemMatchesDataValue(ref)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean collectionItemMatchesDataValue(String ref) {
+		CollectionItem colItem = (CollectionItem) metadataHolder.getMetadataElement(ref);
+		return colItem.getNameInData().equals(dataValue);
+	}
+
+	private ValidationAnswer createErrorMessageForReferredCollection(
+			ItemCollection referredCollection) {
+		ValidationAnswer validationAnswer = new ValidationAnswer();
+		validationAnswer.addErrorMessage("Data value:" + dataValue + " NOT found in collection:"
+				+ referredCollection.getNameInData());
+		return validationAnswer;
+	}
 }

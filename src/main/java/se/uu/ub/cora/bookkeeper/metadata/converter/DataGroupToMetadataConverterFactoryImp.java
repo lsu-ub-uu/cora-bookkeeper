@@ -48,17 +48,11 @@ public final class DataGroupToMetadataConverterFactoryImp
 		if ("group".equals(type)) {
 			return DataGroupToMetadataGroupConverter.fromDataGroup(dataGroup);
 		}
-		if ("groupChild".equals(type)) {
-			return DataGroupToMetadataGroupChildConverter.fromDataGroup(dataGroup);
-		}
 		if ("collectionItem".equals(type)) {
 			return DataGroupToCollectionItemConverter.fromDataGroup(dataGroup);
 		}
 		if ("collectionVariable".equals(type)) {
 			return DataGroupToCollectionVariableConverter.fromDataGroup(dataGroup);
-		}
-		if ("collectionVariableChild".equals(type)) {
-			return DataGroupToCollectionVariableChildConverter.fromDataGroup(dataGroup);
 		}
 		if ("itemCollection".equals(type)) {
 			return DataGroupToItemCollectionConverter.fromDataGroup(dataGroup);

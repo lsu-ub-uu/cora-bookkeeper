@@ -30,7 +30,6 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -699,11 +698,13 @@ public class DataGroupValidatorTest {
 		collection.addItemReference("deathYearId");
 
 		// Two child collections, holds one item each
-		CollectionVariableChild birthColVar = new CollectionVariableChild("birthDateTypeId",
-				"dateType", "Text", "DefText", "birthDateTypeCollectionId", "dateTypeId");
+		CollectionVariable birthColVar = new CollectionVariable("birthDateTypeId", "dateType",
+				"Text", "DefText", "birthDateTypeCollectionId");
+		birthColVar.setRefParentId("dateTypeId");
 		metadataHolder.addMetadataElement(birthColVar);
-		CollectionVariableChild deathColVar = new CollectionVariableChild("deathDateTypeId",
-				"dateType", "Text", "DefText", "deathDateTypeCollectionId", "dateTypeId");
+		CollectionVariable deathColVar = new CollectionVariable("deathDateTypeId", "dateType",
+				"Text", "DefText", "deathDateTypeCollectionId");
+		deathColVar.setRefParentId("dateTypeId");
 		metadataHolder.addMetadataElement(deathColVar);
 
 		ItemCollection birthCollection = new ItemCollection("birthDateTypeCollectionId",

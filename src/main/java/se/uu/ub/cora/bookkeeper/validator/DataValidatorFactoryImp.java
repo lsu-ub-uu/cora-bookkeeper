@@ -20,12 +20,10 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroupChild;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataValidatorFactoryImp implements DataValidatorFactory {
@@ -40,17 +38,11 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 	public DataElementValidator factor(String elementId) {
 		MetadataElement metadataElement = metadataHolder.getMetadataElement(elementId);
 
-		if (metadataElement instanceof MetadataGroupChild
-				|| metadataElement instanceof MetadataGroup) {
-			// same validator for childGroup as group
+		if (metadataElement instanceof MetadataGroup) {
 			return new DataGroupValidator(this, metadataHolder, (MetadataGroup) metadataElement);
 		}
 		if (metadataElement instanceof TextVariable) {
 			return new DataTextVariableValidator((TextVariable) metadataElement);
-		}
-		if (metadataElement instanceof CollectionVariableChild) {
-			return new DataCollectionVariableChildValidator(metadataHolder,
-					(CollectionVariableChild) metadataElement);
 		}
 		if (metadataElement instanceof CollectionVariable) {
 			return new DataCollectionVariableValidator(metadataHolder,

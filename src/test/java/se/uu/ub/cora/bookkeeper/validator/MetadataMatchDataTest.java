@@ -29,12 +29,10 @@ import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 
 public class MetadataMatchDataTest {
 	private static final String NAME_IN_DATA = "nameInData";
@@ -111,12 +109,12 @@ public class MetadataMatchDataTest {
 				"collectionVariableDefTextId", "itemCollectionId");
 		metadataHolder.addMetadataElement(collectionVariable);
 
-		CollectionVariableChild collectionVariableChild = new CollectionVariableChild(
+		CollectionVariable collectionVariableChild = new CollectionVariable(
 				"collectionVariableChildId", "collectionVariableNameInData",
 				"collectionVariableChildTextId", "collectionVariableChildDefTextId",
-				"itemCollectionId", "collectionVariableId");
+				"itemCollectionId");
 		metadataHolder.addMetadataElement(collectionVariableChild);
-
+		collectionVariableChild.setRefParentId("collectionVariableId");
 		collectionVariableChild.setFinalValue("collectionItem2NameInData");
 	}
 
@@ -212,12 +210,12 @@ public class MetadataMatchDataTest {
 				"collectionVariableDefTextId", "itemCollectionId");
 		metadataHolder.addMetadataElement(collectionVariable);
 
-		CollectionVariableChild collectionVariableChild = new CollectionVariableChild(
+		CollectionVariable collectionVariableChild = new CollectionVariable(
 				"collectionVariableChild3Id", "collectionVariable3NameInData",
 				"collectionVariableChild3TextId", "collectionVariableChild3DefTextId",
-				"itemCollectionId", "collectionVariable3Id");
+				"itemCollectionId");
 		metadataHolder.addMetadataElement(collectionVariableChild);
-
+		collectionVariableChild.setRefParentId("collectionVariable3Id");
 		collectionVariableChild.setFinalValue("collectionItem3NameInData");
 	}
 }

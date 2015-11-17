@@ -19,16 +19,15 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroupChild;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-
-import static org.testng.Assert.assertTrue;
 
 public class DataValidatorFactoryTest {
 	@Test
@@ -38,17 +37,6 @@ public class DataValidatorFactoryTest {
 				"metadataGroupId", "nameInData", "textId", "defTextId"));
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("metadataGroupId");
-		assertTrue(dataGroupValidator instanceof DataGroupValidator);
-	}
-
-	@Test
-	public void testFactorDataValidatorMetadataGroupChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(new MetadataGroupChild("metadataGroupChildId",
-				"nameInData", "textId", "defTextId", "metadataGroupId"));
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataGroupValidator = dataValidatorFactory
-				.factor("metadataGroupChildId");
 		assertTrue(dataGroupValidator instanceof DataGroupValidator);
 	}
 
@@ -87,18 +75,6 @@ public class DataValidatorFactoryTest {
 		DataElementValidator dataGroupValidator = dataValidatorFactory
 				.factor("collectionVariableId");
 		assertTrue(dataGroupValidator instanceof DataCollectionVariableValidator);
-	}
-
-	@Test
-	public void testFactorDataValidatorMetadataCollectionVariableChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(new CollectionVariableChild("collectionVariableId",
-				"nameInData", "textId", "defTextId", "collectionId", "scollectionId"));
-
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataGroupValidator = dataValidatorFactory
-				.factor("collectionVariableId");
-		assertTrue(dataGroupValidator instanceof DataCollectionVariableChildValidator);
 	}
 
 	@Test(expectedExceptions = DataValidationException.class)

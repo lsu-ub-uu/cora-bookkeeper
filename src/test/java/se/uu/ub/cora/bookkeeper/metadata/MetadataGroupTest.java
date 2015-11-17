@@ -19,18 +19,26 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 public class MetadataGroupTest {
+	private MetadataGroup metadataGroup;
+
+	@BeforeMethod
+	public void setUp() {
+		metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id", "nameInData",
+				"textId", "defTextId");
+
+	}
+
 	@Test
 	public void testInit() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
-				"nameInData", "textId", "defTextId");
-
-		assertEquals(metadataGroup.getId(), "id", "Id should have the value set in the constructor");
+		assertEquals(metadataGroup.getId(), "id",
+				"Id should have the value set in the constructor");
 
 		assertEquals(metadataGroup.getNameInData(), "nameInData",
 				"NameInData should have the value set in the constructor");
@@ -49,18 +57,20 @@ public class MetadataGroupTest {
 	}
 
 	@Test
+	public void testAddRefParentId() {
+		metadataGroup.setRefParentId("refParentId");
+		assertEquals(metadataGroup.getRefParentId(), "refParentId");
+	}
+
+	@Test
 	public void testAddAttributeReference() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
-				"nameInData", "textId", "defTextId");
 		metadataGroup.addAttributeReference("attributeReference");
-		assertEquals(metadataGroup.getAttributeReferences().iterator().next(),
-				"attributeReference", "AttributeReference should be the same as the one added");
+		assertEquals(metadataGroup.getAttributeReferences().iterator().next(), "attributeReference",
+				"AttributeReference should be the same as the one added");
 	}
 
 	@Test
 	public void testAddChildReference() {
-		MetadataGroup metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
-				"nameInData", "textId", "defTextId");
 		MetadataChildReference metadataChildReference = MetadataChildReference
 				.withReferenceIdAndRepeatMinAndRepeatMax("aChildReference", 1,
 						MetadataChildReference.UNLIMITED);
