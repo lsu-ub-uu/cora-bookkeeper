@@ -19,10 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import org.testng.annotations.Test;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-
 import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DataGroupToMetadataConverterFactoryTest {
 	@Test(expectedExceptions = DataConversionException.class)
@@ -51,16 +52,6 @@ public class DataGroupToMetadataConverterFactoryTest {
 				.fromDataGroup(dataGroup);
 		DataGroupToMetadataConverter converter = converterFactory.factor();
 		assertTrue(converter instanceof DataGroupToMetadataGroupConverter);
-	}
-
-	@Test
-	public void testFactorGroupChild() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
-		dataGroup.addAttributeByIdWithValue("type", "groupChild");
-		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
-		assertTrue(converter instanceof DataGroupToMetadataGroupChildConverter);
 	}
 
 	@Test

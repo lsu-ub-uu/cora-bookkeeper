@@ -41,6 +41,7 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 	@Override
 	public MetadataGroup toMetadata() {
 		createMetadataGroupWithBasicInfo();
+		convertRefParentId();
 		convertAttributeReferences();
 		convertChildReferences();
 		return metadataGroup;
@@ -52,8 +53,15 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
-		metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData, textId,
-				defTextId);
+		metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData,
+				textId, defTextId);
+	}
+
+	private void convertRefParentId() {
+		if (dataGroup.containsChildWithNameInData("refParentId")) {
+			metadataGroup
+					.setRefParentId(dataGroup.getFirstAtomicValueWithNameInData("refParentId"));
+		}
 	}
 
 	private void convertAttributeReferences() {
