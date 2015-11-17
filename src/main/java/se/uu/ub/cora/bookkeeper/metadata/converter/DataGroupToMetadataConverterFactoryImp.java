@@ -54,9 +54,6 @@ public final class DataGroupToMetadataConverterFactoryImp
 		if ("collectionVariable".equals(type)) {
 			return DataGroupToCollectionVariableConverter.fromDataGroup(dataGroup);
 		}
-		if ("collectionVariableChild".equals(type)) {
-			return DataGroupToCollectionVariableChildConverter.fromDataGroup(dataGroup);
-		}
 		if ("itemCollection".equals(type)) {
 			return DataGroupToItemCollectionConverter.fromDataGroup(dataGroup);
 		}

@@ -20,7 +20,8 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 /**
- * CollectionVariable is the metadataformat class that handles Regular Expressions
+ * CollectionVariable is the metadataformat class that handles Regular
+ * Expressions
  * 
  * @author olov
  * @since 7.0.0
@@ -28,6 +29,8 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public class CollectionVariable extends MetadataElement {
 
 	private String refCollectionId;
+	private String refParentId;
+	private String finalValue;
 
 	public CollectionVariable(String id, String nameInData, String textId, String defTextId,
 			String refCollectionId) {
@@ -37,5 +40,22 @@ public class CollectionVariable extends MetadataElement {
 
 	public String getRefCollectionId() {
 		return refCollectionId;
+	}
+
+	public void setRefParentId(String refParentId) {
+		this.refParentId = refParentId;
+
+	}
+
+	public String getRefParentId() {
+		return refParentId;
+	}
+
+	public void setFinalValue(String finalValue) {
+		this.finalValue = finalValue;
+	}
+
+	public String getFinalValue() {
+		return finalValue;
 	}
 }

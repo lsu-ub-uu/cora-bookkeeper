@@ -19,27 +19,42 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class CollectionVariableTest {
+	private CollectionVariable colVar;
+
+	@BeforeMethod
+	public void setUp() {
+		colVar = new CollectionVariable("id", "nameInData", "textId", "defTextId", "refCollection");
+	}
+
 	@Test
 	public void testInit() {
-		CollectionVariable colVar = new CollectionVariable("id", "nameInData", "textId", "defTextId",
-				"refCollection");
 
-		Assert.assertEquals(colVar.getId(), "id", "Id should have the value set in the constructor");
-
-		Assert.assertEquals(colVar.getNameInData(), "nameInData",
+		assertEquals(colVar.getId(), "id", "Id should have the value set in the constructor");
+		assertEquals(colVar.getNameInData(), "nameInData",
 				"NameInData should have the value set in the constructor");
-
-		Assert.assertEquals(colVar.getTextId(), "textId",
+		assertEquals(colVar.getTextId(), "textId",
 				"TextId should have the value set in the constructor");
-
-		Assert.assertEquals(colVar.getDefTextId(), "defTextId",
+		assertEquals(colVar.getDefTextId(), "defTextId",
 				"DefTextId should have the value set in the constructor");
-
-		Assert.assertEquals(colVar.getRefCollectionId(), "refCollection",
+		assertEquals(colVar.getRefCollectionId(), "refCollection",
 				"RefCollectionId should have the value set in the constructor");
+	}
+
+	@Test
+	public void testWithRefParentId() {
+		colVar.setRefParentId("refParentId");
+		assertEquals(colVar.getRefParentId(), "refParentId");
+	}
+
+	@Test
+	public void testWithFinalValue() {
+		colVar.setFinalValue("finalValue");
+		assertEquals(colVar.getFinalValue(), "finalValue");
 	}
 }

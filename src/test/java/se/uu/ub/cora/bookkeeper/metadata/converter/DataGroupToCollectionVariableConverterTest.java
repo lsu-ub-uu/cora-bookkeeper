@@ -19,16 +19,29 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 
-import static org.testng.Assert.assertEquals;
-
 public class DataGroupToCollectionVariableConverterTest {
 	@Test
 	public void testToMetadata() {
+		DataGroup dataGroup = createDataGroup();
+
+		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
+				.fromDataGroup(dataGroup);
+		CollectionVariable collectionVariable = converter.toMetadata();
+
+		assertBasicCollectionVariableValuesAreCorrect(collectionVariable);
+		assertEquals(collectionVariable.getFinalValue(), null);
+		assertEquals(collectionVariable.getRefParentId(), null);
+	}
+
+	private DataGroup createDataGroup() {
 		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionVar");
 
@@ -40,16 +53,41 @@ public class DataGroupToCollectionVariableConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refCollectionId", "refCollection"));
+		return dataGroup;
+	}
 
-		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
-				.fromDataGroup(dataGroup);
-		CollectionVariable collectionVariable = converter.toMetadata();
-
+	private void assertBasicCollectionVariableValuesAreCorrect(
+			CollectionVariable collectionVariable) {
 		assertEquals(collectionVariable.getId(), "otherId");
 		assertEquals(collectionVariable.getNameInData(), "other");
 		assertEquals(collectionVariable.getTextId(), "otherTextId");
 		assertEquals(collectionVariable.getDefTextId(), "otherDefTextId");
 		assertEquals(collectionVariable.getRefCollectionId(), "refCollection");
+	}
 
+	@Test
+	public void testToMetadataWithRefParentId() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "refParentId"));
+
+		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
+				.fromDataGroup(dataGroup);
+		CollectionVariable collectionVariable = converter.toMetadata();
+
+		assertBasicCollectionVariableValuesAreCorrect(collectionVariable);
+		assertEquals(collectionVariable.getRefParentId(), "refParentId");
+	}
+
+	@Test
+	public void testToMetadataWithFinalValue() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("finalValue", "finalValue"));
+
+		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
+				.fromDataGroup(dataGroup);
+		CollectionVariable collectionVariable = converter.toMetadata();
+
+		assertBasicCollectionVariableValuesAreCorrect(collectionVariable);
+		assertEquals(collectionVariable.getFinalValue(), "finalValue");
 	}
 }

@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
@@ -44,10 +43,6 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 		}
 		if (metadataElement instanceof TextVariable) {
 			return new DataTextVariableValidator((TextVariable) metadataElement);
-		}
-		if (metadataElement instanceof CollectionVariableChild) {
-			return new DataCollectionVariableChildValidator(metadataHolder,
-					(CollectionVariableChild) metadataElement);
 		}
 		if (metadataElement instanceof CollectionVariable) {
 			return new DataCollectionVariableValidator(metadataHolder,

@@ -75,16 +75,6 @@ public class DataGroupToMetadataConverterFactoryTest {
 	}
 
 	@Test
-	public void testFactorCollectionVariableChild() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
-		dataGroup.addAttributeByIdWithValue("type", "collectionVariableChild");
-		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
-		assertTrue(converter instanceof DataGroupToCollectionVariableChildConverter);
-	}
-
-	@Test
 	public void testFactorItemCollection() {
 		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");

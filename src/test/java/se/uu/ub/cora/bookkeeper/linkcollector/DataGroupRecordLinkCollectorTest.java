@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
+import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
@@ -333,17 +333,11 @@ public class DataGroupRecordLinkCollectorTest {
 		addMetadataForOneGroupWithNoLink("toptop");
 		addChildReferenceParentIdChildIdMinMax("toptopGroup", "topGroup", 1, 2);
 
-		// TextVariable attribute1 = TextVariable
-		// .withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("attribute1",
-		// "attribute1", "textId", "defTextId", "attrValue");
-
-		// metadataHolder.addMetadataElement(attribute1);
-
-		CollectionVariableChild collectionVariableChild = new CollectionVariableChild("attribute1",
-				"attribute1", "textId", "defTextId", "itemCollectionId", "collectionVariableId");
-		metadataHolder.addMetadataElement(collectionVariableChild);
-
-		collectionVariableChild.setFinalValue("attrValue");
+		CollectionVariable collectionVariable = new CollectionVariable("attribute1", "attribute1",
+				"textId", "defTextId", "itemCollectionId");
+		metadataHolder.addMetadataElement(collectionVariable);
+		collectionVariable.setRefParentId("collectionVariableId");
+		collectionVariable.setFinalValue("attrValue");
 
 		MetadataGroup toptopGroup = (MetadataGroup) metadataHolder.getMetadataElement("topGroup");
 		toptopGroup.addAttributeReference("attribute1");

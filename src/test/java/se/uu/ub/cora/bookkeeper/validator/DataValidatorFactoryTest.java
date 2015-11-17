@@ -24,7 +24,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariableChild;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
@@ -76,18 +75,6 @@ public class DataValidatorFactoryTest {
 		DataElementValidator dataGroupValidator = dataValidatorFactory
 				.factor("collectionVariableId");
 		assertTrue(dataGroupValidator instanceof DataCollectionVariableValidator);
-	}
-
-	@Test
-	public void testFactorDataValidatorMetadataCollectionVariableChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(new CollectionVariableChild("collectionVariableId",
-				"nameInData", "textId", "defTextId", "collectionId", "scollectionId"));
-
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataGroupValidator = dataValidatorFactory
-				.factor("collectionVariableId");
-		assertTrue(dataGroupValidator instanceof DataCollectionVariableChildValidator);
 	}
 
 	@Test(expectedExceptions = DataValidationException.class)
