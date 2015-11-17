@@ -48,7 +48,7 @@ class DataGroupValidator implements DataElementValidator {
 	/**
 	 * validateData validates that the entered dataGroup is correct according to
 	 * this validators metadataGroup
-	 * 
+	 *
 	 * @param dataGroup
 	 *            A DataGroup to validate
 	 * @return A ValidationAnswer with information if the dataGroup has valid
@@ -155,8 +155,9 @@ class DataGroupValidator implements DataElementValidator {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
 		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
+}
+		
 
-	}
 
 	private void validateNoRepeatId(DataElement childData) {
 		String repeatId = childData.getRepeatId();
@@ -179,8 +180,8 @@ class DataGroupValidator implements DataElementValidator {
 	private void validateDataContainsNoUnspecifiedChildren() {
 		for (DataElement childData : dataGroup.getChildren()) {
 			if (!isChildDataSpecifiedInMetadataGroup(childData)) {
-				validationAnswer.addErrorMessage("Metadata for child with " + "nameInData: "
-						+ childData.getNameInData() + " can not be found in metadata.");
+				validationAnswer.addErrorMessage("Could not find metadata for child with nameInData: "
+						+ childData.getNameInData() + " and a matching set of attributes.");
 			}
 		}
 	}

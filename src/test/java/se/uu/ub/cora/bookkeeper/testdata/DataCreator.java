@@ -39,14 +39,21 @@ public class DataCreator
         return group;
     }
 
-    public static void addAttributeReferenceToGroup(MetadataGroup group, String attributeReference){
-        group.addAttributeReference(attributeReference);
+    public static MetadataGroup createMetaDataGroupWithIdAndNameInNData(String id, String nameInData, MetadataHolder metadataHolder)
+    {
+        MetadataGroup group = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id,
+                nameInData, id + "GroupText", id + "GroupDefText");
+        metadataHolder.addMetadataElement(group);
+        return group;
     }
 
-    public static void addChildReferenceToGroup(MetadataGroup group, MetadataChildReference childReference)
+    public static void addDataGroupAsMetadataChildReferenceToParent(MetadataGroup child, MetadataGroup parent)
     {
-        group.addChildReference(childReference);
+        MetadataChildReference linkChild = MetadataChildReference
+                .withReferenceIdAndRepeatMinAndRepeatMax(child.getId(), 1, 1);
+        parent.addChildReference(linkChild);
     }
+
 
     public static void addRecordLinkChildReferenceToGroup(String id, MetadataGroup group, MetadataHolder metadataHolder)
     {
