@@ -26,6 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 public class DataTextVariableValidator implements DataElementValidator {
 
 	private TextVariable textVariable;
+	private String dataValue;
 
 	public DataTextVariableValidator(TextVariable textVariable) {
 		this.textVariable = textVariable;
@@ -34,16 +35,47 @@ public class DataTextVariableValidator implements DataElementValidator {
 	@Override
 	public ValidationAnswer validateData(DataElement dataElement) {
 		DataAtomic dataAtomic = (DataAtomic) dataElement;
+		dataValue = dataAtomic.getValue();
+		if (finalValueIsDefinedInMetadata()) {
+			return validateDataValueIsFinalValue();
+		}
+		return validateDataValueIsValidAccordingToRegEx();
+	}
+
+	private boolean finalValueIsDefinedInMetadata() {
+		return null != textVariable.getFinalValue();
+	}
+
+	private ValidationAnswer validateDataValueIsFinalValue() {
+		if (dataValueIsFinalValue()) {
+			return new ValidationAnswer();
+		}
+		return createErrorMessageForFinalValue();
+	}
+
+	private boolean dataValueIsFinalValue() {
+		return textVariable.getFinalValue().equals(dataValue);
+	}
+
+	private ValidationAnswer createErrorMessageForFinalValue() {
 		ValidationAnswer validationAnswer = new ValidationAnswer();
-		if (!dataIsValidAccordingToRegEx(dataAtomic)) {
-			validationAnswer.addErrorMessage("TextVariable with nameInData:" + dataAtomic.getNameInData()
-					+ " is NOT valid, regular expression(" + textVariable.getRegularExpression()
-					+ ") does not match:" + dataAtomic.getValue());
+		validationAnswer.addErrorMessage(
+				"Value:" + dataValue + " is not finalValue:" + textVariable.getFinalValue());
+		return validationAnswer;
+	}
+
+	private ValidationAnswer validateDataValueIsValidAccordingToRegEx() {
+		ValidationAnswer validationAnswer = new ValidationAnswer();
+		if (!dataIsValidAccordingToRegEx()) {
+			validationAnswer.addErrorMessage("TextVariable with nameInData:"
+					+ textVariable.getNameInData() + " is NOT valid, regular expression("
+					+ textVariable.getRegularExpression() + ") does not match:" + dataValue);
 		}
 		return validationAnswer;
 	}
 
-	private boolean dataIsValidAccordingToRegEx(DataAtomic dataElement) {
-		return dataElement.getValue().matches(textVariable.getRegularExpression());
+	private boolean dataIsValidAccordingToRegEx() {
+		return dataValue.matches(textVariable.getRegularExpression());
 	}
+
 }

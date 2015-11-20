@@ -19,18 +19,24 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 public class TextVariableTest {
+	private TextVariable textVar;
+	private String regularExpression;
+
+	@BeforeMethod
+	public void setUp() {
+		regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
+		textVar = TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id",
+				"nameInData", "textId", "defTextId", regularExpression);
+	}
+
 	@Test
 	public void testRegExVariableInit() {
-		String regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
-		TextVariable textVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id", "nameInData", "textId",
-						"defTextId", regularExpression);
-
 		assertEquals(textVar.getId(), "id", "Id should have the value set in the constructor");
 
 		assertEquals(textVar.getNameInData(), "nameInData",
@@ -44,5 +50,17 @@ public class TextVariableTest {
 
 		assertEquals(textVar.getRegularExpression(), regularExpression,
 				"RegularExpression should have the value set in the constructor");
+	}
+
+	@Test
+	public void testWithRefParentId() {
+		textVar.setRefParentId("refParentId");
+		assertEquals(textVar.getRefParentId(), "refParentId");
+	}
+
+	@Test
+	public void testWithFinalValue() {
+		textVar.setFinalValue("finalValue");
+		assertEquals(textVar.getFinalValue(), "finalValue");
 	}
 }

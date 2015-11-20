@@ -20,7 +20,8 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 /**
- * TextVariable is the class that handles metadata for a RegularExpression variable
+ * TextVariable is the class that handles metadata for a RegularExpression
+ * variable
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -30,9 +31,12 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public final class TextVariable extends MetadataElement {
 
 	private final String regularExpression;
+	private String refParentId;
+	private String finalValue;
 
-	public static TextVariable withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(String id,
-			String nameInData, String textId, String defTextId, String regularExpression) {
+	public static TextVariable withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
+			String id, String nameInData, String textId, String defTextId,
+			String regularExpression) {
 		return new TextVariable(id, nameInData, textId, defTextId, regularExpression);
 	}
 
@@ -44,6 +48,22 @@ public final class TextVariable extends MetadataElement {
 
 	public String getRegularExpression() {
 		return regularExpression;
+	}
+
+	public void setRefParentId(String refParentId) {
+		this.refParentId = refParentId;
+	}
+
+	public String getRefParentId() {
+		return refParentId;
+	}
+
+	public void setFinalValue(String finalValue) {
+		this.finalValue = finalValue;
+	}
+
+	public String getFinalValue() {
+		return finalValue;
 	}
 
 }

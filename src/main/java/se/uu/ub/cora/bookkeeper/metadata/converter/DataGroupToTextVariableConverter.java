@@ -44,8 +44,26 @@ public final class DataGroupToTextVariableConverter implements DataGroupToMetada
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 		String regularExpression = dataGroup.getFirstAtomicValueWithNameInData("regEx");
 
-		return TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id, nameInData,
-				textId, defTextId, regularExpression);
+		TextVariable textVariable = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id, nameInData,
+						textId, defTextId, regularExpression);
+		convertRefParentId(textVariable);
+		convertFinalValue(textVariable);
+
+		return textVariable;
 	}
 
+	private void convertRefParentId(TextVariable textVariable) {
+		if (dataGroup.containsChildWithNameInData("refParentId")) {
+			String refParentId = dataGroup.getFirstAtomicValueWithNameInData("refParentId");
+			textVariable.setRefParentId(refParentId);
+		}
+	}
+
+	private void convertFinalValue(TextVariable textVariable) {
+		if (dataGroup.containsChildWithNameInData("finalValue")) {
+			String finalValue = dataGroup.getFirstAtomicValueWithNameInData("finalValue");
+			textVariable.setFinalValue(finalValue);
+		}
+	}
 }

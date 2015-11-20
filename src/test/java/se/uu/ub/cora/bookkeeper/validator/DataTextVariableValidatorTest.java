@@ -19,22 +19,24 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+
 public class DataTextVariableValidatorTest {
 	private DataElementValidator textDataValidator;
+	private TextVariable textVariable;
 
 	@BeforeMethod
 	public void setUp() {
-		TextVariable textVariable = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id", "nameInData", "textId",
-						"defTextId", "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}");
+		textVariable = TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
+				"id", "nameInData", "textId", "defTextId",
+				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}");
 
 		textDataValidator = new DataTextVariableValidator(textVariable);
 	}
@@ -52,4 +54,21 @@ public class DataTextVariableValidatorTest {
 		assertFalse(textDataValidator.validateData(data).dataIsValid(),
 				"The regular expression should be validated to false");
 	}
+
+	@Test
+	public void testValidateFinalValueValidData() {
+		textVariable.setFinalValue("12:12");
+		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", "12:12");
+
+		assertTrue(textDataValidator.validateData(data).dataIsValid());
+	}
+
+	@Test
+	public void testValidateFinalValueInvalidData() {
+		textVariable.setFinalValue("12:12");
+		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", "12:10");
+
+		assertFalse(textDataValidator.validateData(data).dataIsValid());
+	}
+
 }

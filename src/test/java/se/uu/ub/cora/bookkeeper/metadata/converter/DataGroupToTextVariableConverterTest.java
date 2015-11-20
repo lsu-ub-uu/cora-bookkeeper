@@ -19,16 +19,44 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
-import static org.testng.Assert.assertEquals;
-
 public class DataGroupToTextVariableConverterTest {
+	@BeforeMethod
+	public void setUp() {
+
+	}
+
 	@Test
 	public void testToMetadata() {
+		DataGroup dataGroup = createDataGroup();
+
+		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
+				.fromDataGroup(dataGroup);
+		TextVariable textVariable = converter.toMetadata();
+
+		assertBasicTextVariableValuesAreCorrect(textVariable);
+		assertEquals(textVariable.getRefParentId(), null);
+		assertEquals(textVariable.getFinalValue(), null);
+	}
+
+	private void assertBasicTextVariableValuesAreCorrect(TextVariable textVariable) {
+		assertEquals(textVariable.getId(), "otherId");
+		assertEquals(textVariable.getNameInData(), "other");
+		assertEquals(textVariable.getTextId(), "otherTextId");
+		assertEquals(textVariable.getDefTextId(), "otherDefTextId");
+		assertEquals(textVariable.getRegularExpression(),
+				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}");
+	}
+
+	private DataGroup createDataGroup() {
 		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "textVar");
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
@@ -42,16 +70,32 @@ public class DataGroupToTextVariableConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
+		return dataGroup;
+	}
+
+	@Test
+	public void testToMetadataWithRefParentId() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "refParentId"));
 
 		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
 				.fromDataGroup(dataGroup);
 		TextVariable textVariable = converter.toMetadata();
 
-		assertEquals(textVariable.getId(), "otherId");
-		assertEquals(textVariable.getNameInData(), "other");
-		assertEquals(textVariable.getTextId(), "otherTextId");
-		assertEquals(textVariable.getDefTextId(), "otherDefTextId");
-		assertEquals(textVariable.getRegularExpression(),
-				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}");
+		assertBasicTextVariableValuesAreCorrect(textVariable);
+		assertEquals(textVariable.getRefParentId(), "refParentId");
+	}
+
+	@Test
+	public void testToMetadataWithFinalValue() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("finalValue", "finalValue"));
+
+		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
+				.fromDataGroup(dataGroup);
+		TextVariable textVariable = converter.toMetadata();
+
+		assertBasicTextVariableValuesAreCorrect(textVariable);
+		assertEquals(textVariable.getFinalValue(), "finalValue");
 	}
 }
