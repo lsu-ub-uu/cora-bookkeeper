@@ -21,10 +21,13 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -65,8 +68,7 @@ class DataGroupValidator implements DataElementValidator {
 
 	private void validateNameInDataAndAttributes(DataElement dataGroup) {
 		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
-		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(metadataGroup,
-				dataGroup);
+		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(metadataGroup, dataGroup);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
 
@@ -141,8 +143,8 @@ class DataGroupValidator implements DataElementValidator {
 	private void validateRepeatMinAndMax(MetadataChildReference childReference, int childrenFound) {
 		String referenceId = childReference.getReferenceId();
 		if (childrenFound < childReference.getRepeatMin()) {
-			validationAnswer.addErrorMessage(
-					"Did not find enough data children with referenceId: " + referenceId + ".");
+			validationAnswer.addErrorMessage("Did not find enough data children with referenceId: "
+					+ referenceId + getReferenceText(referenceId) + ".");
 		}
 		if (childrenFound > childReference.getRepeatMax()) {
 			validationAnswer.addErrorMessage(
@@ -150,14 +152,42 @@ class DataGroupValidator implements DataElementValidator {
 		}
 	}
 
+	private String getReferenceText(String referenceId) {
+		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
+		StringBuilder sb = new StringBuilder();
+		sb.append("(with nameInData:");
+		sb.append(childElement.getNameInData());
+		sb.append(getAttributesTextForMetadata(childElement));
+		return sb.toString();
+	}
+
+	private String getAttributesTextForMetadata(MetadataElement childElement) {
+		if (childElement.getAttributeReferences().isEmpty()) {
+			return "";
+		}
+		return getTextForExistingMetadataAttributes(childElement);
+	}
+
+	private String getTextForExistingMetadataAttributes(MetadataElement childElement) {
+		StringJoiner joiner = new StringJoiner(", ");
+		for (String attributeRef : childElement.getAttributeReferences()) {
+			CollectionVariable attributeElement = (CollectionVariable) metadataHolder
+					.getMetadataElement(attributeRef);
+
+			joiner.add(attributeElement.getNameInData() + ":" + attributeElement.getFinalValue());
+		}
+		return " and attributes: " + joiner.toString();
+	}
+
 	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
 			String referenceId) {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
+		if (childElement == null) {
+			throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
+		}
 		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
-}
-		
-
+	}
 
 	private void validateNoRepeatId(DataElement childData) {
 		String repeatId = childData.getRepeatId();
@@ -180,8 +210,9 @@ class DataGroupValidator implements DataElementValidator {
 	private void validateDataContainsNoUnspecifiedChildren() {
 		for (DataElement childData : dataGroup.getChildren()) {
 			if (!isChildDataSpecifiedInMetadataGroup(childData)) {
-				validationAnswer.addErrorMessage("Could not find metadata for child with nameInData: "
-						+ childData.getNameInData() + " and a matching set of attributes.");
+				validationAnswer
+						.addErrorMessage("Could not find metadata for child with nameInData: "
+								+ childData.getNameInData() + getAttributesText(childData));
 			}
 		}
 	}
@@ -195,5 +226,20 @@ class DataGroupValidator implements DataElementValidator {
 			}
 		}
 		return false;
+	}
+
+	private String getAttributesText(DataElement childData) {
+		if (childData.getAttributes().isEmpty()) {
+			return "";
+		}
+		return getTextForExistingDataAttributes(childData);
+	}
+
+	private String getTextForExistingDataAttributes(DataElement childData) {
+		StringJoiner joiner = new StringJoiner(", ");
+		for (Entry<String, String> entry : childData.getAttributes().entrySet()) {
+			joiner.add(entry.getKey() + ":" + entry.getValue());
+		}
+		return " and attributes: " + joiner.toString();
 	}
 }

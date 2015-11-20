@@ -57,6 +57,13 @@ public class DataGroupValidatorTest {
 		return dataValidatorFactory.factor("testGroupId");
 	}
 
+	private MetadataHolder createOneGroupNoAttributesOneTextChild() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
+		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group, metadataHolder);
+		return metadataHolder;
+	}
+
 	@Test
 	public void testOneGroupNoAttributesOneTextChildValidData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
@@ -66,6 +73,22 @@ public class DataGroupValidatorTest {
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
 				"The group should be valid");
+	}
+
+	@Test(expectedExceptions = DataValidationException.class)
+	public void testMetadataGroupThatRefersToMetadataChildThatDoesNotExist() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
+		MetadataChildReference groupChild = MetadataChildReference
+				.withReferenceIdAndRepeatMinAndRepeatMax("IdToChildThatDoesNotExist", 1, 1);
+		group.addChildReference(groupChild);
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator dataElementValidator = new DataGroupValidator(
+				(DataValidatorFactoryImp) dataValidatorFactory, metadataHolder, group);
+
+		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("NOT_text1NameInData", "10:10"));
+		dataElementValidator.validateData(dataGroup);
 	}
 
 	@Test
@@ -135,13 +158,6 @@ public class DataGroupValidatorTest {
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not be valid, as it has too many children");
-	}
-
-	private MetadataHolder createOneGroupNoAttributesOneTextChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
-		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
-		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group, metadataHolder);
-		return metadataHolder;
 	}
 
 	@Test
