@@ -43,7 +43,7 @@ public class PresentationVariable implements PresentationElement {
 		return mode;
 	}
 
-	public static enum Mode {
+	public enum Mode {
 		INPUT("input"), OUTPUT("output");
 		private String value;
 

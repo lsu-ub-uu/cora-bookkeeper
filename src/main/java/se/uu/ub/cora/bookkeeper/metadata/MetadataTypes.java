@@ -24,7 +24,7 @@ public enum MetadataTypes {
 			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
 					"metadataCollectionItem"), RECORDLINK("metadataRecordLink");
 
-	private MetadataTypes(String type) {
+	MetadataTypes(String type) {
 		this.type = type;
 	}
 
