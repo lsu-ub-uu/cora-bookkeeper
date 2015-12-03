@@ -29,6 +29,7 @@ import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterF
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 
+
 public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 
 	private MetadataStorage metadataStorage;
@@ -45,11 +46,12 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 		DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
 				fromRecordType, fromRecordId);
-		List<DataGroup> collectedLinks = collector.collectLinks(metadataId, dataGroup);
-		for (DataGroup collectedLink : collectedLinks) {
-			collectedDataLinks.addChild(collectedLink);
-		}
-		return collectedDataLinks;
+//		List<DataGroup> collectedLinks = collector.collectLinks(metadataId, dataGroup);
+//		for (DataGroup collectedLink : collectedLinks) {
+//			collectedDataLinks.addChild(collectedLink);
+//		}
+//		return collectedDataLinks;
+		return null;
 	}
 
 	private void getMetadataFromStorage() {

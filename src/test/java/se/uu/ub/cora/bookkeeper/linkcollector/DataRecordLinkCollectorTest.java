@@ -25,7 +25,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
+//import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 
@@ -51,20 +51,20 @@ public class DataRecordLinkCollectorTest {
 		assertTrue(collectedLinks.getChildren().isEmpty());
 	}
 
-	@Test
-	public void testCollectLinksGroupWithOneLink() {
-		// data
-		DataGroup dataGroup = DataGroup.withNameInData("bush");
-		DataRecordLink dataTestLink = DataRecordLink
-				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "bush", "bush1");
-		dataGroup.addChild(dataTestLink);
-
-		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
-				"recordId");
-
-		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
-		List<DataElement> linkList = collectedLinks.getChildren();
-		assertEquals(linkList.size(), 1);
-
-	}
+//	@Test
+//	public void testCollectLinksGroupWithOneLink() {
+//		// data
+//		DataGroup dataGroup = DataGroup.withNameInData("bush");
+//		DataRecordLink dataTestLink = DataRecordLink
+//				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("testLink", "bush", "bush1");
+//		dataGroup.addChild(dataTestLink);
+//
+//		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
+//				"recordId");
+//
+//		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
+//		List<DataElement> linkList = collectedLinks.getChildren();
+//		assertEquals(linkList.size(), 1);
+//
+//	}
 }

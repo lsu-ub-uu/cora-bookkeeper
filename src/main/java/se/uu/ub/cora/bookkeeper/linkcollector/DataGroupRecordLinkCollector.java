@@ -22,9 +22,9 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -131,9 +131,15 @@ public class DataGroupRecordLinkCollector {
 		linkList.add(recordToRecordLink);
 	}
 
-	private DataRecordLink createFromPart(DataElement dataElement, DataGroup fromPath) {
-		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"from", fromRecordType, fromRecordId);
+	private DataGroup createFromPart(DataElement dataElement, DataGroup fromPath) {
+		DataGroup from = DataGroup.withNameInData("from");
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", fromRecordType);
+		from.addChild(linkedRecordType);
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", fromRecordId);
+		from.addChild(linkedRecordId);
+
+//		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+//				"from", fromRecordType, fromRecordId);
 		from.setLinkedRepeatId(dataElement.getRepeatId());
 		from.setLinkedPath(fromPath);
 		return from;

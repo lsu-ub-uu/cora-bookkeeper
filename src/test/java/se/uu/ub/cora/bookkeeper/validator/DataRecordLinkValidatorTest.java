@@ -21,8 +21,8 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 import static org.testng.Assert.assertEquals;
@@ -41,16 +41,26 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidate() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
+	private DataGroup createGroupWithNameInDataAndRecordTypeAndRecordId(String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
+		DataGroup dataRecordLink = DataGroup.withNameInData(nameInData);
+
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordTypeString);
+		dataRecordLink.addChild(linkedRecordType);
+
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordIdString);
+		dataRecordLink.addChild(linkedRecordId);
+		return dataRecordLink;
+	}
+
 	@Test
 	public void testValidateRecordType() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "notMyRecordType", "linkedRecordId");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "notMyRecordType", "myLinkedRecordId");
+
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
@@ -58,8 +68,8 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateEmptyNameInData() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("",
-				"linkedRecordType", "linkedRecordId");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("", "linkedRecordType", "myLinkedRecordId");
+
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
@@ -67,8 +77,8 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateEmptyRecordType() {
-		DataRecordLink dataRecordLink = DataRecordLink
-				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "", "linkedRecordId");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "", "myLinkedRecordId");
+
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 2);
 		assertTrue(validationAnswer.dataIsInvalid());
@@ -76,8 +86,8 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateEmptyRecordId() {
-		DataRecordLink dataRecordLink = DataRecordLink
-				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "linkedRecordType", "");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "");
+
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
@@ -87,9 +97,9 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
-		dataRecordLink.setLinkedRepeatId("x1");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "x1");
+		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
@@ -99,8 +109,7 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedMissingRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -111,9 +120,9 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedEmptyRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
-		dataRecordLink.setLinkedRepeatId("");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "");
+		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -122,9 +131,9 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testLinkedRepeatIdShouldNotExist() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
-		dataRecordLink.setLinkedRepeatId("x1");
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "x1");
+		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -132,25 +141,13 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testLinkedLinkedPath() {
-		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
-
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
-		dataRecordLink.setLinkedRepeatId("x1");
-
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertTrue(validationAnswer.dataIsValid());
-	}
-
-	@Test
 	public void testLinkedLinkedPathShouldNeverExist() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"nameInData", "linkedRecordType", "linkedRecordId");
-		dataRecordLink.setLinkedRepeatId("x1");
-		dataRecordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "x1");
+		dataRecordLink.addChild(linkedRepeatId);
+		dataRecordLink.addChild(DataGroup.withNameInData("linkedPath"));
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
