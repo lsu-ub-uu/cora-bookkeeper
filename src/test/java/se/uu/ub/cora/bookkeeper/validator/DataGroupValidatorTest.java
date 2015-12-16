@@ -136,8 +136,6 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
-		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("text1NameInData",
-		// "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
@@ -166,9 +164,6 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupId");
 
 		DataGroup dataGroup = DataGroup.withNameInData("groupNameInData");
-
-
-
 		dataGroup.addChild(createGroupWithNameInDataAndRecordTypeAndRecordId(
 				"recordLinkNameInData", "recordLinkLinkedRecordType", "someRecordLinkId"));
 
