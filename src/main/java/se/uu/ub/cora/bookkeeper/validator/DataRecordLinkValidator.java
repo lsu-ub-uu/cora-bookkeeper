@@ -25,6 +25,8 @@ import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 public class DataRecordLinkValidator implements DataElementValidator {
 
+	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
+	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private ValidationAnswer validationAnswer;
 	private DataGroup dataRecordLink;
 	private RecordLink recordLink;
@@ -67,12 +69,12 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean recordTypeIsEmpty() {
-		return !dataRecordLink.containsChildWithNameInData("linkedRecordType")
-				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType").isEmpty();
+		return !dataRecordLink.containsChildWithNameInData(LINKED_RECORD_TYPE)
+				|| dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE).isEmpty();
 	}
 
 	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
-		String linkedRecordType = dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType");
+		String linkedRecordType = dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
 		return !linkedRecordType.equals(recordLink.getLinkedRecordType());
 	}
 
@@ -123,8 +125,8 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean linkedRepeatIdIsEmpty() {
-		return (!dataRecordLink.containsChildWithNameInData("linkedRepeatId"))
-				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRepeatId").isEmpty();
+		return (!dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID))
+				|| dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID).isEmpty();
 	}
 
 	private void validateDoesNotHaveLinkedRepeatId() {
@@ -135,7 +137,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean linkedRepeatIdIsNotNull() {
-		return dataRecordLink.containsChildWithNameInData("linkedRepeatId");
+		return dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID);
 	}
 
 }
