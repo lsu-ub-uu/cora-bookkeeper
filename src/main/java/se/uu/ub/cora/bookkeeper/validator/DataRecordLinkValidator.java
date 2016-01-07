@@ -116,13 +116,13 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateHasLinkedRepeatId() {
-		if (linkedRepeatIdIsMissingOrEmpty()) {
+		if (linkedRepeatIdIsEmpty()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " should have a linkedRepeatId");
 		}
 	}
 
-	private boolean linkedRepeatIdIsMissingOrEmpty() {
+	private boolean linkedRepeatIdIsEmpty() {
 		return (!dataRecordLink.containsChildWithNameInData("linkedRepeatId"))
 				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRepeatId").isEmpty();
 	}

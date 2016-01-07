@@ -53,9 +53,7 @@ public class DataRecordLinkCollectorTest {
 
 	@Test
 	public void testCollectLinksGroupWithOneLink() {
-		// data
 		DataGroup dataGroup = DataGroup.withNameInData("bush");
-
 		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
 
 		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "bush");

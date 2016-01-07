@@ -29,7 +29,6 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.Data;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
@@ -190,6 +189,7 @@ public class DataGroupRecordLinkCollectorTest {
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
+
 		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "e3");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.setRepeatId("e3");
@@ -340,23 +340,4 @@ public class DataGroupRecordLinkCollectorTest {
 	private void assertCorrectToPartOfOneGroupInGroupInGroupWithOneLink(DataGroup recordToRecordLink) {
 		assertCorrectToPartOfRecordLink(recordToRecordLink);
 	}
-
-//	@Test
-//	public void testNullPointer(){
-//		DataGroup bush = DataGroup.withNameInData("bush");
-//
-//		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-//		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "bush6"));
-//		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", "bush"));
-//		bush.addChild(recordInfo);
-//
-//		DataGroup recordLink  = DataGroup.withNameInData("subBush");
-//		recordLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "bush"));
-//		recordLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1"));
-//
-//		bush.addChild(recordLink);
-//
-//		List<DataGroup> linkList = linkCollector.collectLinks("bush", bush);
-//	}
-
 }
