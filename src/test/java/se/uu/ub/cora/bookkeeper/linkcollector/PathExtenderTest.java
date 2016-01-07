@@ -27,6 +27,8 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 
 public class PathExtenderTest {
 	@Test(expectedExceptions = InvocationTargetException.class)
@@ -136,5 +138,13 @@ public class PathExtenderTest {
 
 		checkExtendedPath(extendedPath.getFirstGroupWithNameInData("linkedPath")
 				.getFirstGroupWithNameInData("linkedPath"));
+	}
+
+	@Test
+	public void testExtendPathWithAtomicElement(){
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,
+				linkedRecordType);
+		assertFalse(extendedPath.containsChildWithNameInData("attributes"));
 	}
 }
