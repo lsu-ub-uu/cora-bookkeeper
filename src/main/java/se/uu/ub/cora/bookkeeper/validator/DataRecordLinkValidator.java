@@ -75,7 +75,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 
 	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
 		String linkedRecordType = dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
-		return !recordTypeIsEmpty() && !linkedRecordType.equals(recordLink.getLinkedRecordType());
+		return !linkedRecordType.equals(recordLink.getLinkedRecordType());
 	}
 
 	private void validateRecordId() {
