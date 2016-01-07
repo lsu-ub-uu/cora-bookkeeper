@@ -197,6 +197,26 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	@Test
+	public void testOneGroupWithOneLinkWithEmptyLinkedRepeatId(){
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
+		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+
+		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
+		dataGroup.addChild(dataRecordLink);
+
+		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "someLinkedRepeatId");
+		dataRecordLink.addChild(linkedRepeatId);
+		dataRecordLink.setRepeatId("");
+
+		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
+		assertEquals(linkList.size(), 1);
+
+		DataGroup recordToRecordLink = linkList.get(0);
+		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
+		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
+	}
+
+	@Test
 	public void testOneGroupInGroupWithOneLink() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupInGroupWithOneLink();
 		DataGroup topDataGroup = createGroupInGroupWithOneLink();
