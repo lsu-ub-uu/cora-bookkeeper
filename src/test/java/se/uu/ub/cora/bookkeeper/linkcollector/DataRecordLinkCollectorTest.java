@@ -33,12 +33,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class DataRecordLinkCollectorTest {
-	private MetadataStorage metadataStorage;
 	private DataRecordLinkCollector linkCollector;
 
 	@BeforeMethod
 	public void setUp() {
-		metadataStorage = new MetadataStorageStub();
+		MetadataStorage metadataStorage = new MetadataStorageStub();
 		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
 	}
 

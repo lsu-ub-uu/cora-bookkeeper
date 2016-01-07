@@ -15,9 +15,8 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 
     private MetadataGroup addMetadataForOneGroupWithNoLinkUsingIdAndNameInData(String id,
                                                                                String nameInData) {
-        MetadataGroup group = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id + "Group",
+        return MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id + "Group",
                 nameInData + "Group", id + "GroupTextId", id + "GroupDefTextId");
-        return group;
     }
 
     void addMetadataForOneGroupWithOneLink(String id) {

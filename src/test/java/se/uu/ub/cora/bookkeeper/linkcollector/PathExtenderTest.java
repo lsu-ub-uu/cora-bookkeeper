@@ -46,8 +46,7 @@ public class PathExtenderTest {
 	}
 
 	private DataGroup createDataGroup() {
-		DataGroup dataGroup = DataGroup.withNameInData("someData");
-		return dataGroup;
+		return DataGroup.withNameInData("someData");
 	}
 
 	private void checkExtendedPath(DataGroup extendedPath) {
