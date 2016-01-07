@@ -155,8 +155,14 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void addLinkedRepeatIdToFromPart(DataElement dataElement, DataGroup from) {
-		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", dataElement.getRepeatId());
-		from.addChild(linkedRepeatId);
+		if(hasNonEmptyRepeatId(dataElement)) {
+			DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", dataElement.getRepeatId());
+			from.addChild(linkedRepeatId);
+		}
+	}
+
+	private boolean hasNonEmptyRepeatId(DataElement dataElement) {
+		return dataElement.getRepeatId() != null && !dataElement.getRepeatId().equals("");
 	}
 
 	private DataGroup createToPart(DataElement dataElement, RecordLink recordLink) {
