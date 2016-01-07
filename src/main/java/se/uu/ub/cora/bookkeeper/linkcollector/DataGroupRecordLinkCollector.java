@@ -22,9 +22,9 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -43,7 +43,7 @@ public class DataGroupRecordLinkCollector {
 	private DataGroup elementPath;
 
 	public DataGroupRecordLinkCollector(MetadataHolder metadataHolder, String fromRecordType,
-			String fromRecordId) {
+										String fromRecordId) {
 		this.metadataHolder = metadataHolder;
 		this.fromRecordType = fromRecordType;
 		this.fromRecordId = fromRecordId;
@@ -92,14 +92,14 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void collectLinksFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement) {
+												DataElement childDataElement) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			createLinkOrParseChildGroup(childMetadataElement, childDataElement);
 		}
 	}
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
-			DataElement dataElement) {
+													DataElement dataElement) {
 		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
 		ValidationAnswer validationAnswer = metadataMatchData
 				.metadataSpecifiesData(childMetadataElement, dataElement);
@@ -107,7 +107,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,
-			DataElement childDataElement) {
+											 DataElement childDataElement) {
 		DataGroup childPath = createChildPath(childDataElement);
 
 		if (isRecordLink(childMetadataElement)) {
@@ -124,31 +124,88 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void createRecordToRecordLink(RecordLink recordLink, DataElement dataElement,
-			DataGroup fromPath) {
+										  DataGroup fromPath) {
 		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
 		recordToRecordLink.addChild(createFromPart(dataElement, fromPath));
-		recordToRecordLink.addChild(createToPart((DataRecordLink) dataElement, recordLink));
+		recordToRecordLink.addChild(createToPart(dataElement, recordLink));
 		linkList.add(recordToRecordLink);
 	}
 
-	private DataRecordLink createFromPart(DataElement dataElement, DataGroup fromPath) {
-		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"from", fromRecordType, fromRecordId);
-		from.setLinkedRepeatId(dataElement.getRepeatId());
-		from.setLinkedPath(fromPath);
+	private DataGroup createFromPart(DataElement dataElement, DataGroup fromPath) {
+		DataGroup from = DataGroup.withNameInData("from");
+		addChildrenToFromPart(dataElement, fromPath, from);
 		return from;
 	}
 
-	private DataRecordLink createToPart(DataRecordLink dataRecordLink, RecordLink recordLink) {
-		DataRecordLink to = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("to",
-				dataRecordLink.getLinkedRecordType(), dataRecordLink.getLinkedRecordId());
-		to.setLinkedPath(recordLink.getLinkedPath());
-		to.setLinkedRepeatId(dataRecordLink.getLinkedRepeatId());
+	private void addChildrenToFromPart(DataElement dataElement, DataGroup fromPath, DataGroup from) {
+		addRecordTypeToFromPart(from);
+		addRecordIdToFromPart(from);
+		addLinkedRepeatIdToFromPart(dataElement, from);
+		from.addChild(fromPath);
+	}
+
+	private void addRecordTypeToFromPart(DataGroup from) {
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", fromRecordType);
+		from.addChild(linkedRecordType);
+	}
+
+	private void addRecordIdToFromPart(DataGroup from) {
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", fromRecordId);
+		from.addChild(linkedRecordId);
+	}
+
+	private void addLinkedRepeatIdToFromPart(DataElement dataElement, DataGroup from) {
+		if(hasNonEmptyRepeatId(dataElement)) {
+			DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", dataElement.getRepeatId());
+			from.addChild(linkedRepeatId);
+		}
+	}
+
+	private boolean hasNonEmptyRepeatId(DataElement dataElement) {
+		return dataElement.getRepeatId() != null && !dataElement.getRepeatId().equals("");
+	}
+
+	private DataGroup createToPart(DataElement dataElement, RecordLink recordLink) {
+		DataGroup to = DataGroup.withNameInData("to");
+		DataGroup dataGroup = (DataGroup) dataElement;
+
+		addChildrenToToPart(recordLink, to, dataGroup);
 		return to;
 	}
 
+	private void addChildrenToToPart(RecordLink recordLink, DataGroup to, DataGroup dataGroup) {
+		addRecordTypeToToPart(to, dataGroup);
+		addRecordIdToToPart(to, dataGroup);
+		addLinkedPathToToPart(recordLink, to);
+		addLinkedRepeatIdToToPart(to, dataGroup);
+	}
+
+	private void addRecordTypeToToPart(DataGroup to, DataGroup dataGroup) {
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType"));
+		to.addChild(linkedRecordType);
+	}
+
+	private void addRecordIdToToPart(DataGroup to, DataGroup dataGroup) {
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", dataGroup.getFirstAtomicValueWithNameInData("linkedRecordId"));
+		to.addChild(linkedRecordId);
+	}
+
+	private void addLinkedPathToToPart(RecordLink recordLink, DataGroup to) {
+		if(recordLink.getLinkedPath() != null){
+			to.addChild(recordLink.getLinkedPath());
+		}
+	}
+
+	private void addLinkedRepeatIdToToPart(DataGroup to, DataGroup dataGroup) {
+		if(dataGroup.containsChildWithNameInData("linkedRepeatId")){
+			DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", dataGroup.getFirstAtomicValueWithNameInData("linkedRepeatId"));
+			to.addChild(linkedRepeatId);
+		}
+	}
+
+
 	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup,
-			DataGroup pathCopy) {
+										  DataGroup pathCopy) {
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
 				fromRecordType, fromRecordId);
 

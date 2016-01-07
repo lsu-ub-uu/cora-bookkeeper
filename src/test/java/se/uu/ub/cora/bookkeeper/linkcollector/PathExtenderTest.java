@@ -25,7 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 
 import static org.testng.Assert.assertEquals;
 
@@ -58,8 +57,13 @@ public class PathExtenderTest {
 
 	@Test
 	public void testExtendPathUsingDataRecordLink() {
-		DataRecordLink dataRecordLink = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"someData", "someRecordType", "someRecordId");
+		DataGroup dataRecordLink = DataGroup.withNameInData("someData");
+
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		dataRecordLink.addChild(linkedRecordType);
+
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		dataRecordLink.addChild(linkedRecordId);
 
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,
 				dataRecordLink);

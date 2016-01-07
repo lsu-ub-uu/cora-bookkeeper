@@ -20,13 +20,13 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 public class DataRecordLinkValidator implements DataElementValidator {
 
 	private ValidationAnswer validationAnswer;
-	private DataRecordLink dataRecordLink;
+	private DataGroup dataRecordLink;
 	private RecordLink recordLink;
 
 	public DataRecordLinkValidator(RecordLink dataLink) {
@@ -36,7 +36,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	@Override
 	public ValidationAnswer validateData(DataElement dataElement) {
 		validationAnswer = new ValidationAnswer();
-		dataRecordLink = (DataRecordLink) dataElement;
+		dataRecordLink = (DataGroup) dataElement;
 		validateNameInData();
 		validateRecordType();
 		validateRecordId();
@@ -51,6 +51,10 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		}
 	}
 
+	private boolean nameInDataIsEmpty() {
+		return dataRecordLink.getNameInData().isEmpty();
+	}
+
 	private void validateRecordType() {
 		if (recordTypeIsEmpty()) {
 			validationAnswer.addErrorMessage(
@@ -63,11 +67,13 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean recordTypeIsEmpty() {
-		return dataRecordLink.getLinkedRecordType().isEmpty();
+		return !dataRecordLink.containsChildWithNameInData("linkedRecordType")
+				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType").isEmpty();
 	}
 
 	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
-		return !dataRecordLink.getLinkedRecordType().equals(recordLink.getLinkedRecordType());
+		String linkedRecordType = dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType");
+		return !linkedRecordType.equals(recordLink.getLinkedRecordType());
 	}
 
 	private void validateRecordId() {
@@ -77,16 +83,13 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		}
 	}
 
+	private boolean recordIdIsEmpty() {
+		return !dataRecordLink.containsChildWithNameInData("linkedRecordId")
+				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId").isEmpty();
+	}
+
 	private String createNameInDataMessagePart() {
 		return "DataRecordLink with nameInData:" + dataRecordLink.getNameInData();
-	}
-
-	private boolean nameInDataIsEmpty() {
-		return dataRecordLink.getNameInData().isEmpty();
-	}
-
-	private boolean recordIdIsEmpty() {
-		return dataRecordLink.getLinkedRecordId().isEmpty();
 	}
 
 	private void validateNoLinkedPath() {
@@ -97,7 +100,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean thereIsALinkedPath() {
-		return !(dataRecordLink.getLinkedPath() == null);
+		return dataRecordLink.containsChildWithNameInData("linkedPath");
 	}
 
 	private void validateLinkedRepeatId() {
@@ -113,15 +116,15 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateHasLinkedRepeatId() {
-		if (linkedRepeatIdIsMissingOrEmpty()) {
+		if (linkedRepeatIdIsEmpty()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " should have a linkedRepeatId");
 		}
 	}
 
-	private boolean linkedRepeatIdIsMissingOrEmpty() {
-		return dataRecordLink.getLinkedRepeatId() == null
-				|| dataRecordLink.getLinkedRepeatId().isEmpty();
+	private boolean linkedRepeatIdIsEmpty() {
+		return (!dataRecordLink.containsChildWithNameInData("linkedRepeatId"))
+				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRepeatId").isEmpty();
 	}
 
 	private void validateDoesNotHaveLinkedRepeatId() {
@@ -132,7 +135,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean linkedRepeatIdIsNotNull() {
-		return dataRecordLink.getLinkedRepeatId() != null;
+		return dataRecordLink.containsChildWithNameInData("linkedRepeatId");
 	}
 
 }
