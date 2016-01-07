@@ -80,7 +80,19 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "", "myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 2);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	@Test
+	public void testValidateNoRecordType(){
+		DataGroup dataRecordLink = DataGroup.withNameInData("nameInData");
+
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "myLinkedRecordId");
+		dataRecordLink.addChild(linkedRecordId);
+
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 

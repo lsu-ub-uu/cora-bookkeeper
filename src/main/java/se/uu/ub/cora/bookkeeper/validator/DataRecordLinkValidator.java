@@ -62,7 +62,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " must have an nonempty recordType as child.");
 		}
-		if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
+		else if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
 			validationAnswer.addErrorMessage(createNameInDataMessagePart()
 					+ " must have an recordType:" + recordLink.getLinkedRecordType());
 		}
@@ -75,7 +75,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 
 	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
 		String linkedRecordType = dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
-		return !linkedRecordType.equals(recordLink.getLinkedRecordType());
+		return !recordTypeIsEmpty() && !linkedRecordType.equals(recordLink.getLinkedRecordType());
 	}
 
 	private void validateRecordId() {
