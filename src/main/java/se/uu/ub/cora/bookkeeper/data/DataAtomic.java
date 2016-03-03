@@ -58,7 +58,8 @@ public final class DataAtomic implements DataElement {
 		this.repeatId = repeatId;
 	}
 
-	public String getRepeatId() {
+    @Override
+    public String getRepeatId() {
 		return repeatId;
 	}
 

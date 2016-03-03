@@ -38,7 +38,8 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 		this.metadataStorage = metadataStorage;
 	}
 
-	public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
+    @Override
+    public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
 			String fromRecordId) {
 		getMetadataFromStorage();
 
