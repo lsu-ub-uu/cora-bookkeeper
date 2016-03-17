@@ -25,16 +25,16 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 
-public final class DataGroupToMetadataGroupConverter implements DataGroupToMetadataConverter {
+public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataConverter {
 
-	private DataGroup dataGroup;
-	private MetadataGroup metadataGroup;
+	protected DataGroup dataGroup;
+	protected MetadataGroup metadataGroup;
 
 	public static DataGroupToMetadataGroupConverter fromDataGroup(DataGroup dataGroup) {
 		return new DataGroupToMetadataGroupConverter(dataGroup);
 	}
 
-	private DataGroupToMetadataGroupConverter(DataGroup dataGroup) {
+	protected DataGroupToMetadataGroupConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
