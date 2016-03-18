@@ -27,6 +27,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataValidatorFactoryTest {
@@ -38,6 +39,18 @@ public class DataValidatorFactoryTest {
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("metadataGroupId");
 		assertTrue(dataGroupValidator instanceof DataGroupValidator);
+	}
+
+	@Test
+	public void testFactorDataValidatorRecordRelation() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+		metadataHolder.addMetadataElement(
+				RecordRelation.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(
+						"metadataGroupId", "nameInData", "textId", "defTextId", "someLink"));
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator recordRelationValidator = dataValidatorFactory
+				.factor("metadataGroupId");
+		assertTrue(recordRelationValidator instanceof DataRecordRelationValidator);
 	}
 
 	@Test

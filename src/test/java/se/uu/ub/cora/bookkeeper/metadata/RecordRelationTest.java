@@ -30,8 +30,9 @@ public class RecordRelationTest {
 
 	@BeforeMethod
 	public void setUp() {
-		recordRelation = RecordRelation.withIdAndNameInDataAndTextIdAndDefTextId("id", "nameInData",
-				"textId", "defTextId");
+		recordRelation = RecordRelation
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId("id", "nameInData",
+						"textId", "defTextId", "refrecordLinkId");
 
 	}
 
@@ -44,6 +45,8 @@ public class RecordRelationTest {
 		assertEquals(recordRelation.getTextId(), "textId");
 
 		assertEquals(recordRelation.getDefTextId(), "defTextId");
+
+		assertEquals(recordRelation.getRefrecordLinkId(), "refrecordLinkId");
 
 		assertNotNull(recordRelation.getAttributeReferences());
 

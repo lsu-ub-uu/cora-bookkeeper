@@ -40,7 +40,8 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 		MetadataElement metadataElement = metadataHolder.getMetadataElement(elementId);
 
 		if (metadataElement instanceof RecordRelation) {
-			return new DataGroupValidator(this, metadataHolder, (MetadataGroup) metadataElement);
+			return new DataRecordRelationValidator(this, metadataHolder,
+					(MetadataGroup) metadataElement);
 		}
 		if (metadataElement instanceof MetadataGroup) {
 			return new DataGroupValidator(this, metadataHolder, (MetadataGroup) metadataElement);

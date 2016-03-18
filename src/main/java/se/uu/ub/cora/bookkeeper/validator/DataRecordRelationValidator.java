@@ -17,17 +17,17 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.bookkeeper.metadata;
+package se.uu.ub.cora.bookkeeper.validator;
 
-public enum MetadataTypes {
-	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
-			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK(
-							"metadataRecordLink"), RECORDRELATION("metadataRecordRelation");
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 
-	MetadataTypes(String type) {
-		this.type = type;
+public class DataRecordRelationValidator extends DataGroupValidator {
+
+	public DataRecordRelationValidator(DataValidatorFactoryImp dataValidatorFactoryImp,
+			MetadataHolder metadataHolder, MetadataGroup metadataGroup) {
+		super(dataValidatorFactoryImp, metadataHolder, metadataGroup);
+		// TODO Auto-generated constructor stub
 	}
 
-	public final String type;
 }

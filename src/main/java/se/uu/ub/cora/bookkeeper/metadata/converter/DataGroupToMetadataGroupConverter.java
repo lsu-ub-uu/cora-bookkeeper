@@ -57,14 +57,14 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 				textId, defTextId);
 	}
 
-	private void convertRefParentId() {
+	protected void convertRefParentId() {
 		if (dataGroup.containsChildWithNameInData("refParentId")) {
 			metadataGroup
 					.setRefParentId(dataGroup.getFirstAtomicValueWithNameInData("refParentId"));
 		}
 	}
 
-	private void convertAttributeReferences() {
+	protected void convertAttributeReferences() {
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
 					.getFirstGroupWithNameInData("attributeReferences");
@@ -74,7 +74,7 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 		}
 	}
 
-	private void convertChildReferences() {
+	protected void convertChildReferences() {
 		DataGroup childReferences = dataGroup.getFirstGroupWithNameInData("childReferences");
 		for (DataElement childReferenceElement : childReferences.getChildren()) {
 			convertChildReference((DataGroup) childReferenceElement);

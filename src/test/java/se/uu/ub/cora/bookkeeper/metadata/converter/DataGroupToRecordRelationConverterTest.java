@@ -29,6 +29,7 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 
 public class DataGroupToRecordRelationConverterTest {
 	@Test
@@ -38,8 +39,8 @@ public class DataGroupToRecordRelationConverterTest {
 		DataGroupToRecordRelationConverter converter = DataGroupToRecordRelationConverter
 				.fromDataGroup(dataGroup);
 
-		MetadataGroup metadataGroup = converter.toMetadata();
-		assertMetadataGroupIsBasedOnDataGroup(metadataGroup);
+		RecordRelation recordRelation = (RecordRelation) converter.toMetadata();
+		assertMetadataGroupIsBasedOnDataGroup(recordRelation);
 
 	}
 
@@ -54,6 +55,8 @@ public class DataGroupToRecordRelationConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refrecordLinkId",
+				"otherRefrecordLinkId"));
 
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
 		dataGroup.addChild(childReferences);
@@ -71,13 +74,14 @@ public class DataGroupToRecordRelationConverterTest {
 		return dataGroup;
 	}
 
-	private void assertMetadataGroupIsBasedOnDataGroup(MetadataGroup metadataGroup) {
-		assertEquals(metadataGroup.getId(), "otherId");
-		assertEquals(metadataGroup.getNameInData(), "other");
-		assertEquals(metadataGroup.getTextId(), "otherTextId");
-		assertEquals(metadataGroup.getDefTextId(), "otherDefTextId");
+	private void assertMetadataGroupIsBasedOnDataGroup(RecordRelation recordRelation) {
+		assertEquals(recordRelation.getId(), "otherId");
+		assertEquals(recordRelation.getNameInData(), "other");
+		assertEquals(recordRelation.getTextId(), "otherTextId");
+		assertEquals(recordRelation.getDefTextId(), "otherDefTextId");
+		assertEquals(recordRelation.getRefrecordLinkId(), "otherRefrecordLinkId");
 
-		Iterator<MetadataChildReference> childReferencesIterator = metadataGroup
+		Iterator<MetadataChildReference> childReferencesIterator = recordRelation
 				.getChildReferences().iterator();
 		MetadataChildReference metadataChildReference = childReferencesIterator.next();
 		assertEquals(metadataChildReference.getReferenceId(), "otherMetadata");
@@ -95,12 +99,12 @@ public class DataGroupToRecordRelationConverterTest {
 		DataGroup dataGroup = createDataGroup();
 		addAttributesToDataGroup(dataGroup);
 
-		DataGroupToMetadataConverter converter = DataGroupToMetadataGroupConverter
+		DataGroupToMetadataConverter converter = DataGroupToRecordRelationConverter
 				.fromDataGroup(dataGroup);
-		MetadataGroup metadataGroup = (MetadataGroup) converter.toMetadata();
+		RecordRelation recordRelation = (RecordRelation) converter.toMetadata();
 
-		assertMetadataGroupIsBasedOnDataGroup(metadataGroup);
-		assertAttributesBasedOnDataGroup(metadataGroup);
+		assertMetadataGroupIsBasedOnDataGroup(recordRelation);
+		assertAttributesBasedOnDataGroup(recordRelation);
 	}
 
 	private void addAttributesToDataGroup(DataGroup dataGroup) {
@@ -111,8 +115,8 @@ public class DataGroupToRecordRelationConverterTest {
 		dataGroup.addChild(attributeReference);
 	}
 
-	private void assertAttributesBasedOnDataGroup(MetadataGroup metadataGroup) {
-		Iterator<String> attributeReferenceIterator = metadataGroup.getAttributeReferences()
+	private void assertAttributesBasedOnDataGroup(RecordRelation recordRelation) {
+		Iterator<String> attributeReferenceIterator = recordRelation.getAttributeReferences()
 				.iterator();
 		assertEquals(attributeReferenceIterator.next(), "attribute1");
 		assertEquals(attributeReferenceIterator.next(), "attribute2");

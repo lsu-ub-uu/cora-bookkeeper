@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 
 public class DataGroupToRecordRelationConverter extends DataGroupToMetadataGroupConverter {
 
@@ -31,4 +32,25 @@ public class DataGroupToRecordRelationConverter extends DataGroupToMetadataGroup
 		super(dataGroup);
 	}
 
+	@Override
+	public RecordRelation toMetadata() {
+		createMetadataGroupWithBasicInfo();
+		convertRefParentId();
+		convertAttributeReferences();
+		convertChildReferences();
+		return (RecordRelation) metadataGroup;
+	}
+
+	private void createMetadataGroupWithBasicInfo() {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
+		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String refrecordLinkId = dataGroup
+				.getFirstAtomicValueWithNameInData("refrecordLinkId");
+		metadataGroup = RecordRelation
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(id, nameInData,
+						textId, defTextId, refrecordLinkId);
+	}
 }

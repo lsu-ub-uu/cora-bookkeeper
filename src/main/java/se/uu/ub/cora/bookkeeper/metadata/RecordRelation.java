@@ -21,13 +21,22 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 public class RecordRelation extends MetadataGroup {
 
-	public RecordRelation(String id, String nameInData, String textId, String defTextId) {
+	private String refRecordLinkId;
+
+	private RecordRelation(String id, String nameInData, String textId, String defTextId,
+			String refrecordLinkId) {
 		super(id, nameInData, textId, defTextId);
+		this.refRecordLinkId = refrecordLinkId;
 	}
 
-	public static RecordRelation withIdAndNameInDataAndTextIdAndDefTextId(String id,
-			String nameInData, String textId, String defTextId) {
-		return new RecordRelation(id, nameInData, textId, defTextId);
+	public static RecordRelation withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(
+			String id, String nameInData, String textId, String defTextId,
+			String refrecordLinkId) {
+		return new RecordRelation(id, nameInData, textId, defTextId, refrecordLinkId);
+	}
+
+	public String getRefrecordLinkId() {
+		return refRecordLinkId;
 	}
 
 }

@@ -38,9 +38,11 @@ public class DataCreator {
 	}
 
 	public static RecordRelation createRecordRelation(String id, MetadataHolder metadataHolder) {
-		RecordRelation recordRelation = RecordRelation.withIdAndNameInDataAndTextIdAndDefTextId(
-				id + "RecordRelationId", id + "RecordRelationNameInData", id + "RecordRelationText",
-				id + "RecordRelationDefText");
+		RecordRelation recordRelation = RecordRelation
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(
+						id + "RecordRelationId", id + "RecordRelationNameInData",
+						id + "RecordRelationText", id + "RecordRelationDefText",
+						id + "refRecordLinkText");
 		metadataHolder.addMetadataElement(recordRelation);
 		return recordRelation;
 	}
