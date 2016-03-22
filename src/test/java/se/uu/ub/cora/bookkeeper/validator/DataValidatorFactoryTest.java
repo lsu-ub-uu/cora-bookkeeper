@@ -45,8 +45,8 @@ public class DataValidatorFactoryTest {
 	public void testFactorDataValidatorRecordRelation() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(
-				RecordRelation.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(
-						"metadataGroupId", "nameInData", "textId", "defTextId", "someLink"));
+				RecordRelation.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(
+						"metadataGroupId", "nameInData", "textId", "defTextId", "someLinkId", "someMetadataGroupId"));
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator recordRelationValidator = dataValidatorFactory
 				.factor("metadataGroupId");

@@ -39,9 +39,13 @@ public class DataGroupToRecordRelationConverterTest {
 		DataGroupToRecordRelationConverter converter = DataGroupToRecordRelationConverter
 				.fromDataGroup(dataGroup);
 
-		RecordRelation recordRelation = (RecordRelation) converter.toMetadata();
-		assertMetadataGroupIsBasedOnDataGroup(recordRelation);
-
+		RecordRelation recordRelation = converter.toMetadata();
+		assertEquals(recordRelation.getId(), "otherId");
+		assertEquals(recordRelation.getNameInData(), "other");
+		assertEquals(recordRelation.getTextId(), "otherTextId");
+		assertEquals(recordRelation.getDefTextId(), "otherDefTextId");
+		assertEquals(recordRelation.getRefRecordLinkId(), "otherRefRecordLinkId");
+		assertEquals(recordRelation.getRefMetadataGroupId(), "otherRefMetadataGroupId");
 	}
 
 	private DataGroup createDataGroup() {
@@ -55,72 +59,12 @@ public class DataGroupToRecordRelationConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refrecordLinkId",
-				"otherRefrecordLinkId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refRecordLinkId",
+				"otherRefRecordLinkId"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refMetadataGroupId",
+				"otherRefMetadataGroupId"));
 
-		DataGroup childReferences = DataGroup.withNameInData("childReferences");
-		dataGroup.addChild(childReferences);
-
-		DataGroup childReference = DataGroup.withNameInData("childReference");
-		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("secret", "true"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("secretKey", "SECRET_KEY"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnly", "true"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnlyKey", "READONLY_KEY"));
-		childReferences.addChild(childReference);
 		return dataGroup;
-	}
-
-	private void assertMetadataGroupIsBasedOnDataGroup(RecordRelation recordRelation) {
-		assertEquals(recordRelation.getId(), "otherId");
-		assertEquals(recordRelation.getNameInData(), "other");
-		assertEquals(recordRelation.getTextId(), "otherTextId");
-		assertEquals(recordRelation.getDefTextId(), "otherDefTextId");
-		assertEquals(recordRelation.getRefrecordLinkId(), "otherRefrecordLinkId");
-
-		Iterator<MetadataChildReference> childReferencesIterator = recordRelation
-				.getChildReferences().iterator();
-		MetadataChildReference metadataChildReference = childReferencesIterator.next();
-		assertEquals(metadataChildReference.getReferenceId(), "otherMetadata");
-		assertEquals(metadataChildReference.getRepeatMin(), 0);
-		assertEquals(metadataChildReference.getRepeatMinKey(), "SOME_KEY");
-		assertEquals(metadataChildReference.getRepeatMax(), 16);
-		assertEquals(metadataChildReference.isSecret(), true);
-		assertEquals(metadataChildReference.getSecretKey(), "SECRET_KEY");
-		assertEquals(metadataChildReference.isReadOnly(), true);
-		assertEquals(metadataChildReference.getReadOnlyKey(), "READONLY_KEY");
-	}
-
-	@Test
-	public void testToMetadataWithAttributeReferences() {
-		DataGroup dataGroup = createDataGroup();
-		addAttributesToDataGroup(dataGroup);
-
-		DataGroupToMetadataConverter converter = DataGroupToRecordRelationConverter
-				.fromDataGroup(dataGroup);
-		RecordRelation recordRelation = (RecordRelation) converter.toMetadata();
-
-		assertMetadataGroupIsBasedOnDataGroup(recordRelation);
-		assertAttributesBasedOnDataGroup(recordRelation);
-	}
-
-	private void addAttributesToDataGroup(DataGroup dataGroup) {
-		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
-		dataGroup.addChild(attributeReference);
-	}
-
-	private void assertAttributesBasedOnDataGroup(RecordRelation recordRelation) {
-		Iterator<String> attributeReferenceIterator = recordRelation.getAttributeReferences()
-				.iterator();
-		assertEquals(attributeReferenceIterator.next(), "attribute1");
-		assertEquals(attributeReferenceIterator.next(), "attribute2");
-		assertEquals(attributeReferenceIterator.next(), "attribute3");
 	}
 
 	@Test
@@ -131,7 +75,7 @@ public class DataGroupToRecordRelationConverterTest {
 		DataGroupToRecordRelationConverter converter = DataGroupToRecordRelationConverter
 				.fromDataGroup(dataGroup);
 
-		MetadataGroup metadataGroup = converter.toMetadata();
-		assertEquals(metadataGroup.getRefParentId(), "refParentId");
+		RecordRelation recordRelation = converter.toMetadata();
+		assertEquals(recordRelation.getRefParentId(), "refParentId");
 	}
 }

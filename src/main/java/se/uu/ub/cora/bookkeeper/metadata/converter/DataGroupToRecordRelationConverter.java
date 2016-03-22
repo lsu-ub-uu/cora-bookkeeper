@@ -20,25 +20,27 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 
-public class DataGroupToRecordRelationConverter extends DataGroupToMetadataGroupConverter {
+public class DataGroupToRecordRelationConverter implements DataGroupToMetadataConverter {
+
+	private DataGroup dataGroup;
+	private RecordRelation recordRelation;
 
 	public static DataGroupToRecordRelationConverter fromDataGroup(DataGroup dataGroup) {
 		return new DataGroupToRecordRelationConverter(dataGroup);
 	}
 
 	private DataGroupToRecordRelationConverter(DataGroup dataGroup) {
-		super(dataGroup);
+		this.dataGroup = dataGroup;
 	}
 
 	@Override
 	public RecordRelation toMetadata() {
 		createMetadataGroupWithBasicInfo();
 		convertRefParentId();
-		convertAttributeReferences();
-		convertChildReferences();
-		return (RecordRelation) metadataGroup;
+		return recordRelation;
 	}
 
 	private void createMetadataGroupWithBasicInfo() {
@@ -47,10 +49,19 @@ public class DataGroupToRecordRelationConverter extends DataGroupToMetadataGroup
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
-		String refrecordLinkId = dataGroup
-				.getFirstAtomicValueWithNameInData("refrecordLinkId");
-		metadataGroup = RecordRelation
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(id, nameInData,
-						textId, defTextId, refrecordLinkId);
+		String refRecordLinkId = dataGroup
+				.getFirstAtomicValueWithNameInData("refRecordLinkId");
+		String refMetadataGroupId = dataGroup
+				.getFirstAtomicValueWithNameInData("refMetadataGroupId");
+		recordRelation = RecordRelation
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(id, nameInData,
+						textId, defTextId, refRecordLinkId, refMetadataGroupId);
+	}
+
+	protected void convertRefParentId() {
+		if (dataGroup.containsChildWithNameInData("refParentId")) {
+			recordRelation
+					.setRefParentId(dataGroup.getFirstAtomicValueWithNameInData("refParentId"));
+		}
 	}
 }

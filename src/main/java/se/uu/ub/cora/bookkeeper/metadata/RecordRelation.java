@@ -19,24 +19,38 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-public class RecordRelation extends MetadataGroup {
+public class RecordRelation extends MetadataElement {
 
 	private String refRecordLinkId;
+	private String refMetadataGroupId;
+	private String refParentId;
 
 	private RecordRelation(String id, String nameInData, String textId, String defTextId,
-			String refrecordLinkId) {
+						   String refRecordLinkId, String refMetadataGroupId) {
 		super(id, nameInData, textId, defTextId);
-		this.refRecordLinkId = refrecordLinkId;
+		this.refRecordLinkId = refRecordLinkId;
+		this.refMetadataGroupId = refMetadataGroupId;
 	}
 
-	public static RecordRelation withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId(
+	public static RecordRelation withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(
 			String id, String nameInData, String textId, String defTextId,
-			String refrecordLinkId) {
-		return new RecordRelation(id, nameInData, textId, defTextId, refrecordLinkId);
+			String refRecordLinkId, String refMetadataGroupId) {
+		return new RecordRelation(id, nameInData, textId, defTextId, refRecordLinkId, refMetadataGroupId);
 	}
 
-	public String getRefrecordLinkId() {
+	public String getRefRecordLinkId() {
 		return refRecordLinkId;
 	}
 
+	public String getRefMetadataGroupId() {
+		return refMetadataGroupId;
+	}
+
+	public void setRefParentId(String refParentId) {
+		this.refParentId = refParentId;
+	}
+
+	public String getRefParentId() {
+		return refParentId;
+	}
 }

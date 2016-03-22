@@ -31,8 +31,8 @@ public class RecordRelationTest {
 	@BeforeMethod
 	public void setUp() {
 		recordRelation = RecordRelation
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefrecordLinkId("id", "nameInData",
-						"textId", "defTextId", "refrecordLinkId");
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup("id", "nameInData",
+						"textId", "defTextId", "refRecordLinkId", "testRefMetadataGroup");
 
 	}
 
@@ -46,10 +46,8 @@ public class RecordRelationTest {
 
 		assertEquals(recordRelation.getDefTextId(), "defTextId");
 
-		assertEquals(recordRelation.getRefrecordLinkId(), "refrecordLinkId");
+		assertEquals(recordRelation.getRefRecordLinkId(), "refRecordLinkId");
 
-		assertNotNull(recordRelation.getAttributeReferences());
-
-		assertNotNull(recordRelation.getChildReferences());
+		assertEquals(recordRelation.getRefMetadataGroupId(), "testRefMetadataGroup");
 	}
 }

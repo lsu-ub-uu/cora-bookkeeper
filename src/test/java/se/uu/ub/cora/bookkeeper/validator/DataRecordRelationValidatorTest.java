@@ -27,6 +27,7 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
@@ -58,20 +59,26 @@ public class DataRecordRelationValidatorTest {
 		DataElementValidator dataElementValidator = createOneRecordRelationWithNoAttributesOneTextChildReturnDataElementValidator();
 
 		DataGroup dataGroup = DataGroup.withNameInData("testRecordRelationNameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refRecordLinkId", "testRefRecordLink"));
 
-		// recordLink
-		DataGroup recordLinkData = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
-				"linkedRecordType", "myLinkedRecordId");
-		DataGroup recordLink = DataGroup.withNameInData("relationData");
-		recordLink.addChild(recordLinkData);
-		dataGroup.addChild(recordLink);
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refMetadataGroupId", "testRefMetadataGroup"));
 
-		// relationData
-		DataGroup dataChild = DataGroup.withNameInData("testGroupNameInData");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("text1NameInData", "10:10"));
-		DataGroup relationData = DataGroup.withNameInData("relationData");
-		relationData.addChild(dataChild);
-		dataGroup.addChild(relationData);
+		//refMetadataGroupTextVar
+//		DataGroup dataGroup = DataGroup.withNameInData("testRecordRelationNameInData");
+//		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refRecordLinkId", "testrefRecordLink"));
+
+//		// recordLink
+//		DataGroup recordLinkData = createGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+//				"linkedRecordType", "myLinkedRecordId");
+//		DataGroup recordLink = DataGroup.withNameInData("relationData");
+//		recordLink.addChild(recordLinkData);
+//		dataGroup.addChild(recordLink);
+//
+//		// relationData
+//		DataGroup dataChild = DataGroup.withNameInData("testGroupNameInData");
+//		DataGroup relationData = DataGroup.withNameInData("relationData");
+//		relationData.addChild(dataChild);
+//		dataGroup.addChild(relationData);
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
 				"The group should be valid");
@@ -86,7 +93,11 @@ public class DataRecordRelationValidatorTest {
 	private MetadataHolder createOneRecordRelationNoAttributesOneTextChild() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		RecordRelation recordRelation = DataCreator.createRecordRelation("test", metadataHolder);
-		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", recordRelation, metadataHolder);
+
+		RecordLink recordLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("testrefRecordLink",
+				"nameInData", "textId", "defTextId", "linkedRecordType");
+		metadataHolder.addMetadataElement(recordLink);
+//		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", recordRelation, metadataHolder);
 		return metadataHolder;
 	}
 
