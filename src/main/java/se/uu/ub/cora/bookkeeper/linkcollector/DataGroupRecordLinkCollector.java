@@ -131,13 +131,8 @@ public class DataGroupRecordLinkCollector {
 			createRecordToRecordLink((RecordLink) childMetadataElement, childDataElement,
 					childPath);
 		} else if (isRecordRelation(childMetadataElement)) {
-			String refRecordLinkId = ((RecordRelation) childMetadataElement).getRefRecordLinkId();
-			RecordLink recordLink = (RecordLink) metadataHolder.getMetadataElement(refRecordLinkId);
-			DataGroup recordLinkData = (DataGroup) ((DataGroup) childDataElement)
-					.getFirstChildWithNameInData(recordLink.getNameInData());
-			DataGroup recordLinkPath = PathExtender.extendPathWithElementInformation(childPath,
-					recordLinkData);
-			createRecordToRecordLink((RecordLink) recordLink, recordLinkData, recordLinkPath);
+			createRecordToRecordLinkForRecordRelation((RecordRelation) childMetadataElement,
+					(DataGroup) childDataElement, childPath);
 		} else {
 			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, childPath);
 		}
@@ -233,6 +228,26 @@ public class DataGroupRecordLinkCollector {
 					dataGroup.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID));
 			to.addChild(linkedRepeatId);
 		}
+	}
+
+	private void createRecordToRecordLinkForRecordRelation(RecordRelation recordRelation,
+			DataGroup childDataElement, DataGroup childPath) {
+		RecordLink recordLink = getRecordLinkMetadataForRecordRelation(recordRelation);
+		DataGroup recordLinkData = getRecordLinkDataFromDataGroupUsingRecordLink(childDataElement,
+				recordLink);
+		DataGroup recordLinkPath = PathExtender.extendPathWithElementInformation(childPath,
+				recordLinkData);
+		createRecordToRecordLink((RecordLink) recordLink, recordLinkData, recordLinkPath);
+	}
+
+	private RecordLink getRecordLinkMetadataForRecordRelation(RecordRelation recordRelation) {
+		String refRecordLinkId = recordRelation.getRefRecordLinkId();
+		return (RecordLink) metadataHolder.getMetadataElement(refRecordLinkId);
+	}
+
+	private DataGroup getRecordLinkDataFromDataGroupUsingRecordLink(DataGroup childDataElement,
+			RecordLink recordLink) {
+		return (DataGroup) childDataElement.getFirstChildWithNameInData(recordLink.getNameInData());
 	}
 
 	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup,

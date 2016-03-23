@@ -19,23 +19,24 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-public class RecordRelation extends MetadataElement {
+public final class RecordRelation extends MetadataElement {
 
 	private String refRecordLinkId;
 	private String refMetadataGroupId;
 	private String refParentId;
 
 	private RecordRelation(String id, String nameInData, String textId, String defTextId,
-						   String refRecordLinkId, String refMetadataGroupId) {
+			String refRecordLinkId, String refMetadataGroupId) {
 		super(id, nameInData, textId, defTextId);
 		this.refRecordLinkId = refRecordLinkId;
 		this.refMetadataGroupId = refMetadataGroupId;
 	}
 
 	public static RecordRelation withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(
-			String id, String nameInData, String textId, String defTextId,
-			String refRecordLinkId, String refMetadataGroupId) {
-		return new RecordRelation(id, nameInData, textId, defTextId, refRecordLinkId, refMetadataGroupId);
+			String id, String nameInData, String textId, String defTextId, String refRecordLinkId,
+			String refMetadataGroupId) {
+		return new RecordRelation(id, nameInData, textId, defTextId, refRecordLinkId,
+				refMetadataGroupId);
 	}
 
 	public String getRefRecordLinkId() {

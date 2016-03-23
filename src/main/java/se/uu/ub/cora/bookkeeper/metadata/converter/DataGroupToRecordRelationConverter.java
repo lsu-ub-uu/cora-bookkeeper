@@ -20,10 +20,9 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 
-public class DataGroupToRecordRelationConverter implements DataGroupToMetadataConverter {
+public final class DataGroupToRecordRelationConverter implements DataGroupToMetadataConverter {
 
 	private DataGroup dataGroup;
 	private RecordRelation recordRelation;
@@ -49,16 +48,15 @@ public class DataGroupToRecordRelationConverter implements DataGroupToMetadataCo
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
-		String refRecordLinkId = dataGroup
-				.getFirstAtomicValueWithNameInData("refRecordLinkId");
+		String refRecordLinkId = dataGroup.getFirstAtomicValueWithNameInData("refRecordLinkId");
 		String refMetadataGroupId = dataGroup
 				.getFirstAtomicValueWithNameInData("refMetadataGroupId");
 		recordRelation = RecordRelation
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(id, nameInData,
-						textId, defTextId, refRecordLinkId, refMetadataGroupId);
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(id,
+						nameInData, textId, defTextId, refRecordLinkId, refMetadataGroupId);
 	}
 
-	protected void convertRefParentId() {
+	private void convertRefParentId() {
 		if (dataGroup.containsChildWithNameInData("refParentId")) {
 			recordRelation
 					.setRefParentId(dataGroup.getFirstAtomicValueWithNameInData("refParentId"));
