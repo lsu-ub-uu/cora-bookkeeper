@@ -38,8 +38,6 @@ public class DataRecordRelationValidator implements DataElementValidator {
 		this.dataValidatorFactoryImp = dataValidatorFactoryImp;
 		this.metadataHolder = metadataHolder;
 		this.recordRelation = recordRelation;
-		// super(dataValidatorFactoryImp, metadataHolder, metadataGroup);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class DataRecordRelationValidator implements DataElementValidator {
 		validationAnswer = new ValidationAnswer();
 		validateNameInData();
 		validateLink();
-		// validateChildren();
+		validateGroup();
 		return validationAnswer;
 	}
 
@@ -70,29 +68,6 @@ public class DataRecordRelationValidator implements DataElementValidator {
 		}
 	}
 
-	// private void validateChildren() {
-	// validateDataContainsAllRequiredChildrenWithCorrectValues();
-	// validateDataContainsNoUnspecifiedChildren();
-	// }
-	//
-	// private void validateDataContainsAllRequiredChildrenWithCorrectValues() {
-	// Collection<MetadataChildReference> childReferences =
-	// metadataGroup.getChildReferences();
-	// for (MetadataChildReference childReference : childReferences) {
-	// validateDataContainsRequiredChildReferenceWithCorrectValue(childReference);
-	// }
-	// }
-	//
-	// private void validateDataContainsRequiredChildReferenceWithCorrectValue(
-	// MetadataChildReference childReference) {
-	// String referenceId = childReference.getReferenceId();
-	// boolean mayBeRepeated = childReference.getRepeatMax() > 1;
-	//
-	// int childrenFound = validateAndCountChildrenWithReferenceId(referenceId,
-	// mayBeRepeated);
-	// validateRepeatMinAndMax(childReference, childrenFound);
-	// }
-	//
 	private int validateAndCountChildrenWithReferenceId(String referenceId) {
 		int childrenFound = 0;
 		for (DataElement childData : dataGroup.getChildren()) {
@@ -110,62 +85,6 @@ public class DataRecordRelationValidator implements DataElementValidator {
 				+ dataGroup.getNameInData();
 	}
 
-	// private void validateUniqueRepeatId(Set<String> repeatIds, DataElement
-	// childData) {
-	// String repeatId = childData.getRepeatId();
-	// if (repeatIds.contains(repeatId)) {
-	// validationAnswer.addErrorMessage(createIdentifiedErrorMessage(childData)
-	// + " must have unique repeatId: " + repeatId);
-	// } else {
-	// repeatIds.add(repeatId);
-	// }
-	// }
-	//
-	// private void validateRepeatMinAndMax(MetadataChildReference
-	// childReference, int childrenFound) {
-	// String referenceId = childReference.getReferenceId();
-	// if (childrenFound < childReference.getRepeatMin()) {
-	// validationAnswer.addErrorMessage("Did not find enough data children with
-	// referenceId: "
-	// + referenceId + getReferenceText(referenceId) + ".");
-	// }
-	// if (childrenFound > childReference.getRepeatMax()) {
-	// validationAnswer.addErrorMessage(
-	// "Found too many data children with referenceId: " + referenceId + ".");
-	// }
-	// }
-	//
-	// private String getReferenceText(String referenceId) {
-	// MetadataElement childElement =
-	// metadataHolder.getMetadataElement(referenceId);
-	// StringBuilder sb = new StringBuilder();
-	// sb.append("(with nameInData:");
-	// sb.append(childElement.getNameInData());
-	// sb.append(getAttributesTextForMetadata(childElement));
-	// return sb.toString();
-	// }
-	//
-	// private String getAttributesTextForMetadata(MetadataElement childElement)
-	// {
-	// if (childElement.getAttributeReferences().isEmpty()) {
-	// return "";
-	// }
-	// return getTextForExistingMetadataAttributes(childElement);
-	// }
-	//
-	// private String getTextForExistingMetadataAttributes(MetadataElement
-	// childElement) {
-	// StringJoiner joiner = new StringJoiner(", ");
-	// for (String attributeRef : childElement.getAttributeReferences()) {
-	// CollectionVariable attributeElement = (CollectionVariable) metadataHolder
-	// .getMetadataElement(attributeRef);
-	//
-	// joiner.add(attributeElement.getNameInData() + ":" +
-	// attributeElement.getFinalValue());
-	// }
-	// return " and attributes: " + joiner.toString();
-	// }
-	//
 	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
 			String referenceId) {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
@@ -194,42 +113,14 @@ public class DataRecordRelationValidator implements DataElementValidator {
 		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
 	}
 
-	// private void validateDataContainsNoUnspecifiedChildren() {
-	// for (DataElement childData : dataGroup.getChildren()) {
-	// if (!isChildDataSpecifiedInMetadataGroup(childData)) {
-	// validationAnswer
-	// .addErrorMessage("Could not find metadata for child with nameInData: "
-	// + childData.getNameInData() + getAttributesText(childData));
-	// }
-	// }
-	// }
-	//
-	// private boolean isChildDataSpecifiedInMetadataGroup(DataElement
-	// childData) {
-	// Collection<MetadataChildReference> childReferences =
-	// metadataGroup.getChildReferences();
-	// for (MetadataChildReference childReference : childReferences) {
-	// if (isChildDataSpecifiedByChildReferenceId(childData,
-	// childReference.getReferenceId())) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
-	//
-	// private String getAttributesText(DataElement childData) {
-	// if (childData.getAttributes().isEmpty()) {
-	// return "";
-	// }
-	// return getTextForExistingDataAttributes(childData);
-	// }
-	//
-	// private String getTextForExistingDataAttributes(DataElement childData) {
-	// StringJoiner joiner = new StringJoiner(", ");
-	// for (Entry<String, String> entry : childData.getAttributes().entrySet())
-	// {
-	// joiner.add(entry.getKey() + ":" + entry.getValue());
-	// }
-	// return " and attributes: " + joiner.toString();
-	// }
+	private void validateGroup() {
+		String refMetadataGroupId = recordRelation.getRefMetadataGroupId();
+		int noOfChildrenFound = validateAndCountChildrenWithReferenceId(refMetadataGroupId);
+		if (noOfChildrenFound != 1) {
+			validationAnswer.addErrorMessage(
+					"RecordRelation should have data for one and only one metadataGroup with id:"
+							+ refMetadataGroupId + " (found:" + noOfChildrenFound + ")");
+		}
+	}
+
 }

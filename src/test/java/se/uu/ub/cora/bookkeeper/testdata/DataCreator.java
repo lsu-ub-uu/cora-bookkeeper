@@ -47,8 +47,8 @@ public class DataCreator {
 		return recordRelation;
 	}
 
-	public static MetadataGroup createMetaDataGroupWithIdAndNameInNData(String id,
-			String nameInData, MetadataHolder metadataHolder) {
+	public static MetadataGroup createMetaDataGroupWithIdAndNameInData(String id, String nameInData,
+			MetadataHolder metadataHolder) {
 		MetadataGroup group = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData,
 				id + "GroupText", id + "GroupDefText");
 		metadataHolder.addMetadataElement(group);
@@ -98,6 +98,18 @@ public class DataCreator {
 
 		MetadataChildReference groupChild = MetadataChildReference
 				.withReferenceIdAndRepeatMinAndRepeatMax(id + "Id", 1, repeatMax);
+		group.addChildReference(groupChild);
+	}
+
+	public static void addTextVarWithIdAndNameInDataAndRegExChildReferenceToGroup(String id,
+			String nameInData, String regEx, MetadataGroup group, MetadataHolder metadataHolder) {
+		TextVariable textVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id, nameInData,
+						id + "Text", id + "DefText", regEx);
+		metadataHolder.addMetadataElement(textVar);
+
+		MetadataChildReference groupChild = MetadataChildReference
+				.withReferenceIdAndRepeatMinAndRepeatMax(id, 1, 1);
 		group.addChildReference(groupChild);
 	}
 

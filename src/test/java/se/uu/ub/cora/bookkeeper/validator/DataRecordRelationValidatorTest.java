@@ -56,7 +56,7 @@ public class DataRecordRelationValidatorTest {
 		dataGroup.addChild(relationInfo);
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
-				"The group should be valid");
+				dataElementValidator.validateData(dataGroup).getErrorMessages().toString());
 	}
 
 	private DataElementValidator createOneRecordRelationWithOneTextChildReturnDataElementValidator() {
@@ -77,11 +77,53 @@ public class DataRecordRelationValidatorTest {
 		metadataHolder.addMetadataElement(recordLink);
 
 		// relationInfoGroup
-		MetadataGroup group = DataCreator.createMetaDataGroup("relationInfoGroup", metadataHolder);
-		DataCreator.addOnlyOneTextVarChildReferenceToGroup("whatEverTextVar", group,
-				metadataHolder);
+		MetadataGroup group = DataCreator.createMetaDataGroupWithIdAndNameInData(
+				"relationInfoGroup", "relationInfoGroup", metadataHolder);
+		DataCreator.addTextVarWithIdAndNameInDataAndRegExChildReferenceToGroup("whatEverTextVar",
+				"whatEverText", "^.*$", group, metadataHolder);
 
 		return metadataHolder;
+	}
+
+	@Test(expectedExceptions = DataValidationException.class)
+	public void testRecordRelationInValidDataMissingPiecesOfMetadata() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+		DataCreator.createRecordRelation("ourRelation", "ourRelation", "testLink",
+				"relationInfoGroup", metadataHolder);
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator dataElementValidator = dataValidatorFactory.factor("ourRelation");
+
+		DataGroup dataGroup = DataGroup.withNameInData("ourRelation");
+
+		DataGroup testLink = DataGroup.withNameInData("testLink");
+		testLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		testLink.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "metadataTextVariableGroup"));
+		dataGroup.addChild(testLink);
+
+		DataGroup relationInfo = DataGroup.withNameInData("relationInfoGroup");
+		relationInfo.addChild(DataAtomic.withNameInDataAndValue("whatEverText", "some text"));
+		dataGroup.addChild(relationInfo);
+
+		dataElementValidator.validateData(dataGroup);
+	}
+
+	@Test
+	public void testRecordRelationInValidDataExtraRepeatId() {
+		DataGroup dataGroup = DataGroup.withNameInData("ourRelation");
+
+		DataGroup testLink = DataGroup.withNameInData("testLink");
+		testLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		testLink.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "metadataTextVariableGroup"));
+		testLink.setRepeatId("1");
+		dataGroup.addChild(testLink);
+
+		DataGroup relationInfo = DataGroup.withNameInData("relationInfoGroup");
+		relationInfo.addChild(DataAtomic.withNameInDataAndValue("whatEverText", "some text"));
+		dataGroup.addChild(relationInfo);
+
+		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid());
 	}
 
 	@Test
@@ -124,6 +166,71 @@ public class DataRecordRelationValidatorTest {
 
 		DataGroup relationInfo = DataGroup.withNameInData("relationInfoGroup");
 		relationInfo.addChild(DataAtomic.withNameInDataAndValue("whatEverText", "some text"));
+		dataGroup.addChild(relationInfo);
+
+		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid());
+	}
+
+	@Test
+	public void testRecordRelationInValidDataWrongRecordTypeForLink() {
+		DataGroup dataGroup = DataGroup.withNameInData("ourRelation");
+
+		DataGroup testLink = DataGroup.withNameInData("testLink");
+		testLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textVariable"));
+		testLink.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "metadataTextVariableGroup"));
+		dataGroup.addChild(testLink);
+
+		DataGroup relationInfo = DataGroup.withNameInData("relationInfoGroup");
+		relationInfo.addChild(DataAtomic.withNameInDataAndValue("whatEverText", "some text"));
+		dataGroup.addChild(relationInfo);
+
+		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid());
+	}
+
+	@Test
+	public void testRecordRelationInValidDataWrongNameInDataForMetadataGroup() {
+		DataGroup dataGroup = DataGroup.withNameInData("ourRelation");
+
+		DataGroup testLink = DataGroup.withNameInData("testLink");
+		testLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		testLink.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "metadataTextVariableGroup"));
+		dataGroup.addChild(testLink);
+
+		DataGroup relationInfo = DataGroup.withNameInData("relationInfoGroupNOT");
+		relationInfo.addChild(DataAtomic.withNameInDataAndValue("whatEverText", "some text"));
+		dataGroup.addChild(relationInfo);
+
+		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid());
+	}
+
+	@Test
+	public void testRecordRelationInValidDataMissingMetadataGroup() {
+		DataGroup dataGroup = DataGroup.withNameInData("ourRelation");
+
+		DataGroup testLink = DataGroup.withNameInData("testLink");
+		testLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		testLink.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "metadataTextVariableGroup"));
+		dataGroup.addChild(testLink);
+
+		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid());
+	}
+
+	@Test
+	public void testRecordRelationInValidDataMetadataGroupWithRepeatId() {
+		DataGroup dataGroup = DataGroup.withNameInData("ourRelation");
+
+		DataGroup testLink = DataGroup.withNameInData("testLink");
+		testLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		testLink.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "metadataTextVariableGroup"));
+		dataGroup.addChild(testLink);
+
+		DataGroup relationInfo = DataGroup.withNameInData("relationInfoGroupNOT");
+		relationInfo.addChild(DataAtomic.withNameInDataAndValue("whatEverText", "some text"));
+		relationInfo.setRepeatId("2");
 		dataGroup.addChild(relationInfo);
 
 		assertFalse(dataElementValidator.validateData(dataGroup).dataIsValid());
