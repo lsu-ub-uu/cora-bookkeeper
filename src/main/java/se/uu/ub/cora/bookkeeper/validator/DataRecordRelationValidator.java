@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 
@@ -32,13 +33,12 @@ public class DataRecordRelationValidator implements DataElementValidator {
 	protected DataGroup dataGroup;
 	protected ValidationAnswer validationAnswer;
 
-
 	public DataRecordRelationValidator(DataValidatorFactoryImp dataValidatorFactoryImp,
 			MetadataHolder metadataHolder, RecordRelation recordRelation) {
 		this.dataValidatorFactoryImp = dataValidatorFactoryImp;
 		this.metadataHolder = metadataHolder;
 		this.recordRelation = recordRelation;
-//		super(dataValidatorFactoryImp, metadataHolder, metadataGroup);
+		// super(dataValidatorFactoryImp, metadataHolder, metadataGroup);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -47,8 +47,8 @@ public class DataRecordRelationValidator implements DataElementValidator {
 		this.dataGroup = (DataGroup) dataGroup;
 		validationAnswer = new ValidationAnswer();
 		validateNameInData();
-		validateRefRecordLinkId();
-		validateRefMetadataGroupId();
+		validateLink();
+		// validateChildren();
 		return validationAnswer;
 	}
 
@@ -61,18 +61,175 @@ public class DataRecordRelationValidator implements DataElementValidator {
 		}
 	}
 
-	private void validateRefRecordLinkId() {
-		if (!dataGroup.containsChildWithNameInData("refRecordLinkId")
-				|| dataGroup.getFirstAtomicValueWithNameInData("refRecordLinkId").isEmpty()) {
-			validationAnswer.addErrorMessage(
-					"DataRecordRelation with nameInData:" + dataGroup.getNameInData() + " must have an nonempty refRecordLinkId as child.");
+	private void validateLink() {
+		String refRecordLinkId = recordRelation.getRefRecordLinkId();
+		int noOfChildrenFound = validateAndCountChildrenWithReferenceId(refRecordLinkId);
+		if (noOfChildrenFound != 1) {
+			validationAnswer
+					.addErrorMessage("RecordRelation should have one and only one recordLink");
 		}
 	}
 
-	private void validateRefMetadataGroupId() {
-		if(!dataGroup.containsChildWithNameInData("refMetadataGroupId")
-				|| dataGroup.getFirstAtomicValueWithNameInData("refMetadataGroupId").isEmpty()){
-			validationAnswer.addErrorMessage("DataRecordRelation with nameInData:" + dataGroup.getNameInData() + " must have an nonempty refMetadataGroupId as child.");
+	// private void validateChildren() {
+	// validateDataContainsAllRequiredChildrenWithCorrectValues();
+	// validateDataContainsNoUnspecifiedChildren();
+	// }
+	//
+	// private void validateDataContainsAllRequiredChildrenWithCorrectValues() {
+	// Collection<MetadataChildReference> childReferences =
+	// metadataGroup.getChildReferences();
+	// for (MetadataChildReference childReference : childReferences) {
+	// validateDataContainsRequiredChildReferenceWithCorrectValue(childReference);
+	// }
+	// }
+	//
+	// private void validateDataContainsRequiredChildReferenceWithCorrectValue(
+	// MetadataChildReference childReference) {
+	// String referenceId = childReference.getReferenceId();
+	// boolean mayBeRepeated = childReference.getRepeatMax() > 1;
+	//
+	// int childrenFound = validateAndCountChildrenWithReferenceId(referenceId,
+	// mayBeRepeated);
+	// validateRepeatMinAndMax(childReference, childrenFound);
+	// }
+	//
+	private int validateAndCountChildrenWithReferenceId(String referenceId) {
+		int childrenFound = 0;
+		for (DataElement childData : dataGroup.getChildren()) {
+			if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
+				childrenFound++;
+				validateNoRepeatId(childData);
+				validateChildElementData(referenceId, childData);
+			}
+		}
+		return childrenFound;
+	}
+
+	private String createIdentifiedErrorMessage(DataElement childData) {
+		return "Repeatable child " + childData.getNameInData() + " in group "
+				+ dataGroup.getNameInData();
+	}
+
+	// private void validateUniqueRepeatId(Set<String> repeatIds, DataElement
+	// childData) {
+	// String repeatId = childData.getRepeatId();
+	// if (repeatIds.contains(repeatId)) {
+	// validationAnswer.addErrorMessage(createIdentifiedErrorMessage(childData)
+	// + " must have unique repeatId: " + repeatId);
+	// } else {
+	// repeatIds.add(repeatId);
+	// }
+	// }
+	//
+	// private void validateRepeatMinAndMax(MetadataChildReference
+	// childReference, int childrenFound) {
+	// String referenceId = childReference.getReferenceId();
+	// if (childrenFound < childReference.getRepeatMin()) {
+	// validationAnswer.addErrorMessage("Did not find enough data children with
+	// referenceId: "
+	// + referenceId + getReferenceText(referenceId) + ".");
+	// }
+	// if (childrenFound > childReference.getRepeatMax()) {
+	// validationAnswer.addErrorMessage(
+	// "Found too many data children with referenceId: " + referenceId + ".");
+	// }
+	// }
+	//
+	// private String getReferenceText(String referenceId) {
+	// MetadataElement childElement =
+	// metadataHolder.getMetadataElement(referenceId);
+	// StringBuilder sb = new StringBuilder();
+	// sb.append("(with nameInData:");
+	// sb.append(childElement.getNameInData());
+	// sb.append(getAttributesTextForMetadata(childElement));
+	// return sb.toString();
+	// }
+	//
+	// private String getAttributesTextForMetadata(MetadataElement childElement)
+	// {
+	// if (childElement.getAttributeReferences().isEmpty()) {
+	// return "";
+	// }
+	// return getTextForExistingMetadataAttributes(childElement);
+	// }
+	//
+	// private String getTextForExistingMetadataAttributes(MetadataElement
+	// childElement) {
+	// StringJoiner joiner = new StringJoiner(", ");
+	// for (String attributeRef : childElement.getAttributeReferences()) {
+	// CollectionVariable attributeElement = (CollectionVariable) metadataHolder
+	// .getMetadataElement(attributeRef);
+	//
+	// joiner.add(attributeElement.getNameInData() + ":" +
+	// attributeElement.getFinalValue());
+	// }
+	// return " and attributes: " + joiner.toString();
+	// }
+	//
+	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
+			String referenceId) {
+		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
+		if (childElement == null) {
+			throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
+		}
+		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
+	}
+
+	private void validateNoRepeatId(DataElement childData) {
+		String repeatId = childData.getRepeatId();
+		if (repeatId != null) {
+			validationAnswer.addErrorMessage(
+					createIdentifiedErrorMessage(childData) + " can not have a repeatId");
 		}
 	}
+
+	private void validateChildElementData(String referenceId, DataElement childData) {
+		DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
+		ValidationAnswer va = childValidator.validateData(childData);
+		addMessagesFromAnswerToTotalValidationAnswer(va);
+	}
+
+	private void addMessagesFromAnswerToTotalValidationAnswer(ValidationAnswer aValidationAnswer) {
+		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
+	}
+
+	// private void validateDataContainsNoUnspecifiedChildren() {
+	// for (DataElement childData : dataGroup.getChildren()) {
+	// if (!isChildDataSpecifiedInMetadataGroup(childData)) {
+	// validationAnswer
+	// .addErrorMessage("Could not find metadata for child with nameInData: "
+	// + childData.getNameInData() + getAttributesText(childData));
+	// }
+	// }
+	// }
+	//
+	// private boolean isChildDataSpecifiedInMetadataGroup(DataElement
+	// childData) {
+	// Collection<MetadataChildReference> childReferences =
+	// metadataGroup.getChildReferences();
+	// for (MetadataChildReference childReference : childReferences) {
+	// if (isChildDataSpecifiedByChildReferenceId(childData,
+	// childReference.getReferenceId())) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+	//
+	// private String getAttributesText(DataElement childData) {
+	// if (childData.getAttributes().isEmpty()) {
+	// return "";
+	// }
+	// return getTextForExistingDataAttributes(childData);
+	// }
+	//
+	// private String getTextForExistingDataAttributes(DataElement childData) {
+	// StringJoiner joiner = new StringJoiner(", ");
+	// for (Entry<String, String> entry : childData.getAttributes().entrySet())
+	// {
+	// joiner.add(entry.getKey() + ":" + entry.getValue());
+	// }
+	// return " and attributes: " + joiner.toString();
+	// }
 }

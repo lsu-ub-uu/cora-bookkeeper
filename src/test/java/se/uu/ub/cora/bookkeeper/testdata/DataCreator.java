@@ -37,12 +37,12 @@ public class DataCreator {
 		return group;
 	}
 
-	public static RecordRelation createRecordRelation(String id, MetadataHolder metadataHolder) {
+	public static RecordRelation createRecordRelation(String id, String nameInData,
+			String refRecordLink, String refMetadataGroup, MetadataHolder metadataHolder) {
 		RecordRelation recordRelation = RecordRelation
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(
-						id + "RecordRelationId", id + "RecordRelationNameInData",
-						id + "RecordRelationText", id + "RecordRelationDefText",
-						id + "refRecordLink", id + "RefMetadataGroup");
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(id,
+						nameInData, id + "RecordRelationText", id + "RecordRelationDefText",
+						refRecordLink, refMetadataGroup);
 		metadataHolder.addMetadataElement(recordRelation);
 		return recordRelation;
 	}
