@@ -38,8 +38,8 @@ class DataGroupValidator implements DataElementValidator {
 	private DataValidatorFactoryImp dataValidatorFactoryImp;
 	private final MetadataGroup metadataGroup;
 	private MetadataHolder metadataHolder;
-	private DataGroup dataGroup;
-	private ValidationAnswer validationAnswer;
+	protected DataGroup dataGroup;
+	protected ValidationAnswer validationAnswer;
 
 	DataGroupValidator(DataValidatorFactoryImp dataValidatorFactoryImp,
 			MetadataHolder metadataHolder, MetadataGroup metadataGroup) {
