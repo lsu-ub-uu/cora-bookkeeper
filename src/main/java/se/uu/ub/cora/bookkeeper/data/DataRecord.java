@@ -19,12 +19,20 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DataRecord implements Data {
-	Set<String> keys = new HashSet<>();
+	Set<String> keys = new LinkedHashSet<>();
 	private DataGroup dataGroup;
+
+	public static DataRecord withDataGroup(DataGroup dataGroup) {
+		return new DataRecord(dataGroup);
+	}
+
+	private DataRecord(DataGroup dataGroup) {
+		this.dataGroup = dataGroup;
+	}
 
 	public void addKey(String key) {
 		keys.add(key);

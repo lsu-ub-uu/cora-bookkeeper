@@ -1,5 +1,6 @@
 /*
  * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -29,15 +30,23 @@ import org.testng.annotations.Test;
 
 public class DataRecordTest {
 	private DataRecord dataRecord;
+	private DataGroup dataGroup;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataRecord = new DataRecord();
+		dataGroup = DataGroup.withNameInData("nameInData");
+		dataRecord = DataRecord.withDataGroup(dataGroup);
+	}
+
+	@Test
+	public void testWithDataGroup() {
+		assertEquals(dataRecord.getDataGroup(), dataGroup);
 	}
 
 	@Test
 	public void testRecordIsData() {
 		assertTrue(dataRecord instanceof Data);
+		assertEquals(dataRecord.getDataGroup(), dataGroup);
 	}
 
 	@Test

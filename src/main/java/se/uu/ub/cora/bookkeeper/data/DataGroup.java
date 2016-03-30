@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class DataGroup implements DataElement, Data {
+public final class DataGroup implements DataPart, DataElement, Data {
 
 	private final String nameInData;
 	private Map<String, String> attributes = new HashMap<>();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,26 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-public final class DataAttribute implements DataPart {
-
-	private String nameInData;
-	private String value;
-
-	public static DataAttribute withNameInDataAndValue(String nameInData, String value) {
-		return new DataAttribute(nameInData, value);
-	}
-
-	private DataAttribute(String nameInData, String value) {
-		this.nameInData = nameInData;
-		this.value = value;
-	}
-
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
+public interface DataPart {
+	String getNameInData();
 }

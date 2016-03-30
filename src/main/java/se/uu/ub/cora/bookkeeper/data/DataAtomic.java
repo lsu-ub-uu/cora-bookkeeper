@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-public final class DataAtomic implements DataElement {
+public final class DataAtomic implements DataPart, DataElement {
 
 	private String nameInData;
 	private String value;

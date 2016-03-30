@@ -36,7 +36,8 @@ public class DataListTest {
 	@Test
 	public void testAddRecord() {
 		DataList dataList = DataList.withContainDataOfType("metadata");
-		DataRecord record = new DataRecord();
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		DataRecord record = DataRecord.withDataGroup(dataGroup);
 		dataList.addData(record);
 		List<Data> records = dataList.getDataList();
 		assertEquals(records.get(0), record);
