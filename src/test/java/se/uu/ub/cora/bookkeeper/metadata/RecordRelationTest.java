@@ -17,31 +17,37 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.bookkeeper.presentation;
+package se.uu.ub.cora.bookkeeper.metadata;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
-public class PresentationTextReferenceTest {
-	private PresentationTextReference presentationTextReference;
+public class RecordRelationTest {
+	private RecordRelation recordRelation;
 
 	@BeforeMethod
-	public void beforeMethod() {
-		String textRef = "textRef";
-		presentationTextReference = new PresentationTextReference(textRef);
+	public void setUp() {
+		recordRelation = RecordRelation
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup("id", "nameInData",
+						"textId", "defTextId", "refRecordLinkId", "testRefMetadataGroup");
+
 	}
 
 	@Test
 	public void testInit() {
-		assertEquals(presentationTextReference.getTextRef(), "textRef");
-	}
+		assertEquals(recordRelation.getId(), "id");
 
-	@Test
-	public void testPresentationChildReference() {
-		PresentationChildReference presentationChildReference = presentationTextReference;
-		String refId = presentationChildReference.getReferenceId();
-		assertEquals(refId, "textRef");
+		assertEquals(recordRelation.getNameInData(), "nameInData");
+
+		assertEquals(recordRelation.getTextId(), "textId");
+
+		assertEquals(recordRelation.getDefTextId(), "defTextId");
+
+		assertEquals(recordRelation.getRefRecordLinkId(), "refRecordLinkId");
+
+		assertEquals(recordRelation.getRefMetadataGroupId(), "testRefMetadataGroup");
 	}
 }

@@ -45,7 +45,8 @@ public class MetadataGroup extends MetadataElement {
 		super(id, nameInData, textId, defTextId);
 	}
 
-	public List<String> getAttributeReferences() {
+    @Override
+    public List<String> getAttributeReferences() {
 		return attributeReferences;
 	}
 

@@ -60,7 +60,8 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		return children;
 	}
 
-	public Map<String, String> getAttributes() {
+    @Override
+    public Map<String, String> getAttributes() {
 		return attributes;
 	}
 
@@ -107,7 +108,8 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		this.repeatId = repeatId;
 	}
 
-	public String getRepeatId() {
+    @Override
+    public String getRepeatId() {
 		return repeatId;
 	}
 }

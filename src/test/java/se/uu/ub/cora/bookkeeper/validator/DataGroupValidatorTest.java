@@ -695,9 +695,9 @@ public class DataGroupValidatorTest {
 	private void createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(
 			final MetadataHolder metadataHolder) {
 		MetadataGroup parent = DataCreator.createMetaDataGroup("parent", metadataHolder);
-		MetadataGroup group1 = DataCreator.createMetaDataGroupWithIdAndNameInNData("test1",
+		MetadataGroup group1 = DataCreator.createMetaDataGroupWithIdAndNameInData("test1",
 				"testGroup", metadataHolder);
-		MetadataGroup group2 = DataCreator.createMetaDataGroupWithIdAndNameInNData("test2",
+		MetadataGroup group2 = DataCreator.createMetaDataGroupWithIdAndNameInData("test2",
 				"testGroup", metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group1, metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text2", group2, metadataHolder);
@@ -849,7 +849,7 @@ public class DataGroupValidatorTest {
 			final boolean addExtraChildToData) {
 		MetadataGroup grandParent = DataCreator.createMetaDataGroup("grandParent", metadataHolder);
 		MetadataGroup parent = DataCreator.createMetaDataGroup("parent", metadataHolder);
-		MetadataGroup child = DataCreator.createMetaDataGroupWithIdAndNameInNData("test1",
+		MetadataGroup child = DataCreator.createMetaDataGroupWithIdAndNameInData("test1",
 				"testGroup", metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", child, metadataHolder);
 		DataCreator.addDataGroupAsMetadataChildReferenceToParent(parent, grandParent);

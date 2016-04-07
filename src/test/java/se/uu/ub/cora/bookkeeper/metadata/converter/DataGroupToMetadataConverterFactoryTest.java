@@ -104,4 +104,14 @@ public class DataGroupToMetadataConverterFactoryTest {
 		assertTrue(converter instanceof DataGroupToRecordLinkConverter);
 	}
 
+	@Test
+	public void testFactorRecordRelation() {
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "recordRelation");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToRecordRelationConverter);
+	}
+
 }

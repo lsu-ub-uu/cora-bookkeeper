@@ -25,16 +25,16 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 
-public final class DataGroupToMetadataGroupConverter implements DataGroupToMetadataConverter {
+public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataConverter {
 
-	private DataGroup dataGroup;
-	private MetadataGroup metadataGroup;
+	protected DataGroup dataGroup;
+	protected MetadataGroup metadataGroup;
 
 	public static DataGroupToMetadataGroupConverter fromDataGroup(DataGroup dataGroup) {
 		return new DataGroupToMetadataGroupConverter(dataGroup);
 	}
 
-	private DataGroupToMetadataGroupConverter(DataGroup dataGroup) {
+	protected DataGroupToMetadataGroupConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
@@ -57,14 +57,14 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 				textId, defTextId);
 	}
 
-	private void convertRefParentId() {
+	protected void convertRefParentId() {
 		if (dataGroup.containsChildWithNameInData("refParentId")) {
 			metadataGroup
 					.setRefParentId(dataGroup.getFirstAtomicValueWithNameInData("refParentId"));
 		}
 	}
 
-	private void convertAttributeReferences() {
+	protected void convertAttributeReferences() {
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
 					.getFirstGroupWithNameInData("attributeReferences");
@@ -74,7 +74,7 @@ public final class DataGroupToMetadataGroupConverter implements DataGroupToMetad
 		}
 	}
 
-	private void convertChildReferences() {
+	protected void convertChildReferences() {
 		DataGroup childReferences = dataGroup.getFirstGroupWithNameInData("childReferences");
 		for (DataElement childReferenceElement : childReferences.getChildren()) {
 			convertChildReference((DataGroup) childReferenceElement);
