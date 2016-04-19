@@ -72,10 +72,8 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateRecordTypeIsChildOfAbstractMetadataRecordType(){
-		RecordLink myBinaryLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
-				"binary", "textId", "defTextId", "binary");
 		MetadataHolder abstractMetadataHolder = new MetadataHolder();
-		abstractMetadataHolder.addMetadataElement(myBinaryLink);
+		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(abstractMetadataHolder);
 
 		MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image", "recordType", "imageText","imageDefText");
 		image.setRefParentId("binary");
@@ -87,6 +85,30 @@ public class DataRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 0);
 		assertTrue(validationAnswer.dataIsValid());
+	}
+
+	@Test
+	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordType(){
+		MetadataHolder abstractMetadataHolder = new MetadataHolder();
+		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(abstractMetadataHolder);
+
+		MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image", "recordType", "imageText","imageDefText");
+		image.setRefParentId("NOTBinary");
+		abstractMetadataHolder.addMetadataElement(image);
+
+		dataLinkValidator = new DataRecordLinkValidator(abstractMetadataHolder, myBinaryLink);
+
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image", "image001");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	private RecordLink createAndAddBinaryToMetadataHolder(MetadataHolder abstractMetadataHolder) {
+		RecordLink myBinaryLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
+				"binary", "textId", "defTextId", "binary");
+		abstractMetadataHolder.addMetadataElement(myBinaryLink);
+		return myBinaryLink;
 	}
 
 	@Test
