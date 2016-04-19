@@ -23,6 +23,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 import static org.testng.Assert.assertEquals;
@@ -34,9 +36,11 @@ public class DataRecordLinkValidatorTest {
 
 	@BeforeMethod
 	public void setUp() {
+		MetadataHolder metadataHolder = new MetadataHolder();
 		dataLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
 				"nameInData", "textId", "defTextId", "linkedRecordType");
-		dataLinkValidator = new DataRecordLinkValidator(dataLink);
+		metadataHolder.addMetadataElement(dataLink);
+		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, dataLink);
 	}
 
 	@Test
@@ -64,6 +68,25 @@ public class DataRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	@Test
+	public void testValidateRecordTypeIsChildOfAbstractMetadataRecordType(){
+		RecordLink myBinaryLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
+				"binary", "textId", "defTextId", "binary");
+		MetadataHolder abstractMetadataHolder = new MetadataHolder();
+		abstractMetadataHolder.addMetadataElement(myBinaryLink);
+
+		MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image", "recordType", "imageText","imageDefText");
+		image.setRefParentId("binary");
+		abstractMetadataHolder.addMetadataElement(image);
+
+		dataLinkValidator = new DataRecordLinkValidator(abstractMetadataHolder, myBinaryLink);
+
+		DataGroup dataRecordLink = createGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image", "image001");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 0);
+		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
@@ -179,3 +202,4 @@ public class DataRecordLinkValidatorTest {
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 }
+

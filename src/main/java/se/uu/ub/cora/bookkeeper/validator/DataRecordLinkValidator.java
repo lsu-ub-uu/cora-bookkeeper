@@ -21,6 +21,9 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 public class DataRecordLinkValidator implements DataElementValidator {
@@ -28,10 +31,12 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private ValidationAnswer validationAnswer;
+	private MetadataHolder metadataHolder;
 	private DataGroup dataRecordLink;
 	private RecordLink recordLink;
 
-	public DataRecordLinkValidator(RecordLink dataLink) {
+	public DataRecordLinkValidator(MetadataHolder metadataHolder, RecordLink dataLink) {
+		this.metadataHolder = metadataHolder;
 		this.recordLink = dataLink;
 	}
 
@@ -62,7 +67,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " must have an nonempty recordType as child.");
 		}
-		else if (incomingRecordTypeNotSameAsSpecifiedInMetadata()) {
+		else if (incomingRecordTypeNotSameAsOrChildOfTypeSpecifiedInMetadata()) {
 			validationAnswer.addErrorMessage(createNameInDataMessagePart()
 					+ " must have an recordType:" + recordLink.getLinkedRecordType());
 		}
@@ -73,9 +78,29 @@ public class DataRecordLinkValidator implements DataElementValidator {
 				|| dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE).isEmpty();
 	}
 
-	private boolean incomingRecordTypeNotSameAsSpecifiedInMetadata() {
+	private boolean incomingRecordTypeNotSameAsOrChildOfTypeSpecifiedInMetadata() {
 		String linkedRecordType = dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
-		return !linkedRecordType.equals(recordLink.getLinkedRecordType());
+		if(linkedRecordType.equals(recordLink.getLinkedRecordType())){
+			return false;
+		}
+
+		return !recordTypeChildOfRecordTypeSpecifiedInMetadata(linkedRecordType);
+	}
+
+	private boolean recordTypeChildOfRecordTypeSpecifiedInMetadata(String linkedRecordType) {
+		MetadataElement metadataElementRecordType = metadataHolder.getMetadataElement(linkedRecordType);
+		if(metadataElementRecordType != null){
+			MetadataGroup recordType = (MetadataGroup)metadataElementRecordType;
+			if(linkedRecordTypeIsChildOfRecordTypeInMetadata(recordType)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean linkedRecordTypeIsChildOfRecordTypeInMetadata(MetadataGroup recordType) {
+		return recordType.getRefParentId() != null
+				&& recordType.getRefParentId().equals(recordLink.getLinkedRecordType());
 	}
 
 	private void validateRecordId() {
