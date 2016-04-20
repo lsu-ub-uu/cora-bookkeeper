@@ -22,7 +22,7 @@ package se.uu.ub.cora.bookkeeper.data;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class DataRecord implements Data {
+public final class DataRecord implements Data {
 	Set<String> keys = new LinkedHashSet<>();
 	private DataGroup dataGroup;
 

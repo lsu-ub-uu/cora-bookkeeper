@@ -33,6 +33,7 @@ public final class DataAttribute implements DataPart {
 		this.value = value;
 	}
 
+	@Override
 	public String getNameInData() {
 		return nameInData;
 	}
