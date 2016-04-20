@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,39 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-public final class DataRecord implements Data {
-	Set<String> keys = new LinkedHashSet<>();
-	private DataGroup dataGroup;
-
-	public static DataRecord withDataGroup(DataGroup dataGroup) {
-		return new DataRecord(dataGroup);
-	}
-
-	private DataRecord(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
-	}
-
-	public void addKey(String key) {
-		keys.add(key);
-	}
-
-	public boolean containsKey(String key) {
-		return keys.contains(key);
-	}
-
-	public void setDataGroup(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
-	}
-
-	public DataGroup getDataGroup() {
-		return dataGroup;
-	}
-
-	public Set<String> getKeys() {
-		return keys;
-	}
-
+public interface DataPart {
+	String getNameInData();
 }

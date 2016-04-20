@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-public final class DataAttribute {
+public final class DataAttribute implements DataPart {
 
 	private String nameInData;
 	private String value;
@@ -33,6 +33,7 @@ public final class DataAttribute {
 		this.value = value;
 	}
 
+	@Override
 	public String getNameInData() {
 		return nameInData;
 	}
