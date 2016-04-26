@@ -27,6 +27,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private ValidationAnswer validationAnswer;
 	private MetadataHolder metadataHolder;
 	private DataGroup dataRecordLink;
@@ -113,7 +114,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		if (finalValueIsDefinedInMetadata()) {
 			validateDataValueIsFinalValue();
 		}else {
-			validateTextVariableValueByMetadataIdAndNameInData("linkedRecordIdTextVar", "linkedRecordId");
+			validateTextVariableValueByMetadataIdAndNameInData("linkedRecordIdTextVar", LINKED_RECORD_ID);
 		}
 	}
 
