@@ -74,4 +74,22 @@ public class DataGroupToRecordLinkConverterTest {
 		assertEquals(recordLink.getLinkedPath().getNameInData(), "linkedPath");
 	}
 
+	@Test
+	public void testToMetadataWithFinalValue() {
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("finalValue", "someInstance"));
+
+		RecordLink recordLink = converter.toMetadata();
+
+		assertEquals(recordLink.getFinalValue(), "someInstance");
+	}
+
+	@Test
+	public void testToMetadataWithRefParentId() {
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "someParent"));
+
+		RecordLink recordLink = converter.toMetadata();
+
+		assertEquals(recordLink.getRefParentId(), "someParent");
+	}
+
 }

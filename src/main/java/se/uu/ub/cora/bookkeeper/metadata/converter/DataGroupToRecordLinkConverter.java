@@ -47,13 +47,28 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		RecordLink recordLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id, nameInData, textId,
 						defTextId, linkedRecordType);
-		addLinkedPathIfExists(recordLink);
+		convertLinkedPathIfExists(recordLink);
+		convertFinalValueIfExists(recordLink);
+		convertRefParentId(recordLink);
 		return recordLink;
 	}
 
-	private void addLinkedPathIfExists(RecordLink recordLink) {
+	private void convertLinkedPathIfExists(RecordLink recordLink) {
 		if (dataGroup.containsChildWithNameInData("linkedPath")) {
 			recordLink.setLinkedPath(dataGroup.getFirstGroupWithNameInData("linkedPath"));
+		}
+	}
+
+	private void convertFinalValueIfExists(RecordLink recordLink) {
+		if (dataGroup.containsChildWithNameInData("finalValue")) {
+			recordLink.setFinalValue(dataGroup.getFirstAtomicValueWithNameInData("finalValue"));
+		}
+	}
+
+	private void convertRefParentId(RecordLink recordLink) {
+		if (dataGroup.containsChildWithNameInData("refParentId")) {
+			String refParentId = dataGroup.getFirstAtomicValueWithNameInData("refParentId");
+			recordLink.setRefParentId(refParentId);
 		}
 	}
 }

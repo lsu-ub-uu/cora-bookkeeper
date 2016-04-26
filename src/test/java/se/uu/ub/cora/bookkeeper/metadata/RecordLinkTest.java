@@ -54,4 +54,16 @@ public class RecordLinkTest {
 		assertEquals(recordLink.getLinkedPath().getNameInData(), "linkedPath");
 	}
 
+	@Test
+	public void testWithRefParentId() {
+		recordLink.setRefParentId("refParentId");
+		assertEquals(recordLink.getRefParentId(), "refParentId");
+	}
+
+	@Test
+	public void testWithFinalValue() {
+		recordLink.setFinalValue("finalValue");
+		assertEquals(recordLink.getFinalValue(), "finalValue");
+	}
+
 }

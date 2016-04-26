@@ -21,10 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.metadata.*;
 
 public class DataRecordLinkValidator implements DataElementValidator {
 
@@ -104,15 +101,63 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateRecordId() {
-		if (recordIdIsEmpty()) {
+		if (recordIdIsMissing()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " must have an nonempty recordId as child.");
+		}else {
+			validateRecordIdValue();
 		}
 	}
 
-	private boolean recordIdIsEmpty() {
-		return !dataRecordLink.containsChildWithNameInData("linkedRecordId")
-				|| dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId").isEmpty();
+	private void validateRecordIdValue() {
+		if (finalValueIsDefinedInMetadata()) {
+			validateDataValueIsFinalValue();
+		}else {
+			validateTextVariableValueByMetadataIdAndNameInData("linkedRecordIdTextVar", "linkedRecordId");
+		}
+	}
+
+	private void validateTextVariableValueByMetadataIdAndNameInData(String metadataId, String nameInData) {
+		DataTextVariableValidator dataValidator = createDataValidator(metadataId);
+		DataElement linkedRecordIdData = dataRecordLink.getFirstChildWithNameInData(nameInData);
+		validateTextVariableData(dataValidator, linkedRecordIdData);
+	}
+
+	private void validateTextVariableData(DataTextVariableValidator dataValidator, DataElement textVariableData) {
+		ValidationAnswer va = dataValidator.validateData(textVariableData);
+
+		if (va.dataIsInvalid()) {
+            validationAnswer.addErrorMessages(va.getErrorMessages());
+        }
+	}
+
+	private DataTextVariableValidator createDataValidator(String metadataId) {
+		MetadataElement metadataElement = metadataHolder.getMetadataElement(metadataId);
+		return new DataTextVariableValidator((TextVariable) metadataElement);
+	}
+
+	private boolean recordIdIsMissing() {
+		return !dataRecordLink.containsChildWithNameInData("linkedRecordId");
+	}
+
+	private boolean finalValueIsDefinedInMetadata() {
+		return null != recordLink.getFinalValue();
+	}
+
+	private void validateDataValueIsFinalValue() {
+		String dataValue = dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId");
+		if (!dataValueIsFinalValue(dataValue)) {
+			createErrorMessageForFinalValue(dataValue);
+		}
+	}
+
+	private boolean dataValueIsFinalValue(String dataValue) {
+		return recordLink.getFinalValue().equals(dataValue);
+	}
+
+	private void createErrorMessageForFinalValue(String dataValue) {
+		validationAnswer.addErrorMessage(
+				"Value:" + dataValue + " is not finalValue:" + recordLink.getFinalValue());
 	}
 
 	private String createNameInDataMessagePart() {
@@ -143,15 +188,20 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateHasLinkedRepeatId() {
-		if (linkedRepeatIdIsEmpty()) {
+		if (linkedRepeatIdIsMissing()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " should have a linkedRepeatId");
+		}else{
+			validateRepeatIdValue();
 		}
 	}
 
-	private boolean linkedRepeatIdIsEmpty() {
-		return (!dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID))
-				|| dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID).isEmpty();
+	private void validateRepeatIdValue() {
+		validateTextVariableValueByMetadataIdAndNameInData("linkedRepeatIdTextVar", "linkedRepeatId");
+	}
+
+	private boolean linkedRepeatIdIsMissing() {
+		return (!dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID));
 	}
 
 	private void validateDoesNotHaveLinkedRepeatId() {

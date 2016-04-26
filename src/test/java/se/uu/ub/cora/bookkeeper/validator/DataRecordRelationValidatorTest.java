@@ -30,6 +30,7 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataRecordRelationValidatorTest {
@@ -61,6 +62,12 @@ public class DataRecordRelationValidatorTest {
 
 	private DataElementValidator createOneRecordRelationWithOneTextChildReturnDataElementValidator() {
 		MetadataHolder metadataHolder = createOneRecordRelationOneTextChild();
+		TextVariable linkedRecordIdTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("linkedRecordIdTextVar",
+						"linkedRecordId", "linkedRecordIdTextVarText", "linkedRecordIdTextVarDefText",
+						"(^[0-9A-Za-z:-_]{2,50}$)");
+
+		metadataHolder.addMetadataElement(linkedRecordIdTextVar);
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		return dataValidatorFactory.factor("ourRelation");
 	}

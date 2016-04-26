@@ -24,6 +24,8 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 public final class RecordLink extends MetadataElement {
 	private String linkedRecordType;
 	private DataGroup linkedPath;
+	private String refParentId;
+	private String finalValue;
 
 	public static RecordLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
 			String id, String nameInData, String textId, String defTextId,
@@ -49,4 +51,19 @@ public final class RecordLink extends MetadataElement {
 		return linkedPath;
 	}
 
+	public void setRefParentId(String refParentId) {
+		this.refParentId = refParentId;
+	}
+
+	public String getRefParentId() {
+		return refParentId;
+	}
+
+	public String getFinalValue() {
+		return finalValue;
+	}
+
+	public void setFinalValue(String finalValue) {
+		this.finalValue = finalValue;
+	}
 }

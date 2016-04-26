@@ -27,12 +27,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.*;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupValidatorTest {
@@ -160,6 +155,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testOneGroupNoAttributesOneRecordLinkChildValidData() {
 		MetadataHolder metadataHolder = createOneGroupNoAttributesOneRecordLinkChild();
+		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
+
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupId");
 
@@ -168,6 +165,15 @@ public class DataGroupValidatorTest {
 				"recordLinkNameInData", "recordLinkLinkedRecordType", "someRecordLinkId"));
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid());
+	}
+
+	private void addLinkedRecordIdTextVarToMetadataHolder(MetadataHolder metadataHolder) {
+		TextVariable linkedRecordIdTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("linkedRecordIdTextVar",
+						"linkedRecordId", "linkedRecordIdTextVarText", "linkedRecordIdTextVarDefText",
+						"(^[0-9A-Za-z:-_]{2,50}$)");
+
+		metadataHolder.addMetadataElement(linkedRecordIdTextVar);
 	}
 
 	private DataGroup createGroupWithNameInDataAndRecordTypeAndRecordId(String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
@@ -677,6 +683,7 @@ public class DataGroupValidatorTest {
 		dataParent.addChild(createGroupWithNameInDataAndRecordTypeAndRecordId(
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
+		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
@@ -761,6 +768,7 @@ public class DataGroupValidatorTest {
 		dataParent.addChild(createGroupWithNameInDataAndRecordTypeAndRecordId(
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
+		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
@@ -784,6 +792,7 @@ public class DataGroupValidatorTest {
 		dataParent.addChild(createGroupWithNameInDataAndRecordTypeAndRecordId(
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
+		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
@@ -807,6 +816,7 @@ public class DataGroupValidatorTest {
 		dataParent.addChild(createGroupWithNameInDataAndRecordTypeAndRecordId(
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
+		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
