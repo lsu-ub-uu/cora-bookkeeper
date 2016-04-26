@@ -138,7 +138,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean recordIdIsMissing() {
-		return !dataRecordLink.containsChildWithNameInData("linkedRecordId");
+		return !dataRecordLink.containsChildWithNameInData(LINKED_RECORD_ID);
 	}
 
 	private boolean finalValueIsDefinedInMetadata() {
@@ -146,7 +146,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateDataValueIsFinalValue() {
-		String dataValue = dataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String dataValue = dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		if (!dataValueIsFinalValue(dataValue)) {
 			createErrorMessageForFinalValue(dataValue);
 		}
