@@ -21,14 +21,10 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.Iterator;
-
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 
 public class DataGroupToRecordRelationConverterTest {
@@ -59,10 +55,10 @@ public class DataGroupToRecordRelationConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refRecordLinkId",
-				"otherRefRecordLinkId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refMetadataGroupId",
-				"otherRefMetadataGroupId"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValue("refRecordLinkId", "otherRefRecordLinkId"));
+		dataGroup.addChild(
+				DataAtomic.withNameInDataAndValue("refMetadataGroupId", "otherRefMetadataGroupId"));
 
 		return dataGroup;
 	}
