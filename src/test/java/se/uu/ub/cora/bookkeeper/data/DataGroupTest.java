@@ -158,4 +158,22 @@ public class DataGroupTest {
 		dataGroup.addChild(child);
 		dataGroup.getFirstChildWithNameInData("groupId2_NOTFOUND");
 	}
+
+	@Test
+	public void testRemoveChild() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		DataElement child = DataAtomic.withNameInDataAndValue("childId", "child value");
+		dataGroup.addChild(child);
+		dataGroup.removeFirstChildWithNameInData("childId");
+		assertFalse(dataGroup.containsChildWithNameInData("childId"));
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testRemoveChildNotFound() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		DataElement child = DataAtomic.withNameInDataAndValue("childId", "child value");
+		dataGroup.addChild(child);
+		dataGroup.removeFirstChildWithNameInData("childId_NOTFOUND");
+	}
+
 }
