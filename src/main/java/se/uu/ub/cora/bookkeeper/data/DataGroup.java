@@ -60,8 +60,8 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		return children;
 	}
 
-    @Override
-    public Map<String, String> getAttributes() {
+	@Override
+	public Map<String, String> getAttributes() {
 		return attributes;
 	}
 
@@ -108,8 +108,26 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		this.repeatId = repeatId;
 	}
 
-    @Override
-    public String getRepeatId() {
+	@Override
+	public String getRepeatId() {
 		return repeatId;
+	}
+
+	public void removeFirstChildWithNameInData(String childNameInData) {
+		boolean childRemoved = tryToRemoveChild(childNameInData);
+		if (!childRemoved) {
+			throw new DataMissingException(
+					"Element not found for childNameInData:" + childNameInData);
+		}
+	}
+
+	private boolean tryToRemoveChild(String childNameInData) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement.getNameInData().equals(childNameInData)) {
+				getChildren().remove(dataElement);
+				return true;
+			}
+		}
+		return false;
 	}
 }
