@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -31,8 +30,9 @@ public class RecordRelationTest {
 	@BeforeMethod
 	public void setUp() {
 		recordRelation = RecordRelation
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup("id", "nameInData",
-						"textId", "defTextId", "refRecordLinkId", "testRefMetadataGroup");
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup("id",
+						"nameInData", "textId", "defTextId", "refRecordLinkId",
+						"testRefMetadataGroup");
 
 	}
 

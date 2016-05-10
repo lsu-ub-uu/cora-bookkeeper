@@ -19,16 +19,16 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNull;
 
 public class PathExtenderTest {
 	@Test(expectedExceptions = InvocationTargetException.class)
@@ -60,10 +60,12 @@ public class PathExtenderTest {
 	public void testExtendPathUsingDataRecordLink() {
 		DataGroup dataRecordLink = DataGroup.withNameInData("someData");
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"someRecordType");
 		dataRecordLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId",
+				"someRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,
@@ -141,8 +143,9 @@ public class PathExtenderTest {
 	}
 
 	@Test
-	public void testExtendPathWithAtomicElement(){
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+	public void testExtendPathWithAtomicElement() {
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"someRecordType");
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,
 				linkedRecordType);
 		assertFalse(extendedPath.containsChildWithNameInData("attributes"));
