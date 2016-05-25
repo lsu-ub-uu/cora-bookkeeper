@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.testdata;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
@@ -136,5 +138,16 @@ public class DataCreator {
 			collection.addItemReference("choice2Id");
 		}
 
+	}
+
+	public static DataGroup createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
+		DataGroup dataRecordLink = DataGroup.withNameInData(nameInData);
+
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordTypeString);
+		dataRecordLink.addChild(linkedRecordType);
+
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordIdString);
+		dataRecordLink.addChild(linkedRecordId);
+		return dataRecordLink;
 	}
 }
