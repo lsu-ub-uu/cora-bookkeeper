@@ -1,5 +1,6 @@
 /*
  * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -112,6 +113,16 @@ public class DataGroupToMetadataConverterFactoryTest {
 				.fromDataGroup(dataGroup);
 		DataGroupToMetadataConverter converter = converterFactory.factor();
 		assertTrue(converter instanceof DataGroupToRecordRelationConverter);
+	}
+
+	@Test
+	public void testFactorResourceLink() {
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "resourceLink");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToResourceLinkConverter);
 	}
 
 }
