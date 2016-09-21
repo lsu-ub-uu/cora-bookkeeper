@@ -96,11 +96,10 @@ public class DataValidatorFactoryTest {
 	public void testFactorDataValidatorMetadataResourceLink() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(
-				"collectionVariableId", "nameInData", "textId", "defTextId"));
+				"masterResource", "nameInData", "textId", "defTextId"));
 
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
-		DataElementValidator dataGroupValidator = dataValidatorFactory
-				.factor("collectionVariableId");
+		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("masterResource");
 		assertTrue(dataGroupValidator instanceof DataResourceLinkValidator);
 	}
 

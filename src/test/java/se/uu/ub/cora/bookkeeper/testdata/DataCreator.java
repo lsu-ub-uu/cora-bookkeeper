@@ -140,14 +140,26 @@ public class DataCreator {
 
 	}
 
-	public static DataGroup createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
+	public static DataGroup createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
+			String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
 		DataGroup dataRecordLink = DataGroup.withNameInData(nameInData);
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordTypeString);
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+				linkedRecordTypeString);
 		dataRecordLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordIdString);
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId",
+				linkedRecordIdString);
 		dataRecordLink.addChild(linkedRecordId);
 		return dataRecordLink;
+	}
+
+	public static DataGroup createResourceLinkGroupWithNameInDataAndStreamId(String nameInData,
+			String streamId) {
+		DataGroup dataResourceLink = DataGroup.withNameInData(nameInData);
+
+		DataAtomic streamIdData = DataAtomic.withNameInDataAndValue("streamId", streamId);
+		dataResourceLink.addChild(streamIdData);
+		return dataResourceLink;
 	}
 }

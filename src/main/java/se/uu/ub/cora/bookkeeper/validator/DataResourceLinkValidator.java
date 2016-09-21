@@ -24,7 +24,6 @@ import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataResourceLinkValidator implements DataElementValidator {
@@ -33,11 +32,9 @@ public class DataResourceLinkValidator implements DataElementValidator {
 	private ValidationAnswer validationAnswer;
 	private MetadataHolder metadataHolder;
 	private DataGroup dataForResourceLink;
-	private ResourceLink resourceLink;
 
-	public DataResourceLinkValidator(MetadataHolder metadataHolder, ResourceLink dataLink) {
+	public DataResourceLinkValidator(MetadataHolder metadataHolder) {
 		this.metadataHolder = metadataHolder;
-		this.resourceLink = dataLink;
 	}
 
 	@Override
