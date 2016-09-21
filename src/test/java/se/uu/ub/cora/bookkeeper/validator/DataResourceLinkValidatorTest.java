@@ -40,54 +40,100 @@ public class DataResourceLinkValidatorTest {
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("streamIdTextVar",
 						"streamId", "streamIdTextVarText", "streamIdTextVarDefText",
 						"(^[0-9A-Za-z:-_]{2,50}$)");
-
 		metadataHolder.addMetadataElement(streamIdTextVar);
+
+		TextVariable fileNameTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("fileNameTextVar",
+						"fileName", "fileNameTextVarText", "fileNameTextVarDefText",
+						"(^[0-9A-Za-z:-_/.]{2,50}$)");
+		metadataHolder.addMetadataElement(fileNameTextVar);
+
+		TextVariable fileSizeTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("fileSizeTextVar",
+						"fileSize", "fileSizeTextVarText", "fileSizeTextVarDefText",
+						"(^[0-9]{2,50}$)");
+		metadataHolder.addMetadataElement(fileSizeTextVar);
+
+		TextVariable mimeTypeTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("mimeTypeTextVar",
+						"mimeType", "mimeTypeTextVarText", "mimeTypeTextVarDefText",
+						"(^[0-9A-Za-z:-_//]{2,50}$)");
+		metadataHolder.addMetadataElement(mimeTypeTextVar);
 
 		dataResourceLinkValidator = new DataResourceLinkValidator(metadataHolder);
 	}
 
 	@Test
 	public void testValidate() {
-		DataGroup dataResourceLink = DataCreator.createResourceLinkGroupWithNameInDataAndStreamId(
-				"nameInData", "imageBinary:123456");
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("master",
+						"imageBinary:123456", "adele.png", "123456", "application/png");
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
-	public void testValidateInvalidStreamId() {
-		DataGroup dataResourceLink = DataCreator.createResourceLinkGroupWithNameInDataAndStreamId(
-				"nameInData", "imageBinary:123456ÖÅÖ");
+	public void testValidateEmptyNameInData() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("",
+						"imageBinary:123456ÖÅÖ", "adele.png", "123456", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	private void validateAndAssertDataIsInvalid(DataGroup dataResourceLink) {
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
-	public void testValidateEmptyNameInData() {
+	public void testValidateInvalidStreamId() {
 		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamId("", "imageBinary:123456ÖÅÖ");
-		ValidationAnswer validationAnswer = dataResourceLinkValidator
-				.validateData(dataResourceLink);
-		assertTrue(validationAnswer.dataIsInvalid());
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456ÖÅÖ", "adele.png", "123456", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
 	@Test
 	public void testValidateEmptyStreamId() {
 		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamId("nameInData", "");
-		ValidationAnswer validationAnswer = dataResourceLinkValidator
-				.validateData(dataResourceLink);
-		assertTrue(validationAnswer.dataIsInvalid());
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData", "",
+						"adele.png", "123456", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
 	@Test
 	public void testValidateNoStreamId() {
-		DataGroup dataResourceLink = DataGroup.withNameInData("nameInData");
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData", null,
+						"adele.png", "123456", "application/png");
 
-		ValidationAnswer validationAnswer = dataResourceLinkValidator
-				.validateData(dataResourceLink);
-		assertTrue(validationAnswer.dataIsInvalid());
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateInvalidFileName() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456", "adeleÄÖLÄÖLL(/(%.png", "123456", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateEmptyFileName() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456", "", "123456", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateNoFileName() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456", null, "123456", "application/png");
+
+		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 }

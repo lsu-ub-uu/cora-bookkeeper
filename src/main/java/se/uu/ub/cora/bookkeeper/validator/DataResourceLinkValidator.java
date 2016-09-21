@@ -43,9 +43,9 @@ public class DataResourceLinkValidator implements DataElementValidator {
 		dataForResourceLink = (DataGroup) dataElement;
 		validateNameInData();
 		validateStreamId();
-		validatefileName();
-		validatefileSize();
-		validateMimeType();
+		// validatefileName();
+		// validatefileSize();
+		// validateMimeType();
 		return validationAnswer;
 	}
 

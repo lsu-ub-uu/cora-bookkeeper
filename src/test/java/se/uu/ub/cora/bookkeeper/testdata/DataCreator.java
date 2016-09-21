@@ -154,8 +154,8 @@ public class DataCreator {
 		return dataRecordLink;
 	}
 
-	public static DataGroup createResourceLinkGroupWithNameInDataAndStreamId(String nameInData,
-			String streamId) {
+	public static DataGroup createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType(
+			String nameInData, String streamId, String fileName, String fileSize, String mimeType) {
 		DataGroup dataResourceLink = DataGroup.withNameInData(nameInData);
 
 		DataAtomic streamIdData = DataAtomic.withNameInDataAndValue("streamId", streamId);
