@@ -25,6 +25,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
@@ -105,6 +106,18 @@ public class DataResourceLinkValidatorTest {
 	}
 
 	@Test
+	public void testValidateMissingStreamId() {
+		DataGroup dataResourceLink = DataGroup.withNameInData("nameInData");
+
+		// dataResourceLink
+		// .addChild(DataAtomic.withNameInDataAndValue("streamId", "imageBinary:123456"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filename", "adele.png"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filesize", "123456"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType", "application/png"));
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
 	public void testValidateInvalidFileName() {
 		DataGroup dataResourceLink = DataCreator
 				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
@@ -117,6 +130,18 @@ public class DataResourceLinkValidatorTest {
 		DataGroup dataResourceLink = DataCreator
 				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
 						"imageBinary:123456", "", "123456", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateMissingFilename() {
+		DataGroup dataResourceLink = DataGroup.withNameInData("nameInData");
+
+		dataResourceLink
+				.addChild(DataAtomic.withNameInDataAndValue("streamId", "imageBinary:123456"));
+		// dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filename", "adele.png"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filesize", "123456"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType", "application/png"));
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
@@ -137,6 +162,18 @@ public class DataResourceLinkValidatorTest {
 	}
 
 	@Test
+	public void testValidateMissingFilesize() {
+		DataGroup dataResourceLink = DataGroup.withNameInData("nameInData");
+
+		dataResourceLink
+				.addChild(DataAtomic.withNameInDataAndValue("streamId", "imageBinary:123456"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filename", "adele.png"));
+		// dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filesize", "123456"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType", "application/png"));
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
 	public void testValidateInvalidMimeType() {
 		DataGroup dataResourceLink = DataCreator
 				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
@@ -149,6 +186,19 @@ public class DataResourceLinkValidatorTest {
 		DataGroup dataResourceLink = DataCreator
 				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
 						"imageBinary:123456", "adele.png", "123456", "");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateMissingMimeType() {
+		DataGroup dataResourceLink = DataGroup.withNameInData("nameInData");
+
+		dataResourceLink
+				.addChild(DataAtomic.withNameInDataAndValue("streamId", "imageBinary:123456"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filename", "adele.png"));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filesize", "123456"));
+		// dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType",
+		// "application/png"));
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
