@@ -42,22 +42,22 @@ public class DataResourceLinkValidatorTest {
 						"(^[0-9A-Za-z:-_]{2,50}$)");
 		metadataHolder.addMetadataElement(streamIdTextVar);
 
-		TextVariable fileNameTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("fileNameTextVar",
-						"fileName", "fileNameTextVarText", "fileNameTextVarDefText",
-						"(^[0-9A-Za-z:-_/.]{2,50}$)");
-		metadataHolder.addMetadataElement(fileNameTextVar);
+		TextVariable filenameTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("filenameTextVar",
+						"filename", "filenameTextVarText", "filenameTextVarDefText",
+						"(^[0-9A-Za-z:-_.]{2,50}$)");
+		metadataHolder.addMetadataElement(filenameTextVar);
 
-		TextVariable fileSizeTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("fileSizeTextVar",
-						"fileSize", "fileSizeTextVarText", "fileSizeTextVarDefText",
+		TextVariable filesizeTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("filesizeTextVar",
+						"filesize", "filesizeTextVarText", "filesizeTextVarDefText",
 						"(^[0-9]{2,50}$)");
-		metadataHolder.addMetadataElement(fileSizeTextVar);
+		metadataHolder.addMetadataElement(filesizeTextVar);
 
 		TextVariable mimeTypeTextVar = TextVariable
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("mimeTypeTextVar",
 						"mimeType", "mimeTypeTextVarText", "mimeTypeTextVarDefText",
-						"(^[0-9A-Za-z:-_//]{2,50}$)");
+						"(^[0-9A-Za-z:-_/]{2,50}$)");
 		metadataHolder.addMetadataElement(mimeTypeTextVar);
 
 		dataResourceLinkValidator = new DataResourceLinkValidator(metadataHolder);
@@ -70,6 +70,7 @@ public class DataResourceLinkValidatorTest {
 						"imageBinary:123456", "adele.png", "123456", "application/png");
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
+		System.out.println(validationAnswer.getErrorMessages());
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
@@ -104,15 +105,6 @@ public class DataResourceLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidateNoStreamId() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData", null,
-						"adele.png", "123456", "application/png");
-
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
 	public void testValidateInvalidFileName() {
 		DataGroup dataResourceLink = DataCreator
 				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
@@ -129,11 +121,35 @@ public class DataResourceLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidateNoFileName() {
+	public void testValidateInvalidFileSize() {
 		DataGroup dataResourceLink = DataCreator
 				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", null, "123456", "application/png");
-
+						"imageBinary:123456", "adele.png", "/)=(&/(123456", "application/png");
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
+
+	@Test
+	public void testValidateEmptyFileSize() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456", "adele.png", "", "application/png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateInvalidMimeType() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456", "adele.png", "123456", "application/)(/(&png");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
+	@Test
+	public void testValidateEmptyMimeType() {
+		DataGroup dataResourceLink = DataCreator
+				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
+						"imageBinary:123456", "adele.png", "123456", "");
+		validateAndAssertDataIsInvalid(dataResourceLink);
+	}
+
 }

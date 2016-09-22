@@ -43,9 +43,9 @@ public class DataResourceLinkValidator implements DataElementValidator {
 		dataForResourceLink = (DataGroup) dataElement;
 		validateNameInData();
 		validateStreamId();
-		// validatefileName();
-		// validatefileSize();
-		// validateMimeType();
+		validateFileName();
+		validateFileSize();
+		validateMimeType();
 		return validationAnswer;
 	}
 
@@ -60,20 +60,24 @@ public class DataResourceLinkValidator implements DataElementValidator {
 	}
 
 	private void validateStreamId() {
-		if (streamIdIsMissing()) {
-			validationAnswer.addErrorMessage(
-					createNameInDataMessagePart() + " must have an nonempty streamId as child.");
+		validateChild("streamIdTextVar", STREAM_ID);
+	}
+
+	private void validateChild(String metadataId, String nameInData) {
+		if (childIsMissing(nameInData)) {
+			validationAnswer.addErrorMessage(createNameInDataMessagePart()
+					+ " must have an nonempty " + nameInData + " as child.");
 		} else {
-			validateStreamIdValue();
+			validateChildValue(metadataId, nameInData);
 		}
 	}
 
-	private boolean streamIdIsMissing() {
-		return !dataForResourceLink.containsChildWithNameInData(STREAM_ID);
+	private boolean childIsMissing(String nameInData) {
+		return !dataForResourceLink.containsChildWithNameInData(nameInData);
 	}
 
-	private void validateStreamIdValue() {
-		validateTextVariableValueByMetadataIdAndNameInData("streamIdTextVar", STREAM_ID);
+	private void validateChildValue(String metdataId, String nameInData) {
+		validateTextVariableValueByMetadataIdAndNameInData(metdataId, nameInData);
 	}
 
 	private void validateTextVariableValueByMetadataIdAndNameInData(String metadataId,
@@ -102,4 +106,15 @@ public class DataResourceLinkValidator implements DataElementValidator {
 		return "DataRecordLink with nameInData:" + dataForResourceLink.getNameInData();
 	}
 
+	private void validateFileName() {
+		validateChild("filenameTextVar", "filename");
+	}
+
+	private void validateFileSize() {
+		validateChild("filesizeTextVar", "filesize");
+	}
+
+	private void validateMimeType() {
+		validateChild("mimeTypeTextVar", "mimeType");
+	}
 }

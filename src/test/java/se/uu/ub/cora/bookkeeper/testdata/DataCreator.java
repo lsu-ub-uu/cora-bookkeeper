@@ -155,11 +155,13 @@ public class DataCreator {
 	}
 
 	public static DataGroup createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType(
-			String nameInData, String streamId, String fileName, String fileSize, String mimeType) {
+			String nameInData, String streamId, String filename, String filesize, String mimeType) {
 		DataGroup dataResourceLink = DataGroup.withNameInData(nameInData);
 
-		DataAtomic streamIdData = DataAtomic.withNameInDataAndValue("streamId", streamId);
-		dataResourceLink.addChild(streamIdData);
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("streamId", streamId));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filename", filename));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filesize", filesize));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType", mimeType));
 		return dataResourceLink;
 	}
 }
