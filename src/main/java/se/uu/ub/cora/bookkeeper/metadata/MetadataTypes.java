@@ -22,12 +22,12 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public enum MetadataTypes {
 	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
 			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK(
-							"metadataRecordLink"), RECORDRELATION("metadataRecordRelation");
+					"metadataCollectionItem"), RECORDLINK("metadataRecordLink"), RECORDRELATION(
+							"metadataRecordRelation"), RESOURCELINK("metadataResourceLink");
+
+	public final String type;
 
 	MetadataTypes(String type) {
 		this.type = type;
 	}
-
-	public final String type;
 }
