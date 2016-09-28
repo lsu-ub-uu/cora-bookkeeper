@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,15 +19,22 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-public enum MetadataTypes {
-	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
-			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK("metadataRecordLink"), RECORDRELATION(
-							"metadataRecordRelation"), RESOURCELINK("metadataResourceLink");
+import static org.testng.Assert.assertEquals;
 
-	public final String type;
+import org.testng.annotations.Test;
 
-	MetadataTypes(String type) {
-		this.type = type;
+public class ResourceLinkTest {
+	@Test
+	public void testInit() {
+		ResourceLink resourceLink = ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId("id",
+				"nameInData", "textId", "defTextId");
+
+		assertEquals(resourceLink.getId(), "id");
+
+		assertEquals(resourceLink.getNameInData(), "nameInData");
+
+		assertEquals(resourceLink.getTextId(), "textId");
+
+		assertEquals(resourceLink.getDefTextId(), "defTextId");
 	}
 }

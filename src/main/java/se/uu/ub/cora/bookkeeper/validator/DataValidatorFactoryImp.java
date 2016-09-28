@@ -25,6 +25,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
+import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataValidatorFactoryImp implements DataValidatorFactory {
@@ -55,6 +56,9 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 		}
 		if (metadataElement instanceof RecordLink) {
 			return new DataRecordLinkValidator(metadataHolder, (RecordLink) metadataElement);
+		}
+		if (metadataElement instanceof ResourceLink) {
+			return new DataResourceLinkValidator(metadataHolder);
 		}
 		throw DataValidationException
 				.withMessage("No validator created for element with id: " + elementId);

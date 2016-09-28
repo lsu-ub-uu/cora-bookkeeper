@@ -28,6 +28,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
+import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataValidatorFactoryTest {
@@ -44,9 +45,10 @@ public class DataValidatorFactoryTest {
 	@Test
 	public void testFactorDataValidatorRecordRelation() {
 		MetadataHolder metadataHolder = new MetadataHolder();
-		metadataHolder.addMetadataElement(
-				RecordRelation.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(
-						"metadataGroupId", "nameInData", "textId", "defTextId", "someLinkId", "someMetadataGroupId"));
+		metadataHolder.addMetadataElement(RecordRelation
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(
+						"metadataGroupId", "nameInData", "textId", "defTextId", "someLinkId",
+						"someMetadataGroupId"));
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator recordRelationValidator = dataValidatorFactory
 				.factor("metadataGroupId");
@@ -88,6 +90,17 @@ public class DataValidatorFactoryTest {
 		DataElementValidator dataGroupValidator = dataValidatorFactory
 				.factor("collectionVariableId");
 		assertTrue(dataGroupValidator instanceof DataCollectionVariableValidator);
+	}
+
+	@Test
+	public void testFactorDataValidatorMetadataResourceLink() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+		metadataHolder.addMetadataElement(ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(
+				"masterResource", "nameInData", "textId", "defTextId"));
+
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("masterResource");
+		assertTrue(dataGroupValidator instanceof DataResourceLinkValidator);
 	}
 
 	@Test(expectedExceptions = DataValidationException.class)

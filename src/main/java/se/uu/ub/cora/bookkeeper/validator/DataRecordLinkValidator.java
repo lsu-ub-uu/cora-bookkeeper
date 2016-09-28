@@ -33,9 +33,9 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	private DataGroup dataRecordLink;
 	private RecordLink recordLink;
 
-	public DataRecordLinkValidator(MetadataHolder metadataHolder, RecordLink dataLink) {
+	public DataRecordLinkValidator(MetadataHolder metadataHolder, RecordLink recordLink) {
 		this.metadataHolder = metadataHolder;
-		this.recordLink = dataLink;
+		this.recordLink = recordLink;
 	}
 
 	@Override

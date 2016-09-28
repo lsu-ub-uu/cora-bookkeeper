@@ -19,13 +19,22 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.Test;
 
 public class MetadataTypesTest {
 	@Test
 	public void testEnum() {
 		// small hack to get 100% coverage on enum
 		MetadataTypes.valueOf(MetadataTypes.GROUP.toString());
+		assertEquals(MetadataTypes.GROUP.type, "metadataGroup");
+		assertEquals(MetadataTypes.TEXTVARIABLE.type, "metadataTextVariable");
+		assertEquals(MetadataTypes.COLLECTIONVARIABLE.type, "metadataCollectionVariable");
+		assertEquals(MetadataTypes.ITEMCOLLECTION.type, "metadataItemCollection");
+		assertEquals(MetadataTypes.COLLECTIONITEM.type, "metadataCollectionItem");
+		assertEquals(MetadataTypes.RECORDLINK.type, "metadataRecordLink");
+		assertEquals(MetadataTypes.RECORDRELATION.type, "metadataRecordRelation");
+		assertEquals(MetadataTypes.RESOURCELINK.type, "metadataResourceLink");
 	}
 }

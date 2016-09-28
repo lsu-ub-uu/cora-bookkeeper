@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,15 +19,14 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-public enum MetadataTypes {
-	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
-			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK("metadataRecordLink"), RECORDRELATION(
-							"metadataRecordRelation"), RESOURCELINK("metadataResourceLink");
+public final class ResourceLink extends MetadataElement {
 
-	public final String type;
+	private ResourceLink(String id, String nameInData, String textId, String defTextId) {
+		super(id, nameInData, textId, defTextId);
+	}
 
-	MetadataTypes(String type) {
-		this.type = type;
+	public static ResourceLink withIdAndNameInDataAndTextIdAndDefTextId(String id,
+			String nameInData, String textId, String defTextId) {
+		return new ResourceLink(id, nameInData, textId, defTextId);
 	}
 }

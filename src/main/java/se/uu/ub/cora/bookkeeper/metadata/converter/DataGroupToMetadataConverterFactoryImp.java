@@ -23,15 +23,14 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class DataGroupToMetadataConverterFactoryImp
 		implements DataGroupToMetadataConverterFactory {
-
-	public static DataGroupToMetadataConverterFactoryImp fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToMetadataConverterFactoryImp(dataGroup);
-	}
-
 	private DataGroup dataGroup;
 
 	private DataGroupToMetadataConverterFactoryImp(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
+	}
+
+	public static DataGroupToMetadataConverterFactoryImp fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupToMetadataConverterFactoryImp(dataGroup);
 	}
 
 	@Override
@@ -65,6 +64,9 @@ public final class DataGroupToMetadataConverterFactoryImp
 		}
 		if ("recordRelation".equals(type)) {
 			return DataGroupToRecordRelationConverter.fromDataGroup(dataGroup);
+		}
+		if ("resourceLink".equals(type)) {
+			return DataGroupToResourceLinkConverter.fromDataGroup(dataGroup);
 		}
 		throw DataConversionException
 				.withMessage("No converter found for DataGroup with type:" + type);

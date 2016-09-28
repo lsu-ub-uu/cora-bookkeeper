@@ -140,14 +140,28 @@ public class DataCreator {
 
 	}
 
-	public static DataGroup createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
+	public static DataGroup createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
+			String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
 		DataGroup dataRecordLink = DataGroup.withNameInData(nameInData);
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordTypeString);
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+				linkedRecordTypeString);
 		dataRecordLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordIdString);
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId",
+				linkedRecordIdString);
 		dataRecordLink.addChild(linkedRecordId);
 		return dataRecordLink;
+	}
+
+	public static DataGroup createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType(
+			String nameInData, String streamId, String filename, String filesize, String mimeType) {
+		DataGroup dataResourceLink = DataGroup.withNameInData(nameInData);
+
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("streamId", streamId));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filename", filename));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("filesize", filesize));
+		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType", mimeType));
+		return dataResourceLink;
 	}
 }

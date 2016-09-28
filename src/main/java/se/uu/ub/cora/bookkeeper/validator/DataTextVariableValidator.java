@@ -65,17 +65,22 @@ public class DataTextVariableValidator implements DataElementValidator {
 	}
 
 	private ValidationAnswer validateDataValueIsValidAccordingToRegEx() {
-		ValidationAnswer validationAnswer = new ValidationAnswer();
-		if (!dataIsValidAccordingToRegEx()) {
-			validationAnswer.addErrorMessage("TextVariable with nameInData:"
-					+ textVariable.getNameInData() + " is NOT valid, regular expression("
-					+ textVariable.getRegularExpression() + ") does not match:" + dataValue);
+		if (dataIsInvalidAccordingToRegEx()) {
+			return createValidationAnswerWithError();
 		}
-		return validationAnswer;
+		return new ValidationAnswer();
 	}
 
-	private boolean dataIsValidAccordingToRegEx() {
-		return dataValue.matches(textVariable.getRegularExpression());
+	private boolean dataIsInvalidAccordingToRegEx() {
+		return !dataValue.matches(textVariable.getRegularExpression());
+	}
+
+	private ValidationAnswer createValidationAnswerWithError() {
+		ValidationAnswer validationAnswer = new ValidationAnswer();
+		validationAnswer.addErrorMessage("TextVariable with nameInData:"
+				+ textVariable.getNameInData() + " is NOT valid, regular expression("
+				+ textVariable.getRegularExpression() + ") does not match:" + dataValue);
+		return validationAnswer;
 	}
 
 }

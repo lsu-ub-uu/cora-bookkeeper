@@ -36,39 +36,48 @@ public class DataTextVariableValidatorTest {
 	public void setUp() {
 		textVariable = TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
 				"id", "nameInData", "textId", "defTextId",
-				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}");
+				"^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$");
 
 		textDataValidator = new DataTextVariableValidator(textVariable);
 	}
 
 	@Test
 	public void testValidate() {
-		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", "10:10");
-		assertTrue(textDataValidator.validateData(data).dataIsValid(),
-				"The regular expression should be validated to true");
+		validateDataAndAssertValid("10:10");
+	}
+
+	private void validateDataAndAssertValid(String value) {
+		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", value);
+		assertTrue(textDataValidator.validateData(data).dataIsValid());
 	}
 
 	@Test
 	public void testInvalidCase() {
-		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", "1010");
-		assertFalse(textDataValidator.validateData(data).dataIsValid(),
-				"The regular expression should be validated to false");
+		validateDataAndAssertInvalid("1010");
+	}
+
+	@Test
+	public void testEmptyValue() {
+		validateDataAndAssertInvalid("");
+	}
+
+	private void validateDataAndAssertInvalid(String value) {
+		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", value);
+		assertFalse(textDataValidator.validateData(data).dataIsValid());
 	}
 
 	@Test
 	public void testValidateFinalValueValidData() {
-		textVariable.setFinalValue("12:12");
-		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", "12:12");
-
-		assertTrue(textDataValidator.validateData(data).dataIsValid());
+		String value = "12:12";
+		textVariable.setFinalValue(value);
+		validateDataAndAssertValid(value);
 	}
 
 	@Test
 	public void testValidateFinalValueInvalidData() {
 		textVariable.setFinalValue("12:12");
-		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", "12:10");
-
-		assertFalse(textDataValidator.validateData(data).dataIsValid());
+		String value = "12:10";
+		validateDataAndAssertInvalid(value);
 	}
 
 }
