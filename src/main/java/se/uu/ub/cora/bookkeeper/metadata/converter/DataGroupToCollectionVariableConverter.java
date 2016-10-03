@@ -41,7 +41,9 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
-		String refCollectionId = dataGroup.getFirstAtomicValueWithNameInData("refCollectionId");
+		
+		DataGroup refCollection = (DataGroup) dataGroup.getFirstChildWithNameInData("refCollection");
+		String refCollectionId = refCollection.getFirstAtomicValueWithNameInData("linkedRecordId");
 
 		CollectionVariable collectionVariable = new CollectionVariable(id, nameInData, textId,
 				defTextId, refCollectionId);

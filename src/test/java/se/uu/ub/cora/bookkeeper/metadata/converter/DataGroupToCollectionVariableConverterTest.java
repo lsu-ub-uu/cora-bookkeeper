@@ -52,7 +52,13 @@ public class DataGroupToCollectionVariableConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refCollectionId", "refCollection"));
+		
+		DataGroup refCollection = DataGroup.withNameInData("refCollection");
+		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
+		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refCollection"));
+		dataGroup.addChild(refCollection);
+
+		
 		return dataGroup;
 	}
 

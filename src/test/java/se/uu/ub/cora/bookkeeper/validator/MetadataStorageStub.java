@@ -62,8 +62,12 @@ public class MetadataStorageStub implements MetadataStorage {
 		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("textId", "groupTypeVarText"));
 		groupTypeVar
 				.addChild(DataAtomic.withNameInDataAndValue("defTextId", "groupTypeVarDefText"));
-		groupTypeVar.addChild(
-				DataAtomic.withNameInDataAndValue("refCollectionId", "groupTypeCollection"));
+		
+		DataGroup refCollection = DataGroup.withNameInData("refCollection");
+		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
+		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "groupTypeCollection"));
+		groupTypeVar.addChild(refCollection);
+
 		dataGroups.add(groupTypeVar);
 
 		// groupType1
@@ -179,8 +183,14 @@ public class MetadataStorageStub implements MetadataStorage {
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "collectionVar2"));
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("textId", "collectionVarText"));
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("defTextId", "collectionVarDefText"));
-		colVar2.addChild(
-				DataAtomic.withNameInDataAndValue("refCollectionId", "authorityTypeCollection"));
+		
+		DataGroup refCollection2 = DataGroup.withNameInData("refCollection");
+		refCollection2.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
+		refCollection2.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "authorityTypeCollection"));
+		colVar2.addChild(refCollection2);
+
+//		colVar2.addChild(
+//				DataAtomic.withNameInDataAndValue("refCollectionId", "authorityTypeCollection"));
 		dataGroups.add(colVar2);
 
 		// itemCollection
