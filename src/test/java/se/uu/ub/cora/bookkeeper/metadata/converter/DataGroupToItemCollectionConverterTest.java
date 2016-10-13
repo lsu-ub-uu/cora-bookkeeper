@@ -43,9 +43,11 @@ public class DataGroupToItemCollectionConverterTest {
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
 
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
-		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "choice1"));
-		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "choice2"));
-		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "choice3"));
+		
+		createAndAddItemReference(collectionItemReferences, "choice1", "one");
+		createAndAddItemReference(collectionItemReferences, "choice2", "two");
+		createAndAddItemReference(collectionItemReferences, "choice3", "three");
+		
 		dataGroup.addChild(collectionItemReferences);
 
 		DataGroupToItemCollectionConverter converter = DataGroupToItemCollectionConverter
@@ -61,5 +63,13 @@ public class DataGroupToItemCollectionConverterTest {
 		assertEquals(iterator.next(), "choice1");
 		assertEquals(iterator.next(), "choice2");
 		assertEquals(iterator.next(), "choice3");
+	}
+
+	private void createAndAddItemReference(DataGroup collectionItemReferences, String linkedRecordId, String repeatId) {
+		DataGroup ref1 = DataGroup.withNameInData("ref");
+		ref1.setRepeatId(repeatId);
+		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionItem"));
+		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		collectionItemReferences.addChild(ref1);
 	}
 }
