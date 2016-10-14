@@ -52,7 +52,6 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 			DataGroup itemRefElement = (DataGroup)dataElement;
 			String itemRefId = itemRefElement.getFirstAtomicValueWithNameInData("linkedRecordId");
 			itemCollection.addItemReference(itemRefId);
-//			itemCollection.addItemReference(((DataAtomic) dataElement).getValue());
 		}
 
 		return itemCollection;
