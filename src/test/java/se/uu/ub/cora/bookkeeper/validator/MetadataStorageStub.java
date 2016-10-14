@@ -113,8 +113,10 @@ public class MetadataStorageStub implements MetadataStorage {
 				DataAtomic.withNameInDataAndValue("defTextId", "groupTypeCollectionDefText"));
 
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
-		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "groupType1"));
-		collectionItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "groupType2"));
+
+		createAndAddItemReference(collectionItemReferences, "groupType1", "one");
+		createAndAddItemReference(collectionItemReferences, "groupType2", "two");
+//
 		groupTypeCollection.addChild(collectionItemReferences);
 
 		dataGroups.add(groupTypeCollection);
@@ -189,8 +191,6 @@ public class MetadataStorageStub implements MetadataStorage {
 		refCollection2.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "authorityTypeCollection"));
 		colVar2.addChild(refCollection2);
 
-//		colVar2.addChild(
-//				DataAtomic.withNameInDataAndValue("refCollectionId", "authorityTypeCollection"));
 		dataGroups.add(colVar2);
 
 		// itemCollection
@@ -210,10 +210,11 @@ public class MetadataStorageStub implements MetadataStorage {
 				DataAtomic.withNameInDataAndValue("defTextId", "authorityTypeCollectionDefTextId"));
 
 		DataGroup authorityItemReferences = DataGroup.withNameInData("collectionItemReferences");
-		authorityItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "person"));
-		authorityItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "family"));
-		authorityItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "organisation"));
-		authorityItemReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "place"));
+
+		createAndAddItemReference(authorityItemReferences, "person", "one");
+		createAndAddItemReference(authorityItemReferences, "family", "two");
+		createAndAddItemReference(authorityItemReferences, "organisation", "three");
+		createAndAddItemReference(authorityItemReferences, "place", "four");
 		authority.addChild(authorityItemReferences);
 		dataGroups.add(authority);
 
@@ -273,6 +274,14 @@ public class MetadataStorageStub implements MetadataStorage {
 
 		addDataToDataMetadata();
 		return dataGroups;
+	}
+
+	private void createAndAddItemReference(DataGroup collectionItemReferences, String linkedRecordId, String repeatId) {
+		DataGroup ref1 = DataGroup.withNameInData("ref");
+		ref1.setRepeatId(repeatId);
+		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionItem"));
+		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		collectionItemReferences.addChild(ref1);
 	}
 
 	private void addDataToDataMetadata() {
