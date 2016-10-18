@@ -66,11 +66,9 @@ public class DataValidatorTest {
 	@Test
 	public void testValidateCollectionVariable() {
 		DataElement data = DataAtomic.withNameInDataAndValue("collectionVar2", "person");
-		Assert.assertEquals(dataValidator.validateData("collectionVar2", data).dataIsValid(), true,
-				"The collection variable person should be validated to true");
+		Assert.assertEquals(dataValidator.validateData("collectionVar2", data).dataIsValid(), true);
 		DataElement data2 = DataAtomic.withNameInDataAndValue("collectionVar2", "place");
-		assertTrue(dataValidator.validateData("collectionVar2", data2).dataIsValid(),
-				"The collection variable place should be validated to true");
+		assertTrue(dataValidator.validateData("collectionVar2", data2).dataIsValid());
 	}
 
 	@Test

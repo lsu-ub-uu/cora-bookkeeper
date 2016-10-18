@@ -24,15 +24,15 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 
 public final class DataGroupToItemCollectionConverter implements DataGroupToMetadataConverter {
-
-	public static DataGroupToItemCollectionConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToItemCollectionConverter(dataGroup);
-	}
-
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 
 	private DataGroupToItemCollectionConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
+	}
+
+	public static DataGroupToItemCollectionConverter fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupToItemCollectionConverter(dataGroup);
 	}
 
 	@Override
@@ -40,8 +40,9 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		
+		String textId = extractTextIdByNameInData("textId");
+		String defTextId = extractTextIdByNameInData("defTextId");
 
 		ItemCollection itemCollection = new ItemCollection(id, nameInData, textId, defTextId);
 
@@ -49,11 +50,16 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 				.getFirstGroupWithNameInData("collectionItemReferences");
 		for (DataElement dataElement : collectionItemReferences.getChildren()) {
 			DataGroup itemRefElement = (DataGroup)dataElement;
-			String itemRefId = itemRefElement.getFirstAtomicValueWithNameInData("linkedRecordId");
+			String itemRefId = itemRefElement.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 			itemCollection.addItemReference(itemRefId);
 		}
 
 		return itemCollection;
+	}
+
+	private String extractTextIdByNameInData(String nameInData) {
+		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
+		return text.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 }
