@@ -176,4 +176,38 @@ public class DataGroupTest {
 		dataGroup.removeFirstChildWithNameInData("childId_NOTFOUND");
 	}
 
+	@Test
+	public void testExtractGroup() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		DataGroup dataGroup2 = DataGroup.withNameInData("childNameInData");
+		dataGroup2.addChild(DataGroup.withNameInData("grandChildNameInData"));
+		dataGroup.addChild(dataGroup2);
+		assertEquals(dataGroup.extractGroup("childNameInData"), dataGroup2);
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testExtractGroupNotFound() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		DataGroup dataGroup2 = DataGroup.withNameInData("childNameInData");
+		dataGroup2.addChild(DataGroup.withNameInData("grandChildNameInData"));
+		dataGroup.addChild(dataGroup2);
+		dataGroup.extractGroup("childNameInData_NOT_FOUND");
+	}
+
+	@Test
+	public void testExtractAtomicValue() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		assertEquals(dataGroup.extractAtomicValue("atomicNameInData"), "atomicValue");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testExtractAtomicValueNotFound() {
+		DataGroup dataGroup = DataGroup.withNameInData("nameInData");
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		dataGroup.extractAtomicValue("atomicNameInData_NOT_FOUND");
+	}
+
 }
