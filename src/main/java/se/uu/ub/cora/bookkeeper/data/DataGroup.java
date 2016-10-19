@@ -104,6 +104,24 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		throw new DataMissingException("Element not found for childNameInData:" + childNameInData);
 	}
 
+	public DataGroup extractGroup(String groupId) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement.getNameInData().equals(groupId)) {
+				return (DataGroup) dataElement;
+			}
+		}
+		throw new DataMissingException("Requested dataGroup " + groupId + " doesn't exist");
+	}
+
+	public String extractAtomicValue(String atomicId) {
+		for (DataElement dataElement : getChildren()) {
+			if (dataElement.getNameInData().equals(atomicId)) {
+				return ((DataAtomic) dataElement).getValue();
+			}
+		}
+		throw new DataMissingException("Requested dataAtomic " + atomicId + " does not exist");
+	}
+
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
 	}
