@@ -39,8 +39,16 @@ public class DataGroupToItemCollectionConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		
+		DataGroup text = DataGroup.withNameInData("textId");
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		dataGroup.addChild(text);
+		
+		DataGroup defText = DataGroup.withNameInData("defTextId");
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		dataGroup.addChild(defText);
 
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
 		

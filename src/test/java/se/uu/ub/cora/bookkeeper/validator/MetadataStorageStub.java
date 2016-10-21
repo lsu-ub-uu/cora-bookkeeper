@@ -107,16 +107,14 @@ public class MetadataStorageStub implements MetadataStorage {
 
 		groupTypeCollection
 				.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupTypeCollection"));
-		groupTypeCollection
-				.addChild(DataAtomic.withNameInDataAndValue("textId", "groupTypeCollectionText"));
-		groupTypeCollection.addChild(
-				DataAtomic.withNameInDataAndValue("defTextId", "groupTypeCollectionDefText"));
-
+		groupTypeCollection.addChild(createTextGroup("textId", "groupTypeCollectionText"));
+		groupTypeCollection.addChild(createTextGroup("defTextId", "groupTypeCollectionDefText"));
+		
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
 
 		createAndAddItemReference(collectionItemReferences, "groupType1", "one");
 		createAndAddItemReference(collectionItemReferences, "groupType2", "two");
-//
+
 		groupTypeCollection.addChild(collectionItemReferences);
 
 		dataGroups.add(groupTypeCollection);
@@ -204,11 +202,9 @@ public class MetadataStorageStub implements MetadataStorage {
 
 		authority.addChild(
 				DataAtomic.withNameInDataAndValue("nameInData", "authorityTypeCollection"));
-		authority.addChild(
-				DataAtomic.withNameInDataAndValue("textId", "authorityTypeCollectionTextId"));
-		authority.addChild(
-				DataAtomic.withNameInDataAndValue("defTextId", "authorityTypeCollectionDefTextId"));
-
+		authority.addChild(createTextGroup("textId", "authorityTypeCollectionTextId"));
+		authority.addChild(createTextGroup("defTextId", "authorityTypeCollectionDefTextId"));
+		
 		DataGroup authorityItemReferences = DataGroup.withNameInData("collectionItemReferences");
 
 		createAndAddItemReference(authorityItemReferences, "person", "one");
@@ -341,6 +337,13 @@ public class MetadataStorageStub implements MetadataStorage {
 		childReferences.addChild(childReference);
 
 		dataGroups.add(bushGroup);
+	}
+	
+	private DataGroup createTextGroup(String nameInData, String linkedRecordId){
+		DataGroup text = DataGroup.withNameInData(nameInData);
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId",linkedRecordId));
+		return text;
 	}
 
 	@Override
