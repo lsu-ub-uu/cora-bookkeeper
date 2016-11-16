@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class DataGroup implements DataPart, DataElement, Data {
 
@@ -30,6 +34,8 @@ public final class DataGroup implements DataPart, DataElement, Data {
 	private Map<String, String> attributes = new HashMap<>();
 	private List<DataElement> children = new ArrayList<>();
 	private String repeatId;
+	private Predicate<DataElement> isDataAtomic = dataElement -> dataElement instanceof DataAtomic;
+	private Predicate<DataElement> isDataGroup = dataElement -> dataElement instanceof DataGroup;
 
 	public static DataGroup withNameInData(String nameInData) {
 		return new DataGroup(nameInData);
@@ -66,60 +72,76 @@ public final class DataGroup implements DataPart, DataElement, Data {
 	}
 
 	public boolean containsChildWithNameInData(String childNameInData) {
-		for (DataElement dataElement : getChildren()) {
-			if (dataElement.getNameInData().equals(childNameInData)) {
-				return true;
-			}
-		}
-		return false;
+		return getChildrenStream().anyMatch(filterByNameInData(childNameInData));
+	}
+
+	private Stream<DataElement> getChildrenStream() {
+		return children.stream();
+	}
+
+	private Predicate<DataElement> filterByNameInData(String childNameInData) {
+		return dataElement -> dataElementsNameInDataIs(dataElement, childNameInData);
+	}
+
+	private boolean dataElementsNameInDataIs(DataElement dataElement, String childNameInData) {
+		return dataElement.getNameInData().equals(childNameInData);
 	}
 
 	public String getFirstAtomicValueWithNameInData(String childNameInData) {
-		for (DataElement dataElement : getChildren()) {
-			if (dataElement instanceof DataAtomic
-					&& dataElement.getNameInData().equals(childNameInData)) {
-				return ((DataAtomic) dataElement).getValue();
-			}
+		Optional<DataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
+				.findFirst();
+		return possiblyReturnAtomicChildWithNameInData(childNameInData, optionalFirst);
+	}
+
+	private String possiblyReturnAtomicChildWithNameInData(String childNameInData,
+			Optional<DataAtomic> optionalFirst) {
+		if (optionalFirst.isPresent()) {
+			return getAtomicValueFromOptional(optionalFirst);
 		}
 		throw new DataMissingException(
 				"Atomic value not found for childNameInData:" + childNameInData);
 	}
 
+	private String getAtomicValueFromOptional(Optional<DataAtomic> optionalFirst) {
+		return optionalFirst.get().getValue();
+	}
+
+	private Stream<DataAtomic> getAtomicChildrenWithNameInData(String childNameInData) {
+		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
+				.map(DataAtomic.class::cast);
+	}
+
+	private Stream<DataElement> getAtomicChildrenStream() {
+		return getChildrenStream().filter(isDataAtomic);
+	}
+
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		for (DataElement dataElement : getChildren()) {
-			if (dataElement instanceof DataGroup
-					&& dataElement.getNameInData().equals(childNameInData)) {
-				return ((DataGroup) dataElement);
-			}
+		Optional<DataGroup> findFirst = getGroupChildrenWithNameInData(childNameInData).findFirst();
+		if (findFirst.isPresent()) {
+			return findFirst.get();
 		}
 		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
 	}
 
+	private Stream<DataGroup> getGroupChildrenWithNameInData(String childNameInData) {
+		return getGroupChildrenStream().filter(filterByNameInData(childNameInData))
+				.map(DataGroup.class::cast);
+	}
+
+	private Stream<DataElement> getGroupChildrenStream() {
+		return getChildrenStream().filter(isDataGroup);
+	}
+
 	public DataElement getFirstChildWithNameInData(String childNameInData) {
-		for (DataElement dataElement : getChildren()) {
-			if (dataElement.getNameInData().equals(childNameInData)) {
-				return dataElement;
-			}
+		Optional<DataElement> optionalFirst = possiblyFindFirstChildWithNameInData(childNameInData);
+		if (optionalFirst.isPresent()) {
+			return optionalFirst.get();
 		}
 		throw new DataMissingException("Element not found for childNameInData:" + childNameInData);
 	}
 
-	public DataGroup extractGroup(String groupId) {
-		for (DataElement dataElement : getChildren()) {
-			if (dataElement.getNameInData().equals(groupId)) {
-				return (DataGroup) dataElement;
-			}
-		}
-		throw new DataMissingException("Requested dataGroup " + groupId + " doesn't exist");
-	}
-
-	public String extractAtomicValue(String atomicId) {
-		for (DataElement dataElement : getChildren()) {
-			if (dataElement.getNameInData().equals(atomicId)) {
-				return ((DataAtomic) dataElement).getValue();
-			}
-		}
-		throw new DataMissingException("Requested dataAtomic " + atomicId + " does not exist");
+	private Optional<DataElement> possiblyFindFirstChildWithNameInData(String childNameInData) {
+		return getChildrenStream().filter(filterByNameInData(childNameInData)).findFirst();
 	}
 
 	public void setRepeatId(String repeatId) {
@@ -141,11 +163,15 @@ public final class DataGroup implements DataPart, DataElement, Data {
 
 	private boolean tryToRemoveChild(String childNameInData) {
 		for (DataElement dataElement : getChildren()) {
-			if (dataElement.getNameInData().equals(childNameInData)) {
+			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
 				getChildren().remove(dataElement);
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
+		return getGroupChildrenWithNameInData(childNameInData).collect(Collectors.toList());
 	}
 }
