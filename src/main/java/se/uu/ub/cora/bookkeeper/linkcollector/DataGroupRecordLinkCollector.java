@@ -30,7 +30,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
-import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 
@@ -86,8 +85,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private boolean metadataElementConcernsLinks(MetadataElement childMetadataElement) {
-		return isRecordLink(childMetadataElement) || isMetadataGroup(childMetadataElement)
-				|| isRecordRelation(childMetadataElement);
+		return isRecordLink(childMetadataElement) || isMetadataGroup(childMetadataElement);
 	}
 
 	private boolean isRecordLink(MetadataElement childMetadataElement) {
@@ -96,10 +94,6 @@ public class DataGroupRecordLinkCollector {
 
 	private boolean isMetadataGroup(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof MetadataGroup;
-	}
-
-	private boolean isRecordRelation(MetadataElement childMetadataElement) {
-		return childMetadataElement instanceof RecordRelation;
 	}
 
 	private void collectLinksFromDataGroupChildren(MetadataElement childMetadataElement) {
@@ -130,9 +124,6 @@ public class DataGroupRecordLinkCollector {
 		if (isRecordLink(childMetadataElement)) {
 			createRecordToRecordLink((RecordLink) childMetadataElement, childDataElement,
 					childPath);
-		} else if (isRecordRelation(childMetadataElement)) {
-			createRecordToRecordLinkForRecordRelation((RecordRelation) childMetadataElement,
-					(DataGroup) childDataElement, childPath);
 		} else {
 			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, childPath);
 		}
@@ -228,26 +219,6 @@ public class DataGroupRecordLinkCollector {
 					dataGroup.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID));
 			to.addChild(linkedRepeatId);
 		}
-	}
-
-	private void createRecordToRecordLinkForRecordRelation(RecordRelation recordRelation,
-			DataGroup childDataElement, DataGroup childPath) {
-		RecordLink recordLink = getRecordLinkMetadataForRecordRelation(recordRelation);
-		DataGroup recordLinkData = getRecordLinkDataFromDataGroupUsingRecordLink(childDataElement,
-				recordLink);
-		DataGroup recordLinkPath = PathExtender.extendPathWithElementInformation(childPath,
-				recordLinkData);
-		createRecordToRecordLink((RecordLink) recordLink, recordLinkData, recordLinkPath);
-	}
-
-	private RecordLink getRecordLinkMetadataForRecordRelation(RecordRelation recordRelation) {
-		String refRecordLinkId = recordRelation.getRefRecordLinkId();
-		return (RecordLink) metadataHolder.getMetadataElement(refRecordLinkId);
-	}
-
-	private DataGroup getRecordLinkDataFromDataGroupUsingRecordLink(DataGroup childDataElement,
-			RecordLink recordLink) {
-		return (DataGroup) childDataElement.getFirstChildWithNameInData(recordLink.getNameInData());
 	}
 
 	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup,

@@ -34,7 +34,6 @@ public class MetadataTypesTest {
 		assertEquals(MetadataTypes.ITEMCOLLECTION.type, "metadataItemCollection");
 		assertEquals(MetadataTypes.COLLECTIONITEM.type, "metadataCollectionItem");
 		assertEquals(MetadataTypes.RECORDLINK.type, "metadataRecordLink");
-		assertEquals(MetadataTypes.RECORDRELATION.type, "metadataRecordRelation");
 		assertEquals(MetadataTypes.RESOURCELINK.type, "metadataResourceLink");
 	}
 }

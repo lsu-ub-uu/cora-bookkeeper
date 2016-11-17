@@ -62,9 +62,6 @@ public final class DataGroupToMetadataConverterFactoryImp
 		if ("recordLink".equals(type)) {
 			return DataGroupToRecordLinkConverter.fromDataGroup(dataGroup);
 		}
-		if ("recordRelation".equals(type)) {
-			return DataGroupToRecordRelationConverter.fromDataGroup(dataGroup);
-		}
 		if ("resourceLink".equals(type)) {
 			return DataGroupToResourceLinkConverter.fromDataGroup(dataGroup);
 		}

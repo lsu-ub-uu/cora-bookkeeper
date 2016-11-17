@@ -28,7 +28,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
-import se.uu.ub.cora.bookkeeper.metadata.RecordRelation;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataCreator {
@@ -37,16 +36,6 @@ public class DataCreator {
 				id + "GroupNameInData", id + "GroupText", id + "GroupDefText");
 		metadataHolder.addMetadataElement(group);
 		return group;
-	}
-
-	public static RecordRelation createRecordRelation(String id, String nameInData,
-			String refRecordLink, String refMetadataGroup, MetadataHolder metadataHolder) {
-		RecordRelation recordRelation = RecordRelation
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRefRecordLinkIdAndRefMetadataGroup(id,
-						nameInData, id + "RecordRelationText", id + "RecordRelationDefText",
-						refRecordLink, refMetadataGroup);
-		metadataHolder.addMetadataElement(recordRelation);
-		return recordRelation;
 	}
 
 	public static MetadataGroup createMetaDataGroupWithIdAndNameInData(String id, String nameInData,
