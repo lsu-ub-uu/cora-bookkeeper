@@ -8,7 +8,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupRecordLinkCollectorMetadataCreator {
 	private MetadataHolder metadataHolder = new MetadataHolder();
@@ -95,29 +94,6 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 
 		MetadataGroup topTopGroup = (MetadataGroup) metadataHolder.getMetadataElement("topGroup");
 		topTopGroup.addAttributeReference("attribute1");
-
-	}
-
-	void addMetadataForOneRecordRelationOneTextChild() {
-		DataCreator.createMetaDataGroupWithIdAndNameInData("topRelationGroup", "topRelationGroup",
-				metadataHolder);
-
-		DataCreator.createRecordRelation("ourRelation", "ourRelation", "testLink",
-				"relationInfoGroup", metadataHolder);
-
-		addChildReferenceParentIdChildIdMinMax("topRelationGroup", "ourRelation", 1, 1);
-
-		// recordLInk
-		RecordLink recordLink = RecordLink
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("testLink", "testLink",
-						"textId", "defTextId", "metadataGroup");
-		metadataHolder.addMetadataElement(recordLink);
-
-		// relationInfoGroup
-		MetadataGroup group = DataCreator.createMetaDataGroupWithIdAndNameInData(
-				"relationInfoGroup", "relationInfoGroup", metadataHolder);
-		DataCreator.addTextVarWithIdAndNameInDataAndRegExChildReferenceToGroup("whatEverTextVar",
-				"whatEverText", "^.*$", group, metadataHolder);
 
 	}
 

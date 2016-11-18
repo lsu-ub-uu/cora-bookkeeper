@@ -22,8 +22,7 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public enum MetadataTypes {
 	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
 			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK("metadataRecordLink"), RECORDRELATION(
-							"metadataRecordRelation"), RESOURCELINK("metadataResourceLink");
+					"metadataCollectionItem"), RECORDLINK("metadataRecordLink"), RESOURCELINK("metadataResourceLink");
 
 	public final String type;
 
