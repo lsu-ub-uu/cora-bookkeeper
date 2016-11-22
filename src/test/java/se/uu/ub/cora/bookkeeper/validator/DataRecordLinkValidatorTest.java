@@ -23,6 +23,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
+import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
@@ -63,8 +65,30 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidate() {
+	public void testValidateNoAttributes() {
 		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertTrue(validationAnswer.dataIsValid());
+	}
+	
+	//TODO: använd den här i testet nedan med attribut
+	private void addMetadataForAttributes(){
+		ItemCollection collection = new ItemCollection("collectionId", "collectionNameInData",
+				"CollectionTextId", "collectionDefTextId");
+		metadataHolder.addMetadataElement(collection);
+		String id = "someCollection";
+		CollectionVariable colVar = new CollectionVariable(id + "Id", id + "NameInData",
+				id + "Text", id + "DefText", "collectionId");
+		metadataHolder.addMetadataElement(colVar);
+	}
+	
+	@Test
+	public void testValidateOneAttribute() {
+		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		
+		
+		
+		dataRecordLink.addAttributeByIdWithValue("type", "choice1NameInData");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
@@ -190,12 +214,6 @@ public class DataRecordLinkValidatorTest {
 		assertEquals(validationAnswer.getErrorMessages().size(), 2);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
-
-	@Test
-	public void testValidateLinkedRecordIdDoesNotExist(){
-
-	}
-
 
 	@Test
 	public void testLinkedRepeatId() {

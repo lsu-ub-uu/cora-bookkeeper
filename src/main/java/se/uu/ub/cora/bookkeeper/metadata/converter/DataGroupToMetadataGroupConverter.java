@@ -30,12 +30,12 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 	protected DataGroup dataGroup;
 	protected MetadataGroup metadataGroup;
 
-	public static DataGroupToMetadataGroupConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToMetadataGroupConverter(dataGroup);
-	}
-
 	protected DataGroupToMetadataGroupConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
+	}
+	
+	public static DataGroupToMetadataGroupConverter fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupToMetadataGroupConverter(dataGroup);
 	}
 
 	@Override

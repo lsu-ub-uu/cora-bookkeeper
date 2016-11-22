@@ -19,6 +19,9 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class RecordLink extends MetadataElement {
@@ -26,18 +29,20 @@ public final class RecordLink extends MetadataElement {
 	private DataGroup linkedPath;
 	private String refParentId;
 	private String finalValue;
+	private final List<String> attributeReferences = new ArrayList<>();
 
+	private RecordLink(String id, String nameInData, String textId, String defTextId,
+			String linkedRecordType) {
+		super(id, nameInData, textId, defTextId);
+		this.linkedRecordType = linkedRecordType;
+	}
+	
 	public static RecordLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
 			String id, String nameInData, String textId, String defTextId,
 			String linkedRecordType) {
 		return new RecordLink(id, nameInData, textId, defTextId, linkedRecordType);
 	}
 
-	private RecordLink(String id, String nameInData, String textId, String defTextId,
-					   String linkedRecordType) {
-		super(id, nameInData, textId, defTextId);
-		this.linkedRecordType = linkedRecordType;
-	}
 
 	public String getLinkedRecordType() {
 		return linkedRecordType;
@@ -65,5 +70,15 @@ public final class RecordLink extends MetadataElement {
 
 	public void setFinalValue(String finalValue) {
 		this.finalValue = finalValue;
+	}
+	
+	@Override
+	public List<String> getAttributeReferences() {
+		return attributeReferences;
+	}
+
+	public void addAttributeReference(String attributeReferenceId) {
+		attributeReferences.add(attributeReferenceId);
+
 	}
 }

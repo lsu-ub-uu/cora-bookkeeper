@@ -23,9 +23,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 import static org.testng.Assert.assertEquals;
+
+import java.util.Iterator;
 
 public class DataGroupToRecordLinkConverterTest {
 	private DataGroupToRecordLinkConverter converter;
@@ -90,6 +93,39 @@ public class DataGroupToRecordLinkConverterTest {
 		RecordLink recordLink = converter.toMetadata();
 
 		assertEquals(recordLink.getRefParentId(), "someParent");
+	}
+	
+	@Test
+	public void testToMetadataWithAttributeReferences() {
+		DataGroup recordLinkDataGroup = createDataGroupContainingRecordLink();
+		addAttributesToDataGroup(recordLinkDataGroup);
+
+		DataGroupToMetadataConverter converter = DataGroupToRecordLinkConverter
+				.fromDataGroup(recordLinkDataGroup);
+		RecordLink recordLink = (RecordLink) converter.toMetadata();
+
+		assertEquals(recordLink.getId(), "otherId");
+		assertEquals(recordLink.getNameInData(), "other");
+		assertEquals(recordLink.getTextId(), "otherTextId");
+		assertEquals(recordLink.getDefTextId(), "otherDefTextId");
+		assertEquals(recordLink.getLinkedRecordType(), "someRecordType");
+		assertAttributesBasedOnDataGroup(recordLink);
+	}
+
+	private void addAttributesToDataGroup(DataGroup dataGroup) {
+		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
+		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
+		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
+		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
+		dataGroup.addChild(attributeReference);
+	}
+
+	private void assertAttributesBasedOnDataGroup(RecordLink recordLink) {
+		Iterator<String> attributeReferenceIterator = recordLink.getAttributeReferences()
+				.iterator();
+		assertEquals(attributeReferenceIterator.next(), "attribute1");
+		assertEquals(attributeReferenceIterator.next(), "attribute2");
+		assertEquals(attributeReferenceIterator.next(), "attribute3");
 	}
 
 }

@@ -24,6 +24,9 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import java.util.ArrayList;
 
 public class RecordLinkTest {
 	private RecordLink recordLink;
@@ -41,6 +44,8 @@ public class RecordLinkTest {
 		assertEquals(recordLink.getTextId(), "textId");
 		assertEquals(recordLink.getDefTextId(), "defTextId");
 		assertEquals(recordLink.getLinkedRecordType(), "linkedRecordType");
+		assertTrue(recordLink.getAttributeReferences() instanceof ArrayList);
+
 	}
 
 	@Test
@@ -65,5 +70,10 @@ public class RecordLinkTest {
 		recordLink.setFinalValue("finalValue");
 		assertEquals(recordLink.getFinalValue(), "finalValue");
 	}
-
+	
+	@Test
+	public void testAddAttributeReference() {
+		recordLink.addAttributeReference("attributeReference");
+		assertEquals(recordLink.getAttributeReferences().iterator().next(), "attributeReference");
+	}
 }

@@ -19,23 +19,35 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 public final class DataGroupToRecordLinkConverter implements DataGroupToMetadataConverter {
 
 	private DataGroup dataGroup;
-
-	public static DataGroupToRecordLinkConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToRecordLinkConverter(dataGroup);
-	}
+	private RecordLink recordLink;
 
 	private DataGroupToRecordLinkConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
+	public static DataGroupToRecordLinkConverter fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupToRecordLinkConverter(dataGroup);
+	}
+
 	@Override
 	public RecordLink toMetadata() {
+		createRecordLinkWithBasicInfo();
+		convertLinkedPathIfExists();
+		convertFinalValueIfExists();
+		convertRefParentId();
+		convertAttributeReferences();
+		return recordLink;
+	}
+
+	private void createRecordLinkWithBasicInfo() {
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
@@ -44,31 +56,37 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
 		String linkedRecordType = dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
 
-		RecordLink recordLink = RecordLink
+		recordLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id, nameInData, textId,
 						defTextId, linkedRecordType);
-		convertLinkedPathIfExists(recordLink);
-		convertFinalValueIfExists(recordLink);
-		convertRefParentId(recordLink);
-		return recordLink;
 	}
 
-	private void convertLinkedPathIfExists(RecordLink recordLink) {
+	private void convertLinkedPathIfExists() {
 		if (dataGroup.containsChildWithNameInData("linkedPath")) {
 			recordLink.setLinkedPath(dataGroup.getFirstGroupWithNameInData("linkedPath"));
 		}
 	}
 
-	private void convertFinalValueIfExists(RecordLink recordLink) {
+	private void convertFinalValueIfExists() {
 		if (dataGroup.containsChildWithNameInData("finalValue")) {
 			recordLink.setFinalValue(dataGroup.getFirstAtomicValueWithNameInData("finalValue"));
 		}
 	}
 
-	private void convertRefParentId(RecordLink recordLink) {
+	private void convertRefParentId() {
 		if (dataGroup.containsChildWithNameInData("refParentId")) {
 			String refParentId = dataGroup.getFirstAtomicValueWithNameInData("refParentId");
 			recordLink.setRefParentId(refParentId);
+		}
+	}
+
+	protected void convertAttributeReferences() {
+		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
+			DataGroup attributeReferences = dataGroup
+					.getFirstGroupWithNameInData("attributeReferences");
+			for (DataElement attributeReference : attributeReferences.getChildren()) {
+				recordLink.addAttributeReference(((DataAtomic) attributeReference).getValue());
+			}
 		}
 	}
 }
