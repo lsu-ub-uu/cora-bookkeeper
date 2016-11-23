@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -32,6 +33,7 @@ import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class DataRecordLinkValidatorTest {
@@ -70,27 +72,49 @@ public class DataRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
-	
-	//TODO: använd den här i testet nedan med attribut
-	private void addMetadataForAttributes(){
+
+	@Test
+	public void testValidateOneAttribute() {
+		addAttributeCollectionToMetadataHolder();
+
+		dataLink.addAttributeReference("linkAttributeId");
+		
+		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		dataRecordLink.addAttributeByIdWithValue("linkAttributeNameInData", "choice1NameInData");
+		
+		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, dataLink);
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertTrue(validationAnswer.dataIsValid());
+	}
+
+	private void addAttributeCollectionToMetadataHolder() {
+		CollectionVariable colVar = new CollectionVariable("linkAttributeId", "linkAttributeNameInData",
+				"linkAttributeText", "linkAttributeDefText", "collectionId");
+		metadataHolder.addMetadataElement(colVar);
+		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",
+				"choice1TextId", "choice1DefTextId");
+		metadataHolder.addMetadataElement(choice1);
+
+		CollectionItem choice2 = new CollectionItem("choice2Id", "choice2NameInData",
+				"choice2TextId", "choice2DefTextId");
+		metadataHolder.addMetadataElement(choice2);
+
 		ItemCollection collection = new ItemCollection("collectionId", "collectionNameInData",
 				"CollectionTextId", "collectionDefTextId");
 		metadataHolder.addMetadataElement(collection);
-		String id = "someCollection";
-		CollectionVariable colVar = new CollectionVariable(id + "Id", id + "NameInData",
-				id + "Text", id + "DefText", "collectionId");
-		metadataHolder.addMetadataElement(colVar);
+		collection.addItemReference("choice1Id");
+		collection.addItemReference("choice2Id");
 	}
 	
 	@Test
-	public void testValidateOneAttribute() {
+	public void testInvalidAttribute() {
 		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
-		
-		
-		
-		dataRecordLink.addAttributeByIdWithValue("type", "choice1NameInData");
+		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
+		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
+
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertTrue(validationAnswer.dataIsValid());
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertFalse(validationAnswer.dataIsValid());
 	}
 
 	@Test

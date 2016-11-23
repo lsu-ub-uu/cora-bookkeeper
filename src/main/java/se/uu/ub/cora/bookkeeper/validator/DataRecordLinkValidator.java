@@ -51,13 +51,12 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateNameInData() {
-		if (nameInDataIsEmpty()) {
-			validationAnswer.addErrorMessage("DataRecordLink must have a nonempty nameInData");
-		}
+		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(recordLink, dataRecordLink);
+		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
-
-	private boolean nameInDataIsEmpty() {
-		return dataRecordLink.getNameInData().isEmpty();
+	private void addMessagesFromAnswerToTotalValidationAnswer(ValidationAnswer aValidationAnswer) {
+		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
 	}
 
 	private void validateRecordType() {
