@@ -25,6 +25,7 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 import static org.testng.Assert.assertEquals;
 
@@ -98,7 +99,7 @@ public class DataGroupToRecordLinkConverterTest {
 	@Test
 	public void testToMetadataWithAttributeReferences() {
 		DataGroup recordLinkDataGroup = createDataGroupContainingRecordLink();
-		addAttributesToDataGroup(recordLinkDataGroup);
+		DataCreator.addAttributesToDataGroup(recordLinkDataGroup);
 
 		DataGroupToMetadataConverter converter = DataGroupToRecordLinkConverter
 				.fromDataGroup(recordLinkDataGroup);
@@ -112,13 +113,6 @@ public class DataGroupToRecordLinkConverterTest {
 		assertAttributesBasedOnDataGroup(recordLink);
 	}
 
-	private void addAttributesToDataGroup(DataGroup dataGroup) {
-		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
-		dataGroup.addChild(attributeReference);
-	}
 
 	private void assertAttributesBasedOnDataGroup(RecordLink recordLink) {
 		Iterator<String> attributeReferenceIterator = recordLink.getAttributeReferences()
