@@ -153,4 +153,13 @@ public class DataCreator {
 		dataResourceLink.addChild(DataAtomic.withNameInDataAndValue("mimeType", mimeType));
 		return dataResourceLink;
 	}
+
+
+	public static void addAttributesToDataGroup(DataGroup dataGroup) {
+		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
+		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
+		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
+		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
+		dataGroup.addChild(attributeReference);
+	}
 }

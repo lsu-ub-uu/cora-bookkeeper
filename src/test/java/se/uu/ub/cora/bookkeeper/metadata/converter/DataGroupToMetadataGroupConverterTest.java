@@ -29,6 +29,7 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupToMetadataGroupConverterTest {
 	@Test
@@ -93,7 +94,7 @@ public class DataGroupToMetadataGroupConverterTest {
 	@Test
 	public void testToMetadataWithAttributeReferences() {
 		DataGroup dataGroup = createDataGroup();
-		addAttributesToDataGroup(dataGroup);
+		DataCreator.addAttributesToDataGroup(dataGroup);
 
 		DataGroupToMetadataConverter converter = DataGroupToMetadataGroupConverter
 				.fromDataGroup(dataGroup);
@@ -101,14 +102,6 @@ public class DataGroupToMetadataGroupConverterTest {
 
 		assertMetadataGroupIsBasedOnDataGroup(metadataGroup);
 		assertAttributesBasedOnDataGroup(metadataGroup);
-	}
-
-	private void addAttributesToDataGroup(DataGroup dataGroup) {
-		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
-		dataGroup.addChild(attributeReference);
 	}
 
 	private void assertAttributesBasedOnDataGroup(MetadataGroup metadataGroup) {
