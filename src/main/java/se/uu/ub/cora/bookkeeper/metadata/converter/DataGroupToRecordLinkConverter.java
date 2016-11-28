@@ -80,7 +80,7 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		}
 	}
 
-	protected void convertAttributeReferences() {
+	private void convertAttributeReferences() {
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
 					.getFirstGroupWithNameInData("attributeReferences");
