@@ -86,7 +86,12 @@ class DataGroupValidator implements DataElementValidator {
 
 	private void validateDataContainsRequiredChildReferenceWithCorrectValue(
 			MetadataChildReference childReference) {
-		String referenceId = childReference.getReferenceId();
+		String referenceId;
+		if(childReference.getReferenceId() != null){
+			referenceId = childReference.getReferenceId();
+		}else{
+			referenceId = childReference.getLinkedRecordId();
+		}
 		boolean mayBeRepeated = childReference.getRepeatMax() > 1;
 
 		int childrenFound = validateAndCountChildrenWithReferenceId(referenceId, mayBeRepeated);
@@ -141,7 +146,13 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateRepeatMinAndMax(MetadataChildReference childReference, int childrenFound) {
-		String referenceId = childReference.getReferenceId();
+		String referenceId;
+		if(childReference.getReferenceId() != null){
+			referenceId = childReference.getReferenceId();
+		}else{
+			referenceId = childReference.getLinkedRecordId();
+		}
+//		String referenceId = childReference.getReferenceId();
 		if (childrenFound < childReference.getRepeatMin()) {
 			validationAnswer.addErrorMessage("Did not find enough data children with referenceId: "
 					+ referenceId + getReferenceText(referenceId) + ".");
@@ -220,8 +231,14 @@ class DataGroupValidator implements DataElementValidator {
 	private boolean isChildDataSpecifiedInMetadataGroup(DataElement childData) {
 		Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
 		for (MetadataChildReference childReference : childReferences) {
+			String referenceId;
+			if(childReference.getReferenceId() != null){
+				referenceId = childReference.getReferenceId();
+			}else{
+				referenceId = childReference.getLinkedRecordId();
+			}
 			if (isChildDataSpecifiedByChildReferenceId(childData,
-					childReference.getReferenceId())) {
+					referenceId)) {
 				return true;
 			}
 		}

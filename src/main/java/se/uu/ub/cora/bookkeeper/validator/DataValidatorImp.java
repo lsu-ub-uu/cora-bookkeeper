@@ -82,6 +82,8 @@ public class DataValidatorImp implements DataValidator {
 	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(DataGroup metadataElement) {
 		DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
 				.fromDataGroup(metadataElement);
+		DataGroup recordInfo = (DataGroup)metadataElement.getFirstChildWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
 		DataGroupToMetadataConverter converter = factory.factor();
 		metadataHolder.addMetadataElement(converter.toMetadata());
 	}

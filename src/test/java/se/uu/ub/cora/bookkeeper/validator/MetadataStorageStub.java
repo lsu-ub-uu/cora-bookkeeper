@@ -155,7 +155,12 @@ public class MetadataStorageStub implements MetadataStorage {
 		group.addChild(childReferences);
 
 		DataGroup childReference = DataGroup.withNameInData("childReference");
-		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "textVarId"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addAttributeByIdWithValue("type", "textVariable");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "textVarId"));
+		childReference.addChild(ref);
+//		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "textVarId"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
 		// childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey",
 		// "SOME_KEY"));
@@ -331,7 +336,12 @@ public class MetadataStorageStub implements MetadataStorage {
 		bushGroup.addChild(childReferences);
 
 		DataGroup childReference = DataGroup.withNameInData("childReference");
-		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "testLink"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addAttributeByIdWithValue("type", "recordLink");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataRecordLink"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "testLink"));
+		
+//		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "testLink"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
 		childReferences.addChild(childReference);
