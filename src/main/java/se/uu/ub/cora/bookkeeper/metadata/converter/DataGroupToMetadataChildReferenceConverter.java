@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.data.DataMissingException;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 
 public final class DataGroupToMetadataChildReferenceConverter {
@@ -56,11 +57,19 @@ public final class DataGroupToMetadataChildReferenceConverter {
 	}
 
 	private void createMetadataChildReferenceWithBasicInfo() {
-		String reference = dataGroup.getFirstAtomicValueWithNameInData("ref");
 		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithNameInData("repeatMin"));
 		int repeatMax = getRepeatMax();
-		childReference = MetadataChildReference.withReferenceIdAndRepeatMinAndRepeatMax(reference,
-				repeatMin, repeatMax);
+		try {
+			String reference = dataGroup.getFirstAtomicValueWithNameInData("ref");
+			childReference = MetadataChildReference.withReferenceIdAndRepeatMinAndRepeatMax(reference,
+					repeatMin, repeatMax);
+		}catch(DataMissingException dme){
+			DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
+			String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
+			String linkedRecordId = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
+			childReference = MetadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, linkedRecordId, repeatMin, repeatMax);
+
+		}
 	}
 
 	private int getRepeatMax() {

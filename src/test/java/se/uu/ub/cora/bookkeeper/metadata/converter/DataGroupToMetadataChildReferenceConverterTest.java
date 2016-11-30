@@ -30,7 +30,11 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadata() {
 		DataGroup dataGroup = DataGroup.withNameInData("childReference");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		dataGroup.addChild(ref);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
@@ -43,7 +47,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getReferenceId(), "otherMetadata");
+		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
+		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMin(), 0);
 		assertEquals(metadataChildReference.getRepeatMinKey(), "SOME_KEY");
 		assertEquals(metadataChildReference.getRepeatMax(), 16);
@@ -56,7 +61,10 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadataFalse() {
 		DataGroup dataGroup = DataGroup.withNameInData("childReference");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		dataGroup.addChild(ref);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("secret", "false"));
@@ -66,7 +74,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getReferenceId(), "otherMetadata");
+		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
+		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMin(), 0);
 		assertEquals(metadataChildReference.getRepeatMinKey(), "");
 		assertEquals(metadataChildReference.getRepeatMax(), 16);
@@ -79,7 +88,11 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadataNoNonMandatoryInfo() {
 		DataGroup dataGroup = DataGroup.withNameInData("childReference");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		dataGroup.addChild(ref);
+
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
 
@@ -87,7 +100,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getReferenceId(), "otherMetadata");
+		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
+		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMin(), 0);
 		assertEquals(metadataChildReference.getRepeatMinKey(), "");
 		assertEquals(metadataChildReference.getRepeatMax(), 16);
@@ -100,7 +114,10 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test(expectedExceptions = DataConversionException.class)
 	public void testToMetadataNotBooleanValue() {
 		DataGroup dataGroup = DataGroup.withNameInData("childReference");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		dataGroup.addChild(ref);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("secret", "NOT_BOOLEAN_VALUE"));
@@ -114,7 +131,10 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test(expectedExceptions = DataConversionException.class)
 	public void testToMetadataNotBooleanValueReadOnly() {
 		DataGroup dataGroup = DataGroup.withNameInData("childReference");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		dataGroup.addChild(ref);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("readOnly", "NOT_BOOLEAN_VALUE"));
@@ -128,7 +148,10 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadataRepeatMaxValueX() {
 		DataGroup dataGroup = DataGroup.withNameInData("childReference");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("ref", "otherMetadata"));
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		dataGroup.addChild(ref);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "X"));
 
@@ -136,7 +159,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getReferenceId(), "otherMetadata");
+		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
+		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMax(), Integer.MAX_VALUE);
 	}
 }

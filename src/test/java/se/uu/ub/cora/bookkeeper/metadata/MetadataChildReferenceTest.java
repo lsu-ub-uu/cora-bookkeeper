@@ -31,13 +31,15 @@ public class MetadataChildReferenceTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		metadataChildReference = MetadataChildReference.withReferenceIdAndRepeatMinAndRepeatMax(
-				"metadataChildReference", 1, MetadataChildReference.UNLIMITED);
+		metadataChildReference = metadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "metadataChildReference", 1, MetadataChildReference.UNLIMITED);
 	}
 
 	@Test
 	public void testInit() {
-		assertEquals(metadataChildReference.getReferenceId(), "metadataChildReference",
+		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup",
+				"ChildReference should be the value set in the constructor");
+
+		assertEquals(metadataChildReference.getLinkedRecordId(), "metadataChildReference",
 				"ChildReference should be the value set in the constructor");
 
 		assertEquals(metadataChildReference.getRepeatMin(), 1,
