@@ -31,7 +31,7 @@ public final class MetadataChildReference {
 
 	public static final int UNLIMITED = Integer.MAX_VALUE;
 
-	private String referenceId;
+//	private String referenceId;
 	private String linkedRecordType;
 	private String linkedRecordId;
 	private final int repeatMin;
@@ -65,14 +65,14 @@ public final class MetadataChildReference {
 	}
 
 	private MetadataChildReference(String reference, int repeatMin, int repeatMax) {
-		this.referenceId = reference;
+//		this.referenceId = reference;
 		this.repeatMin = repeatMin;
 		this.repeatMax = repeatMax;
 	}
-
-	public String getReferenceId() {
-		return referenceId;
-	}
+//
+//	public String getReferenceId() {
+//		return referenceId;
+//	}
 
 	public int getRepeatMin() {
 		return repeatMin;
