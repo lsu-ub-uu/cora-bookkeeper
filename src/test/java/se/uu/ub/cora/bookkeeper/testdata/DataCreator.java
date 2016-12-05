@@ -48,8 +48,6 @@ public class DataCreator {
 
 	public static void addDataGroupAsMetadataChildReferenceToParent(MetadataGroup child,
 			MetadataGroup parent) {
-//		MetadataChildReference linkChild = MetadataChildReference
-//				.withReferenceIdAndRepeatMinAndRepeatMax(child.getId(), 1, 1);
 		MetadataChildReference linkChild = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", child.getId(), 1, 1);
 		parent.addChildReference(linkChild);
@@ -63,8 +61,6 @@ public class DataCreator {
 						"recordLinkLinkedRecordType");
 		metadataHolder.addMetadataElement(recordLink);
 
-//		MetadataChildReference linkChild = MetadataChildReference
-//				.withReferenceIdAndRepeatMinAndRepeatMax(id + "Id", 1, 1);
 		MetadataChildReference linkChild = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataRecordLink", id + "Id", 1, 1);
 
@@ -91,8 +87,6 @@ public class DataCreator {
 						"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}");
 		metadataHolder.addMetadataElement(textVar);
 
-//		MetadataChildReference groupChild = MetadataChildReference
-//				.withReferenceIdAndRepeatMinAndRepeatMax(id + "Id", 1, repeatMax);
 		MetadataChildReference groupChild = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id + "Id", 1, repeatMax);
 		group.addChildReference(groupChild);
@@ -105,8 +99,6 @@ public class DataCreator {
 						id + "Text", id + "DefText", regEx);
 		metadataHolder.addMetadataElement(textVar);
 
-//		MetadataChildReference groupChild = MetadataChildReference
-//				.withReferenceIdAndRepeatMinAndRepeatMax(id, 1, 1);
 		MetadataChildReference groupChild = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id, 1, 1);
 		group.addChildReference(groupChild);

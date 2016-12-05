@@ -77,12 +77,7 @@ public class DataGroupRecordLinkCollector {
 
 	private void collectLinksFromDataGroupUsingMetadataChild(
 			MetadataChildReference metadataChildReference) {
-		String referenceId;
-//		if(metadataChildReference.getReferenceId() != null){
-//			referenceId = metadataChildReference.getReferenceId();
-//		}else{
-			referenceId = metadataChildReference.getLinkedRecordId();
-//		}
+		String referenceId = metadataChildReference.getLinkedRecordId();
 
 		MetadataElement childMetadataElement = metadataHolder
 				.getMetadataElement(referenceId);

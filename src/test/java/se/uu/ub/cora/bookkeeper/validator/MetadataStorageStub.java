@@ -160,7 +160,6 @@ public class MetadataStorageStub implements MetadataStorage {
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "textVarId"));
 		childReference.addChild(ref);
-//		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "textVarId"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
 		// childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey",
 		// "SOME_KEY"));
@@ -341,7 +340,6 @@ public class MetadataStorageStub implements MetadataStorage {
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataRecordLink"));
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "testLink"));
 		childReference.addChild(ref);
-//		childReference.addChild(DataAtomic.withNameInDataAndValue("ref", "testLink"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
 		childReferences.addChild(childReference);

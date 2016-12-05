@@ -72,7 +72,7 @@ public class MetadataGroupTest {
 	@Test
 	public void testAddChildReference() {
 		MetadataChildReference metadataChildReference = MetadataChildReference
-				.withReferenceIdAndRepeatMinAndRepeatMax("aChildReference", 1,
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "aChildReference", 1,
 						MetadataChildReference.UNLIMITED);
 		metadataGroup.addChildReference(metadataChildReference);
 		assertEquals(metadataGroup.getChildReferences().iterator().next(), metadataChildReference,

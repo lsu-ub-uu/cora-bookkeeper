@@ -20,20 +20,19 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataMissingException;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 
 public final class DataGroupToMetadataChildReferenceConverter {
 
 	private DataGroup dataGroup;
 	private MetadataChildReference childReference;
+	
+	private DataGroupToMetadataChildReferenceConverter(DataGroup dataGroup) {
+		this.dataGroup = dataGroup;
+	}
 
 	public static DataGroupToMetadataChildReferenceConverter fromDataGroup(DataGroup dataGroup) {
 		return new DataGroupToMetadataChildReferenceConverter(dataGroup);
-	}
-
-	private DataGroupToMetadataChildReferenceConverter(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
 	}
 
 	public MetadataChildReference toMetadata() {
@@ -59,17 +58,12 @@ public final class DataGroupToMetadataChildReferenceConverter {
 	private void createMetadataChildReferenceWithBasicInfo() {
 		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithNameInData("repeatMin"));
 		int repeatMax = getRepeatMax();
-		try {
-			String reference = dataGroup.getFirstAtomicValueWithNameInData("ref");
-			childReference = MetadataChildReference.withReferenceIdAndRepeatMinAndRepeatMax(reference,
-					repeatMin, repeatMax);
-		}catch(DataMissingException dme){
-			DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
-			String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
-			String linkedRecordId = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
-			childReference = MetadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, linkedRecordId, repeatMin, repeatMax);
+		
+		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
+		String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
+		String linkedRecordId = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
+		childReference = MetadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, linkedRecordId, repeatMin, repeatMax);
 
-		}
 	}
 
 	private int getRepeatMax() {

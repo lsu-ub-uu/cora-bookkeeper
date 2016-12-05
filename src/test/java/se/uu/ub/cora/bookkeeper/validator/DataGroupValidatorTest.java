@@ -73,8 +73,9 @@ public class DataGroupValidatorTest {
 	public void testMetadataGroupThatRefersToMetadataChildThatDoesNotExist() {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
-		MetadataChildReference groupChild = MetadataChildReference
-				.withReferenceIdAndRepeatMinAndRepeatMax("IdToChildThatDoesNotExist", 1, 1);
+		MetadataChildReference groupChild = MetadataChildReference.
+				withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "IdToChildThatDoesNotExist", 1, 1);
+				
 		group.addChildReference(groupChild);
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataElementValidator = new DataGroupValidator(
@@ -301,8 +302,8 @@ public class DataGroupValidatorTest {
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", childGroup, metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text2", parentGroup, metadataHolder);
 
-		MetadataChildReference groupChild = MetadataChildReference
-				.withReferenceIdAndRepeatMinAndRepeatMax("childGroupId", 1, 1);
+		MetadataChildReference groupChild = MetadataChildReference.
+				withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "childGroupId", 1, 1);
 		parentGroup.addChildReference(groupChild);
 
 		return metadataHolder;
