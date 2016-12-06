@@ -221,12 +221,7 @@ class DataGroupValidator implements DataElementValidator {
 	private boolean isChildDataSpecifiedInMetadataGroup(DataElement childData) {
 		Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
 		for (MetadataChildReference childReference : childReferences) {
-			String referenceId;
-//			if(childReference.getReferenceId() != null){
-//				referenceId = childReference.getReferenceId();
-//			}else{
-				referenceId = childReference.getLinkedRecordId();
-//			}
+			String referenceId = childReference.getLinkedRecordId();
 			if (isChildDataSpecifiedByChildReferenceId(childData,
 					referenceId)) {
 				return true;
