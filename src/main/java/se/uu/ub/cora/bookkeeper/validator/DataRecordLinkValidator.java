@@ -59,7 +59,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
 	}
 
-	private void validateRecordType() {
+	private void  validateRecordType() {
 		if (recordTypeIsEmpty()) {
 			validationAnswer.addErrorMessage(
 					createNameInDataMessagePart() + " must have an nonempty recordType as child.");
