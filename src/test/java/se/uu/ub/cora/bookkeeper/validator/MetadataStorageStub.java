@@ -79,9 +79,11 @@ public class MetadataStorageStub implements MetadataStorage {
 		groupType1.addChild(groupType1RecordInfo);
 
 		groupType1.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupType1"));
-		groupType1.addChild(DataAtomic.withNameInDataAndValue("textId", "groupType1Text"));
-		groupType1.addChild(DataAtomic.withNameInDataAndValue("defTextId", "groupType1DefText"));
+
 		dataGroups.add(groupType1);
+
+		addTextByNameInDataAndId(groupType1, "textId", "groupType1Text");
+		addTextByNameInDataAndId(groupType1, "defTextId", "groupType1DefText");
 
 		// groupType2
 		DataGroup groupType2 = DataGroup.withNameInData("metadata");
@@ -92,8 +94,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		groupType2.addChild(groupType2RecordInfo);
 
 		groupType2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupType2"));
-		groupType2.addChild(DataAtomic.withNameInDataAndValue("textId", "groupType2Text"));
-		groupType2.addChild(DataAtomic.withNameInDataAndValue("defTextId", "groupType2DefText"));
+		addTextByNameInDataAndId(groupType2, "textId", "groupType2Text");
+		addTextByNameInDataAndId(groupType2, "defTextId", "groupType2DefText");
 		dataGroups.add(groupType2);
 
 		// groupTypeCollection
@@ -107,9 +109,9 @@ public class MetadataStorageStub implements MetadataStorage {
 
 		groupTypeCollection
 				.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupTypeCollection"));
-		groupTypeCollection.addChild(createTextGroup("textId", "groupTypeCollectionText"));
-		groupTypeCollection.addChild(createTextGroup("defTextId", "groupTypeCollectionDefText"));
-		
+		addTextByNameInDataAndId(groupTypeCollection, "textId", "groupTypeCollectionText");
+		addTextByNameInDataAndId(groupTypeCollection, "defTextId", "groupTypeCollectionDefText");
+
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
 
 		createAndAddItemReference(collectionItemReferences, "groupType1", "one");
@@ -227,8 +229,9 @@ public class MetadataStorageStub implements MetadataStorage {
 		personItem.addChild(personRecordInfo);
 
 		personItem.addChild(DataAtomic.withNameInDataAndValue("nameInData", "person"));
-		personItem.addChild(DataAtomic.withNameInDataAndValue("textId", "personTextId"));
-		personItem.addChild(DataAtomic.withNameInDataAndValue("defTextId", "personDefTextId"));
+		addTextByNameInDataAndId(personItem, "textId", "personTextId");
+		addTextByNameInDataAndId(personItem, "defTextId", "personDefTextId");
+//
 		dataGroups.add(personItem);
 
 		// familyItem
@@ -240,8 +243,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		familyItem.addChild(familyRecordInfo);
 
 		familyItem.addChild(DataAtomic.withNameInDataAndValue("nameInData", "family"));
-		familyItem.addChild(DataAtomic.withNameInDataAndValue("textId", "familyTextId"));
-		familyItem.addChild(DataAtomic.withNameInDataAndValue("defTextId", "familyDefTextId"));
+		addTextByNameInDataAndId(familyItem, "textId", "familyTextId");
+		addTextByNameInDataAndId(familyItem, "defTextId", "familyDefTextId");
 		dataGroups.add(familyItem);
 
 		// organisationItem
@@ -253,10 +256,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		organisationItem.addChild(organisationRecordInfo);
 
 		organisationItem.addChild(DataAtomic.withNameInDataAndValue("nameInData", "organisation"));
-		organisationItem
-				.addChild(DataAtomic.withNameInDataAndValue("textId", "organisationTextId"));
-		organisationItem
-				.addChild(DataAtomic.withNameInDataAndValue("defTextId", "organisationDefTextId"));
+		addTextByNameInDataAndId(organisationItem, "textId", "organisationTextId");
+		addTextByNameInDataAndId(organisationItem, "defTextId", "organisationDefTextId");
 		dataGroups.add(organisationItem);
 
 		// placeItem
@@ -268,12 +269,20 @@ public class MetadataStorageStub implements MetadataStorage {
 		placeItem.addChild(placeRecordInfo);
 
 		placeItem.addChild(DataAtomic.withNameInDataAndValue("nameInData", "place"));
-		placeItem.addChild(DataAtomic.withNameInDataAndValue("textId", "placeTextId"));
-		placeItem.addChild(DataAtomic.withNameInDataAndValue("defTextId", "placeDefTextId"));
+		addTextByNameInDataAndId(placeItem, "textId", "placeTextId");
+		addTextByNameInDataAndId(placeItem, "defTextId", "placeDefTextId");
+//
 		dataGroups.add(placeItem);
 
 		addDataToDataMetadata();
 		return dataGroups;
+	}
+
+	private void addTextByNameInDataAndId(DataGroup groupType1, String nameInData, String textId) {
+		DataGroup text = DataGroup.withNameInData(nameInData);
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		groupType1.addChild(text);
 	}
 
 	private void createAndAddItemReference(DataGroup collectionItemReferences, String linkedRecordId, String repeatId) {

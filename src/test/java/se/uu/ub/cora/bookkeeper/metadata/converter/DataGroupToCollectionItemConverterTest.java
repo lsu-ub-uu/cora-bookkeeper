@@ -19,12 +19,13 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataGroupToCollectionItemConverterTest {
 	@Test
@@ -37,8 +38,8 @@ public class DataGroupToCollectionItemConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+
+		addTexts(dataGroup);
 
 		DataGroupToCollectionItemConverter converter = DataGroupToCollectionItemConverter
 				.fromDataGroup(dataGroup);
@@ -48,5 +49,17 @@ public class DataGroupToCollectionItemConverterTest {
 		assertEquals(collectionItem.getNameInData(), "other");
 		assertEquals(collectionItem.getTextId(), "otherTextId");
 		assertEquals(collectionItem.getDefTextId(), "otherDefTextId");
+	}
+
+	private void addTexts(DataGroup dataGroup) {
+		DataGroup text = DataGroup.withNameInData("textId");
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		dataGroup.addChild(text);
+
+		DataGroup defText = DataGroup.withNameInData("defTextId");
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		dataGroup.addChild(defText);
 	}
 }
