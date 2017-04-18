@@ -53,8 +53,11 @@ public class DataGroupToMetadataGroupConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		addTexts(dataGroup);
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId",
+		// "otherTextId"));
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId",
+		// "otherDefTextId"));
 
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
 		dataGroup.addChild(childReferences);
@@ -74,6 +77,18 @@ public class DataGroupToMetadataGroupConverterTest {
 		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnlyKey", "READONLY_KEY"));
 		childReferences.addChild(childReference);
 		return dataGroup;
+	}
+
+	private void addTexts(DataGroup dataGroup) {
+		DataGroup text = DataGroup.withNameInData("textId");
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		dataGroup.addChild(text);
+
+		DataGroup defText = DataGroup.withNameInData("defTextId");
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		dataGroup.addChild(defText);
 	}
 
 	private void assertMetadataGroupIsBasedOnDataGroup(MetadataGroup metadataGroup) {
