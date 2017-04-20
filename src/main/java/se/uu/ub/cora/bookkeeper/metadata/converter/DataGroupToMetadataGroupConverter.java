@@ -33,7 +33,7 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 	protected DataGroupToMetadataGroupConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
-	
+
 	public static DataGroupToMetadataGroupConverter fromDataGroup(DataGroup dataGroup) {
 		return new DataGroupToMetadataGroupConverter(dataGroup);
 	}
@@ -51,10 +51,15 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String textId = extractTextIdByNameInData("textId");
+		String defTextId = extractTextIdByNameInData("defTextId");
 		metadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData,
 				textId, defTextId);
+	}
+
+	private String extractTextIdByNameInData(String nameInData) {
+		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
+		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 	protected void convertRefParentId() {
