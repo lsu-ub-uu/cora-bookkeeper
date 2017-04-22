@@ -54,10 +54,6 @@ public class DataGroupToMetadataGroupConverterTest {
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		addTexts(dataGroup);
-		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId",
-		// "otherTextId"));
-		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-		// "otherDefTextId"));
 
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
 		dataGroup.addChild(childReferences);
