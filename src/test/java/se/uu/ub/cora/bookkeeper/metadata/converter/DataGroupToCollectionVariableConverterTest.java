@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
+import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupToCollectionVariableConverterTest {
 	@Test
@@ -50,8 +51,10 @@ public class DataGroupToCollectionVariableConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "textId", "otherTextId", "testSystem");
+		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "defTextId", "otherDefTextId", "testSystem");
+//		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
+//		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
 		
 		DataGroup refCollection = DataGroup.withNameInData("refCollection");
 		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
@@ -66,6 +69,7 @@ public class DataGroupToCollectionVariableConverterTest {
 			CollectionVariable collectionVariable) {
 		assertEquals(collectionVariable.getId(), "otherId");
 		assertEquals(collectionVariable.getNameInData(), "other");
+
 		assertEquals(collectionVariable.getTextId(), "otherTextId");
 		assertEquals(collectionVariable.getDefTextId(), "otherDefTextId");
 		assertEquals(collectionVariable.getRefCollectionId(), "refCollection");

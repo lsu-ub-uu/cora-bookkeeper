@@ -59,9 +59,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		groupTypeVar.addChild(groupTypeVarRecordInfo);
 
 		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupTypeVar"));
-		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("textId", "groupTypeVarText"));
-		groupTypeVar
-				.addChild(DataAtomic.withNameInDataAndValue("defTextId", "groupTypeVarDefText"));
+		addTextByNameInDataAndId(groupTypeVar,"textId", "groupTypeVarText");
+		addTextByNameInDataAndId(groupTypeVar,"defTextId", "groupTypeVarDefText");
 
 		DataGroup refCollection = DataGroup.withNameInData("refCollection");
 		refCollection.addChild(
@@ -151,10 +150,6 @@ public class MetadataStorageStub implements MetadataStorage {
 		group.addChild(DataAtomic.withNameInDataAndValue("nameInData", "group"));
 		addTextByNameInDataAndId(group, "textId", "groupTextId");
 		addTextByNameInDataAndId(group, "defTextId", "groupDefText");
-		// group.addChild(DataAtomic.withNameInDataAndValue("textId",
-		// "groupTextId"));
-		// group.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-		// "groupDefText"));
 
 		DataGroup attributeReferences = DataGroup.withNameInData("attributeReferences");
 		attributeReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "groupTypeVar"));
@@ -194,8 +189,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		colVar2.addChild(recordInfo);
 
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "collectionVar2"));
-		colVar2.addChild(DataAtomic.withNameInDataAndValue("textId", "collectionVarText"));
-		colVar2.addChild(DataAtomic.withNameInDataAndValue("defTextId", "collectionVarDefText"));
+		addTextByNameInDataAndId(colVar2,"textId", "collectionVarText");
+		addTextByNameInDataAndId(colVar2,"defTextId", "collectionVarDefText");
 
 		DataGroup refCollection2 = DataGroup.withNameInData("refCollection");
 		refCollection2.addChild(
@@ -351,10 +346,6 @@ public class MetadataStorageStub implements MetadataStorage {
 		bushGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "bush"));
 		addTextByNameInDataAndId(bushGroup, "textId", "bushTextId");
 		addTextByNameInDataAndId(bushGroup, "defTextId", "bushDefText");
-		// bushGroup.addChild(DataAtomic.withNameInDataAndValue("textId",
-		// "bushTextId"));
-		// bushGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-		// "bushDefText"));
 
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
 		bushGroup.addChild(childReferences);
