@@ -287,11 +287,11 @@ public class MetadataStorageStub implements MetadataStorage {
 		return dataGroups;
 	}
 
-	private void addTextByNameInDataAndId(DataGroup groupType1, String nameInData, String textId) {
+	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
 		DataGroup text = DataGroup.withNameInData(nameInData);
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
-		groupType1.addChild(text);
+		dataGroup.addChild(text);
 	}
 
 	private void createAndAddItemReference(DataGroup collectionItemReferences,
@@ -321,8 +321,9 @@ public class MetadataStorageStub implements MetadataStorage {
 		testLinkGroup.addChild(testLinkGroupRecordInfo);
 
 		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "testLink"));
-		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "testLinkTextId"));
-		testLinkGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "testLinkDefText"));
+
+		addTextByNameInDataAndId(testLinkGroup, "textId", "testLinkTextId");
+		addTextByNameInDataAndId(testLinkGroup, "defTextId", "testLinkDefText");
 
 		testLinkGroup.addChild(
 				DataAtomic.withNameInDataAndValue("linkedRecordType", "linkedRecordType1"));

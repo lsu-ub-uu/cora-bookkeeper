@@ -19,17 +19,17 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
-import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-
 import static org.testng.Assert.assertEquals;
 
 import java.util.Iterator;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupToRecordLinkConverterTest {
 	private DataGroupToRecordLinkConverter converter;
@@ -52,10 +52,25 @@ public class DataGroupToRecordLinkConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+		addTexts(dataGroup);
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId",
+		// "otherTextId"));
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId",
+		// "otherDefTextId"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
 		return dataGroup;
+	}
+
+	private void addTexts(DataGroup dataGroup) {
+		DataGroup text = DataGroup.withNameInData("textId");
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		dataGroup.addChild(text);
+
+		DataGroup defText = DataGroup.withNameInData("defTextId");
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		dataGroup.addChild(defText);
 	}
 
 	@Test
@@ -95,7 +110,7 @@ public class DataGroupToRecordLinkConverterTest {
 
 		assertEquals(recordLink.getRefParentId(), "someParent");
 	}
-	
+
 	@Test
 	public void testToMetadataWithAttributeReferences() {
 		DataGroup recordLinkDataGroup = createDataGroupContainingRecordLink();
@@ -112,7 +127,6 @@ public class DataGroupToRecordLinkConverterTest {
 		assertEquals(recordLink.getLinkedRecordType(), "someRecordType");
 		assertAttributesBasedOnDataGroup(recordLink);
 	}
-
 
 	private void assertAttributesBasedOnDataGroup(RecordLink recordLink) {
 		Iterator<String> attributeReferenceIterator = recordLink.getAttributeReferences()
