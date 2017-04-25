@@ -26,12 +26,12 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 
 	private DataGroup dataGroup;
 
-	public static DataGroupToCollectionVariableConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToCollectionVariableConverter(dataGroup);
-	}
-
 	private DataGroupToCollectionVariableConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
+	}
+
+	public static DataGroupToCollectionVariableConverter fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupToCollectionVariableConverter(dataGroup);
 	}
 
 	@Override
