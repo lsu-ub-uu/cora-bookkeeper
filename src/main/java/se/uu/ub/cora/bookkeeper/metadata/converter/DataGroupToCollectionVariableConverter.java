@@ -39,8 +39,8 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String textId = extractTextIdByNameInData("textId");
+		String defTextId = extractTextIdByNameInData("defTextId");
 		
 		DataGroup refCollection = (DataGroup) dataGroup.getFirstChildWithNameInData("refCollection");
 		String refCollectionId = refCollection.getFirstAtomicValueWithNameInData("linkedRecordId");
@@ -50,6 +50,12 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		convertRefParentId(collectionVariable);
 		convertFinalValue(collectionVariable);
 		return collectionVariable;
+	}
+
+
+	private String extractTextIdByNameInData(String nameInData) {
+		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
+		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 	private void convertRefParentId(CollectionVariable collectionVariable) {

@@ -162,4 +162,16 @@ public class DataCreator {
 		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
 		dataGroup.addChild(attributeReference);
 	}
+
+	public static void addTextToGroupWithNameInDataLinkedIdAndLinkedType(DataGroup dataGroup, String nameInData, String linkedRecordId, String linkedRecordType){
+		DataGroup text = DataGroup.withNameInData(nameInData);
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		dataGroup.addChild(text);
+
+//		DataGroup defText = DataGroup.withNameInData("defTextId");
+//		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+//		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+//		dataGroup.addChild(defText);
+	}
 }
