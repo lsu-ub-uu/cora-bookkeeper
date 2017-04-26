@@ -168,10 +168,5 @@ public class DataCreator {
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
 		dataGroup.addChild(text);
-
-//		DataGroup defText = DataGroup.withNameInData("defTextId");
-//		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-//		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
-//		dataGroup.addChild(defText);
 	}
 }

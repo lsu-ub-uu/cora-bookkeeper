@@ -44,8 +44,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		textVar2.addChild(textVar2RecordInfo);
 
 		textVar2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "textVar2"));
-		textVar2.addChild(DataAtomic.withNameInDataAndValue("textId", "textVarText"));
-		textVar2.addChild(DataAtomic.withNameInDataAndValue("defTextId", "textVarDefText"));
+		addTextByNameInDataAndId(textVar2,"textId", "textVarText");
+		addTextByNameInDataAndId(textVar2,"defTextId", "textVarDefText");
 		textVar2.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 		dataGroups.add(textVar2);
@@ -131,9 +131,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		textVar.addChild(textVarRecordInfo);
 
 		textVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", "textVarNameInData"));
-
-		textVar.addChild(DataAtomic.withNameInDataAndValue("textId", "textVarText"));
-		textVar.addChild(DataAtomic.withNameInDataAndValue("defTextId", "textVarDefText"));
+		addTextByNameInDataAndId(textVar,"textId", "textVarText");
+		addTextByNameInDataAndId(textVar,"defTextId", "textVarDefText");
 		textVar.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 

@@ -66,11 +66,20 @@ public class DataGroupToTextVariableConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+
+		addTextByNameInDataAndId(dataGroup, "textId","otherTextId");
+		addTextByNameInDataAndId(dataGroup, "defTextId","otherDefTextId");
+
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
 		return dataGroup;
+	}
+
+	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
+		DataGroup text = DataGroup.withNameInData(nameInData);
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		dataGroup.addChild(text);
 	}
 
 	@Test

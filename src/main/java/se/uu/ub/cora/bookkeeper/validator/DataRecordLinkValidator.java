@@ -201,7 +201,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean linkedRepeatIdIsMissing() {
-		return (!dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID));
+		return !dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID);
 	}
 
 	private void validateDoesNotHaveLinkedRepeatId() {
