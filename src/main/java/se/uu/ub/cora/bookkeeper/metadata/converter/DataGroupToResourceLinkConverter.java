@@ -41,10 +41,15 @@ public final class DataGroupToResourceLinkConverter implements DataGroupToMetada
 
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-		String textId = dataGroup.getFirstAtomicValueWithNameInData("textId");
-		String defTextId = dataGroup.getFirstAtomicValueWithNameInData("defTextId");
+		String textId = extractTextIdByNameInData("textId");
+		String defTextId = extractTextIdByNameInData("defTextId");
 
 		return ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(id,
 				nameInData, textId, defTextId);
+	}
+
+	private String extractTextIdByNameInData(String nameInData) {
+		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
+		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 }

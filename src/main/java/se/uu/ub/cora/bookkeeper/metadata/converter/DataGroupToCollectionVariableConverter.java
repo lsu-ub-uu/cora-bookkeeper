@@ -52,7 +52,6 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		return collectionVariable;
 	}
 
-
 	private String extractTextIdByNameInData(String nameInData) {
 		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
 		return text.getFirstAtomicValueWithNameInData("linkedRecordId");

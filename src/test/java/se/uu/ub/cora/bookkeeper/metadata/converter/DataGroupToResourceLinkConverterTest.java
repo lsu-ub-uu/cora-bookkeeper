@@ -63,8 +63,17 @@ public class DataGroupToResourceLinkConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+
+		addTextWithNameInDataAndId(dataGroup, "textId", "otherTextId");
+		addTextWithNameInDataAndId(dataGroup, "defTextId", "otherDefTextId");
 		return dataGroup;
+	}
+
+	private DataGroup addTextWithNameInDataAndId(DataGroup dataGroup, String textIdNameInData, String textId) {
+		DataGroup textIdGroup = DataGroup.withNameInData(textIdNameInData);
+		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
+		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		dataGroup.addChild(textIdGroup);
+		return textIdGroup;
 	}
 }
