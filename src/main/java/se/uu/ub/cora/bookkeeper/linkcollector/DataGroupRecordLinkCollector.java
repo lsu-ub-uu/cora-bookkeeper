@@ -79,8 +79,7 @@ public class DataGroupRecordLinkCollector {
 			MetadataChildReference metadataChildReference) {
 		String referenceId = metadataChildReference.getLinkedRecordId();
 
-		MetadataElement childMetadataElement = metadataHolder
-				.getMetadataElement(referenceId);
+		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
 		if (metadataElementConcernsLinks(childMetadataElement)) {
 			collectLinksFromDataGroupChildren(childMetadataElement);
 		}
@@ -198,6 +197,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void addRecordTypeToToPart(DataGroup to, DataGroup dataGroup) {
+		DataGroup linkedRecordTypeGroup = dataGroup.getFirstGroupWithNameInData(LINKED_RECORD_TYPE);
 		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE,
 				dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE));
 		to.addChild(linkedRecordType);

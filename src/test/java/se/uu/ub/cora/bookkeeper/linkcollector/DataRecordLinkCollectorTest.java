@@ -19,18 +19,19 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.util.List;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class DataRecordLinkCollectorTest {
 	private DataRecordLinkCollector linkCollector;
@@ -55,8 +56,14 @@ public class DataRecordLinkCollectorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("bush");
 		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "bush");
-		dataTestLink.addChild(linkedRecordType);
+		DataGroup linkedRecordTypeGroup = DataGroup.withNameInData("linkedRecordType");
+		linkedRecordTypeGroup
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		linkedRecordTypeGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "bush"));
+
+		// DataAtomic linkedRecordType =
+		// DataAtomic.withNameInDataAndValue("linkedRecordType", "bush");
+		dataTestLink.addChild(linkedRecordTypeGroup);
 
 		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
 		dataTestLink.addChild(linkedRecordId);

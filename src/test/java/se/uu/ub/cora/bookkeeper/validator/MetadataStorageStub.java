@@ -44,8 +44,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		textVar2.addChild(textVar2RecordInfo);
 
 		textVar2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "textVar2"));
-		addTextByNameInDataAndId(textVar2,"textId", "textVarText");
-		addTextByNameInDataAndId(textVar2,"defTextId", "textVarDefText");
+		addTextByNameInDataAndId(textVar2, "textId", "textVarText");
+		addTextByNameInDataAndId(textVar2, "defTextId", "textVarDefText");
 		textVar2.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 		dataGroups.add(textVar2);
@@ -59,8 +59,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		groupTypeVar.addChild(groupTypeVarRecordInfo);
 
 		groupTypeVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", "groupTypeVar"));
-		addTextByNameInDataAndId(groupTypeVar,"textId", "groupTypeVarText");
-		addTextByNameInDataAndId(groupTypeVar,"defTextId", "groupTypeVarDefText");
+		addTextByNameInDataAndId(groupTypeVar, "textId", "groupTypeVarText");
+		addTextByNameInDataAndId(groupTypeVar, "defTextId", "groupTypeVarDefText");
 
 		DataGroup refCollection = DataGroup.withNameInData("refCollection");
 		refCollection.addChild(
@@ -131,8 +131,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		textVar.addChild(textVarRecordInfo);
 
 		textVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", "textVarNameInData"));
-		addTextByNameInDataAndId(textVar,"textId", "textVarText");
-		addTextByNameInDataAndId(textVar,"defTextId", "textVarDefText");
+		addTextByNameInDataAndId(textVar, "textId", "textVarText");
+		addTextByNameInDataAndId(textVar, "defTextId", "textVarDefText");
 		textVar.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 
@@ -188,8 +188,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		colVar2.addChild(recordInfo);
 
 		colVar2.addChild(DataAtomic.withNameInDataAndValue("nameInData", "collectionVar2"));
-		addTextByNameInDataAndId(colVar2,"textId", "collectionVarText");
-		addTextByNameInDataAndId(colVar2,"defTextId", "collectionVarDefText");
+		addTextByNameInDataAndId(colVar2, "textId", "collectionVarText");
+		addTextByNameInDataAndId(colVar2, "defTextId", "collectionVarDefText");
 
 		DataGroup refCollection2 = DataGroup.withNameInData("refCollection");
 		refCollection2.addChild(
@@ -319,8 +319,16 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(testLinkGroup, "textId", "testLinkTextId");
 		addTextByNameInDataAndId(testLinkGroup, "defTextId", "testLinkDefText");
 
-		testLinkGroup.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "linkedRecordType1"));
+		DataGroup linkedRecordType = DataGroup.withNameInData("linkedRecordType");
+		linkedRecordType
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		linkedRecordType
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "linkedRecordType1"));
+		testLinkGroup.addChild(linkedRecordType);
+
+		// testLinkGroup.addChild(
+		// DataAtomic.withNameInDataAndValue("linkedRecordType",
+		// "linkedRecordType1"));
 		dataGroups.add(testLinkGroup);
 
 		/**
