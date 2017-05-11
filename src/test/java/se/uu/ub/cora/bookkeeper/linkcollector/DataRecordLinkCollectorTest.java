@@ -56,14 +56,8 @@ public class DataRecordLinkCollectorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("bush");
 		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
 
-		DataGroup linkedRecordTypeGroup = DataGroup.withNameInData("linkedRecordType");
-		linkedRecordTypeGroup
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		linkedRecordTypeGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "bush"));
-
-		// DataAtomic linkedRecordType =
-		// DataAtomic.withNameInDataAndValue("linkedRecordType", "bush");
-		dataTestLink.addChild(linkedRecordTypeGroup);
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "bush");
+		dataTestLink.addChild(linkedRecordType);
 
 		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
 		dataTestLink.addChild(linkedRecordId);
