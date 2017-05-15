@@ -53,11 +53,15 @@ public class DataGroupToRecordLinkConverterTest {
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 		addTexts(dataGroup);
-		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId",
-		// "otherTextId"));
-		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId",
-		// "otherDefTextId"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
+
+		DataGroup linkedRecordType = DataGroup.withNameInData("linkedRecordType");
+		linkedRecordType
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		linkedRecordType
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordType"));
+		dataGroup.addChild(linkedRecordType);
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+		// "someRecordType"));
 		return dataGroup;
 	}
 
