@@ -54,7 +54,10 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = extractTextIdByNameInData("textId");
 		String defTextId = extractTextIdByNameInData("defTextId");
-		String linkedRecordType = dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
+
+		DataGroup linkedRecordTypeGroup = dataGroup.getFirstGroupWithNameInData("linkedRecordType");
+		String linkedRecordType = linkedRecordTypeGroup
+				.getFirstAtomicValueWithNameInData("linkedRecordId");
 
 		recordLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id,
 				nameInData, textId, defTextId, linkedRecordType);
