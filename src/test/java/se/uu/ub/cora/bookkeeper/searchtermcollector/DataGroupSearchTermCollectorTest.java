@@ -1,12 +1,18 @@
 package se.uu.ub.cora.bookkeeper.searchtermcollector;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class DataGroupSearchTermCollectorTest {
-    private DataGroupSearchTermCollector collector;
+	private DataGroupSearchTermCollector collector;
 
-    @Test
-    public void testInit(){
+	@BeforeMethod
+	public void setUp() {
+		collector = new DataGroupSearchTermCollector();
+	}
 
-    }
+	@Test
+	public void testInit() {
+
+	}
 }

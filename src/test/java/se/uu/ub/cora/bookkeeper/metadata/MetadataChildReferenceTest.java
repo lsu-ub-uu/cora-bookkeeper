@@ -19,19 +19,21 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class MetadataChildReferenceTest {
 	private MetadataChildReference metadataChildReference;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		metadataChildReference = metadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "metadataChildReference", 1, MetadataChildReference.UNLIMITED);
+		metadataChildReference = MetadataChildReference
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
+						"metadataChildReference", 1, MetadataChildReference.UNLIMITED);
 	}
 
 	@Test
@@ -90,5 +92,11 @@ public class MetadataChildReferenceTest {
 	public void testReadOnlyKey() {
 		metadataChildReference.setReadOnlyKey("READ_ONLY");
 		assertEquals(metadataChildReference.getReadOnlyKey(), "READ_ONLY");
+	}
+
+	@Test
+	public void testSearchTerm() {
+		metadataChildReference.addSearchTerm("someSearchTerm");
+		assertEquals(metadataChildReference.getSearchTerms().get(0), "someSearchTerm");
 	}
 }
