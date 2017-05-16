@@ -3,6 +3,7 @@ package se.uu.ub.cora.bookkeeper.searchtermcollector;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
@@ -16,7 +17,7 @@ public class DataGroupSearchTermCollector {
 
 	private MetadataHolder metadataHolder;
 
-	private List<DataGroup> searchTerms;
+	private List<DataGroup> collectedSearchTerms;
 
 	private DataGroup dataGroup;
 
@@ -26,11 +27,11 @@ public class DataGroupSearchTermCollector {
 
 	public List<DataGroup> collectSearchTerms(String metadataGroupId, DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
-		searchTerms = new ArrayList();
+		collectedSearchTerms = new ArrayList();
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
 		collectSearchTermsFromDataGroupUsingMetadataChildren(metadataChildReferences);
-		return searchTerms;
+		return collectedSearchTerms;
 	}
 
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
@@ -53,21 +54,23 @@ public class DataGroupSearchTermCollector {
 			String referenceId = metadataChildReference.getLinkedRecordId();
 
 			MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
-			collectSearchTermsFromDataGroupChildren(childMetadataElement);
-			// TODO: måste skicka ner searchterms
+			collectSearchTermsFromDataGroupChildren(childMetadataElement,
+					metadataChildReference.getSearchTerms());
 		}
 	}
 
-	private void collectSearchTermsFromDataGroupChildren(MetadataElement childMetadataElement) {
+	private void collectSearchTermsFromDataGroupChildren(MetadataElement childMetadataElement,
+			List<String> searchTerms) {
 		for (DataElement childDataElement : dataGroup.getChildren()) {
-			collectSearchTermsFromDataGroupChild(childMetadataElement, childDataElement);
+			collectSearchTermsFromDataGroupChild(childMetadataElement, childDataElement,
+					searchTerms);
 		}
 	}
 
 	private void collectSearchTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement) {
+			DataElement childDataElement, List<String> searchTerms) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			possiblyCreateSearchTerm(childMetadataElement, childDataElement);
+			createSearchTerm(childMetadataElement, childDataElement, searchTerms);
 		}
 	}
 
@@ -79,8 +82,17 @@ public class DataGroupSearchTermCollector {
 		return validationAnswer.dataIsValid();
 	}
 
-	private void possiblyCreateSearchTerm(MetadataElement childMetadataElement,
-			DataElement childDataElement) {
+	private void createSearchTerm(MetadataElement childMetadataElement,
+			DataElement childDataElement, List<String> searchTerms) {
+		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
+		DataAtomic name = DataAtomic.withNameInDataAndValue("searchTermName", searchTerms.get(0));
+		searchTerm.addChild(name);
+		if (childDataElement instanceof DataAtomic) {
+			String dataValue = ((DataAtomic) childDataElement).getValue();
+			DataAtomic value = DataAtomic.withNameInDataAndValue("searchTermValue", dataValue);
+			searchTerm.addChild(value);
+			collectedSearchTerms.add(searchTerm);
+		}
 
 	}
 }

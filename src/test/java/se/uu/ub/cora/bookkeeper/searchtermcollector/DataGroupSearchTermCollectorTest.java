@@ -37,6 +37,11 @@ public class DataGroupSearchTermCollectorTest {
 		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
 		List<DataGroup> collectedSearchTerms = collector.collectSearchTerms("bookGroup", book);
 		assertEquals(collectedSearchTerms.size(), 1);
+		DataGroup searchTerm = collectedSearchTerms.get(0);
+		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
+		// TODO: failar nu eftersom det som står i textfältet är
+		// titleSearchTerm, dvs id på searchTerm
+		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "bookTitle");
 	}
 
 	private DataGroup createBookWithNoTitle() {

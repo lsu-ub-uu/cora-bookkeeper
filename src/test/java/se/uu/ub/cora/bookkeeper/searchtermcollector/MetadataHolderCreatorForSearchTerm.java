@@ -3,6 +3,7 @@ package se.uu.ub.cora.bookkeeper.searchtermcollector;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class MetadataHolderCreatorForSearchTerm {
 	private MetadataHolder metadataHolder = new MetadataHolder();
@@ -15,8 +16,10 @@ public class MetadataHolderCreatorForSearchTerm {
 		// DataGroup searchTerm = createSearchTerm();
 		// dataGroups.add(searchTerm);
 
-		// DataGroup searchTitleTextVar = createTitleTextVar();
-		// dataGroups.add(searchTitleTextVar);
+		TextVariable searchTitleTextVar = createSearchTitleTextVar();
+		metadataHolder.addMetadataElement(searchTitleTextVar);
+		TextVariable bookTitleTextVar = createBookTitleTextVar();
+		metadataHolder.addMetadataElement(bookTitleTextVar);
 		// return dataGroups;
 		return metadataHolder;
 	}
@@ -68,16 +71,20 @@ public class MetadataHolderCreatorForSearchTerm {
 	// return ref;
 	// }
 
-	// private DataGroup createTitleTextVar() {
-	// DataGroup searchTitleTextVar = TestMetadataCreator
-	// .createMetadataGroupWithIdAndNameInData("searchTitleTextVar",
-	// "metadata");
-	// searchTitleTextVar.addChild(DataAtomic.withNameInDataAndValue("nameInData",
-	// "searchTitle"));
-	// searchTitleTextVar.addChild(
-	// DataAtomic.withNameInDataAndValue("regEx", "(^[0-9A-ZÅÄÖ
-	// a-zåäö:-_]{2,100}$)"));
-	// return searchTitleTextVar;
-	// }
+	private TextVariable createSearchTitleTextVar() {
+		TextVariable searchTitleTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("searchTitleTextVar",
+						"searchTitle", "searchTitleText", "searchTitleDefText",
+						"(^[0-9A-ZÅÄÖ	 a-zåäö:-_]{2,100}$)");
+		return searchTitleTextVar;
+	}
+
+	private TextVariable createBookTitleTextVar() {
+		TextVariable bookTitleTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("bookTitleTextVar",
+						"bookTitle", "bookitleText", "bookTitleDefText",
+						"(^[0-9A-ZÅÄÖ	 a-zåäö:-_]{2,100}$)");
+		return bookTitleTextVar;
+	}
 
 }
