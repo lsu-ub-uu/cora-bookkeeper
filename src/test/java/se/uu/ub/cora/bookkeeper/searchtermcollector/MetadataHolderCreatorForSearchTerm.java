@@ -4,10 +4,10 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 
-public class MetadataStorageSpy {
+public class MetadataHolderCreatorForSearchTerm {
+	private MetadataHolder metadataHolder = new MetadataHolder();
 
 	public MetadataHolder addMetadata() {
-		MetadataHolder metadataHolder = new MetadataHolder();
 
 		MetadataGroup book = createBookDataGroup();
 		metadataHolder.addMetadataElement(book);
