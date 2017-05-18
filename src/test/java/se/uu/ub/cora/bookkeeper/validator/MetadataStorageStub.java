@@ -395,4 +395,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		return null;
 	}
 
+	@Override
+	public Collection<DataGroup> getSearchTerms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -17,6 +17,7 @@ public class DataGroupSearchTermCollector {
 
 	private MetadataHolder metadataHolder;
 
+	//TODo: returnera EN datagrupp
 	private List<DataGroup> collectedSearchTerms;
 
 	private DataGroup dataGroup;
@@ -88,6 +89,9 @@ public class DataGroupSearchTermCollector {
 		DataAtomic name = DataAtomic.withNameInDataAndValue("searchTermName", searchTerms.get(0));
 		searchTerm.addChild(name);
 		if (childDataElement instanceof DataAtomic) {
+			//titleSearchTerm = dataValue
+			//hämta ut searchTerm metadataStorage.getSearchTerms
+			//hämta searchTitleTextVar för att plocka ut det nameInData
 			String dataValue = ((DataAtomic) childDataElement).getValue();
 			DataAtomic value = DataAtomic.withNameInDataAndValue("searchTermValue", dataValue);
 			searchTerm.addChild(value);

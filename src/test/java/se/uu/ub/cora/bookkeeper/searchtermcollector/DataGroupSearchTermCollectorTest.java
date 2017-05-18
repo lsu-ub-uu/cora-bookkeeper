@@ -41,7 +41,7 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
 		// TODO: failar nu eftersom det som står i textfältet är
 		// titleSearchTerm, dvs id på searchTerm
-		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "bookTitle");
+		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "searchTitle");
 	}
 
 	private DataGroup createBookWithNoTitle() {
@@ -64,5 +64,46 @@ public class DataGroupSearchTermCollectorTest {
 		recordInfo.addChild(dataDivider);
 		return recordInfo;
 	}
+
+//	{"name": "searchData",
+//			"children": [
+//		{
+//			"name": "type",
+//				"value": "book"
+//		},{
+//		"name": "id",
+//				"value": "book123"
+//	},
+//
+//		{
+//			"name": "searchTerm",
+//				"children": [
+//
+//			{
+//				"name": "searchTermName",
+//					"value": "bookTitle"
+//			},
+//			{
+//				"name": "searchTermValue",
+//					"value": "Min titel på den här boken"
+//			}
+//			]
+//		},
+//		{
+//			"name": "searchTerm",
+//				"children": [
+//
+//			{
+//				"name": "searchTermName",
+//					"value": "freeText"
+//			},
+//			{
+//				"name": "searchTermValue",
+//					"value": "Min titel på den här boken"
+//			}
+//			]
+//		}
+//		]
+//	}
 
 }
