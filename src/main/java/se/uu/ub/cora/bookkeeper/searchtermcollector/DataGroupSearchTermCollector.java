@@ -1,6 +1,7 @@
 package se.uu.ub.cora.bookkeeper.searchtermcollector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
@@ -10,6 +11,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 
@@ -17,22 +19,46 @@ public class DataGroupSearchTermCollector {
 
 	private MetadataHolder metadataHolder;
 
-	//TODo: returnera EN datagrupp
-	private List<DataGroup> collectedSearchTerms;
+	private DataGroup searchData;
+	private List<DataGroup> collectedSearchTerms = new ArrayList<>();
 
 	private DataGroup dataGroup;
 
-	public DataGroupSearchTermCollector(MetadataHolder metadataHolder) {
+	private MetadataStorage metadataStorage;
+
+	public DataGroupSearchTermCollector(MetadataHolder metadataHolder,
+			MetadataStorage metadataStorage) {
 		this.metadataHolder = metadataHolder;
+		this.metadataStorage = metadataStorage;
 	}
 
-	public List<DataGroup> collectSearchTerms(String metadataGroupId, DataGroup dataGroup) {
+	public DataGroup collectSearchTerms(String metadataGroupId, DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
-		collectedSearchTerms = new ArrayList();
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
 		collectSearchTermsFromDataGroupUsingMetadataChildren(metadataChildReferences);
-		return collectedSearchTerms;
+		if (collectedSearchTerms.isEmpty()) {
+			return null;
+		}
+		searchData = DataGroup.withNameInData("searchData");
+		extractTypeFromDataGroupAndSetInSearchData(dataGroup);
+		extractIdFromDataGroupAndSetInSearchData(dataGroup);
+		for (DataGroup collectedSearchTerm : collectedSearchTerms) {
+			searchData.addChild(collectedSearchTerm);
+		}
+		return searchData;
+	}
+
+	private void extractTypeFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String type = recordInfo.getFirstAtomicValueWithNameInData("type");
+		searchData.addChild(DataAtomic.withNameInDataAndValue("type", type));
+	}
+
+	private void extractIdFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		searchData.addChild(DataAtomic.withNameInDataAndValue("id", id));
 	}
 
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
@@ -89,9 +115,10 @@ public class DataGroupSearchTermCollector {
 		DataAtomic name = DataAtomic.withNameInDataAndValue("searchTermName", searchTerms.get(0));
 		searchTerm.addChild(name);
 		if (childDataElement instanceof DataAtomic) {
-			//titleSearchTerm = dataValue
-			//hämta ut searchTerm metadataStorage.getSearchTerms
-			//hämta searchTitleTextVar för att plocka ut det nameInData
+			// titleSearchTerm = dataValue
+			// hämta ut searchTerm metadataStorage.getSearchTerms
+			Collection<DataGroup> searchTermsCollection = metadataStorage.getSearchTerms();
+			// hämta searchTitleTextVar för att plocka ut det nameInData
 			String dataValue = ((DataAtomic) childDataElement).getValue();
 			DataAtomic value = DataAtomic.withNameInDataAndValue("searchTermValue", dataValue);
 			searchTerm.addChild(value);

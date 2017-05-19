@@ -397,7 +397,69 @@ public class MetadataStorageStub implements MetadataStorage {
 
 	@Override
 	public Collection<DataGroup> getSearchTerms() {
-		// TODO Auto-generated method stub
+		// TODO lägg till searchTerm för bookTitle här
+
+		// {
+		// "name": "searchTerm",
+		// "children": [
+		// {
+		// "name": "recordInfo",
+		// "children": [
+		// {
+		// "name": "id",
+		// "value": "titleSearchTerm"
+		// },
+		// {
+		// "name": "type",
+		// "children": [
+		// {
+		// "name": "linkedRecordType",
+		// "value": "recordType"
+		// },
+		// {
+		// "name": "linkedRecordId",
+		// "value": "searchTerm"
+		// }
+		// ]
+		// },
+		// {
+		// "name": "createdBy",
+		// "value": "141414"
+		// },
+		// {
+		// "name": "dataDivider",
+		// "children": [
+		// {
+		// "name": "linkedRecordType",
+		// "value": "system"
+		// },
+		// {
+		// "name": "linkedRecordId",
+		// "value": "bibsys"
+		// }
+		// ]
+		// }
+		// ]
+		// },
+		// {
+		// "name": "searchTermType",
+		// "value": "final"
+		// },
+		// {
+		// "name": "searchFieldRef",
+		// "children": [
+		// {
+		// "name": "linkedRecordType",
+		// "value": "metadata"
+		// },
+		// {
+		// "name": "linkedRecordId",
+		// "value": "searchTitleTextVar"
+		// }
+		// ]
+		// }
+		// ]
+		// }
 		return null;
 	}
 
