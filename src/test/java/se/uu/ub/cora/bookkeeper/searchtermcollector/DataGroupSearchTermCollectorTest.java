@@ -47,7 +47,7 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
 		// TODO: failar nu eftersom det som står i textfältet är
 		// titleSearchTerm, dvs id på searchTerm
-		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "bookTitle");
+		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "searchTitle");
 	}
 
 	// {"name": "searchData",
