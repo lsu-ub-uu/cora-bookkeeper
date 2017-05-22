@@ -19,16 +19,16 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import java.util.List;
+
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-
-import java.util.List;
 
 public final class DataGroupToMetadataChildReferenceConverter {
 
 	private DataGroup dataGroup;
 	private MetadataChildReference childReference;
-	
+
 	private DataGroupToMetadataChildReferenceConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
@@ -40,7 +40,8 @@ public final class DataGroupToMetadataChildReferenceConverter {
 	public MetadataChildReference toMetadata() {
 		createMetadataChildReferenceWithBasicInfo();
 		if (dataGroup.containsChildWithNameInData("repeatMinKey")) {
-			childReference.setRepeatMinKey(dataGroup.getFirstAtomicValueWithNameInData("repeatMinKey"));
+			childReference
+					.setRepeatMinKey(dataGroup.getFirstAtomicValueWithNameInData("repeatMinKey"));
 		}
 		if (dataGroup.containsChildWithNameInData("secret")) {
 			childReference.setSecret(getFirstAtomicValueWithNameInDataAsBoolean("secret"));
@@ -52,7 +53,8 @@ public final class DataGroupToMetadataChildReferenceConverter {
 			childReference.setReadOnly(getFirstAtomicValueWithNameInDataAsBoolean("readOnly"));
 		}
 		if (dataGroup.containsChildWithNameInData("readOnlyKey")) {
-			childReference.setReadOnlyKey(dataGroup.getFirstAtomicValueWithNameInData("readOnlyKey"));
+			childReference
+					.setReadOnlyKey(dataGroup.getFirstAtomicValueWithNameInData("readOnlyKey"));
 		}
 		return childReference;
 	}
@@ -60,26 +62,29 @@ public final class DataGroupToMetadataChildReferenceConverter {
 	private void createMetadataChildReferenceWithBasicInfo() {
 		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithNameInData("repeatMin"));
 		int repeatMax = getRepeatMax();
-		
+
 		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
 		String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
 		String linkedRecordId = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
-		childReference = MetadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, linkedRecordId, repeatMin, repeatMax);
+		childReference = MetadataChildReference
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
+						linkedRecordId, repeatMin, repeatMax);
 
-		possiblyConvertSearchTerms(ref);
+		possiblyConvertSearchTerms();
 	}
 
-	private void possiblyConvertSearchTerms(DataGroup ref) {
-		if(ref.containsChildWithNameInData("childRefSearchTerm")){
-			convertSearchTerms(ref);
+	private void possiblyConvertSearchTerms() {
+		if (dataGroup.containsChildWithNameInData("childRefSearchTerm")) {
+			convertSearchTerms();
 		}
 	}
 
-	private void convertSearchTerms(DataGroup ref) {
-		List<DataGroup> childRefSearchTerms = ref.getAllGroupsWithNameInData("childRefSearchTerm");
-		for(DataGroup searchTermGroup : childRefSearchTerms) {
+	private void convertSearchTerms() {
+		List<DataGroup> childRefSearchTerms = dataGroup
+				.getAllGroupsWithNameInData("childRefSearchTerm");
+		for (DataGroup searchTermGroup : childRefSearchTerms) {
 			addSearchTermToChildReference(searchTermGroup);
-        }
+		}
 	}
 
 	private void addSearchTermToChildReference(DataGroup searchTermGroup) {
@@ -102,8 +107,8 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		} else if ("false".equals(value)) {
 			return false;
 		}
-		throw DataConversionException.withMessage("Can not convert value:" + value
-				+ " to a boolean value");
+		throw DataConversionException
+				.withMessage("Can not convert value:" + value + " to a boolean value");
 	}
 
 }

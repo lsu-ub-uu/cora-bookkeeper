@@ -34,7 +34,7 @@ public class DataGroupSearchTermCollector {
 	}
 
 	public DataGroup collectSearchTerms(String metadataGroupId, DataGroup dataGroup) {
-		getMetadataFromStorage();
+		populateMetadataHolderFromMetadataStorage();
 		this.dataGroup = dataGroup;
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
@@ -42,16 +42,10 @@ public class DataGroupSearchTermCollector {
 		if (collectedSearchTerms.isEmpty()) {
 			return null;
 		}
-		searchData = DataGroup.withNameInData("searchData");
-		extractTypeFromDataGroupAndSetInSearchData(dataGroup);
-		extractIdFromDataGroupAndSetInSearchData(dataGroup);
-		for (DataGroup collectedSearchTerm : collectedSearchTerms) {
-			searchData.addChild(collectedSearchTerm);
-		}
-		return searchData;
+		return createSearchData(dataGroup);
 	}
 
-	private void getMetadataFromStorage() {
+	private void populateMetadataHolderFromMetadataStorage() {
 		metadataHolder = new MetadataHolder();
 		Collection<DataGroup> metadataElementDataGroups = metadataStorage.getMetadataElements();
 		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups);
@@ -72,17 +66,6 @@ public class DataGroupSearchTermCollector {
 		metadataHolder.addMetadataElement(converter.toMetadata());
 	}
 
-	private void extractTypeFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		String type = recordInfo.getFirstAtomicValueWithNameInData("type");
-		searchData.addChild(DataAtomic.withNameInDataAndValue("type", type));
-	}
-
-	private void extractIdFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
-		String id = getSearchTermId(dataGroup);
-		searchData.addChild(DataAtomic.withNameInDataAndValue("id", id));
-	}
-
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder
 				.getMetadataElement(metadataGroupId);
@@ -92,20 +75,27 @@ public class DataGroupSearchTermCollector {
 	private void collectSearchTermsFromDataGroupUsingMetadataChildren(
 			List<MetadataChildReference> metadataChildReferences) {
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
+			possiblyCollectSearchTermsFromDataGroupUsingMetadataChild(metadataChildReference);
+		}
+	}
+
+	private void possiblyCollectSearchTermsFromDataGroupUsingMetadataChild(
+			MetadataChildReference metadataChildReference) {
+		if (childReferenceHasSearchTerms(metadataChildReference)) {
 			collectSearchTermsFromDataGroupUsingMetadataChild(metadataChildReference);
 		}
 	}
 
+	private boolean childReferenceHasSearchTerms(MetadataChildReference metadataChildReference) {
+		return !metadataChildReference.getSearchTerms().isEmpty();
+	}
+
 	private void collectSearchTermsFromDataGroupUsingMetadataChild(
 			MetadataChildReference metadataChildReference) {
-		if (!metadataChildReference.getSearchTerms().isEmpty()) {
-
-			String referenceId = metadataChildReference.getLinkedRecordId();
-
-			MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
-			collectSearchTermsFromDataGroupChildren(childMetadataElement,
-					metadataChildReference.getSearchTerms());
-		}
+		String referenceId = metadataChildReference.getLinkedRecordId();
+		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
+		collectSearchTermsFromDataGroupChildren(childMetadataElement,
+				metadataChildReference.getSearchTerms());
 	}
 
 	private void collectSearchTermsFromDataGroupChildren(MetadataElement childMetadataElement,
@@ -136,7 +126,6 @@ public class DataGroupSearchTermCollector {
 		if (childDataElement instanceof DataAtomic) {
 			createSearchTerm(childDataElement, metadataSearchTerms);
 		}
-
 	}
 
 	private void createSearchTerm(DataElement childDataElement, List<String> metadataSearchTerms) {
@@ -159,6 +148,11 @@ public class DataGroupSearchTermCollector {
 		}
 	}
 
+	private String getSearchTermId(DataGroup searchTerm) {
+		DataGroup recordInfo = searchTerm.getFirstGroupWithNameInData("recordInfo");
+		return recordInfo.getFirstAtomicValueWithNameInData("id");
+	}
+
 	private void createAndAddCollectedSearchTerm(String childDataElementValue,
 			DataGroup searchTerm) {
 		String searchFiledNameInData = getSearchFieldNameInDataFromSearchTerm(searchTerm);
@@ -168,9 +162,15 @@ public class DataGroupSearchTermCollector {
 		collectedSearchTerms.add(collectedSearchTerm);
 	}
 
-	private String getSearchTermId(DataGroup searchTerm) {
-		DataGroup recordInfo = searchTerm.getFirstGroupWithNameInData("recordInfo");
-		return recordInfo.getFirstAtomicValueWithNameInData("id");
+	private String getSearchFieldNameInDataFromSearchTerm(DataGroup searchTerm) {
+		String linkedMetadata = getMetadataIdFromSearchFieldRef(searchTerm);
+		MetadataElement metadataElement = metadataHolder.getMetadataElement(linkedMetadata);
+		return metadataElement.getNameInData();
+	}
+
+	private String getMetadataIdFromSearchFieldRef(DataGroup term) {
+		DataGroup searchFieldRef = term.getFirstGroupWithNameInData("searchFieldRef");
+		return searchFieldRef.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 	private DataGroup createCollectedSearchTerm(String childDataElementValue,
@@ -195,14 +195,25 @@ public class DataGroupSearchTermCollector {
 		collectedSearchTerm.addChild(searchTermValue);
 	}
 
-	private String getSearchFieldNameInDataFromSearchTerm(DataGroup searchTerm) {
-		String linkedMetadata = getMetadataIdFromSearchFieldRef(searchTerm);
-		MetadataElement metadataElement = metadataHolder.getMetadataElement(linkedMetadata);
-		return metadataElement.getNameInData();
+	private DataGroup createSearchData(DataGroup dataGroup) {
+		searchData = DataGroup.withNameInData("searchData");
+		extractTypeFromDataGroupAndSetInSearchData(dataGroup);
+		extractIdFromDataGroupAndSetInSearchData(dataGroup);
+		for (DataGroup collectedSearchTerm : collectedSearchTerms) {
+			searchData.addChild(collectedSearchTerm);
+		}
+		return searchData;
 	}
 
-	private String getMetadataIdFromSearchFieldRef(DataGroup term) {
-		DataGroup searchFieldRef = term.getFirstGroupWithNameInData("searchFieldRef");
-		return searchFieldRef.getFirstAtomicValueWithNameInData("linkedRecordId");
+	private void extractTypeFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String type = recordInfo.getFirstAtomicValueWithNameInData("type");
+		searchData.addChild(DataAtomic.withNameInDataAndValue("type", type));
 	}
+
+	private void extractIdFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
+		String id = getSearchTermId(dataGroup);
+		searchData.addChild(DataAtomic.withNameInDataAndValue("id", id));
+	}
+
 }

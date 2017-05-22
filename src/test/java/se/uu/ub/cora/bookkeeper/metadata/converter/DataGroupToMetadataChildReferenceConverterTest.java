@@ -19,18 +19,19 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadata() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
-		
+
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
@@ -176,12 +177,14 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
-		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
+		// DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
 
 		DataGroup childRefSearchTerm = createSearchTermWithId("titleSearchTerm");
-		ref.addChild(childRefSearchTerm);
+		childRefSearchTerm.setRepeatId("0");
+		dataGroup.addChild(childRefSearchTerm);
 		DataGroup childRefSearchTerm2 = createSearchTermWithId("freeTextSearchTerm");
-		ref.addChild(childRefSearchTerm2);
+		childRefSearchTerm2.setRepeatId("1");
+		dataGroup.addChild(childRefSearchTerm2);
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
@@ -194,8 +197,10 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	private DataGroup createSearchTermWithId(String searchTermId) {
 		DataGroup childRefSearchTerm = DataGroup.withNameInData("childRefSearchTerm");
-		childRefSearchTerm.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "searchTerm"));
-		childRefSearchTerm.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", searchTermId));
+		childRefSearchTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "searchTerm"));
+		childRefSearchTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", searchTermId));
 		return childRefSearchTerm;
 	}
 }

@@ -1,20 +1,15 @@
 package se.uu.ub.cora.bookkeeper.searchtermcollector;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
+
 public class MetadataStorageForSearchTermStub implements MetadataStorage {
 	private List<DataGroup> dataGroups;
-
 
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
@@ -54,8 +49,9 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		DataGroup book = DataGroup.withNameInData("metadata");
 		book.addAttributeByIdWithValue("type", "group");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("bookGroup", "book");
-//				DataGroup.withNameInData("recordInfo");
-//		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "bookGroup"));
+		// DataGroup.withNameInData("recordInfo");
+		// recordInfo.addChild(DataAtomic.withNameInDataAndValue("id",
+		// "bookGroup"));
 		book.addChild(recordInfo);
 		book.addChild(DataAtomic.withNameInDataAndValue("nameInData", "book"));
 		addTextByNameInDataAndId(book, "textId", "bookTextId");
@@ -71,30 +67,25 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 	private DataGroup createChildReferenceForBook() {
 		DataGroup childReference = DataGroup.withNameInData("childReference");
 		DataGroup ref = DataGroup.withNameInData("ref");
-		ref.addAttributeByIdWithValue("type", "textVariable");
-		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
+		// ref.addAttributeByIdWithValue("type", "textVariable");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "bookTitleTextVar"));
 		childReference.addChild(ref);
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "1"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("searchTerm","titleSearchTerm" ));
-
+		DataGroup childRefSearchTerm = DataGroup.withNameInData("childRefSearchTerm");
+		childRefSearchTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "searchTerm"));
+		childRefSearchTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "titleSearchTerm"));
+		childRefSearchTerm.setRepeatId("0");
+		childReference.addChild(childRefSearchTerm);
 		return childReference;
 	}
 
-	// private DataGroup createLinkWithNameInDataLinkedTypeAndLinkeId(String
-	// nameInData,
-	// String recordType, String recordId) {
-	// DataGroup ref = DataGroup.withNameInData(nameInData);
-	// ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
-	// recordType));
-	// ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId",
-	// recordId));
-	// return ref;
-	// }
-
 	private DataGroup createSearchTitleTextVar() {
-		DataGroup searchTitleTextVar = createTextVariableWithIdAndNameInData("searchTitleTextVar", "searchTitle");
+		DataGroup searchTitleTextVar = createTextVariableWithIdAndNameInData("searchTitleTextVar",
+				"searchTitle");
 		return searchTitleTextVar;
 	}
 
@@ -107,13 +98,14 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		textVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", nameInData));
 		textVar.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
-		addTextByNameInDataAndId(textVar, "textId", id+"TextId");
-		addTextByNameInDataAndId(textVar, "defTextId", id+"DefTextId");
+		addTextByNameInDataAndId(textVar, "textId", id + "TextId");
+		addTextByNameInDataAndId(textVar, "defTextId", id + "DefTextId");
 		return textVar;
 	}
 
 	private DataGroup createBookTitleTextVar() {
-		DataGroup bookTitleTextVar = createTextVariableWithIdAndNameInData("bookTitleTextVar", "bookTitle");
+		DataGroup bookTitleTextVar = createTextVariableWithIdAndNameInData("bookTitleTextVar",
+				"bookTitle");
 		return bookTitleTextVar;
 	}
 
@@ -170,7 +162,6 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		searchTerms.add(searchTerm2);
 		return searchTerms;
 	}
-
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
 		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");

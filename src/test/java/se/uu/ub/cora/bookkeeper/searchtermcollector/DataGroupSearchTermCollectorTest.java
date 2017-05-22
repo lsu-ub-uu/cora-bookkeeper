@@ -8,10 +8,8 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 
 public class DataGroupSearchTermCollectorTest {
 	private DataGroupSearchTermCollector collector;
@@ -19,9 +17,6 @@ public class DataGroupSearchTermCollectorTest {
 	@BeforeMethod
 	public void setUp() {
 		MetadataStorage metadataStorage = new MetadataStorageForSearchTermStub();
-//		MetadataStorageForSearchTermStub metadataHolderCreator = new MetadataStorageForSearchTermStub();
-
-//		MetadataHolder metadataHolder = metadataHolderCreator.addMetadata();
 		collector = new DataGroupSearchTermCollector(metadataStorage);
 	}
 
@@ -42,54 +37,11 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 
-		// assertEquals(collectedSearchTerms.getChildren().size(), 1);
 		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
-		// TODO: failar nu eftersom det som står i textfältet är
-		// titleSearchTerm, dvs id på searchTerm
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "searchTitle");
 	}
 
-	// {"name": "searchData",
-	// "children": [
-	// {
-	// "name": "type",
-	// "value": "book"
-	// },{
-	// "name": "id",
-	// "value": "book123"
-	// },
-	//
-	// {
-	// "name": "searchTerm",
-	// "children": [
-	//
-	// {
-	// "name": "searchTermName",
-	// "value": "bookTitle"
-	// },
-	// {
-	// "name": "searchTermValue",
-	// "value": "Min titel på den här boken"
-	// }
-	// ]
-	// },
-	// {
-	// "name": "searchTerm",
-	// "children": [
-	//
-	// {
-	// "name": "searchTermName",
-	// "value": "freeText"
-	// },
-	// {
-	// "name": "searchTermValue",
-	// "value": "Min titel på den här boken"
-	// }
-	// ]
-	// }
-	// ]
-	// }
 	private DataGroup createBookWithNoTitle() {
 		DataGroup book = DataGroup.withNameInData("book");
 		DataGroup recordInfo = createRecordInfo();
