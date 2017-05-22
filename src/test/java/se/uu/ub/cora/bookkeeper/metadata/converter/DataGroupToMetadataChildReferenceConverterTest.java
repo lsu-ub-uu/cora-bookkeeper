@@ -150,4 +150,52 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMax(), Integer.MAX_VALUE);
 	}
+
+	@Test
+	public void testToMetadataWithOneSearchTerm() {
+		DataGroup dataGroup = createChildRefOtherMetadata();
+
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
+
+		DataGroup childRefSearchTerm = createSearchTermWithId("titleSearchTerm");
+		ref.addChild(childRefSearchTerm);
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getSearchTerms().size(), 1);
+		assertEquals(metadataChildReference.getSearchTerms().get(0), "titleSearchTerm");
+	}
+
+	@Test
+	public void testToMetadataWithTwoSearchTerms() {
+		DataGroup dataGroup = createChildRefOtherMetadata();
+
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
+
+		DataGroup childRefSearchTerm = createSearchTermWithId("titleSearchTerm");
+		ref.addChild(childRefSearchTerm);
+		DataGroup childRefSearchTerm2 = createSearchTermWithId("freeTextSearchTerm");
+		ref.addChild(childRefSearchTerm2);
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getSearchTerms().size(), 2);
+		assertEquals(metadataChildReference.getSearchTerms().get(0), "titleSearchTerm");
+		assertEquals(metadataChildReference.getSearchTerms().get(1), "freeTextSearchTerm");
+	}
+
+	private DataGroup createSearchTermWithId(String searchTermId) {
+		DataGroup childRefSearchTerm = DataGroup.withNameInData("childRefSearchTerm");
+		childRefSearchTerm.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "searchTerm"));
+		childRefSearchTerm.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", searchTermId));
+		return childRefSearchTerm;
+	}
 }

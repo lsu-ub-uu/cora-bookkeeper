@@ -22,6 +22,8 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 
+import java.util.List;
+
 public final class DataGroupToMetadataChildReferenceConverter {
 
 	private DataGroup dataGroup;
@@ -64,6 +66,25 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		String linkedRecordId = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
 		childReference = MetadataChildReference.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, linkedRecordId, repeatMin, repeatMax);
 
+		possiblyConvertSearchTerms(ref);
+	}
+
+	private void possiblyConvertSearchTerms(DataGroup ref) {
+		if(ref.containsChildWithNameInData("childRefSearchTerm")){
+			convertSearchTerms(ref);
+		}
+	}
+
+	private void convertSearchTerms(DataGroup ref) {
+		List<DataGroup> childRefSearchTerms = ref.getAllGroupsWithNameInData("childRefSearchTerm");
+		for(DataGroup searchTermGroup : childRefSearchTerms) {
+			addSearchTermToChildReference(searchTermGroup);
+        }
+	}
+
+	private void addSearchTermToChildReference(DataGroup searchTermGroup) {
+		String searchTerm = searchTermGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+		childReference.addSearchTerm(searchTerm);
 	}
 
 	private int getRepeatMax() {

@@ -11,6 +11,9 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
@@ -26,13 +29,12 @@ public class DataGroupSearchTermCollector {
 
 	private MetadataStorage metadataStorage;
 
-	public DataGroupSearchTermCollector(MetadataHolder metadataHolder,
-			MetadataStorage metadataStorage) {
-		this.metadataHolder = metadataHolder;
+	public DataGroupSearchTermCollector(MetadataStorage metadataStorage) {
 		this.metadataStorage = metadataStorage;
 	}
 
 	public DataGroup collectSearchTerms(String metadataGroupId, DataGroup dataGroup) {
+		getMetadataFromStorage();
 		this.dataGroup = dataGroup;
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
@@ -47,6 +49,27 @@ public class DataGroupSearchTermCollector {
 			searchData.addChild(collectedSearchTerm);
 		}
 		return searchData;
+	}
+
+	private void getMetadataFromStorage() {
+		metadataHolder = new MetadataHolder();
+		Collection<DataGroup> metadataElementDataGroups = metadataStorage.getMetadataElements();
+		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups);
+	}
+
+	private void convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(
+			Collection<DataGroup> metadataElements) {
+		for (DataGroup metadataElement : metadataElements) {
+			convertDataGroupToMetadataElementAndAddItToMetadataHolder(metadataElement);
+		}
+	}
+
+	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(
+			DataGroup metadataElement) {
+		DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(metadataElement);
+		DataGroupToMetadataConverter converter = factory.factor();
+		metadataHolder.addMetadataElement(converter.toMetadata());
 	}
 
 	private void extractTypeFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
@@ -117,9 +140,9 @@ public class DataGroupSearchTermCollector {
 	}
 
 	private void createSearchTerm(DataElement childDataElement, List<String> metadataSearchTerms) {
+		Collection<DataGroup> searchTermsCollection = metadataStorage.getSearchTerms();
 		for (String metadataSearchTermId : metadataSearchTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
-			Collection<DataGroup> searchTermsCollection = metadataStorage.getSearchTerms();
 
 			for (DataGroup searchTerm : searchTermsCollection) {
 				possiblyCreateAndAddCollectedSearchTerm(metadataSearchTermId, childDataElementValue,

@@ -18,11 +18,11 @@ public class DataGroupSearchTermCollectorTest {
 
 	@BeforeMethod
 	public void setUp() {
-		MetadataStorage metadataStorage = new MetadataStorageStub();
-		MetadataHolderCreatorForSearchTerm metadataHolderCreator = new MetadataHolderCreatorForSearchTerm();
+		MetadataStorage metadataStorage = new MetadataStorageForSearchTermStub();
+//		MetadataStorageForSearchTermStub metadataHolderCreator = new MetadataStorageForSearchTermStub();
 
-		MetadataHolder metadataHolder = metadataHolderCreator.addMetadata();
-		collector = new DataGroupSearchTermCollector(metadataHolder, metadataStorage);
+//		MetadataHolder metadataHolder = metadataHolderCreator.addMetadata();
+		collector = new DataGroupSearchTermCollector(metadataStorage);
 	}
 
 	@Test
