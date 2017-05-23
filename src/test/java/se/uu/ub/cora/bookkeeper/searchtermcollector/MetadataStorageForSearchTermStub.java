@@ -22,6 +22,8 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		dataGroups.add(searchTitleTextVar);
 		DataGroup bookTitleTextVar = createBookTitleTextVar();
 		dataGroups.add(bookTitleTextVar);
+		DataGroup bookSubTitleTextVar = createSubBookTitleTextVar();
+		dataGroups.add(bookSubTitleTextVar);
 		DataGroup nameTextVar = createNameTextVar();
 		dataGroups.add(nameTextVar);
 
@@ -58,6 +60,10 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		DataGroup childRefSearchTerm2 = createSearchTerm("someGroupSearchTerm");
 		childReference2.addChild(childRefSearchTerm2);
 		childReferences.addChild(childReference2);
+
+		DataGroup childReference3 = createChildReferenceWithIdRepeatMinAndRepeatMax("bookSubTitleTextVar", "0", "1");
+		childReferences.addChild(childReference3);
+
 
 		return childReferences;
 	}
@@ -109,6 +115,11 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		return bookTitleTextVar;
 	}
 
+	private DataGroup createSubBookTitleTextVar() {
+		DataGroup bookSubTitleTextVar = createTextVariableWithIdAndNameInData("bookSubTitleTextVar",
+				"bookSubTitle");
+		return bookSubTitleTextVar;
+	}
 	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
 		DataGroup text = DataGroup.withNameInData(nameInData);
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));

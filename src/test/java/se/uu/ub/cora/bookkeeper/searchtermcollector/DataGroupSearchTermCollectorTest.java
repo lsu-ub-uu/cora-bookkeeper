@@ -65,6 +65,7 @@ public class DataGroupSearchTermCollectorTest {
 
 	private void addChildrenToBook(DataGroup book) {
 		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		book.addChild(DataAtomic.withNameInDataAndValue("bookSubTitle", "Some subtitle"));
 		DataGroup personRole = DataGroup.withNameInData("personRole");
 		personRole.addChild(DataAtomic.withNameInDataAndValue("name", "someName"));
 		personRole.setRepeatId("0");
