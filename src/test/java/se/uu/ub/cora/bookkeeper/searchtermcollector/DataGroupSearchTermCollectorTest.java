@@ -53,7 +53,7 @@ public class DataGroupSearchTermCollectorTest {
 
 		DataGroup collectedSearchTerms = collector.collectSearchTerms("bookGroup", book);
 
-		assertEquals(collectedSearchTerms.getNameInData(), "searchData");
+		assertEquals(collectedSearchTerms.getNameInData(), "recordIndexData");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 

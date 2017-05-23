@@ -220,7 +220,7 @@ public class DataGroupSearchTermCollector {
 	}
 
 	private DataGroup createSearchData(DataGroup dataGroup) {
-		searchData = DataGroup.withNameInData("searchData");
+		searchData = DataGroup.withNameInData("recordIndexData");
 		extractTypeFromDataGroupAndSetInSearchData(dataGroup);
 		extractIdFromDataGroupAndSetInSearchData(dataGroup);
 		addCollectedSearchTermsToSearchData();
