@@ -19,8 +19,12 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * MetadataChildReference is used to hold information about a child in metadata groups.
+ * MetadataChildReference is used to hold information about a child in metadata
+ * groups.
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -46,7 +50,10 @@ public final class MetadataChildReference {
 
 	private String readOnlyKey = "";
 
-	public MetadataChildReference(String linkedRecordType, String linkedRecordId, int repeatMin, int repeatMax) {
+	private List<String> searchTerms = new ArrayList<>();
+
+	public MetadataChildReference(String linkedRecordType, String linkedRecordId, int repeatMin,
+			int repeatMax) {
 		this.linkedRecordType = linkedRecordType;
 		this.linkedRecordId = linkedRecordId;
 		this.repeatMin = repeatMin;
@@ -54,7 +61,7 @@ public final class MetadataChildReference {
 	}
 
 	public static MetadataChildReference withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(
-			String linkedRecordType, String linkedRecordId, int repeatMin, int repeatMax){
+			String linkedRecordType, String linkedRecordId, int repeatMin, int repeatMax) {
 		return new MetadataChildReference(linkedRecordType, linkedRecordId, repeatMin, repeatMax);
 	}
 
@@ -113,5 +120,14 @@ public final class MetadataChildReference {
 
 	public String getLinkedRecordId() {
 		return linkedRecordId;
+	}
+
+	public List<String> getSearchTerms() {
+		return searchTerms;
+	}
+
+	public void addSearchTerm(String searchTerm) {
+		searchTerms.add(searchTerm);
+
 	}
 }

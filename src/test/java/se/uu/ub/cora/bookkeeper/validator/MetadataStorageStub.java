@@ -395,4 +395,47 @@ public class MetadataStorageStub implements MetadataStorage {
 		return null;
 	}
 
+	@Override
+	public Collection<DataGroup> getSearchTerms() {
+//		List<DataGroup> searchTerms = new ArrayList<>();
+//
+//		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
+//		DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
+//		searchTerm.addChild(recordInfo);
+//		searchTerm.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
+//		DataGroup searchFieldRef = DataGroup.withNameInData("searchFieldRef");
+//		searchFieldRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
+//		searchFieldRef.addChild(
+//				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
+//
+//		searchTerm.addChild(searchFieldRef);
+//
+//		searchTerms.add(searchTerm);
+//
+//		DataGroup searchTerm2 = DataGroup.withNameInData("searchTerm");
+//		DataGroup recordInfo2 = createRecordInfoWithIdAndType("someNameSearchTerm", "searchTerm");
+//		searchTerm2.addChild(recordInfo2);
+//		searchTerm2.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
+//		DataGroup searchFieldRef2 = DataGroup.withNameInData("searchFieldRef");
+//		searchFieldRef2.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
+//		searchFieldRef2.addChild(
+//				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
+//
+//		searchTerm2.addChild(searchFieldRef2);
+//
+//		searchTerms.add(searchTerm2);
+//		return searchTerms;
+		return null;
+	}
+
+//	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
+//		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+//		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
+//		DataGroup type = DataGroup.withNameInData("type");
+//		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+//		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", typeString));
+//		recordInfo.addChild(type);
+//		return recordInfo;
+//	}
+
 }

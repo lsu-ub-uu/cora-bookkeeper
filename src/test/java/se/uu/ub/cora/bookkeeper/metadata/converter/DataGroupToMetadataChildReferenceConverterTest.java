@@ -19,18 +19,19 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadata() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
-		
+
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
@@ -149,5 +150,57 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
 		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMax(), Integer.MAX_VALUE);
+	}
+
+	@Test
+	public void testToMetadataWithOneSearchTerm() {
+		DataGroup dataGroup = createChildRefOtherMetadata();
+
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
+
+		DataGroup childRefSearchTerm = createSearchTermWithId("titleSearchTerm");
+		dataGroup.addChild(childRefSearchTerm);
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getSearchTerms().size(), 1);
+		assertEquals(metadataChildReference.getSearchTerms().get(0), "titleSearchTerm");
+	}
+
+	@Test
+	public void testToMetadataWithTwoSearchTerms() {
+		DataGroup dataGroup = createChildRefOtherMetadata();
+
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+
+		DataGroup childRefSearchTerm = createSearchTermWithId("titleSearchTerm");
+		childRefSearchTerm.setRepeatId("0");
+		dataGroup.addChild(childRefSearchTerm);
+
+		DataGroup childRefSearchTerm2 = createSearchTermWithId("freeTextSearchTerm");
+		childRefSearchTerm2.setRepeatId("1");
+		dataGroup.addChild(childRefSearchTerm2);
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getSearchTerms().size(), 2);
+		assertEquals(metadataChildReference.getSearchTerms().get(0), "titleSearchTerm");
+		assertEquals(metadataChildReference.getSearchTerms().get(1), "freeTextSearchTerm");
+	}
+
+	private DataGroup createSearchTermWithId(String searchTermId) {
+		DataGroup childRefSearchTerm = DataGroup.withNameInData("childRefSearchTerm");
+		childRefSearchTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "searchTerm"));
+		childRefSearchTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", searchTermId));
+		return childRefSearchTerm;
 	}
 }
