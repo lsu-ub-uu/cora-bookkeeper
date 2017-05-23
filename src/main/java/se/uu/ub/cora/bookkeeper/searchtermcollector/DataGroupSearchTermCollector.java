@@ -162,9 +162,7 @@ public class DataGroupSearchTermCollector {
 	private void possiblyCreateAndAddCollectedSearchTerm(String metadataSearchTermId,
 			String childDataElementValue) {
 		DataGroup searchTerm = searchTermHolder.getSearchTerm(metadataSearchTermId);
-		if (searchTerm != null) {
-			createAndAddCollectedSearchTerm(childDataElementValue, searchTerm);
-		}
+		createAndAddCollectedSearchTerm(childDataElementValue, searchTerm);
 	}
 
 	private String getSearchTermId(DataGroup searchTerm) {
