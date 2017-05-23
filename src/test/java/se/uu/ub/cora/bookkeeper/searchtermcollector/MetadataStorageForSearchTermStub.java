@@ -56,7 +56,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 
 		DataGroup childReference2 = createChildReferenceWithIdRepeatMinAndRepeatMax("personRoleGroup", "1", "2");
 		DataGroup childRefSearchTerm2 = createSearchTerm("someGroupSearchTerm");
-		childReference.addChild(childRefSearchTerm2);
+		childReference2.addChild(childRefSearchTerm2);
 		childReferences.addChild(childReference2);
 
 		return childReferences;
@@ -136,8 +136,6 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
 		DataGroup childReference = createChildReferenceWithIdRepeatMinAndRepeatMax("nameTextVar", "1", "1");
 
-		DataGroup childRefSearchTerm = createSearchTerm("someOtherSearchTerm");
-		childReference.addChild(childRefSearchTerm);
 		childReferences.addChild(childReference);
 		personRoleGroup.addChild(childReferences);
 		return personRoleGroup;
