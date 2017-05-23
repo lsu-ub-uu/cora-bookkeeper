@@ -31,8 +31,10 @@ public class DataGroupSearchTermCollectorTest {
 	@Test
 	public void testCollectSearchTermsWithTitle() {
 		DataGroup book = createBookWithNoTitle();
-		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		addChildrenToBook(book);
+
 		DataGroup collectedSearchTerms = collector.collectSearchTerms("bookGroup", book);
+
 		assertEquals(collectedSearchTerms.getNameInData(), "searchData");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
@@ -40,6 +42,15 @@ public class DataGroupSearchTermCollectorTest {
 		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "searchTitle");
+		assertEquals(searchTerm.getRepeatId(), "0");
+	}
+
+	private void addChildrenToBook(DataGroup book) {
+		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		DataGroup personRole = DataGroup.withNameInData("personRole");
+		personRole.addChild(DataAtomic.withNameInDataAndValue("name", "someName"));
+		personRole.setRepeatId("0");
+		book.addChild(personRole);
 	}
 
 	private DataGroup createBookWithNoTitle() {
