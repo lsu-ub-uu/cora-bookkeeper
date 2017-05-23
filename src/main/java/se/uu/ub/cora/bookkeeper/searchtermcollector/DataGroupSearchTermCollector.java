@@ -51,19 +51,19 @@ public class DataGroupSearchTermCollector {
 		}
 	}
 
-	private void populateSearchTermHolderFromMetadataStorage(){
-		searchTermHolder = new SearchTermHolder();
-		for(DataGroup searchTerm : metadataStorage.getSearchTerms()){
-			searchTermHolder.addSearchTerm(searchTerm);
-		}
-	}
-
 	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(
 			DataGroup metadataElement) {
 		DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
 				.fromDataGroup(metadataElement);
 		DataGroupToMetadataConverter converter = factory.factor();
 		metadataHolder.addMetadataElement(converter.toMetadata());
+	}
+
+	private void populateSearchTermHolderFromMetadataStorage(){
+		searchTermHolder = new SearchTermHolder();
+		for(DataGroup searchTerm : metadataStorage.getSearchTerms()){
+			searchTermHolder.addSearchTerm(searchTerm);
+		}
 	}
 
 	private void collectSearchTermsFromDataUsingMetadata(String metadataGroupId) {
