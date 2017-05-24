@@ -172,10 +172,10 @@ public class DataGroupSearchTermCollector {
 
 	private void createAndAddCollectedSearchTerm(String childDataElementValue,
 			DataGroup searchTerm) {
-		String searchFiledNameInData = getSearchFieldNameInDataFromSearchTerm(searchTerm);
+		String searchFieldNameInData = getSearchFieldNameInDataFromSearchTerm(searchTerm);
 
 		DataGroup collectedSearchTerm = createCollectedSearchTerm(childDataElementValue,
-				searchFiledNameInData);
+				searchFieldNameInData, searchTerm);
 		collectedSearchTerms.add(collectedSearchTerm);
 	}
 
@@ -191,11 +191,19 @@ public class DataGroupSearchTermCollector {
 	}
 
 	private DataGroup createCollectedSearchTerm(String childDataElementValue,
-			String searchFiledNameInData) {
+												String searchFiledNameInData, DataGroup searchTerm) {
 		DataGroup collectedSearchTerm = DataGroup.withNameInData("searchTerm");
 		createAndAddSearchTermName(searchFiledNameInData, collectedSearchTerm);
 		createAndAddSearchTermValue(childDataElementValue, collectedSearchTerm);
+		addIndexTypes(searchTerm, collectedSearchTerm);
 		return collectedSearchTerm;
+	}
+
+	private void addIndexTypes(DataGroup searchTerm, DataGroup collectedSearchTerm) {
+		Collection<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
+		for(DataAtomic indexType : indexTypes){
+			collectedSearchTerm.addChild(indexType);
+		}
 	}
 
 	private void createAndAddSearchTermName(String searchFiledNameInData,

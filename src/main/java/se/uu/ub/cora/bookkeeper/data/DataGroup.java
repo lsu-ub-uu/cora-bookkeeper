@@ -19,11 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -173,5 +169,14 @@ public final class DataGroup implements DataPart, DataElement, Data {
 
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
 		return getGroupChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+	}
+
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
+		return getDataAtomicChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+	}
+
+	private Stream<DataAtomic> getDataAtomicChildrenWithNameInData(String childNameInData) {
+		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
+				.map(DataAtomic.class::cast);
 	}
 }

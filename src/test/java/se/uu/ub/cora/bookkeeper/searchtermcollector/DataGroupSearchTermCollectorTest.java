@@ -25,9 +25,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
+
+import java.util.Collection;
+import java.util.List;
 
 public class DataGroupSearchTermCollectorTest {
 	private DataGroupSearchTermCollector collector;
@@ -58,9 +62,12 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 
 		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
+		assertEquals(searchTerm.getRepeatId(), "0");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "searchTitle");
-		assertEquals(searchTerm.getRepeatId(), "0");
+
+		Collection<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
+		assertEquals(indexTypes.size(), 2);
 	}
 
 	private void addChildrenToBook(DataGroup book) {
@@ -94,4 +101,40 @@ public class DataGroupSearchTermCollectorTest {
 		return recordInfo;
 	}
 
+//	{
+//		"name": "recordIndexData",
+//			"children": [
+//		{
+//			"name": "type",
+//				"value": "book"
+//		},
+//		{
+//			"name": "id",
+//				"value": "book1"
+//		},
+//		{
+//			"name": "searchTerm",
+//				"children": [
+//			{
+//				"name": "searchTermName",
+//					"value": "searchTitle"
+//			},
+//			{
+//				"name": "searchTermValue",
+//					"value": "My book title"
+//			},
+//			{
+//				"name": "indexType",
+//					"value": "indexTypeString",
+//					"repeatId": "0"
+//			},
+//			{
+//				"name": "indexType",
+//					"value": "indexTypeBoolean",
+//					"repeatId": "1"
+//			}
+//			]
+//		}
+//		]
+//	}
 }
