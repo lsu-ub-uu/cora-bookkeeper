@@ -134,7 +134,7 @@ public class DataGroupValidatorTest {
 		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		assertEquals(validationAnswer.getErrorMessages().size(), 2, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not be valid, as it does not have a child");
 	}
@@ -869,6 +869,28 @@ public class DataGroupValidatorTest {
 		}
 
 		return dataGrandParent;
+	}
+
+	@Test
+	public void testInvalidDataGroupWhenChildrenMissing() {
+		MetadataHolder metadataHolder = new MetadataHolder();
+
+		// group
+		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);
+		// child
+		DataCreator.addTextVarChildReferenceToGroupMinMax("text1", 0, 4, metadataGroup,
+				metadataHolder);
+
+
+		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
+		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
+
+		DataGroup dataGroup = DataGroup.withNameInData("testGroupNameInData");
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
+		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		assertFalse(validationAnswer.dataIsValid(),
+				"The group should be validate to false - has no repeatId");
 	}
 
 }

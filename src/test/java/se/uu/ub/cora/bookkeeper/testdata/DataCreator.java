@@ -92,6 +92,19 @@ public class DataCreator {
 		group.addChildReference(groupChild);
 	}
 
+	public static void addTextVarChildReferenceToGroupMinMax(String id, int repeatMin, int repeatMax,
+													   MetadataGroup group, MetadataHolder metadataHolder) {
+		TextVariable textVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id + "Id",
+						id + "NameInData", id + "Text", id + "DefText",
+						"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}");
+		metadataHolder.addMetadataElement(textVar);
+
+		MetadataChildReference groupChild = MetadataChildReference
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id + "Id", repeatMin, repeatMax);
+		group.addChildReference(groupChild);
+	}
+
 	public static void addTextVarWithIdAndNameInDataAndRegExChildReferenceToGroup(String id,
 			String nameInData, String regEx, MetadataGroup group, MetadataHolder metadataHolder) {
 		TextVariable textVar = TextVariable

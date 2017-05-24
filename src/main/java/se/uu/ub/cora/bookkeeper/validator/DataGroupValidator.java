@@ -73,8 +73,15 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateChildren() {
+		validateHasChildren();
 		validateDataContainsAllRequiredChildrenWithCorrectValues();
 		validateDataContainsNoUnspecifiedChildren();
+	}
+
+	private void validateHasChildren() {
+		if(dataGroup.getChildren().isEmpty()){
+			validationAnswer.addErrorMessage("DataGroup "+ metadataGroup.getNameInData() + " should have children, it does not.");
+		}
 	}
 
 	private void validateDataContainsAllRequiredChildrenWithCorrectValues() {
