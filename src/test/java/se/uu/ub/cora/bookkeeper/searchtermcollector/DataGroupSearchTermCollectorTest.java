@@ -21,17 +21,15 @@ package se.uu.ub.cora.bookkeeper.searchtermcollector;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
+import java.util.List;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-
-import java.util.Collection;
-import java.util.List;
 
 public class DataGroupSearchTermCollectorTest {
 	private DataGroupSearchTermCollector collector;
@@ -61,13 +59,16 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 1);
 		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
 		assertEquals(searchTerm.getRepeatId(), "0");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermName"), "searchTitle");
 
-		Collection<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
+		List<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
 		assertEquals(indexTypes.size(), 2);
+		assertEquals(indexTypes.get(0).getValue(), "indexTypeString");
+		assertEquals(indexTypes.get(1).getValue(), "indexTypeBoolean");
 	}
 
 	private void addChildrenToBook(DataGroup book) {
@@ -101,40 +102,40 @@ public class DataGroupSearchTermCollectorTest {
 		return recordInfo;
 	}
 
-//	{
-//		"name": "recordIndexData",
-//			"children": [
-//		{
-//			"name": "type",
-//				"value": "book"
-//		},
-//		{
-//			"name": "id",
-//				"value": "book1"
-//		},
-//		{
-//			"name": "searchTerm",
-//				"children": [
-//			{
-//				"name": "searchTermName",
-//					"value": "searchTitle"
-//			},
-//			{
-//				"name": "searchTermValue",
-//					"value": "My book title"
-//			},
-//			{
-//				"name": "indexType",
-//					"value": "indexTypeString",
-//					"repeatId": "0"
-//			},
-//			{
-//				"name": "indexType",
-//					"value": "indexTypeBoolean",
-//					"repeatId": "1"
-//			}
-//			]
-//		}
-//		]
-//	}
+	// {
+	// "name": "recordIndexData",
+	// "children": [
+	// {
+	// "name": "type",
+	// "value": "book"
+	// },
+	// {
+	// "name": "id",
+	// "value": "book1"
+	// },
+	// {
+	// "name": "searchTerm",
+	// "children": [
+	// {
+	// "name": "searchTermName",
+	// "value": "searchTitle"
+	// },
+	// {
+	// "name": "searchTermValue",
+	// "value": "My book title"
+	// },
+	// {
+	// "name": "indexType",
+	// "value": "indexTypeString",
+	// "repeatId": "0"
+	// },
+	// {
+	// "name": "indexType",
+	// "value": "indexTypeBoolean",
+	// "repeatId": "1"
+	// }
+	// ]
+	// }
+	// ]
+	// }
 }
