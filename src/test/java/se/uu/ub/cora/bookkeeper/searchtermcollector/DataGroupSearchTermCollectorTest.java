@@ -60,6 +60,7 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 
 		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 1);
+
 		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
 		assertEquals(searchTerm.getRepeatId(), "0");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
