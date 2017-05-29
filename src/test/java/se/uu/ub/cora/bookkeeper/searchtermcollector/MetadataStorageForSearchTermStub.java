@@ -181,8 +181,9 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		searchFieldRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
 		searchFieldRef.addChild(
 				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
-
 		searchTerm.addChild(searchFieldRef);
+
+		addIndexTypes(searchTerm);
 
 		searchTerms.add(searchTerm);
 
@@ -199,6 +200,15 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 
 		searchTerms.add(searchTerm2);
 		return searchTerms;
+	}
+
+	private void addIndexTypes(DataGroup searchTerm) {
+		DataAtomic indexType = DataAtomic.withNameInDataAndValue("indexType", "indexTypeString");
+		indexType.setRepeatId("0");
+		searchTerm.addChild(indexType);
+		DataAtomic indexType2 = DataAtomic.withNameInDataAndValue("indexType", "indexTypeBoolean");
+		indexType2.setRepeatId("1");
+		searchTerm.addChild(indexType2);
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {

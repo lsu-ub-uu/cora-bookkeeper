@@ -212,4 +212,27 @@ public class DataGroupTest {
 		return child;
 	}
 
+	@Test
+	public void testGetAllDataAtomicsWithNameInData() {
+		DataGroup book = createDataGroupWithTwoAtomicChildrenAndOneGroupChild();
+
+		assertEquals(book.getAllDataAtomicsWithNameInData("someChild").size(), 2);
+
+	}
+
+	private DataGroup createDataGroupWithTwoAtomicChildrenAndOneGroupChild() {
+		DataGroup book = DataGroup.withNameInData("book");
+		DataAtomic child1 = DataAtomic.withNameInDataAndValue("someChild", "child1");
+		child1.setRepeatId("0");
+		book.addChild(child1);
+
+		DataAtomic child2 = DataAtomic.withNameInDataAndValue("someChild", "child2");
+		child2.setRepeatId("1");
+		book.addChild(child2);
+
+		DataGroup child3 = DataGroup.withNameInData("someChild");
+		book.addChild(child3);
+		return book;
+	}
+
 }

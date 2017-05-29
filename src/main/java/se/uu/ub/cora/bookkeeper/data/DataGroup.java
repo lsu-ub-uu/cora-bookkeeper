@@ -174,4 +174,13 @@ public final class DataGroup implements DataPart, DataElement, Data {
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
 		return getGroupChildrenWithNameInData(childNameInData).collect(Collectors.toList());
 	}
+
+	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
+		return getDataAtomicChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+	}
+
+	private Stream<DataAtomic> getDataAtomicChildrenWithNameInData(String childNameInData) {
+		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
+				.map(DataAtomic.class::cast);
+	}
 }
