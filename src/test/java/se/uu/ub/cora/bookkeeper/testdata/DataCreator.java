@@ -170,10 +170,19 @@ public class DataCreator {
 
 	public static void addAttributesToDataGroup(DataGroup dataGroup) {
 		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute1"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute2"));
-		attributeReference.addChild(DataAtomic.withNameInDataAndValue("ref", "attribute3"));
+
+		createAndAddRefWithLinkedRecordIdAndRepeatId(attributeReference, "attribute1", "0");
+		createAndAddRefWithLinkedRecordIdAndRepeatId(attributeReference, "attribute2", "1");
+		createAndAddRefWithLinkedRecordIdAndRepeatId(attributeReference, "attribute3", "2");
 		dataGroup.addChild(attributeReference);
+	}
+
+	private static void createAndAddRefWithLinkedRecordIdAndRepeatId(DataGroup attributeReference, String linkedRecordId, String repeatId) {
+		DataGroup ref = DataGroup.withNameInData("ref");
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		ref.setRepeatId(repeatId);
+		attributeReference.addChild(ref);
 	}
 
 	public static void addTextToGroupWithNameInDataLinkedIdAndLinkedType(DataGroup dataGroup, String nameInData, String linkedRecordId, String linkedRecordType){

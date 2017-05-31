@@ -19,13 +19,12 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 
 public final class DataGroupToRecordLinkConverter implements DataGroupToMetadataConverter {
 
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 	private RecordLink recordLink;
 
@@ -57,7 +56,7 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 
 		DataGroup linkedRecordTypeGroup = dataGroup.getFirstGroupWithNameInData("linkedRecordType");
 		String linkedRecordType = linkedRecordTypeGroup
-				.getFirstAtomicValueWithNameInData("linkedRecordId");
+				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 
 		recordLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id,
 				nameInData, textId, defTextId, linkedRecordType);
@@ -65,7 +64,7 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 
 	private String extractTextIdByNameInData(String nameInData) {
 		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
-		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
+		return text.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 	private void convertLinkedPathIfExists() {
@@ -91,8 +90,9 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
 					.getFirstGroupWithNameInData("attributeReferences");
-			for (DataElement attributeReference : attributeReferences.getChildren()) {
-				recordLink.addAttributeReference(((DataAtomic) attributeReference).getValue());
+			for (DataGroup attributeReference : attributeReferences.getAllGroupsWithNameInData("ref")) {
+				String refValue = attributeReference.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+				recordLink.addAttributeReference(refValue);
 			}
 		}
 	}

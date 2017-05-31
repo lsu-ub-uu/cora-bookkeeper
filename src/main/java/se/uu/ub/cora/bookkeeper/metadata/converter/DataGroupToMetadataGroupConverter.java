@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
@@ -73,8 +72,9 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
 					.getFirstGroupWithNameInData("attributeReferences");
-			for (DataElement attributeReference : attributeReferences.getChildren()) {
-				metadataGroup.addAttributeReference(((DataAtomic) attributeReference).getValue());
+			for (DataGroup attributeReference : attributeReferences.getAllGroupsWithNameInData("ref")) {
+				String refValue = attributeReference.getFirstAtomicValueWithNameInData("linkedRecordId");
+				metadataGroup.addAttributeReference(refValue);
 			}
 		}
 	}

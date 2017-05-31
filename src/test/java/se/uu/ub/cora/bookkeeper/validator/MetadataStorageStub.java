@@ -151,7 +151,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(group, "defTextId", "groupDefText");
 
 		DataGroup attributeReferences = DataGroup.withNameInData("attributeReferences");
-		attributeReferences.addChild(DataAtomic.withNameInDataAndValue("ref", "groupTypeVar"));
+		DataGroup attributeRef = DataGroup.withNameInData("ref");
+		attributeRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionVariable"));
+		attributeRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "groupTypeVar"));
+		attributeReferences.addChild(attributeRef);
 		group.addChild(attributeReferences);
 
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
