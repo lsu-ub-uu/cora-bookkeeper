@@ -48,6 +48,7 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 		this.metadataStorage = metadataStorage;
 	}
 
+	@Override
 	public DataGroup collectSearchTerms(String metadataGroupId, DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 		populateMetadataHolderFromMetadataStorage();
