@@ -32,12 +32,12 @@ import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupSearchTermCollectorTest {
-	private DataGroupSearchTermCollector collector;
+	private DataGroupSearchTermCollectorImp collector;
 
 	@BeforeMethod
 	public void setUp() {
 		MetadataStorage metadataStorage = new MetadataStorageForSearchTermStub();
-		collector = new DataGroupSearchTermCollector(metadataStorage);
+		collector = new DataGroupSearchTermCollectorImp(metadataStorage);
 	}
 
 	@Test
