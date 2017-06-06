@@ -131,7 +131,11 @@ public class DataGroupToMetadataGroupConverterTest {
 	@Test
 	public void testToMetadataAsChildGroup() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "refParentId"));
+		DataGroup refParentId = DataGroup.withNameInData("refParentId");
+		refParentId
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
+		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
+		dataGroup.addChild(refParentId);
 
 		DataGroupToMetadataGroupConverter converter = DataGroupToMetadataGroupConverter
 				.fromDataGroup(dataGroup);
