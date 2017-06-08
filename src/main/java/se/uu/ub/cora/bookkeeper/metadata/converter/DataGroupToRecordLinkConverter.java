@@ -41,7 +41,7 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		createRecordLinkWithBasicInfo();
 		convertLinkedPathIfExists();
 		convertFinalValueIfExists();
-		convertRefParentId();
+		possiblyConvertRefParentId();
 		convertAttributeReferences();
 		return recordLink;
 	}
@@ -79,11 +79,16 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 		}
 	}
 
-	private void convertRefParentId() {
+	private void possiblyConvertRefParentId() {
 		if (dataGroup.containsChildWithNameInData("refParentId")) {
-			String refParentId = dataGroup.getFirstAtomicValueWithNameInData("refParentId");
-			recordLink.setRefParentId(refParentId);
+			convertRefParentId();
 		}
+	}
+
+	private void convertRefParentId() {
+		DataGroup refParentGroup = dataGroup.getFirstGroupWithNameInData("refParentId");
+		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+		recordLink.setRefParentId(refParentId);
 	}
 
 	private void convertAttributeReferences() {

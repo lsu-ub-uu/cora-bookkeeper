@@ -78,7 +78,10 @@ public class DataGroupToCollectionVariableConverterTest {
 	@Test
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "refParentId"));
+		DataGroup refParentGroup = DataGroup.withNameInData("refParentId");
+		refParentGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionVariable"));
+		refParentGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
+		dataGroup.addChild(refParentGroup);
 
 		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
 				.fromDataGroup(dataGroup);

@@ -26,6 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 
 public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataConverter {
 
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	protected DataGroup dataGroup;
 	protected MetadataGroup metadataGroup;
 
@@ -58,13 +59,14 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 
 	private String extractTextIdByNameInData(String nameInData) {
 		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
-		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
+		return text.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 	protected void convertRefParentId() {
 		if (dataGroup.containsChildWithNameInData("refParentId")) {
-			metadataGroup
-					.setRefParentId(dataGroup.getFirstAtomicValueWithNameInData("refParentId"));
+			DataGroup refParentGroup = dataGroup.getFirstGroupWithNameInData("refParentId");
+			metadataGroup.setRefParentId(
+					refParentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID));
 		}
 	}
 
@@ -72,8 +74,10 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
 			DataGroup attributeReferences = dataGroup
 					.getFirstGroupWithNameInData("attributeReferences");
-			for (DataGroup attributeReference : attributeReferences.getAllGroupsWithNameInData("ref")) {
-				String refValue = attributeReference.getFirstAtomicValueWithNameInData("linkedRecordId");
+			for (DataGroup attributeReference : attributeReferences
+					.getAllGroupsWithNameInData("ref")) {
+				String refValue = attributeReference
+						.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 				metadataGroup.addAttributeReference(refValue);
 			}
 		}

@@ -85,7 +85,10 @@ public class DataGroupToTextVariableConverterTest {
 	@Test
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "refParentId"));
+		DataGroup refParentId = DataGroup.withNameInData("refParentId");
+		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
+		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
+		dataGroup.addChild(refParentId);
 
 		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
 				.fromDataGroup(dataGroup);

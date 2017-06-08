@@ -108,7 +108,10 @@ public class DataGroupToRecordLinkConverterTest {
 
 	@Test
 	public void testToMetadataWithRefParentId() {
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("refParentId", "someParent"));
+		DataGroup refParentId = DataGroup.withNameInData("refParentId");
+		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataRecordLink"));
+		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "someParent"));
+		dataGroup.addChild(refParentId);
 
 		RecordLink recordLink = converter.toMetadata();
 
