@@ -92,7 +92,6 @@ public class DataGroupSearchTermCollectorTest {
 	private DataGroup createRecordInfo() {
 		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "book1"));
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", "book"));
 		DataGroup type = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
 				"type", "recordType", "book");
 		recordInfo.addChild(type);
@@ -102,41 +101,4 @@ public class DataGroupSearchTermCollectorTest {
 		recordInfo.addChild(dataDivider);
 		return recordInfo;
 	}
-
-	// {
-	// "name": "recordIndexData",
-	// "children": [
-	// {
-	// "name": "type",
-	// "value": "book"
-	// },
-	// {
-	// "name": "id",
-	// "value": "book1"
-	// },
-	// {
-	// "name": "searchTerm",
-	// "children": [
-	// {
-	// "name": "searchTermName",
-	// "value": "searchTitle"
-	// },
-	// {
-	// "name": "searchTermValue",
-	// "value": "My book title"
-	// },
-	// {
-	// "name": "indexType",
-	// "value": "indexTypeString",
-	// "repeatId": "0"
-	// },
-	// {
-	// "name": "indexType",
-	// "value": "indexTypeBoolean",
-	// "repeatId": "1"
-	// }
-	// ]
-	// }
-	// ]
-	// }
 }
