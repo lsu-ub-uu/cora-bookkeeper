@@ -24,6 +24,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 
 public final class DataGroupToCollectionVariableConverter implements DataGroupToMetadataConverter {
 
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 
 	private DataGroupToCollectionVariableConverter(DataGroup dataGroup) {
@@ -43,7 +44,7 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		String defTextId = extractTextIdByNameInData("defTextId");
 		
 		DataGroup refCollection = (DataGroup) dataGroup.getFirstChildWithNameInData("refCollection");
-		String refCollectionId = refCollection.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String refCollectionId = refCollection.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 
 		CollectionVariable collectionVariable = new CollectionVariable(id, nameInData, textId,
 				defTextId, refCollectionId);
@@ -54,7 +55,7 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 
 	private String extractTextIdByNameInData(String nameInData) {
 		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
-		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
+		return text.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 	private void possiblyConvertRefParentId(CollectionVariable collectionVariable) {
@@ -65,7 +66,7 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 
 	private void convertRefParentId(CollectionVariable collectionVariable) {
 		DataGroup refParentGroup = dataGroup.getFirstGroupWithNameInData("refParentId");
-		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		collectionVariable.setRefParentId(refParentId);
 	}
 
