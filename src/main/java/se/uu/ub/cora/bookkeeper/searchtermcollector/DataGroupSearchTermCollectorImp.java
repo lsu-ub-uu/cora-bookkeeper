@@ -25,7 +25,11 @@ import java.util.List;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.*;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.SearchTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
@@ -42,7 +46,6 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 	private DataGroup searchData;
 	private List<DataGroup> collectedSearchTerms = new ArrayList<>();
 	private DataGroup dataGroup;
-
 
 	public DataGroupSearchTermCollectorImp(MetadataStorage metadataStorage) {
 		this.metadataStorage = metadataStorage;
@@ -78,9 +81,9 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 		metadataHolder.addMetadataElement(converter.toMetadata());
 	}
 
-	private void populateSearchTermHolderFromMetadataStorage(){
+	private void populateSearchTermHolderFromMetadataStorage() {
 		searchTermHolder = new SearchTermHolder();
-		for(DataGroup searchTerm : metadataStorage.getSearchTerms()){
+		for (DataGroup searchTerm : metadataStorage.getSearchTerms()) {
 			searchTermHolder.addSearchTerm(searchTerm);
 		}
 	}
@@ -192,7 +195,7 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 	}
 
 	private DataGroup createCollectedSearchTerm(String childDataElementValue,
-												String searchFiledNameInData, DataGroup searchTerm) {
+			String searchFiledNameInData, DataGroup searchTerm) {
 		DataGroup collectedSearchTerm = DataGroup.withNameInData("searchTerm");
 		createAndAddSearchTermName(searchFiledNameInData, collectedSearchTerm);
 		createAndAddSearchTermValue(childDataElementValue, collectedSearchTerm);
@@ -202,7 +205,7 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 
 	private void addIndexTypes(DataGroup searchTerm, DataGroup collectedSearchTerm) {
 		Collection<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
-		for(DataAtomic indexType : indexTypes){
+		for (DataAtomic indexType : indexTypes) {
 			collectedSearchTerm.addChild(indexType);
 		}
 	}
@@ -246,9 +249,14 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 	}
 
 	private void extractTypeFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		String type = recordInfo.getFirstAtomicValueWithNameInData("type");
+		String type = extractTypeFromDataGroup(dataGroup);
 		searchData.addChild(DataAtomic.withNameInDataAndValue("type", type));
+	}
+
+	private String extractTypeFromDataGroup(DataGroup dataGroup) {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
+		return typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 	private void extractIdFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
