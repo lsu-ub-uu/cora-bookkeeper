@@ -57,7 +57,7 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 		populateMetadataHolderFromMetadataStorage();
 		populateSearchTermHolderFromMetadataStorage();
 		collectSearchTermsFromDataUsingMetadata(metadataGroupId);
-		return createSearchDataIfSearchTermsExist(dataGroup);
+		return createSearchData(dataGroup);
 	}
 
 	private void populateMetadataHolderFromMetadataStorage() {
@@ -222,13 +222,6 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 		DataAtomic searchTermValue = DataAtomic.withNameInDataAndValue("searchTermValue",
 				childDataElementValue);
 		collectedSearchTerm.addChild(searchTermValue);
-	}
-
-	private DataGroup createSearchDataIfSearchTermsExist(DataGroup dataGroup) {
-		if (collectedSearchTerms.isEmpty()) {
-			return null;
-		}
-		return createSearchData(dataGroup);
 	}
 
 	private DataGroup createSearchData(DataGroup dataGroup) {

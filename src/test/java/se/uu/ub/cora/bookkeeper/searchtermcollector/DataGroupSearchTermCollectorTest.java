@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.searchtermcollector;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 
 import java.util.List;
@@ -45,7 +46,9 @@ public class DataGroupSearchTermCollectorTest {
 		DataGroup book = createBookWithNoTitle();
 
 		DataGroup collectedSearchTerms = collector.collectSearchTerms("bookGroup", book);
-		assertNull(collectedSearchTerms);
+		assertFalse(collectedSearchTerms.containsChildWithNameInData("searchTerm"));
+		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
+		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 	}
 
 	@Test
