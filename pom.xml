@@ -34,6 +34,10 @@
 
 	<name>Bookkeeper</name>
 
+	<properties>
+		<json.version>0.3-SNAPSHOT</json.version>
+	</properties>
+	
 	<scm>
 		<connection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</connection>
 		<developerConnection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</developerConnection>
@@ -72,6 +76,11 @@
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
 		</dependency>
 	</dependencies>
 </project>
