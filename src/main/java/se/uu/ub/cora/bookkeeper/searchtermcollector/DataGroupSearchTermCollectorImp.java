@@ -169,35 +169,24 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 		createAndAddCollectedSearchTerm(childDataElementValue, searchTerm);
 	}
 
+	private void createAndAddCollectedSearchTerm(String childDataElementValue,
+			DataGroup searchTerm) {
+		String searchTermId = getSearchTermId(searchTerm);
+
+		DataGroup collectedSearchTerm = createCollectedSearchTerm(childDataElementValue,
+				searchTermId, searchTerm);
+		collectedSearchTerms.add(collectedSearchTerm);
+	}
+
 	private String getSearchTermId(DataGroup searchTerm) {
 		DataGroup recordInfo = searchTerm.getFirstGroupWithNameInData("recordInfo");
 		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
-	private void createAndAddCollectedSearchTerm(String childDataElementValue,
+	private DataGroup createCollectedSearchTerm(String childDataElementValue, String searchTermId,
 			DataGroup searchTerm) {
-		String searchFieldNameInData = getSearchFieldNameInDataFromSearchTerm(searchTerm);
-
-		DataGroup collectedSearchTerm = createCollectedSearchTerm(childDataElementValue,
-				searchFieldNameInData, searchTerm);
-		collectedSearchTerms.add(collectedSearchTerm);
-	}
-
-	private String getSearchFieldNameInDataFromSearchTerm(DataGroup searchTerm) {
-		String linkedMetadata = getMetadataIdFromSearchFieldRef(searchTerm);
-		MetadataElement metadataElement = metadataHolder.getMetadataElement(linkedMetadata);
-		return metadataElement.getNameInData();
-	}
-
-	private String getMetadataIdFromSearchFieldRef(DataGroup term) {
-		DataGroup searchFieldRef = term.getFirstGroupWithNameInData("searchFieldRef");
-		return searchFieldRef.getFirstAtomicValueWithNameInData("linkedRecordId");
-	}
-
-	private DataGroup createCollectedSearchTerm(String childDataElementValue,
-			String searchFiledNameInData, DataGroup searchTerm) {
 		DataGroup collectedSearchTerm = DataGroup.withNameInData("searchTerm");
-		createAndAddSearchTermName(searchFiledNameInData, collectedSearchTerm);
+		createAndAddSearchTermName(searchTermId, collectedSearchTerm);
 		createAndAddSearchTermValue(childDataElementValue, collectedSearchTerm);
 		addIndexTypes(searchTerm, collectedSearchTerm);
 		return collectedSearchTerm;
@@ -212,7 +201,7 @@ public class DataGroupSearchTermCollectorImp implements DataGroupSearchTermColle
 
 	private void createAndAddSearchTermName(String searchFiledNameInData,
 			DataGroup collectedSearchTerm) {
-		DataAtomic searchTermName = DataAtomic.withNameInDataAndValue("searchTermName",
+		DataAtomic searchTermName = DataAtomic.withNameInDataAndValue("searchTermId",
 				searchFiledNameInData);
 		collectedSearchTerm.addChild(searchTermName);
 	}

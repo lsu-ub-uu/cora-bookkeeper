@@ -15,7 +15,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 	public Collection<DataGroup> getMetadataElements() {
 		dataGroups = new ArrayList<>();
 
-		DataGroup book = createBookDataGroup();
+		DataGroup book = createBookMetadataGroup();
 		dataGroups.add(book);
 
 		DataGroup searchTitleTextVar = createSearchTitleTextVar();
@@ -33,7 +33,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		return dataGroups;
 	}
 
-	private DataGroup createBookDataGroup() {
+	private DataGroup createBookMetadataGroup() {
 
 		DataGroup book = DataGroup.withNameInData("metadata");
 		book.addAttributeByIdWithValue("type", "group");
