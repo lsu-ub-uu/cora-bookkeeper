@@ -48,10 +48,12 @@ public class DataGroupSearchTermCollectorTest {
 		assertFalse(collectedSearchTerms.containsChildWithNameInData("searchTerm"));
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
+
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 0);
 	}
 
 	@Test
-	public void testCollectSearchTermsWithTitle() {
+	public void testCollectSearchTermsWithTitleAndPersonName() {
 		DataGroup book = createBookWithNoTitle();
 		addChildrenToBook(book);
 
@@ -61,7 +63,7 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 
-		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 1);
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 2);
 
 		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
 		assertEquals(searchTerm.getRepeatId(), "0");
@@ -73,13 +75,27 @@ public class DataGroupSearchTermCollectorTest {
 		assertEquals(indexTypes.size(), 2);
 		assertEquals(indexTypes.get(0).getValue(), "indexTypeString");
 		assertEquals(indexTypes.get(1).getValue(), "indexTypeBoolean");
+
+		// searchTerm: nameSearchTerm
+		DataGroup searchTerm2 = collectedSearchTerms.getAllGroupsWithNameInData("searchTerm")
+				.get(1);
+		assertEquals(searchTerm2.getRepeatId(), "1");
+		assertEquals(searchTerm2.getFirstAtomicValueWithNameInData("searchTermValue"),
+				"Kalle Kula");
+		assertEquals(searchTerm2.getFirstAtomicValueWithNameInData("searchTermId"),
+				"nameSearchTerm");
+
+		List<DataAtomic> indexTypes2 = searchTerm2.getAllDataAtomicsWithNameInData("indexType");
+		assertEquals(indexTypes2.size(), 1);
+		assertEquals(indexTypes2.get(0).getValue(), "indexTypeString");
+
 	}
 
 	private void addChildrenToBook(DataGroup book) {
 		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
 		book.addChild(DataAtomic.withNameInDataAndValue("bookSubTitle", "Some subtitle"));
 		DataGroup personRole = DataGroup.withNameInData("personRole");
-		personRole.addChild(DataAtomic.withNameInDataAndValue("name", "someName"));
+		personRole.addChild(DataAtomic.withNameInDataAndValue("name", "Kalle Kula"));
 		personRole.setRepeatId("0");
 		book.addChild(personRole);
 	}

@@ -50,25 +50,28 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 
 	private DataGroup createChildReferencesForBook() {
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
-		DataGroup childReference = createChildReferenceWithIdRepeatMinAndRepeatMax("bookTitleTextVar", "1", "1");
+		DataGroup childReference = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"bookTitleTextVar", "1", "1");
 
 		DataGroup childRefSearchTerm = createSearchTerm("titleSearchTerm");
 		childReference.addChild(childRefSearchTerm);
 		childReferences.addChild(childReference);
 
-		DataGroup childReference2 = createChildReferenceWithIdRepeatMinAndRepeatMax("personRoleGroup", "1", "2");
+		DataGroup childReference2 = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"personRoleGroup", "1", "2");
 		DataGroup childRefSearchTerm2 = createSearchTerm("someGroupSearchTerm");
 		childReference2.addChild(childRefSearchTerm2);
 		childReferences.addChild(childReference2);
 
-		DataGroup childReference3 = createChildReferenceWithIdRepeatMinAndRepeatMax("bookSubTitleTextVar", "0", "1");
+		DataGroup childReference3 = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"bookSubTitleTextVar", "0", "1");
 		childReferences.addChild(childReference3);
-
 
 		return childReferences;
 	}
 
-	private DataGroup createChildReferenceWithIdRepeatMinAndRepeatMax(String id, String repeatMin, String repeatMax) {
+	private DataGroup createChildReferenceWithIdRepeatMinAndRepeatMax(String id, String repeatMin,
+			String repeatMax) {
 		DataGroup childReference = DataGroup.withNameInData("childReference");
 		DataGroup ref = DataGroup.withNameInData("ref");
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
@@ -120,6 +123,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 				"bookSubTitle");
 		return bookSubTitleTextVar;
 	}
+
 	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
 		DataGroup text = DataGroup.withNameInData(nameInData);
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
@@ -128,8 +132,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 	}
 
 	private DataGroup createNameTextVar() {
-		DataGroup nameTextVar = createTextVariableWithIdAndNameInData("nameTextVar",
-				"name");
+		DataGroup nameTextVar = createTextVariableWithIdAndNameInData("nameTextVar", "name");
 		return nameTextVar;
 	}
 
@@ -145,14 +148,16 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		addTextByNameInDataAndId(personRoleGroup, "defTextId", "personRoleDefTextId");
 
 		DataGroup childReferences = DataGroup.withNameInData("childReferences");
-		DataGroup childReference = createChildReferenceWithIdRepeatMinAndRepeatMax("nameTextVar", "1", "1");
+		DataGroup childReference = createChildReferenceWithIdRepeatMinAndRepeatMax("nameTextVar",
+				"1", "1");
+
+		DataGroup childRefSearchTerm = createSearchTerm("nameSearchTerm");
+		childReference.addChild(childRefSearchTerm);
 
 		childReferences.addChild(childReference);
 		personRoleGroup.addChild(childReferences);
 		return personRoleGroup;
 	}
-
-
 
 	@Override
 	public Collection<DataGroup> getPresentationElements() {
@@ -188,7 +193,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		searchTerms.add(searchTerm);
 
 		DataGroup searchTerm2 = DataGroup.withNameInData("searchTerm");
-		DataGroup recordInfo2 = createRecordInfoWithIdAndType("someNameSearchTerm", "searchTerm");
+		DataGroup recordInfo2 = createRecordInfoWithIdAndType("nameSearchTerm", "searchTerm");
 		searchTerm2.addChild(recordInfo2);
 		searchTerm2.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
 		DataGroup searchFieldRef2 = DataGroup.withNameInData("searchFieldRef");
@@ -197,18 +202,22 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
 
 		searchTerm2.addChild(searchFieldRef2);
+		searchTerm2.addChild(createIndexTypeWithTypeStringAndRepeatId("indexTypeString", "0"));
 
 		searchTerms.add(searchTerm2);
 		return searchTerms;
 	}
 
 	private void addIndexTypes(DataGroup searchTerm) {
-		DataAtomic indexType = DataAtomic.withNameInDataAndValue("indexType", "indexTypeString");
-		indexType.setRepeatId("0");
+		DataAtomic indexType = createIndexTypeWithTypeStringAndRepeatId("indexTypeString", "0");
 		searchTerm.addChild(indexType);
-		DataAtomic indexType2 = DataAtomic.withNameInDataAndValue("indexType", "indexTypeBoolean");
-		indexType2.setRepeatId("1");
+
+		DataAtomic indexType2 = createIndexTypeWithTypeStringAndRepeatId("indexTypeBoolean", "1");
 		searchTerm.addChild(indexType2);
+	}
+
+	private DataAtomic createIndexTypeWithTypeStringAndRepeatId(String value, String repeatId) {
+		return DataAtomic.withNameInDataAndValueAndRepeatId("indexType", value, repeatId);
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
