@@ -64,7 +64,9 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		childReferences.addChild(childReference2);
 
 		DataGroup childReference3 = createChildReferenceWithIdRepeatMinAndRepeatMax(
-				"bookSubTitleTextVar", "0", "1");
+				"bookSubTitleTextVar", "0", "5");
+		DataGroup childRefSearchTerm3 = createSearchTerm("subTitleSearchTerm");
+		childReference3.addChild(childRefSearchTerm3);
 		childReferences.addChild(childReference3);
 
 		return childReferences;
@@ -175,7 +177,7 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 	}
 
 	@Override
-	public Collection<DataGroup> getSearchTerms() {
+	public Collection<DataGroup> getCollectTerms() {
 		List<DataGroup> searchTerms = new ArrayList<>();
 
 		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
@@ -205,6 +207,21 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		searchTerm2.addChild(createIndexTypeWithTypeStringAndRepeatId("indexTypeString", "0"));
 
 		searchTerms.add(searchTerm2);
+
+		DataGroup searchTerm3 = DataGroup.withNameInData("searchTerm");
+		DataGroup recordInfo3 = createRecordInfoWithIdAndType("subTitleSearchTerm", "searchTerm");
+		searchTerm3.addChild(recordInfo3);
+		searchTerm3.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
+		DataGroup searchFieldRef3 = DataGroup.withNameInData("searchFieldRef");
+		searchFieldRef3.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
+		searchFieldRef3.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
+		searchTerm3.addChild(searchFieldRef3);
+		searchTerm3.addChild(searchFieldRef2);
+		searchTerm3.addChild(createIndexTypeWithTypeStringAndRepeatId("indexTypeString", "0"));
+
+		searchTerms.add(searchTerm3);
+
 		return searchTerms;
 	}
 

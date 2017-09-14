@@ -43,5 +43,5 @@ public interface MetadataStorage {
 
 	Collection<DataGroup> getRecordTypes();
 
-	Collection<DataGroup> getSearchTerms();
+	Collection<DataGroup> getCollectTerms();
 }

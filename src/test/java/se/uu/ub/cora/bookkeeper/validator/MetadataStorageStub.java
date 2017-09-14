@@ -399,7 +399,7 @@ public class MetadataStorageStub implements MetadataStorage {
 	}
 
 	@Override
-	public Collection<DataGroup> getSearchTerms() {
+	public Collection<DataGroup> getCollectTerms() {
 //		List<DataGroup> searchTerms = new ArrayList<>();
 //
 //		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
