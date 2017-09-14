@@ -24,8 +24,11 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		dataGroups.add(bookTitleTextVar);
 		DataGroup bookSubTitleTextVar = createSubBookTitleTextVar();
 		dataGroups.add(bookSubTitleTextVar);
-		DataGroup nameTextVar = createNameTextVar();
+		DataGroup nameTextVar = createTextVariableWithIdAndNameInData("nameTextVar", "name");
 		dataGroups.add(nameTextVar);
+		DataGroup addressTextVar = createTextVariableWithIdAndNameInData("addressTextVar",
+				"address");
+		dataGroups.add(addressTextVar);
 
 		DataGroup personRoleGroup = createPersonRoleGroup();
 		dataGroups.add(personRoleGroup);
@@ -133,11 +136,6 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		dataGroup.addChild(text);
 	}
 
-	private DataGroup createNameTextVar() {
-		DataGroup nameTextVar = createTextVariableWithIdAndNameInData("nameTextVar", "name");
-		return nameTextVar;
-	}
-
 	private DataGroup createPersonRoleGroup() {
 		DataGroup personRoleGroup = DataGroup.withNameInData("metadata");
 		personRoleGroup.addAttributeByIdWithValue("type", "group");
@@ -157,6 +155,11 @@ public class MetadataStorageForSearchTermStub implements MetadataStorage {
 		childReference.addChild(childRefSearchTerm);
 
 		childReferences.addChild(childReference);
+
+		DataGroup childReferenceAddress = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"addressTextVar", "1", "1");
+		childReferences.addChild(childReferenceAddress);
+
 		personRoleGroup.addChild(childReferences);
 		return personRoleGroup;
 	}
