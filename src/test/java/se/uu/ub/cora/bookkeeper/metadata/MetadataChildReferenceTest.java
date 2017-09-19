@@ -95,8 +95,14 @@ public class MetadataChildReferenceTest {
 	}
 
 	@Test
-	public void testSearchTerm() {
-		metadataChildReference.addSearchTerm("someSearchTerm");
-		assertEquals(metadataChildReference.getSearchTerms().get(0), "someSearchTerm");
+	public void testCollectIndexTerms() {
+		metadataChildReference.addCollectIndexTerm("someIndexTerm");
+		assertEquals(metadataChildReference.getCollectIndexTerms().get(0), "someIndexTerm");
+	}
+
+	@Test
+	public void testCollectPermissionTerm() {
+		metadataChildReference.setCollectPermissionTerm("somePermissionTerm");
+		assertEquals(metadataChildReference.getCollectPermissionTerm(), "somePermissionTerm");
 	}
 }

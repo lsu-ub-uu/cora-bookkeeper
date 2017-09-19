@@ -25,11 +25,11 @@ import java.util.List;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.SearchTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
@@ -41,7 +41,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private MetadataStorage metadataStorage;
 	private MetadataHolder metadataHolder;
-	private SearchTermHolder collectTermHolder;
+	private CollectTermHolder collectTermHolder;
 
 	private DataGroup searchData;
 	private List<DataGroup> collectedSearchTerms = new ArrayList<>();
@@ -80,7 +80,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void populateCollectTermHolderFromMetadataStorage() {
-		collectTermHolder = new SearchTermHolder();
+		collectTermHolder = new CollectTermHolder();
 		for (DataGroup collectTerm : metadataStorage.getCollectTerms()) {
 			collectTermHolder.addSearchTerm(collectTerm);
 		}
@@ -133,13 +133,13 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private void collectDataForMetadataChildIfItHasCollectTerm(
 			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
-		if (childReferenceHasSearchTerms(metadataChildReference)) {
+		if (childReferenceHasCollectTerms(metadataChildReference)) {
 			collectSearchTermsFromDataGroupUsingMetadataChild(metadataChildReference, dataGroup);
 		}
 	}
 
-	private boolean childReferenceHasSearchTerms(MetadataChildReference metadataChildReference) {
-		return !metadataChildReference.getSearchTerms().isEmpty();
+	private boolean childReferenceHasCollectTerms(MetadataChildReference metadataChildReference) {
+		return !metadataChildReference.getCollectIndexTerms().isEmpty();
 	}
 
 	private void collectSearchTermsFromDataGroupUsingMetadataChild(
@@ -147,7 +147,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		String referenceId = metadataChildReference.getLinkedRecordId();
 		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
 		collectSearchTermsFromDataGroupChildren(childMetadataElement,
-				metadataChildReference.getSearchTerms(), dataGroup);
+				metadataChildReference.getCollectIndexTerms(), dataGroup);
 	}
 
 	private void collectSearchTermsFromDataGroupChildren(MetadataElement childMetadataElement,
@@ -209,7 +209,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private DataGroup createCollectedSearchTerm(String childDataElementValue, String searchTermId,
 			DataGroup searchTerm) {
-		DataGroup collectedSearchTerm = DataGroup.withNameInData("searchTerm");
+		DataGroup collectedSearchTerm = DataGroup.withNameInData("collectedIndexTerm");
 		createAndAddSearchTermName(searchTermId, collectedSearchTerm);
 		createAndAddSearchTermValue(childDataElementValue, collectedSearchTerm);
 		addIndexTypes(searchTerm, collectedSearchTerm);
@@ -217,7 +217,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void addIndexTypes(DataGroup searchTerm, DataGroup collectedSearchTerm) {
-		Collection<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
+		DataGroup extraData = searchTerm.getFirstGroupWithNameInData("extraData");
+		Collection<DataAtomic> indexTypes = extraData.getAllDataAtomicsWithNameInData("indexType");
 		for (DataAtomic indexType : indexTypes) {
 			collectedSearchTerm.addChild(indexType);
 		}

@@ -25,10 +25,10 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class SearchTermHolderTest {
+public class CollectTermHolderTest {
 	@Test
 	public void testInit() {
-		SearchTermHolder searchTermHolder = new SearchTermHolder();
+		CollectTermHolder collectTermHolder = new CollectTermHolder();
 		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
 		searchTerm.addChild(recordInfo);
@@ -40,9 +40,9 @@ public class SearchTermHolderTest {
 
 		searchTerm.addChild(searchFieldRef);
 
-		searchTermHolder.addSearchTerm(searchTerm);
+		collectTermHolder.addSearchTerm(searchTerm);
 
-		assertEquals(searchTermHolder.getSearchTerm("titleSearchTerm"), searchTerm);
+		assertEquals(collectTermHolder.getSearchTerm("titleSearchTerm"), searchTerm);
 
 	}
 

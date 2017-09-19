@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -70,26 +70,8 @@ public final class DataGroupToMetadataChildReferenceConverter {
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
 
-		possiblyConvertSearchTerms();
-	}
-
-	private void possiblyConvertSearchTerms() {
-		if (dataGroup.containsChildWithNameInData("childRefSearchTerm")) {
-			convertSearchTerms();
-		}
-	}
-
-	private void convertSearchTerms() {
-		List<DataGroup> childRefSearchTerms = dataGroup
-				.getAllGroupsWithNameInData("childRefSearchTerm");
-		for (DataGroup searchTermGroup : childRefSearchTerms) {
-			addSearchTermToChildReference(searchTermGroup);
-		}
-	}
-
-	private void addSearchTermToChildReference(DataGroup searchTermGroup) {
-		String searchTerm = searchTermGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
-		childReference.addSearchTerm(searchTerm);
+		possiblyConvertCollectIndexTerms();
+		possiblyConvertCollectPermissionTerm();
 	}
 
 	private int getRepeatMax() {
@@ -100,15 +82,50 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		return Integer.valueOf(repeatMaxString);
 	}
 
-	private boolean getFirstAtomicValueWithNameInDataAsBoolean(String nameInData) {
-		String value = dataGroup.getFirstAtomicValueWithNameInData(nameInData);
-		if ("true".equals(value)) {
-			return true;
-		} else if ("false".equals(value)) {
-			return false;
+	private void possiblyConvertCollectIndexTerms() {
+		if (dataGroup.containsChildWithNameInData("childRefIndexTerm")) {
+			convertCollectIndexTerms();
 		}
-		throw DataConversionException
-				.withMessage("Can not convert value:" + value + " to a boolean value");
 	}
 
+	private void convertCollectIndexTerms() {
+		List<DataGroup> childRefCollectIndexTerms = dataGroup
+				.getAllGroupsWithNameInData("childRefIndexTerm");
+		for (DataGroup collectIndexTermGroup : childRefCollectIndexTerms) {
+			addCollectIndexTermToChildReference(collectIndexTermGroup);
+		}
+	}
+
+	private void addCollectIndexTermToChildReference(DataGroup collectIndexTermGroup) {
+		String collectIndexTerm = collectIndexTermGroup
+				.getFirstAtomicValueWithNameInData("linkedRecordId");
+		childReference.addCollectIndexTerm(collectIndexTerm);
+	}
+
+	private void possiblyConvertCollectPermissionTerm() {
+		if (dataGroup.containsChildWithNameInData("childRefPermissionTerm")) {
+			convertCollectPermissionTerm();
+		}
+	}
+
+	private void convertCollectPermissionTerm() {
+		DataGroup childRefPermissionTerm = dataGroup
+				.getFirstGroupWithNameInData("childRefPermissionTerm");
+		String permissionTermId = childRefPermissionTerm
+				.getFirstAtomicValueWithNameInData("linkedRecordId");
+		childReference.setCollectPermissionTerm(permissionTermId);
+	}
+
+	private boolean getFirstAtomicValueWithNameInDataAsBoolean(String nameInData) {
+		String value = dataGroup.getFirstAtomicValueWithNameInData(nameInData);
+		ensureValidBooleanValue(value);
+		return "true".equals(value);
+	}
+
+	private void ensureValidBooleanValue(String value) {
+		if (!"true".equals(value) && !"false".equals(value)) {
+			throw DataConversionException
+					.withMessage("Can not convert value:" + value + " to a boolean value");
+		}
+	}
 }

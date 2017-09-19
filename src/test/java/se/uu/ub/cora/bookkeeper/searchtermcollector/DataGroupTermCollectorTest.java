@@ -37,42 +37,43 @@ public class DataGroupTermCollectorTest {
 
 	@BeforeMethod
 	public void setUp() {
-		MetadataStorage metadataStorage = new MetadataStorageForSearchTermStub();
+		MetadataStorage metadataStorage = new MetadataStorageForTermStub();
 		collector = new DataGroupTermCollectorImp(metadataStorage);
 	}
 
 	@Test
-	public void testCollectSearchTermsNoTitle() {
+	public void testCollectTermsNoTitle() {
 		DataGroup book = createBookWithNoTitle();
 
 		DataGroup collectedSearchTerms = collector.collectTerms("bookGroup", book);
 		assertEquals(collectedSearchTerms.getNameInData(), "recordIndexData");
-		assertFalse(collectedSearchTerms.containsChildWithNameInData("searchTerm"));
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("id"), "book1");
 		assertEquals(collectedSearchTerms.getFirstAtomicValueWithNameInData("type"), "book");
 
-		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 0);
+		assertFalse(collectedSearchTerms.containsChildWithNameInData("collectIndexTerm"));
+		assertFalse(collectedSearchTerms.containsChildWithNameInData("collectPermissionTerm"));
 	}
 
 	@Test
-	public void testCollectSearchTermsTitle() {
+	public void testCollectTermsTitle() {
 		DataGroup book = createBookWithNoTitle();
 		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
 
 		DataGroup collectedSearchTerms = collector.collectTerms("bookGroup", book);
-		assertTrue(collectedSearchTerms.containsChildWithNameInData("searchTerm"));
+		assertTrue(collectedSearchTerms.containsChildWithNameInData("collectedIndexTerm"));
 
-		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 1);
-		DataGroup searchTerm = collectedSearchTerms.getFirstGroupWithNameInData("searchTerm");
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("collectedIndexTerm").size(),
+				1);
+		DataGroup searchTerm = collectedSearchTerms
+				.getFirstGroupWithNameInData("collectedIndexTerm");
 		assertEquals(searchTerm.getRepeatId(), "0");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermValue"), "Some title");
 		assertEquals(searchTerm.getFirstAtomicValueWithNameInData("searchTermId"),
-				"titleSearchTerm");
+				"titleIndexTerm");
 
 		List<DataAtomic> indexTypes = searchTerm.getAllDataAtomicsWithNameInData("indexType");
-		assertEquals(indexTypes.size(), 2);
+		assertEquals(indexTypes.size(), 1);
 		assertEquals(indexTypes.get(0).getValue(), "indexTypeString");
-		assertEquals(indexTypes.get(1).getValue(), "indexTypeBoolean");
 	}
 
 	@Test
@@ -86,9 +87,8 @@ public class DataGroupTermCollectorTest {
 
 		DataGroup collectedSearchTerms = collector.collectTerms("bookGroup", book);
 
-		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 3);
-
-		assertTrue(collectedSearchTerms.containsChildWithNameInData("searchTerm"));
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("collectedIndexTerm").size(),
+				3);
 
 	}
 
@@ -99,16 +99,17 @@ public class DataGroupTermCollectorTest {
 
 		DataGroup collectedSearchTerms = collector.collectTerms("bookGroup", book);
 
-		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 3);
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("collectedIndexTerm").size(),
+				3);
 
 		// searchTerm: nameSearchTerm
-		DataGroup searchTerm2 = collectedSearchTerms.getAllGroupsWithNameInData("searchTerm")
-				.get(1);
+		DataGroup searchTerm2 = collectedSearchTerms
+				.getAllGroupsWithNameInData("collectedIndexTerm").get(1);
 		assertEquals(searchTerm2.getRepeatId(), "1");
 		assertEquals(searchTerm2.getFirstAtomicValueWithNameInData("searchTermValue"),
 				"Kalle Kula");
 		assertEquals(searchTerm2.getFirstAtomicValueWithNameInData("searchTermId"),
-				"nameSearchTerm");
+				"nameIndexTerm");
 
 		List<DataAtomic> indexTypes2 = searchTerm2.getAllDataAtomicsWithNameInData("indexType");
 		assertEquals(indexTypes2.size(), 1);
@@ -128,16 +129,17 @@ public class DataGroupTermCollectorTest {
 
 		DataGroup collectedSearchTerms = collector.collectTerms("bookGroup", book);
 
-		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("searchTerm").size(), 4);
+		assertEquals(collectedSearchTerms.getAllGroupsWithNameInData("collectedIndexTerm").size(),
+				4);
 
 		// searchTerm: nameSearchTerm
-		DataGroup searchTerm2 = collectedSearchTerms.getAllGroupsWithNameInData("searchTerm")
-				.get(1);
+		DataGroup searchTerm2 = collectedSearchTerms
+				.getAllGroupsWithNameInData("collectedIndexTerm").get(1);
 		assertEquals(searchTerm2.getRepeatId(), "1");
 		assertEquals(searchTerm2.getFirstAtomicValueWithNameInData("searchTermValue"),
 				"Kalle Kula");
 		assertEquals(searchTerm2.getFirstAtomicValueWithNameInData("searchTermId"),
-				"nameSearchTerm");
+				"nameIndexTerm");
 
 		List<DataAtomic> indexTypes2 = searchTerm2.getAllDataAtomicsWithNameInData("indexType");
 		assertEquals(indexTypes2.size(), 1);
