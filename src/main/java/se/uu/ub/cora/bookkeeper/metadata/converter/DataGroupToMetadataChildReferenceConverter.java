@@ -26,6 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 
 public final class DataGroupToMetadataChildReferenceConverter {
 
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 	private MetadataChildReference childReference;
 
@@ -65,7 +66,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 
 		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
 		String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
-		String linkedRecordId = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String linkedRecordId = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		childReference = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
@@ -98,7 +99,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 
 	private void addCollectIndexTermToChildReference(DataGroup collectIndexTermGroup) {
 		String collectIndexTerm = collectIndexTermGroup
-				.getFirstAtomicValueWithNameInData("linkedRecordId");
+				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		childReference.addCollectIndexTerm(collectIndexTerm);
 	}
 
@@ -112,7 +113,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		DataGroup childRefPermissionTerm = dataGroup
 				.getFirstGroupWithNameInData("childRefPermissionTerm");
 		String permissionTermId = childRefPermissionTerm
-				.getFirstAtomicValueWithNameInData("linkedRecordId");
+				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		childReference.setCollectPermissionTerm(permissionTermId);
 	}
 

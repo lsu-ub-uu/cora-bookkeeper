@@ -25,7 +25,7 @@ import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.data.DataMissingException;
 
-public class CollectedTermHolder {
+public final class CollectedTermHolder {
 
 	private Map<String, List<CollectedTerm>> collectedTerms = new HashMap<>();
 	public final String recordType;

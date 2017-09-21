@@ -20,12 +20,12 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class CollectedTerm {
+public final class CollectedTerm {
 
 	public final String type;
 	public final String id;
 	public final String nameInData;
-	public DataGroup extraData;
+	public final DataGroup extraData;
 
 	private CollectedTerm(String type, String id, String nameInData, DataGroup extraData) {
 		this.type = type;

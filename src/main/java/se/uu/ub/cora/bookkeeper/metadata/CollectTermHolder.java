@@ -23,7 +23,7 @@ import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class CollectTermHolder {
+public final class CollectTermHolder {
 	private Map<String, DataGroup> searchTerms = new HashMap<>();
 
 	public void addSearchTerm(DataGroup searchTerm) {
