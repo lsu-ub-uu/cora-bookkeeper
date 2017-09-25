@@ -206,20 +206,22 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private DataGroup createCollectedTerm(String childDataElementValue, String collectTermId,
 			String collectType, DataGroup collectTerm) {
-		DataGroup collectedTerm = DataGroup.withNameInData("collectTerm");
-		collectedTerm.addAttributeByIdWithValue("type", collectType);
+		DataGroup collectedTerm = createCollectTermDataGroupWithType(collectType);
 		createAndAddCollectTermName(collectTermId, collectedTerm);
 		createAndAddCollectTermValue(childDataElementValue, collectedTerm);
 		addExtraData(collectTerm, collectedTerm);
 		return collectedTerm;
 	}
 
+	private DataGroup createCollectTermDataGroupWithType(String collectType) {
+		DataGroup collectedTerm = DataGroup.withNameInData("collectTerm");
+		collectedTerm.addAttributeByIdWithValue("type", collectType);
+		return collectedTerm;
+	}
+
 	private void addExtraData(DataGroup collectTerm, DataGroup collectedTerm) {
 		DataGroup extraData = collectTerm.getFirstGroupWithNameInData("extraData");
-		Collection<DataAtomic> indexTypes = extraData.getAllDataAtomicsWithNameInData("indexType");
-		for (DataAtomic indexType : indexTypes) {
-			collectedTerm.addChild(indexType);
-		}
+		collectedTerm.addChild(extraData);
 	}
 
 	private void createAndAddCollectTermName(String collectTermNameInData,
