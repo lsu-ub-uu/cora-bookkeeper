@@ -43,8 +43,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private MetadataHolder metadataHolder;
 	private CollectTermHolder collectTermHolder;
 
-	private DataGroup searchData;
-	private List<DataGroup> collectedSearchTerms = new ArrayList<>();
+	private DataGroup collectedData;
+	private List<DataGroup> collectedTerms = new ArrayList<>();
 
 	public DataGroupTermCollectorImp(MetadataStorage metadataStorage) {
 		this.metadataStorage = metadataStorage;
@@ -54,8 +54,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	public DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup) {
 		populateMetadataHolderFromMetadataStorage();
 		populateCollectTermHolderFromMetadataStorage();
-		collectSearchTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
-		return createSearchData(dataGroup);
+		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
+		return createCollectedData(dataGroup);
 	}
 
 	private void populateMetadataHolderFromMetadataStorage() {
@@ -82,15 +82,14 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void populateCollectTermHolderFromMetadataStorage() {
 		collectTermHolder = new CollectTermHolder();
 		for (DataGroup collectTerm : metadataStorage.getCollectTerms()) {
-			collectTermHolder.addSearchTerm(collectTerm);
+			collectTermHolder.addCollectTerm(collectTerm);
 		}
 	}
 
-	private void collectSearchTermsFromDataUsingMetadata(String metadataGroupId,
-			DataGroup dataGroup) {
+	private void collectTermsFromDataUsingMetadata(String metadataGroupId, DataGroup dataGroup) {
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
-		collectSearchTermsFromDataUsingMetadataChildren(metadataChildReferences, dataGroup);
+		collectTermsFromDataUsingMetadataChildren(metadataChildReferences, dataGroup);
 	}
 
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
@@ -99,15 +98,15 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return metadataGroup.getChildReferences();
 	}
 
-	private void collectSearchTermsFromDataUsingMetadataChildren(
+	private void collectTermsFromDataUsingMetadataChildren(
 			List<MetadataChildReference> metadataChildReferences, DataGroup dataGroup) {
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
 			collectDataForMetadataChildIfItHasCollectTerm(metadataChildReference, dataGroup);
-			recurseAndcollectTermsFromChildsGroupChildren(dataGroup, metadataChildReference);
+			recurseAndCollectTermsFromChildsGroupChildren(dataGroup, metadataChildReference);
 		}
 	}
 
-	private void recurseAndcollectTermsFromChildsGroupChildren(DataGroup dataGroup,
+	private void recurseAndCollectTermsFromChildsGroupChildren(DataGroup dataGroup,
 			MetadataChildReference metadataChildReference) {
 		String referenceId = metadataChildReference.getLinkedRecordId();
 		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
@@ -121,7 +120,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		String childMetadataGroupId = childMetadataElement.getId();
 		for (DataElement childDataElement : dataGroup.getChildren()) {
 			if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-				collectSearchTermsFromDataUsingMetadata(childMetadataGroupId,
+				collectTermsFromDataUsingMetadata(childMetadataGroupId,
 						(DataGroup) childDataElement);
 			}
 		}
@@ -134,7 +133,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void collectDataForMetadataChildIfItHasCollectTerm(
 			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
 		if (childReferenceHasCollectTerms(metadataChildReference)) {
-			collectSearchTermsFromDataGroupUsingMetadataChild(metadataChildReference, dataGroup);
+			collectTermsFromDataGroupUsingMetadataChild(metadataChildReference, dataGroup);
 		}
 	}
 
@@ -142,26 +141,25 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return !metadataChildReference.getCollectIndexTerms().isEmpty();
 	}
 
-	private void collectSearchTermsFromDataGroupUsingMetadataChild(
+	private void collectTermsFromDataGroupUsingMetadataChild(
 			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
 		String referenceId = metadataChildReference.getLinkedRecordId();
 		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
-		collectSearchTermsFromDataGroupChildren(childMetadataElement,
+		collectTermsFromDataGroupChildren(childMetadataElement,
 				metadataChildReference.getCollectIndexTerms(), dataGroup);
 	}
 
-	private void collectSearchTermsFromDataGroupChildren(MetadataElement childMetadataElement,
-			List<String> searchTerms, DataGroup dataGroup) {
+	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
+			List<String> collectTerms, DataGroup dataGroup) {
 		for (DataElement childDataElement : dataGroup.getChildren()) {
-			collectSearchTermsFromDataGroupChild(childMetadataElement, childDataElement,
-					searchTerms);
+			collectTermsFromDataGroupChild(childMetadataElement, childDataElement, collectTerms);
 		}
 	}
 
-	private void collectSearchTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement, List<String> searchTerms) {
+	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
+			DataElement childDataElement, List<String> collectTerms) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			possiblyCreateSearchTerm(childDataElement, searchTerms);
+			possiblyCreateCollectedTerm(childDataElement, collectTerms);
 		}
 	}
 
@@ -173,91 +171,95 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return validationAnswer.dataIsValid();
 	}
 
-	private void possiblyCreateSearchTerm(DataElement childDataElement,
-			List<String> metadataSearchTerms) {
+	private void possiblyCreateCollectedTerm(DataElement childDataElement,
+			List<String> collectTerms) {
 		if (childDataElement instanceof DataAtomic) {
-			createSearchTerm(childDataElement, metadataSearchTerms);
+			createCollectTerm(childDataElement, collectTerms);
 		}
 	}
 
-	private void createSearchTerm(DataElement childDataElement, List<String> metadataSearchTerms) {
-		for (String metadataSearchTermId : metadataSearchTerms) {
+	private void createCollectTerm(DataElement childDataElement, List<String> collectTerms) {
+		for (String collectTermId : collectTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
-			possiblyCreateAndAddCollectedSearchTerm(metadataSearchTermId, childDataElementValue);
+			possiblyCreateAndAddCollectedTerm(collectTermId, childDataElementValue);
 		}
 	}
 
-	private void possiblyCreateAndAddCollectedSearchTerm(String metadataSearchTermId,
+	private void possiblyCreateAndAddCollectedTerm(String collectTermId,
 			String childDataElementValue) {
-		DataGroup searchTerm = collectTermHolder.getSearchTerm(metadataSearchTermId);
-		createAndAddCollectedSearchTerm(childDataElementValue, searchTerm);
+		DataGroup collectTerm = collectTermHolder.getCollectTerm(collectTermId);
+		createAndAddCollectedTerm(childDataElementValue, collectTerm);
 	}
 
-	private void createAndAddCollectedSearchTerm(String childDataElementValue,
-			DataGroup searchTerm) {
-		String searchTermId = getSearchTermId(searchTerm);
-
-		DataGroup collectedSearchTerm = createCollectedSearchTerm(childDataElementValue,
-				searchTermId, searchTerm);
-		collectedSearchTerms.add(collectedSearchTerm);
+	private void createAndAddCollectedTerm(String childDataElementValue, DataGroup collectTerm) {
+		String collectTermId = getCollectTermId(collectTerm);
+		String collectTermType = collectTerm.getAttribute("type");
+		DataGroup collectedTerm = createCollectedTerm(childDataElementValue, collectTermId,
+				collectTermType, collectTerm);
+		collectedTerms.add(collectedTerm);
 	}
 
-	private String getSearchTermId(DataGroup searchTerm) {
-		DataGroup recordInfo = searchTerm.getFirstGroupWithNameInData("recordInfo");
+	private String getCollectTermId(DataGroup collectTerm) {
+		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
 		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
-	private DataGroup createCollectedSearchTerm(String childDataElementValue, String searchTermId,
-			DataGroup searchTerm) {
-		DataGroup collectedSearchTerm = DataGroup.withNameInData("collectedIndexTerm");
-		createAndAddSearchTermName(searchTermId, collectedSearchTerm);
-		createAndAddSearchTermValue(childDataElementValue, collectedSearchTerm);
-		addIndexTypes(searchTerm, collectedSearchTerm);
-		return collectedSearchTerm;
+	private DataGroup createCollectedTerm(String childDataElementValue, String collectTermId,
+			String collectType, DataGroup collectTerm) {
+		DataGroup collectedTerm = DataGroup.withNameInData("collectTerm");
+		collectedTerm.addAttributeByIdWithValue("type", collectType);
+		createAndAddCollectTermName(collectTermId, collectedTerm);
+		createAndAddCollectTermValue(childDataElementValue, collectedTerm);
+		addExtraData(collectTerm, collectedTerm);
+		return collectedTerm;
 	}
 
-	private void addIndexTypes(DataGroup searchTerm, DataGroup collectedSearchTerm) {
-		DataGroup extraData = searchTerm.getFirstGroupWithNameInData("extraData");
+	private void addExtraData(DataGroup collectTerm, DataGroup collectedTerm) {
+		DataGroup extraData = collectTerm.getFirstGroupWithNameInData("extraData");
 		Collection<DataAtomic> indexTypes = extraData.getAllDataAtomicsWithNameInData("indexType");
 		for (DataAtomic indexType : indexTypes) {
-			collectedSearchTerm.addChild(indexType);
+			collectedTerm.addChild(indexType);
 		}
 	}
 
-	private void createAndAddSearchTermName(String searchFiledNameInData,
+	private void createAndAddCollectTermName(String collectTermNameInData,
 			DataGroup collectedSearchTerm) {
-		DataAtomic searchTermName = DataAtomic.withNameInDataAndValue("searchTermId",
-				searchFiledNameInData);
+		DataAtomic searchTermName = DataAtomic.withNameInDataAndValue("collectTermId",
+				collectTermNameInData);
 		collectedSearchTerm.addChild(searchTermName);
 	}
 
-	private void createAndAddSearchTermValue(String childDataElementValue,
+	private void createAndAddCollectTermValue(String childDataElementValue,
 			DataGroup collectedSearchTerm) {
-		DataAtomic searchTermValue = DataAtomic.withNameInDataAndValue("searchTermValue",
+		DataAtomic searchTermValue = DataAtomic.withNameInDataAndValue("collectTermValue",
 				childDataElementValue);
 		collectedSearchTerm.addChild(searchTermValue);
 	}
 
-	private DataGroup createSearchData(DataGroup dataGroup) {
-		searchData = DataGroup.withNameInData("recordIndexData");
-		extractTypeFromDataGroupAndSetInSearchData(dataGroup);
-		extractIdFromDataGroupAndSetInSearchData(dataGroup);
-		addCollectedSearchTermsToSearchData();
-		return searchData;
+	private DataGroup createCollectedData(DataGroup dataGroup) {
+		collectedData = DataGroup.withNameInData("collectedData");
+		extractTypeFromDataGroupAndSetInCollectedData(dataGroup);
+		extractIdFromDataGroupAndSetInCollectedData(dataGroup);
+		addCollectedTermsToCollectedData();
+		return collectedData;
 	}
 
-	private void addCollectedSearchTermsToSearchData() {
-		int counter = 0;
-		for (DataGroup collectedSearchTerm : collectedSearchTerms) {
-			collectedSearchTerm.setRepeatId(String.valueOf(counter));
-			searchData.addChild(collectedSearchTerm);
-			counter++;
+	private void addCollectedTermsToCollectedData() {
+		if (!collectedTerms.isEmpty()) {
+			int counter = 0;
+			DataGroup index = DataGroup.withNameInData("index");
+			collectedData.addChild(index);
+			for (DataGroup collectedSearchTerm : collectedTerms) {
+				collectedSearchTerm.setRepeatId(String.valueOf(counter));
+				index.addChild(collectedSearchTerm);
+				counter++;
+			}
 		}
 	}
 
-	private void extractTypeFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
+	private void extractTypeFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
 		String type = extractTypeFromDataGroup(dataGroup);
-		searchData.addChild(DataAtomic.withNameInDataAndValue("type", type));
+		collectedData.addChild(DataAtomic.withNameInDataAndValue("type", type));
 	}
 
 	private String extractTypeFromDataGroup(DataGroup dataGroup) {
@@ -266,9 +268,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
-	private void extractIdFromDataGroupAndSetInSearchData(DataGroup dataGroup) {
-		String id = getSearchTermId(dataGroup);
-		searchData.addChild(DataAtomic.withNameInDataAndValue("id", id));
+	private void extractIdFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
+		String id = getCollectTermId(dataGroup);
+		collectedData.addChild(DataAtomic.withNameInDataAndValue("id", id));
 	}
 
 }

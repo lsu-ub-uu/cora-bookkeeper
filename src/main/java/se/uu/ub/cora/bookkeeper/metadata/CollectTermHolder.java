@@ -24,15 +24,15 @@ import java.util.Map;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class CollectTermHolder {
-	private Map<String, DataGroup> searchTerms = new HashMap<>();
+	private Map<String, DataGroup> collectTerms = new HashMap<>();
 
-	public void addSearchTerm(DataGroup searchTerm) {
-		DataGroup recordInfo = searchTerm.getFirstGroupWithNameInData("recordInfo");
+	public void addCollectTerm(DataGroup collectTerm) {
+		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
-		searchTerms.put(id, searchTerm);
+		collectTerms.put(id, collectTerm);
 	}
 
-	public DataGroup getSearchTerm(String id) {
-		return searchTerms.get(id);
+	public DataGroup getCollectTerm(String id) {
+		return collectTerms.get(id);
 	}
 }

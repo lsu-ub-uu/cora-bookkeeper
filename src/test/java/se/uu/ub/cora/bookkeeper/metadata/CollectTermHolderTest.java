@@ -40,9 +40,9 @@ public class CollectTermHolderTest {
 
 		searchTerm.addChild(searchFieldRef);
 
-		collectTermHolder.addSearchTerm(searchTerm);
+		collectTermHolder.addCollectTerm(searchTerm);
 
-		assertEquals(collectTermHolder.getSearchTerm("titleSearchTerm"), searchTerm);
+		assertEquals(collectTermHolder.getCollectTerm("titleSearchTerm"), searchTerm);
 
 	}
 

@@ -222,17 +222,18 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 	private DataGroup createIndexTermMetadataWithIdAndIndexTypeAndNameInData(String id,
 			String indexType, String nameInData) {
 		String recordType = "collectIndexTerm";
-		DataGroup titleIndexTerm = createCollectTermMetadataWithIdAndIndexTypeAndNameInDataAndRecordType(
-				id, indexType, nameInData, recordType);
+		DataGroup titleIndexTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
+				id, "index", nameInData, recordType);
 		DataGroup extraData = DataGroup.withNameInData("extraData");
 		extraData.addChild(DataAtomic.withNameInDataAndValue("indexType", indexType));
 		titleIndexTerm.addChild(extraData);
 		return titleIndexTerm;
 	}
 
-	private DataGroup createCollectTermMetadataWithIdAndIndexTypeAndNameInDataAndRecordType(
-			String id, String indexType, String nameInData, String recordType) {
+	private DataGroup createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
+			String id, String collectType, String nameInData, String recordType) {
 		DataGroup indexTerm = DataGroup.withNameInData("collectTerm");
+		indexTerm.addAttributeByIdWithValue("type", collectType);
 		DataGroup recordInfo = createRecordInfoWithIdAndType(id, recordType);
 		indexTerm.addChild(recordInfo);
 		indexTerm.addChild(DataAtomic.withNameInDataAndValue("nameInData", nameInData));
@@ -242,8 +243,8 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 	private DataGroup createPermissionTermMetadataWithIdAndPermissionKeyAndNameInData(String id,
 			String permissionName, String nameInData) {
 		String recordType = "collectPermissionTerm";
-		DataGroup permissionTerm = createCollectTermMetadataWithIdAndIndexTypeAndNameInDataAndRecordType(
-				id, permissionName, nameInData, recordType);
+		DataGroup permissionTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
+				id, "permission", nameInData, recordType);
 		DataGroup extraData = DataGroup.withNameInData("extraData");
 		extraData.addChild(DataAtomic.withNameInDataAndValue("permissionKey", permissionName));
 		permissionTerm.addChild(extraData);
