@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 
 public final class DataGroupToMetadataChildReferenceConverter {
@@ -71,8 +72,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
 
-		possiblyConvertCollectIndexTerms();
-		possiblyConvertCollectPermissionTerm();
+		possiblyConvertCollectTerms();
 	}
 
 	private int getRepeatMax() {
@@ -83,38 +83,27 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		return Integer.valueOf(repeatMaxString);
 	}
 
-	private void possiblyConvertCollectIndexTerms() {
-		if (dataGroup.containsChildWithNameInData("childRefIndexTerm")) {
-			convertCollectIndexTerms();
+	private void possiblyConvertCollectTerms() {
+		if (dataGroup.containsChildWithNameInData("childRefCollectTerm")) {
+			convertCollectTerms();
 		}
 	}
 
-	private void convertCollectIndexTerms() {
+	private void convertCollectTerms() {
 		List<DataGroup> childRefCollectIndexTerms = dataGroup
-				.getAllGroupsWithNameInData("childRefIndexTerm");
+				.getAllGroupsWithNameInData("childRefCollectTerm");
 		for (DataGroup collectIndexTermGroup : childRefCollectIndexTerms) {
 			addCollectIndexTermToChildReference(collectIndexTermGroup);
 		}
 	}
 
 	private void addCollectIndexTermToChildReference(DataGroup collectIndexTermGroup) {
-		String collectIndexTerm = collectIndexTermGroup
+		String collectTermId = collectIndexTermGroup
 				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		childReference.addCollectIndexTerm(collectIndexTerm);
-	}
+		String type = collectIndexTermGroup.getAttribute("type");
+		CollectTerm collectTerm = CollectTerm.createCollectTermWithTypeAndId(type, collectTermId);
 
-	private void possiblyConvertCollectPermissionTerm() {
-		if (dataGroup.containsChildWithNameInData("childRefPermissionTerm")) {
-			convertCollectPermissionTerm();
-		}
-	}
-
-	private void convertCollectPermissionTerm() {
-		DataGroup childRefPermissionTerm = dataGroup
-				.getFirstGroupWithNameInData("childRefPermissionTerm");
-		String permissionTermId = childRefPermissionTerm
-				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		childReference.setCollectPermissionTerm(permissionTermId);
+		childReference.addCollectIndexTerm(collectTerm);
 	}
 
 	private boolean getFirstAtomicValueWithNameInDataAsBoolean(String nameInData) {

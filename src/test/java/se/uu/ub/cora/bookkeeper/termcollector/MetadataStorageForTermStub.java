@@ -92,22 +92,24 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 	private DataGroup createCollectIndexTermWithNameAndRepeatId(String collectIndexTermId,
 			String repeatId) {
-		DataGroup childRefSearchTerm = DataGroup.withNameInData("childRefIndexTerm");
-		childRefSearchTerm.addChild(
+		DataGroup childRefCollectTerm = DataGroup.withNameInData("childRefCollectTerm");
+		childRefCollectTerm.addChild(
 				DataAtomic.withNameInDataAndValue("linkedRecordType", "collectIndexTerm"));
-		childRefSearchTerm
+		childRefCollectTerm
 				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", collectIndexTermId));
-		childRefSearchTerm.setRepeatId(repeatId);
-		return childRefSearchTerm;
+		childRefCollectTerm.setRepeatId(repeatId);
+		childRefCollectTerm.addAttributeByIdWithValue("type", "index");
+		return childRefCollectTerm;
 	}
 
 	private DataGroup createCollectPermissionTerm(String collectPermissionTermId) {
-		DataGroup childRefSearchTerm = DataGroup.withNameInData("childRefPermissionTerm");
-		childRefSearchTerm.addChild(
+		DataGroup childRefCollectTerm = DataGroup.withNameInData("childRefCollectTerm");
+		childRefCollectTerm.addChild(
 				DataAtomic.withNameInDataAndValue("linkedRecordType", "collectPermissionTerm"));
-		childRefSearchTerm.addChild(
+		childRefCollectTerm.addChild(
 				DataAtomic.withNameInDataAndValue("linkedRecordId", collectPermissionTermId));
-		return childRefSearchTerm;
+		childRefCollectTerm.addAttributeByIdWithValue("type", "permission");
+		return childRefCollectTerm;
 	}
 
 	private DataGroup createSearchTitleTextVar() {

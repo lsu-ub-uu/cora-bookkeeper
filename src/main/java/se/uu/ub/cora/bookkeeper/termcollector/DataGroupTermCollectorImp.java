@@ -25,6 +25,7 @@ import java.util.List;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
@@ -138,7 +139,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private boolean childReferenceHasCollectTerms(MetadataChildReference metadataChildReference) {
-		return !metadataChildReference.getCollectIndexTerms().isEmpty();
+		return !metadataChildReference.getCollectTerms().isEmpty();
 	}
 
 	private void collectTermsFromDataGroupUsingMetadataChild(
@@ -146,18 +147,18 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		String referenceId = metadataChildReference.getLinkedRecordId();
 		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
 		collectTermsFromDataGroupChildren(childMetadataElement,
-				metadataChildReference.getCollectIndexTerms(), dataGroup);
+				metadataChildReference.getCollectTerms(), dataGroup);
 	}
 
 	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
-			List<String> collectTerms, DataGroup dataGroup) {
+			List<CollectTerm> collectTerms, DataGroup dataGroup) {
 		for (DataElement childDataElement : dataGroup.getChildren()) {
 			collectTermsFromDataGroupChild(childMetadataElement, childDataElement, collectTerms);
 		}
 	}
 
 	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement, List<String> collectTerms) {
+			DataElement childDataElement, List<CollectTerm> collectTerms) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			possiblyCreateCollectedTerm(childDataElement, collectTerms);
 		}
@@ -172,16 +173,16 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void possiblyCreateCollectedTerm(DataElement childDataElement,
-			List<String> collectTerms) {
+			List<CollectTerm> collectTerms) {
 		if (childDataElement instanceof DataAtomic) {
 			createCollectTerm(childDataElement, collectTerms);
 		}
 	}
 
-	private void createCollectTerm(DataElement childDataElement, List<String> collectTerms) {
-		for (String collectTermId : collectTerms) {
+	private void createCollectTerm(DataElement childDataElement, List<CollectTerm> collectTerms) {
+		for (CollectTerm collectTerm : collectTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
-			possiblyCreateAndAddCollectedTerm(collectTermId, childDataElementValue);
+			possiblyCreateAndAddCollectedTerm(collectTerm.id, childDataElementValue);
 		}
 	}
 
@@ -231,7 +232,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		collectedDataTerm.addChild(collectedDataTermName);
 	}
 
-	private void createAndAddCollectDataTermValue(String childDataElementValue, DataGroup collectedDataTerm) {
+	private void createAndAddCollectDataTermValue(String childDataElementValue,
+			DataGroup collectedDataTerm) {
 		DataAtomic collectDataTermValue = DataAtomic.withNameInDataAndValue("collectTermValue",
 				childDataElementValue);
 		collectedDataTerm.addChild(collectDataTermValue);
