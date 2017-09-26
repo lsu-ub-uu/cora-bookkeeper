@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.searchtermcollector;
+package se.uu.ub.cora.bookkeeper.termcollector;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 

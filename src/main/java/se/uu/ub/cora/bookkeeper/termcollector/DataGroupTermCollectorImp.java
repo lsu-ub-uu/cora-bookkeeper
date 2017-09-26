@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.searchtermcollector;
+package se.uu.ub.cora.bookkeeper.termcollector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -194,7 +194,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void createAndAddCollectedTerm(String childDataElementValue, DataGroup collectTerm) {
 		String collectTermId = getCollectTermId(collectTerm);
 		String collectTermType = collectTerm.getAttribute("type");
-		DataGroup collectedTerm = createCollectedTerm(childDataElementValue, collectTermId,
+		DataGroup collectedTerm = createCollectedDataTerm(childDataElementValue, collectTermId,
 				collectTermType, collectTerm);
 		collectedTerms.add(collectedTerm);
 	}
@@ -204,19 +204,19 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
-	private DataGroup createCollectedTerm(String childDataElementValue, String collectTermId,
+	private DataGroup createCollectedDataTerm(String childDataElementValue, String collectTermId,
 			String collectType, DataGroup collectTerm) {
-		DataGroup collectedTerm = createCollectTermDataGroupWithType(collectType);
-		createAndAddCollectTermName(collectTermId, collectedTerm);
-		createAndAddCollectTermValue(childDataElementValue, collectedTerm);
-		addExtraData(collectTerm, collectedTerm);
-		return collectedTerm;
+		DataGroup collectedDataTerm = createCollectedDataTermDataGroupWithType(collectType);
+		createAndAddCollectDataTermId(collectTermId, collectedDataTerm);
+		createAndAddCollectDataTermValue(childDataElementValue, collectedDataTerm);
+		addExtraData(collectTerm, collectedDataTerm);
+		return collectedDataTerm;
 	}
 
-	private DataGroup createCollectTermDataGroupWithType(String collectType) {
-		DataGroup collectedTerm = DataGroup.withNameInData("collectTerm");
-		collectedTerm.addAttributeByIdWithValue("type", collectType);
-		return collectedTerm;
+	private DataGroup createCollectedDataTermDataGroupWithType(String collectType) {
+		DataGroup collectedDataTerm = DataGroup.withNameInData("collectedDataTerm");
+		collectedDataTerm.addAttributeByIdWithValue("type", collectType);
+		return collectedDataTerm;
 	}
 
 	private void addExtraData(DataGroup collectTerm, DataGroup collectedTerm) {
@@ -224,18 +224,17 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		collectedTerm.addChild(extraData);
 	}
 
-	private void createAndAddCollectTermName(String collectTermNameInData,
-			DataGroup collectedSearchTerm) {
-		DataAtomic searchTermName = DataAtomic.withNameInDataAndValue("collectTermId",
+	private void createAndAddCollectDataTermId(String collectTermNameInData,
+			DataGroup collectedDataTerm) {
+		DataAtomic collectedDataTermName = DataAtomic.withNameInDataAndValue("collectTermId",
 				collectTermNameInData);
-		collectedSearchTerm.addChild(searchTermName);
+		collectedDataTerm.addChild(collectedDataTermName);
 	}
 
-	private void createAndAddCollectTermValue(String childDataElementValue,
-			DataGroup collectedSearchTerm) {
-		DataAtomic searchTermValue = DataAtomic.withNameInDataAndValue("collectTermValue",
+	private void createAndAddCollectDataTermValue(String childDataElementValue, DataGroup collectedDataTerm) {
+		DataAtomic collectDataTermValue = DataAtomic.withNameInDataAndValue("collectTermValue",
 				childDataElementValue);
-		collectedSearchTerm.addChild(searchTermValue);
+		collectedDataTerm.addChild(collectDataTermValue);
 	}
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
@@ -251,9 +250,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 			int counter = 0;
 			DataGroup index = DataGroup.withNameInData("index");
 			collectedData.addChild(index);
-			for (DataGroup collectedSearchTerm : collectedTerms) {
-				collectedSearchTerm.setRepeatId(String.valueOf(counter));
-				index.addChild(collectedSearchTerm);
+			for (DataGroup collectedTerm : collectedTerms) {
+				collectedTerm.setRepeatId(String.valueOf(counter));
+				index.addChild(collectedTerm);
 				counter++;
 			}
 		}

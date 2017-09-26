@@ -1,4 +1,4 @@
-package se.uu.ub.cora.bookkeeper.searchtermcollector;
+package se.uu.ub.cora.bookkeeper.termcollector;
 
 import java.util.ArrayList;
 import java.util.Collection;

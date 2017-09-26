@@ -16,12 +16,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.searchtermcollector;
+package se.uu.ub.cora.bookkeeper.termcollector;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-
-import java.util.List;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -29,6 +27,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
+import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupTermCollectorTest {
@@ -62,13 +61,13 @@ public class DataGroupTermCollectorTest {
 		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
 
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
-		DataGroup collectTerm = indexTerms.getFirstGroupWithNameInData("collectTerm");
-		assertEquals(collectTerm.getRepeatId(), "0");
-		assertEquals(collectTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerm.getRepeatId(), "0");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
 				"Some title");
-		assertEquals(collectTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
 				"titleIndexTerm");
-		DataGroup extraData = collectTerm.getFirstGroupWithNameInData("extraData");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
 		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
 	}
 
@@ -84,7 +83,7 @@ public class DataGroupTermCollectorTest {
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
 
-		assertEquals(indexTerms.getAllGroupsWithNameInData("collectTerm").size(), 3);
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 3);
 
 	}
 
@@ -96,16 +95,17 @@ public class DataGroupTermCollectorTest {
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
 
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
-		assertEquals(indexTerms.getAllGroupsWithNameInData("collectTerm").size(), 3);
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 3);
 
-		DataGroup collectTerm = indexTerms.getAllGroupsWithNameInData("collectTerm").get(1);
-		assertEquals(collectTerm.getRepeatId(), "1");
-		assertEquals(collectTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+		DataGroup collectedDataTerm = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
+				.get(1);
+		assertEquals(collectedDataTerm.getRepeatId(), "1");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
 				"Kalle Kula");
-		assertEquals(collectTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
 				"nameIndexTerm");
 
-		DataGroup extraData = collectTerm.getFirstGroupWithNameInData("extraData");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
 
 		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
 
@@ -124,16 +124,17 @@ public class DataGroupTermCollectorTest {
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
 
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
-		assertEquals(indexTerms.getAllGroupsWithNameInData("collectTerm").size(), 4);
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 4);
 
-		DataGroup collectTerm = indexTerms.getAllGroupsWithNameInData("collectTerm").get(1);
-		assertEquals(collectTerm.getRepeatId(), "1");
-		assertEquals(collectTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+		DataGroup collectedDataTerm = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
+				.get(1);
+		assertEquals(collectedDataTerm.getRepeatId(), "1");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
 				"Kalle Kula");
-		assertEquals(collectTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
 				"nameIndexTerm");
 
-		DataGroup extraData = collectTerm.getFirstGroupWithNameInData("extraData");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
 		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
 
 	}
