@@ -50,10 +50,7 @@ public final class MetadataChildReference {
 
 	private String readOnlyKey = "";
 
-	private List<String> collectIndexTerms = new ArrayList<>();
 	private List<CollectTerm> collectTerms = new ArrayList<>();
-
-	private String collectPermissionTerm;
 
 	public MetadataChildReference(String linkedRecordType, String linkedRecordId, int repeatMin,
 			int repeatMax) {
@@ -132,14 +129,5 @@ public final class MetadataChildReference {
 	public void addCollectIndexTerm(CollectTerm collectTerm) {
 		collectTerms.add(collectTerm);
 
-	}
-
-	public void setCollectPermissionTerm(String collectPermissionTerm) {
-		this.collectPermissionTerm = collectPermissionTerm;
-
-	}
-
-	public String getCollectPermissionTerm() {
-		return collectPermissionTerm;
 	}
 }

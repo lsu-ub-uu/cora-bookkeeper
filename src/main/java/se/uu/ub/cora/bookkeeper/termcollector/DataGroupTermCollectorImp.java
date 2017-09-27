@@ -249,15 +249,22 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private void addCollectedTermsToCollectedData() {
 		if (!collectedTerms.isEmpty()) {
-			int counter = 0;
+			int repeatId = 0;
 			DataGroup index = DataGroup.withNameInData("index");
 			collectedData.addChild(index);
 			for (DataGroup collectedTerm : collectedTerms) {
-				collectedTerm.setRepeatId(String.valueOf(counter));
-				index.addChild(collectedTerm);
-				counter++;
+				repeatId = addCollectedIndexTerm(repeatId, index, collectedTerm);
 			}
 		}
+	}
+
+	private int addCollectedIndexTerm(int repeatId, DataGroup index, DataGroup collectedTerm) {
+		if("index".equals(collectedTerm.getAttribute("type"))) {
+            collectedTerm.setRepeatId(String.valueOf(repeatId));
+            index.addChild(collectedTerm);
+            repeatId++;
+        }
+		return repeatId;
 	}
 
 	private void extractTypeFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
