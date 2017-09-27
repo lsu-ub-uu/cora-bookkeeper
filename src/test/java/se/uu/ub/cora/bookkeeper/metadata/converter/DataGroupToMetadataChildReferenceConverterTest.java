@@ -68,9 +68,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	@Test
 	public void testToMetadataFalse() {
-		DataGroup dataGroup = createChildRefOtherMetadata();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup dataGroup = createDataGroup();
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("secret", "false"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("readOnly", "false"));
 
@@ -91,10 +89,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	@Test
 	public void testToMetadataNoNonMandatoryInfo() {
-		DataGroup dataGroup = createChildRefOtherMetadata();
-
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup dataGroup = createDataGroup();
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
@@ -113,9 +108,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	@Test(expectedExceptions = DataConversionException.class)
 	public void testToMetadataNotBooleanValue() {
-		DataGroup dataGroup = createChildRefOtherMetadata();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup dataGroup = createDataGroup();
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("secret", "NOT_BOOLEAN_VALUE"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("readOnly", "NOT_BOOLEAN_VALUE"));
 
@@ -126,9 +119,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	@Test(expectedExceptions = DataConversionException.class)
 	public void testToMetadataNotBooleanValueReadOnly() {
-		DataGroup dataGroup = createChildRefOtherMetadata();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		DataGroup dataGroup = createDataGroup();
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("readOnly", "NOT_BOOLEAN_VALUE"));
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
@@ -154,35 +145,40 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	@Test
 	public void testToMetadataWithOneCollectIndexTerm() {
-		DataGroup dataGroup = createChildRefOtherMetadata();
+		DataGroup dataGroup = createDataGroup();
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
-
-		DataGroup childRefCollectIndexTerm = createCollectIndexTermWithId("titleCollectIndexTerm");
+		DataGroup childRefCollectIndexTerm = createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+				"collectIndexTerm", "titleCollectIndexTerm", "index");
 		dataGroup.addChild(childRefCollectIndexTerm);
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getCollectIndexTerms().size(), 1);
-		assertEquals(metadataChildReference.getCollectIndexTerms().get(0), "titleCollectIndexTerm");
+		assertEquals(metadataChildReference.getCollectTerms().size(), 1);
+		assertEquals(metadataChildReference.getCollectTerms().get(0).id, "titleCollectIndexTerm");
+		assertEquals(metadataChildReference.getCollectTerms().get(0).type, "index");
 	}
 
-	@Test
-	public void testToMetadataWithTwoCollectIndexTerms() {
+	private DataGroup createDataGroup() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
+		return dataGroup;
+	}
 
-		DataGroup childRefCollectIndexTerm = createCollectIndexTermWithId("titleCollectIndexTerm");
+	@Test
+	public void testToMetadataWithTwoCollectIndexTerms() {
+		DataGroup dataGroup = createDataGroup();
+
+		DataGroup childRefCollectIndexTerm = createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+				"collectIndexTerm", "titleCollectIndexTerm", "index");
 		childRefCollectIndexTerm.setRepeatId("0");
 		dataGroup.addChild(childRefCollectIndexTerm);
 
-		DataGroup childRefCollectIndexTerm2 = createCollectIndexTermWithId(
-				"freeTextCollectIndexTerm");
+		DataGroup childRefCollectIndexTerm2 = createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+				"collectIndexTerm", "freeTextCollectIndexTerm", "index");
 		childRefCollectIndexTerm2.setRepeatId("1");
 		dataGroup.addChild(childRefCollectIndexTerm2);
 
@@ -190,45 +186,63 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getCollectIndexTerms().size(), 2);
-		assertEquals(metadataChildReference.getCollectIndexTerms().get(0), "titleCollectIndexTerm");
-		assertEquals(metadataChildReference.getCollectIndexTerms().get(1),
+		assertEquals(metadataChildReference.getCollectTerms().size(), 2);
+		assertEquals(metadataChildReference.getCollectTerms().get(0).id, "titleCollectIndexTerm");
+		assertEquals(metadataChildReference.getCollectTerms().get(0).type, "index");
+		assertEquals(metadataChildReference.getCollectTerms().get(1).id,
 				"freeTextCollectIndexTerm");
 	}
 
-	private DataGroup createCollectIndexTermWithId(String indexTermId) {
-		DataGroup childRefTerm = DataGroup.withNameInData("childRefIndexTerm");
-		childRefTerm.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "collectIndexTerm"));
+	private DataGroup createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+			String linkedRecordType, String indexTermId, String type) {
+		DataGroup childRefTerm = DataGroup.withNameInData("childRefCollectTerm");
+		childRefTerm
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
 		childRefTerm.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", indexTermId));
+		childRefTerm.addAttributeByIdWithValue("type", type);
 		return childRefTerm;
 	}
 
 	@Test
 	public void testToMetadataWithCollectPermissionTerm() {
-		DataGroup dataGroup = createChildRefOtherMetadata();
+		DataGroup dataGroup = createDataGroup();
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
-
-		DataGroup childRefCollectPermissionTerm = createCollectPermissionTermWithId(
-				"titleCollectPermissionTerm");
+		DataGroup childRefCollectPermissionTerm = createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+				"collectPermissionTerm", "titleCollectPermissionTerm", "permission");
 		dataGroup.addChild(childRefCollectPermissionTerm);
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
-		assertEquals(metadataChildReference.getCollectPermissionTerm(),
+		assertEquals(metadataChildReference.getCollectTerms().size(), 1);
+		assertEquals(metadataChildReference.getCollectTerms().get(0).id,
 				"titleCollectPermissionTerm");
+		assertEquals(metadataChildReference.getCollectTerms().get(0).type, "permission");
 	}
 
-	private DataGroup createCollectPermissionTermWithId(String collectPermissionTermId) {
-		DataGroup childRefTerm = DataGroup.withNameInData("childRefPermissionTerm");
-		childRefTerm.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "collectPermissionTerm"));
-		childRefTerm.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordId", collectPermissionTermId));
-		return childRefTerm;
+	@Test
+	public void testToMetadataWithCollectIndexTermAndCollectPermissionTerm() {
+		DataGroup dataGroup = createDataGroup();
+
+		DataGroup childRefCollectIndexTerm = createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+				"collectIndexTerm", "titleCollectIndexTerm", "index");
+		dataGroup.addChild(childRefCollectIndexTerm);
+
+		DataGroup childRefCollectPermissionTerm = createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
+				"collectPermissionTerm", "titleCollectPermissionTerm", "permission");
+		dataGroup.addChild(childRefCollectPermissionTerm);
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getCollectTerms().size(), 2);
+		assertEquals(metadataChildReference.getCollectTerms().get(0).id, "titleCollectIndexTerm");
+		assertEquals(metadataChildReference.getCollectTerms().get(0).type, "index");
+
+		assertEquals(metadataChildReference.getCollectTerms().get(1).id,
+				"titleCollectPermissionTerm");
+		assertEquals(metadataChildReference.getCollectTerms().get(1).type, "permission");
 	}
 }
