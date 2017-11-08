@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,14 +19,9 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import java.util.Collection;
-
 import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 
 /**
@@ -56,7 +51,8 @@ public class DataValidatorImp implements DataValidator {
 			ValidationAnswer validationAnswer = new ValidationAnswer();
 			validationAnswer.addErrorMessageAndAppendErrorMessageFromExceptionToMessage(
 					"DataElementValidator not created for the requested metadataId: " + metadataId
-							+ " with error:", exception);
+							+ " with error:",
+					exception);
 			return validationAnswer;
 		}
 	}
@@ -67,23 +63,8 @@ public class DataValidatorImp implements DataValidator {
 	}
 
 	private void getMetadataFromStorage() {
-		metadataHolder = new MetadataHolder();
-		Collection<DataGroup> metadataElementDataGroups = metadataStorage.getMetadataElements();
-		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups);
-	}
-
-	private void convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(
-			Collection<DataGroup> metadataElements) {
-		for (DataGroup metadataElement : metadataElements) {
-			convertDataGroupToMetadataElementAndAddItToMetadataHolder(metadataElement);
-		}
-	}
-
-	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(DataGroup metadataElement) {
-		DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(metadataElement);
-		DataGroupToMetadataConverter converter = factory.factor();
-		metadataHolder.addMetadataElement(converter.toMetadata());
+		metadataHolder = new MetadataHolderFromStoragePopulator()
+				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
 	}
 
 	private ValidationAnswer validateDataUsingDataValidator() {

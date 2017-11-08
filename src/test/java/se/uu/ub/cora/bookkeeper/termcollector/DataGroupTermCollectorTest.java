@@ -20,6 +20,7 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +28,6 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
-import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataGroupTermCollectorTest {
@@ -61,6 +61,8 @@ public class DataGroupTermCollectorTest {
 		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
 
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
+
 		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
 		assertEquals(collectedDataTerm.getRepeatId(), "0");
 		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
@@ -69,6 +71,38 @@ public class DataGroupTermCollectorTest {
 				"titleIndexTerm");
 		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
 		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
+	}
+
+	@Test
+	public void testCollectTermsTitleWithMoreIndexTerms() {
+		DataGroup book = createBookWithNoTitle();
+		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+
+		DataGroup collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup", book);
+		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
+
+		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 2);
+
+		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerm.getRepeatId(), "0");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+				"Some title");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+				"titleIndexTerm");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
+
+		DataGroup collectedDataTerm2 = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
+				.get(1);
+		assertEquals(collectedDataTerm2.getRepeatId(), "1");
+		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermValue"),
+				"Some title");
+		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermId"),
+				"titleSecondIndexTerm");
+		DataGroup extraData2 = collectedDataTerm2.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData2.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
+
 	}
 
 	@Test
@@ -139,6 +173,14 @@ public class DataGroupTermCollectorTest {
 
 	}
 
+	private DataGroup createBookWithNoTitle() {
+		DataGroup book = DataGroup.withNameInData("book");
+		DataGroup recordInfo = createRecordInfo();
+		book.addChild(recordInfo);
+
+		return book;
+	}
+
 	private void addChildrenToBook(DataGroup book) {
 		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
 		book.addChild(DataAtomic.withNameInDataAndValue("bookSubTitle", "Some subtitle"));
@@ -148,12 +190,13 @@ public class DataGroupTermCollectorTest {
 		book.addChild(personRole);
 	}
 
-	private DataGroup createBookWithNoTitle() {
-		DataGroup book = DataGroup.withNameInData("book");
-		DataGroup recordInfo = createRecordInfo();
-		book.addChild(recordInfo);
-
-		return book;
+	private void addLinkToOtherBook(DataGroup book) {
+		DataGroup otherBookLink = DataGroup.withNameInData("otherBook");
+		otherBookLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "book"));
+		otherBookLink
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "someOtherBookId"));
+		otherBookLink.setRepeatId("0");
+		book.addChild(otherBookLink);
 	}
 
 	private DataGroup createRecordInfo() {
@@ -167,6 +210,68 @@ public class DataGroupTermCollectorTest {
 						"system", "testSystem");
 		recordInfo.addChild(dataDivider);
 		return recordInfo;
+	}
+
+	@Test
+	public void testCollectTermsOneLinkToOtherBook() {
+		DataGroup book = createBookWithNoTitle();
+		addLinkToOtherBook(book);
+
+		DataGroup collectedData = collector.collectTerms("bookGroup", book);
+		assertEquals(collectedData.getNameInData(), "collectedData");
+		assertEquals(collectedData.getFirstAtomicValueWithNameInData("id"), "book1");
+		assertEquals(collectedData.getFirstAtomicValueWithNameInData("type"), "book");
+
+		assertTrue(collectedData.containsChildWithNameInData("index"));
+		assertFalse(collectedData.containsChildWithNameInData("permission"));
+
+		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
+
+		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerm.getRepeatId(), "0");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+				"otherBookIndexTerm");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+				"book_someOtherBookId");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeId");
+	}
+
+	@Test
+	public void testCollectTermsOneLinkToOtherBookWithMoreIndexTerms() {
+		DataGroup book = createBookWithNoTitle();
+		addLinkToOtherBook(book);
+
+		DataGroup collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup", book);
+		assertEquals(collectedData.getNameInData(), "collectedData");
+		assertEquals(collectedData.getFirstAtomicValueWithNameInData("id"), "book1");
+		assertEquals(collectedData.getFirstAtomicValueWithNameInData("type"), "book");
+
+		assertTrue(collectedData.containsChildWithNameInData("index"));
+		assertFalse(collectedData.containsChildWithNameInData("permission"));
+
+		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 2);
+
+		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerm.getRepeatId(), "0");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+				"otherBookIndexTerm");
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+				"book_someOtherBookId");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeId");
+
+		DataGroup collectedDataTerm2 = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
+				.get(1);
+		assertEquals(collectedDataTerm2.getRepeatId(), "1");
+		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermId"),
+				"otherBookSecondIndexTerm");
+		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermValue"),
+				"book_someOtherBookId");
+		DataGroup extraData2 = collectedDataTerm2.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData2.getFirstAtomicValueWithNameInData("indexType"), "indexTypeId");
 	}
 
 }

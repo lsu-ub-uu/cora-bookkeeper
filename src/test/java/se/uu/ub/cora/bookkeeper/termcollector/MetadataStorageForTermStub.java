@@ -18,11 +18,12 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		DataGroup book = createBookMetadataGroup();
 		dataGroups.add(book);
 
+		DataGroup bookWithMoreCollectTerms = createBookWithMoreCollectTermsMetadataGroup();
+		dataGroups.add(bookWithMoreCollectTerms);
+
 		DataGroup personRoleGroup = createPersonRoleGroup();
 		dataGroups.add(personRoleGroup);
 
-		// DataGroup searchTitleTextVar = createSearchTitleTextVar();
-		// dataGroups.add(searchTitleTextVar);
 		DataGroup bookTitleTextVar = createBookTitleTextVar();
 		dataGroups.add(bookTitleTextVar);
 		DataGroup bookSubTitleTextVar = createSubBookTitleTextVar();
@@ -32,6 +33,9 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		DataGroup addressTextVar = createTextVariableWithIdAndNameInData("addressTextVar",
 				"address");
 		dataGroups.add(addressTextVar);
+
+		DataGroup otherBookLink = createOtherBookLink();
+		dataGroups.add(otherBookLink);
 
 		return dataGroups;
 	}
@@ -74,6 +78,69 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 				"subTitleIndexTerm", "0");
 		childReferenceSubTitle.addChild(childRefSubTitleIndexTerm);
 		childReferences.addChild(childReferenceSubTitle);
+
+		DataGroup childReferenceOtherBook = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"otherBookLink", "0", "5");
+		DataGroup childRefOtherBookIndexTerm = createCollectIndexTermWithNameAndRepeatId(
+				"otherBookIndexTerm", "0");
+		childReferenceOtherBook.addChild(childRefOtherBookIndexTerm);
+		childReferences.addChild(childReferenceOtherBook);
+
+		return childReferences;
+	}
+
+	private DataGroup createBookWithMoreCollectTermsMetadataGroup() {
+
+		DataGroup book = DataGroup.withNameInData("metadata");
+		book.addAttributeByIdWithValue("type", "group");
+		DataGroup recordInfo = createRecordInfoWithIdAndType("bookWithMoreCollectTermsGroup",
+				"metadataGroup");
+		book.addChild(recordInfo);
+		book.addChild(DataAtomic.withNameInDataAndValue("nameInData", "book"));
+		addTextByNameInDataAndId(book, "textId", "bookTextId");
+		addTextByNameInDataAndId(book, "defTextId", "bookDefTextId");
+
+		DataGroup childReferences = createChildReferencesForBookWithMoreCollectTerms();
+		book.addChild(childReferences);
+		return book;
+	}
+
+	private DataGroup createChildReferencesForBookWithMoreCollectTerms() {
+		DataGroup childReferences = DataGroup.withNameInData("childReferences");
+
+		DataGroup childReferenceTitle = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"bookTitleTextVar", "1", "1");
+		DataGroup childRefTitleIndexTerm = createCollectIndexTermWithNameAndRepeatId(
+				"titleIndexTerm", "0");
+		childReferenceTitle.addChild(childRefTitleIndexTerm);
+		DataGroup childRefTitleIndexTerm2 = createCollectIndexTermWithNameAndRepeatId(
+				"titleSecondIndexTerm", "0");
+		childReferenceTitle.addChild(childRefTitleIndexTerm2);
+		childReferences.addChild(childReferenceTitle);
+
+		DataGroup childReferencePersonRole = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"personRoleGroup", "1", "2");
+		DataGroup childRefGroupIndexTerm = createCollectIndexTermWithNameAndRepeatId(
+				"someGroupIndexTerm", "0");
+		childReferencePersonRole.addChild(childRefGroupIndexTerm);
+		childReferences.addChild(childReferencePersonRole);
+
+		DataGroup childReferenceSubTitle = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"bookSubTitleTextVar", "0", "5");
+		DataGroup childRefSubTitleIndexTerm = createCollectIndexTermWithNameAndRepeatId(
+				"subTitleIndexTerm", "0");
+		childReferenceSubTitle.addChild(childRefSubTitleIndexTerm);
+		childReferences.addChild(childReferenceSubTitle);
+
+		DataGroup childReferenceOtherBook = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"otherBookLink", "0", "5");
+		DataGroup childRefOtherBookIndexTerm = createCollectIndexTermWithNameAndRepeatId(
+				"otherBookIndexTerm", "0");
+		childReferenceOtherBook.addChild(childRefOtherBookIndexTerm);
+		DataGroup childRefOtherBookIndexTerm2 = createCollectIndexTermWithNameAndRepeatId(
+				"otherBookSecondIndexTerm", "0");
+		childReferenceOtherBook.addChild(childRefOtherBookIndexTerm2);
+		childReferences.addChild(childReferenceOtherBook);
 
 		return childReferences;
 	}
@@ -179,6 +246,29 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		return personRoleGroup;
 	}
 
+	private DataGroup createOtherBookLink() {
+		DataGroup otherBookLink = DataGroup.withNameInData("metadata");
+		otherBookLink.addAttributeByIdWithValue("type", "recordLink");
+
+		DataGroup recordInfo = createRecordInfoWithIdAndType("otherBookLink", "metadataRecordLink");
+		otherBookLink.addChild(recordInfo);
+
+		otherBookLink.addChild(DataAtomic.withNameInDataAndValue("nameInData", "otherBook"));
+		addTextByNameInDataAndId(otherBookLink, "textId", "otherBookLinkText");
+		addTextByNameInDataAndId(otherBookLink, "defTextId", "otherBookLinkDefText");
+
+		addLinkToGroupByNameInDataAndId(otherBookLink, "linkedRecordType", "book");
+		return otherBookLink;
+	}
+
+	private void addLinkToGroupByNameInDataAndId(DataGroup dataGroup, String nameInData,
+			String textId) {
+		DataGroup text = DataGroup.withNameInData(nameInData);
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		dataGroup.addChild(text);
+	}
+
 	@Override
 	public Collection<DataGroup> getPresentationElements() {
 		return null;
@@ -196,29 +286,41 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 	@Override
 	public Collection<DataGroup> getCollectTerms() {
-		List<DataGroup> searchTerms = new ArrayList<>();
+		List<DataGroup> collectTerms = new ArrayList<>();
 
 		DataGroup titleIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
 				"titleIndexTerm", "indexTypeString", "title");
-		searchTerms.add(titleIndexTerm);
+		collectTerms.add(titleIndexTerm);
+
+		DataGroup titleSecondIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
+				"titleSecondIndexTerm", "indexTypeString", "title");
+		collectTerms.add(titleSecondIndexTerm);
 
 		DataGroup nameIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
 				"nameIndexTerm", "indexTypeString", "name");
-		searchTerms.add(nameIndexTerm);
+		collectTerms.add(nameIndexTerm);
 
 		DataGroup subTitleIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
 				"subTitleIndexTerm", "indexTypeString", "subTitle");
-		searchTerms.add(subTitleIndexTerm);
+		collectTerms.add(subTitleIndexTerm);
 
 		DataGroup textIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
 				"textIndexTerm", "indexTypeString", "text");
-		searchTerms.add(textIndexTerm);
+		collectTerms.add(textIndexTerm);
 
 		DataGroup namePermissionTerm = createPermissionTermMetadataWithIdAndPermissionKeyAndNameInData(
 				"namePermissionTerm", "PERMISSIONFORNAME", "name");
-		searchTerms.add(namePermissionTerm);
+		collectTerms.add(namePermissionTerm);
 
-		return searchTerms;
+		DataGroup otherBookIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
+				"otherBookIndexTerm", "indexTypeId", "otherBook");
+		collectTerms.add(otherBookIndexTerm);
+
+		DataGroup otherBookSecondIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
+				"otherBookSecondIndexTerm", "indexTypeId", "otherBook");
+		collectTerms.add(otherBookSecondIndexTerm);
+
+		return collectTerms;
 	}
 
 	private DataGroup createIndexTermMetadataWithIdAndIndexTypeAndNameInData(String id,

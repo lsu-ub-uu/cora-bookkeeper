@@ -19,7 +19,6 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
@@ -31,9 +30,8 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
@@ -44,7 +42,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private MetadataHolder metadataHolder;
 	private CollectTermHolder collectTermHolder;
 
-	private DataGroup collectedData;
 	private List<DataGroup> collectedTerms = new ArrayList<>();
 
 	public DataGroupTermCollectorImp(MetadataStorage metadataStorage) {
@@ -53,31 +50,15 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	@Override
 	public DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup) {
-		populateMetadataHolderFromMetadataStorage();
+		metadataHolder = populateMetadataHolderFromMetadataStorage();
 		populateCollectTermHolderFromMetadataStorage();
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
 		return createCollectedData(dataGroup);
 	}
 
-	private void populateMetadataHolderFromMetadataStorage() {
-		metadataHolder = new MetadataHolder();
-		Collection<DataGroup> metadataElementDataGroups = metadataStorage.getMetadataElements();
-		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups);
-	}
-
-	private void convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(
-			Collection<DataGroup> metadataElements) {
-		for (DataGroup metadataElement : metadataElements) {
-			convertDataGroupToMetadataElementAndAddItToMetadataHolder(metadataElement);
-		}
-	}
-
-	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(
-			DataGroup metadataElement) {
-		DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(metadataElement);
-		DataGroupToMetadataConverter converter = factory.factor();
-		metadataHolder.addMetadataElement(converter.toMetadata());
+	private MetadataHolder populateMetadataHolderFromMetadataStorage() {
+		return new MetadataHolderFromStoragePopulator()
+				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
 	}
 
 	private void populateCollectTermHolderFromMetadataStorage() {
@@ -102,7 +83,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void collectTermsFromDataUsingMetadataChildren(
 			List<MetadataChildReference> metadataChildReferences, DataGroup dataGroup) {
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
-			collectDataForMetadataChildIfItHasCollectTerm(metadataChildReference, dataGroup);
+			collectDataForMetadataChildIfItHasAtLeastOneCollectTerm(metadataChildReference,
+					dataGroup);
 			recurseAndCollectTermsFromChildsGroupChildren(dataGroup, metadataChildReference);
 		}
 	}
@@ -131,7 +113,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return childMetadataElement instanceof MetadataGroup;
 	}
 
-	private void collectDataForMetadataChildIfItHasCollectTerm(
+	private void collectDataForMetadataChildIfItHasAtLeastOneCollectTerm(
 			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
 		if (childReferenceHasCollectTerms(metadataChildReference)) {
 			collectTermsFromDataGroupUsingMetadataChild(metadataChildReference, dataGroup);
@@ -160,7 +142,18 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
 			DataElement childDataElement, List<CollectTerm> collectTerms) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			possiblyCreateCollectedTerm(childDataElement, collectTerms);
+			collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, childDataElement,
+					collectTerms);
+		}
+	}
+
+	private void collectTermsFromDataGroupChildMatchingMetadata(
+			MetadataElement childMetadataElement, DataElement childDataElement,
+			List<CollectTerm> collectTerms) {
+		if (childMetadataElement instanceof RecordLink) {
+			createCollectTermsForRecordLink(childDataElement, collectTerms);
+		} else {
+			possiblyCreateCollectedTerms(childDataElement, collectTerms);
 		}
 	}
 
@@ -172,37 +165,42 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return validationAnswer.dataIsValid();
 	}
 
-	private void possiblyCreateCollectedTerm(DataElement childDataElement,
+	private void createCollectTermsForRecordLink(DataElement childDataElement,
+			List<CollectTerm> collectTerms) {
+		String childDataElementValue = createValueForLinkedData(childDataElement);
+		for (CollectTerm collectTerm : collectTerms) {
+			createAndAddCollectedTermUsingIdAndValue(collectTerm.id, childDataElementValue);
+		}
+	}
+
+	private String createValueForLinkedData(DataElement childDataElement) {
+		DataGroup linkGroup = (DataGroup) childDataElement;
+		String recordType = linkGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
+		String recordId = linkGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+		return recordType + "_" + recordId;
+	}
+
+	private void possiblyCreateCollectedTerms(DataElement childDataElement,
 			List<CollectTerm> collectTerms) {
 		if (childDataElement instanceof DataAtomic) {
-			createCollectTerm(childDataElement, collectTerms);
+			createCollectTerms(childDataElement, collectTerms);
 		}
 	}
 
-	private void createCollectTerm(DataElement childDataElement, List<CollectTerm> collectTerms) {
+	private void createCollectTerms(DataElement childDataElement, List<CollectTerm> collectTerms) {
 		for (CollectTerm collectTerm : collectTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
-			possiblyCreateAndAddCollectedTerm(collectTerm.id, childDataElementValue);
+			createAndAddCollectedTermUsingIdAndValue(collectTerm.id, childDataElementValue);
 		}
 	}
 
-	private void possiblyCreateAndAddCollectedTerm(String collectTermId,
+	private void createAndAddCollectedTermUsingIdAndValue(String collectTermId,
 			String childDataElementValue) {
 		DataGroup collectTerm = collectTermHolder.getCollectTerm(collectTermId);
-		createAndAddCollectedTerm(childDataElementValue, collectTerm);
-	}
-
-	private void createAndAddCollectedTerm(String childDataElementValue, DataGroup collectTerm) {
-		String collectTermId = getCollectTermId(collectTerm);
 		String collectTermType = collectTerm.getAttribute("type");
 		DataGroup collectedTerm = createCollectedDataTerm(childDataElementValue, collectTermId,
 				collectTermType, collectTerm);
 		collectedTerms.add(collectedTerm);
-	}
-
-	private String getCollectTermId(DataGroup collectTerm) {
-		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
-		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
 	private DataGroup createCollectedDataTerm(String childDataElementValue, String collectTermId,
@@ -240,48 +238,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
-		collectedData = DataGroup.withNameInData("collectedData");
-		extractTypeFromDataGroupAndSetInCollectedData(dataGroup);
-		extractIdFromDataGroupAndSetInCollectedData(dataGroup);
-		addCollectedTermsToCollectedData();
-		return collectedData;
+		return new CollectedDataCreator()
+				.createCollectedDataFromCollectedTermsAndDataGroup(collectedTerms, dataGroup);
 	}
-
-	private void addCollectedTermsToCollectedData() {
-		if (!collectedTerms.isEmpty()) {
-			int repeatId = 0;
-			DataGroup index = DataGroup.withNameInData("index");
-			collectedData.addChild(index);
-			for (DataGroup collectedTerm : collectedTerms) {
-				repeatId = addCollectedIndexTerm(repeatId, index, collectedTerm);
-			}
-		}
-	}
-
-	private int addCollectedIndexTerm(int repeatId, DataGroup index, DataGroup collectedTerm) {
-		int newRepeatId = repeatId;
-		if("index".equals(collectedTerm.getAttribute("type"))) {
-            collectedTerm.setRepeatId(String.valueOf(repeatId));
-            index.addChild(collectedTerm);
-			newRepeatId++;
-        }
-		return newRepeatId;
-	}
-
-	private void extractTypeFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
-		String type = extractTypeFromDataGroup(dataGroup);
-		collectedData.addChild(DataAtomic.withNameInDataAndValue("type", type));
-	}
-
-	private String extractTypeFromDataGroup(DataGroup dataGroup) {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
-		return typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
-	}
-
-	private void extractIdFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
-		String id = getCollectTermId(dataGroup);
-		collectedData.addChild(DataAtomic.withNameInDataAndValue("id", id));
-	}
-
 }
