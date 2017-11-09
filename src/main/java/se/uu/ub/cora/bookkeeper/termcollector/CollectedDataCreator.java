@@ -24,19 +24,18 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class CollectedDataCreator {
-	private List<DataGroup> collectedTerms;
 	private DataGroup collectedData;
 
-	public DataGroup createCollectedDataFromCollectedTermsAndDataGroup(List<DataGroup> collectedTerms, DataGroup dataGroup) {
-		this.collectedTerms = collectedTerms;
+	public DataGroup createCollectedDataFromCollectedTermsAndDataGroup(
+			List<DataGroup> collectedTerms, DataGroup dataGroup) {
 		collectedData = DataGroup.withNameInData("collectedData");
 		extractTypeFromDataGroupAndSetInCollectedData(dataGroup);
 		extractIdFromDataGroupAndSetInCollectedData(dataGroup);
-		addCollectedTermsToCollectedData();
+		addCollectedTermsToCollectedData(collectedTerms);
 		return collectedData;
 	}
 
-	private void addCollectedTermsToCollectedData() {
+	private void addCollectedTermsToCollectedData(List<DataGroup> collectedTerms) {
 		if (!collectedTerms.isEmpty()) {
 			int repeatId = 0;
 			DataGroup index = DataGroup.withNameInData("index");
