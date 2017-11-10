@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -49,13 +49,13 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	/**
-	 * validateData validates that the entered dataGroup is correct according to
-	 * this validators metadataGroup
+	 * validateData validates that the entered dataGroup is correct according to this validators
+	 * metadataGroup
 	 *
 	 * @param dataGroup
 	 *            A DataGroup to validate
-	 * @return A ValidationAnswer with information if the dataGroup has valid
-	 *         data and if not a list of errors
+	 * @return A ValidationAnswer with information if the dataGroup has valid data and if not a list
+	 *         of errors
 	 */
 	@Override
 	public ValidationAnswer validateData(DataElement dataGroup) {
@@ -79,8 +79,9 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateHasChildren() {
-		if(dataGroup.getChildren().isEmpty()){
-			validationAnswer.addErrorMessage("DataGroup "+ metadataGroup.getNameInData() + " should have children, it does not.");
+		if (dataGroup.getChildren().isEmpty()) {
+			validationAnswer.addErrorMessage("DataGroup " + metadataGroup.getNameInData()
+					+ " should have children, it does not.");
 		}
 	}
 
@@ -149,7 +150,7 @@ class DataGroupValidator implements DataElementValidator {
 
 	private void validateRepeatMinAndMax(MetadataChildReference childReference, int childrenFound) {
 		String referenceId = childReference.getLinkedRecordId();
-		
+
 		if (childrenFound < childReference.getRepeatMin()) {
 			validationAnswer.addErrorMessage("Did not find enough data children with referenceId: "
 					+ referenceId + getReferenceText(referenceId) + ".");
@@ -229,8 +230,7 @@ class DataGroupValidator implements DataElementValidator {
 		Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
 		for (MetadataChildReference childReference : childReferences) {
 			String referenceId = childReference.getLinkedRecordId();
-			if (isChildDataSpecifiedByChildReferenceId(childData,
-					referenceId)) {
+			if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
 				return true;
 			}
 		}

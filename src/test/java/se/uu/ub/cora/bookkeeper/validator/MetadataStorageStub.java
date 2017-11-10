@@ -152,7 +152,8 @@ public class MetadataStorageStub implements MetadataStorage {
 
 		DataGroup attributeReferences = DataGroup.withNameInData("attributeReferences");
 		DataGroup attributeRef = DataGroup.withNameInData("ref");
-		attributeRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionVariable"));
+		attributeRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"metadataCollectionVariable"));
 		attributeRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "groupTypeVar"));
 		attributeReferences.addChild(attributeRef);
 		group.addChild(attributeReferences);
@@ -280,6 +281,23 @@ public class MetadataStorageStub implements MetadataStorage {
 		//
 		dataGroups.add(placeItem);
 
+		// linkedRecordId (textVar)
+		DataGroup linkedRecordIdTextVar = DataGroup.withNameInData("metadata");
+		linkedRecordIdTextVar.addAttributeByIdWithValue("type", "textVariable");
+
+		DataGroup linkedRecordIdTextVarRecordInfo = DataGroup.withNameInData("recordInfo");
+		linkedRecordIdTextVarRecordInfo
+				.addChild(DataAtomic.withNameInDataAndValue("id", "linkedRecordIdTextVar"));
+		linkedRecordIdTextVar.addChild(linkedRecordIdTextVarRecordInfo);
+
+		linkedRecordIdTextVar
+				.addChild(DataAtomic.withNameInDataAndValue("nameInData", "linkedRecordId"));
+		addTextByNameInDataAndId(linkedRecordIdTextVar, "textId", "textVarText");
+		addTextByNameInDataAndId(linkedRecordIdTextVar, "defTextId", "textVarDefText");
+		linkedRecordIdTextVar.addChild(DataAtomic.withNameInDataAndValue("regEx", "((.*)|^$){1}"));
+
+		dataGroups.add(linkedRecordIdTextVar);
+
 		addDataToDataMetadata();
 		return dataGroups;
 	}
@@ -367,7 +385,8 @@ public class MetadataStorageStub implements MetadataStorage {
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "testLink"));
 		childReference.addChild(ref);
 		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "1"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
+		// childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "15"));
+		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "1"));
 		childReferences.addChild(childReference);
 
 		dataGroups.add(bushGroup);
@@ -394,51 +413,65 @@ public class MetadataStorageStub implements MetadataStorage {
 
 	@Override
 	public Collection<DataGroup> getRecordTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DataGroup> recordTypes = new ArrayList<>();
+		DataGroup image = DataGroup.withNameInData("image");
+
+		DataGroup recordInfo = createRecordInfoWithIdAndType("image", "recordType");
+		image.addChild(recordInfo);
+
+		DataGroup parentId = DataGroup.withNameInData("parentId");
+		image.addChild(parentId);
+
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "binary"));
+		recordTypes.add(image);
+		return recordTypes;
 	}
 
 	@Override
 	public Collection<DataGroup> getCollectTerms() {
-//		List<DataGroup> searchTerms = new ArrayList<>();
-//
-//		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
-//		DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
-//		searchTerm.addChild(recordInfo);
-//		searchTerm.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
-//		DataGroup searchFieldRef = DataGroup.withNameInData("searchFieldRef");
-//		searchFieldRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
-//		searchFieldRef.addChild(
-//				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
-//
-//		searchTerm.addChild(searchFieldRef);
-//
-//		searchTerms.add(searchTerm);
-//
-//		DataGroup searchTerm2 = DataGroup.withNameInData("searchTerm");
-//		DataGroup recordInfo2 = createRecordInfoWithIdAndType("someNameSearchTerm", "searchTerm");
-//		searchTerm2.addChild(recordInfo2);
-//		searchTerm2.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
-//		DataGroup searchFieldRef2 = DataGroup.withNameInData("searchFieldRef");
-//		searchFieldRef2.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
-//		searchFieldRef2.addChild(
-//				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
-//
-//		searchTerm2.addChild(searchFieldRef2);
-//
-//		searchTerms.add(searchTerm2);
-//		return searchTerms;
+		// List<DataGroup> searchTerms = new ArrayList<>();
+		//
+		// DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
+		// DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
+		// searchTerm.addChild(recordInfo);
+		// searchTerm.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
+		// DataGroup searchFieldRef = DataGroup.withNameInData("searchFieldRef");
+		// searchFieldRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+		// "metadata"));
+		// searchFieldRef.addChild(
+		// DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
+		//
+		// searchTerm.addChild(searchFieldRef);
+		//
+		// searchTerms.add(searchTerm);
+		//
+		// DataGroup searchTerm2 = DataGroup.withNameInData("searchTerm");
+		// DataGroup recordInfo2 = createRecordInfoWithIdAndType("someNameSearchTerm",
+		// "searchTerm");
+		// searchTerm2.addChild(recordInfo2);
+		// searchTerm2.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
+		// DataGroup searchFieldRef2 = DataGroup.withNameInData("searchFieldRef");
+		// searchFieldRef2.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+		// "metadata"));
+		// searchFieldRef2.addChild(
+		// DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
+		//
+		// searchTerm2.addChild(searchFieldRef2);
+		//
+		// searchTerms.add(searchTerm2);
+		// return searchTerms;
 		return null;
 	}
 
-//	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
-//		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-//		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
-//		DataGroup type = DataGroup.withNameInData("type");
-//		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-//		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", typeString));
-//		recordInfo.addChild(type);
-//		return recordInfo;
-//	}
+	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
+		DataGroup type = DataGroup.withNameInData("type");
+		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", typeString));
+		recordInfo.addChild(type);
+		return recordInfo;
+	}
 
 }

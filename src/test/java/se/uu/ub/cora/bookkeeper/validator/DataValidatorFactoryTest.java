@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,8 +21,14 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
@@ -31,48 +37,58 @@ import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataValidatorFactoryTest {
+
+	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
+	private MetadataHolder metadataHolder;
+	private DataValidatorFactory dataValidatorFactory;
+
+	@BeforeMethod
+	public void setup() {
+		DataGroup image = DataGroup.withNameInData("image");
+		DataGroup parentId = DataGroup.withNameInData("parentId");
+		image.addChild(parentId);
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "binary"));
+		recordTypeHolder.put("image", image);
+
+		metadataHolder = new MetadataHolder();
+		dataValidatorFactory = new DataValidatorFactoryImp(recordTypeHolder, metadataHolder);
+	}
+
 	@Test
 	public void testFactorDataValidatorMetadataGroup() {
-		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
 				"metadataGroupId", "nameInData", "textId", "defTextId"));
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("metadataGroupId");
 		assertTrue(dataGroupValidator instanceof DataGroupValidator);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataTextVariable() {
-		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(
 				TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
 						"textVariableId", "nameInData", "textId", "defTextId",
 						"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("textVariableId");
 		assertTrue(dataGroupValidator instanceof DataTextVariableValidator);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataRecordLink() {
-		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(
 				RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
 						"recordLinkId", "nameInData", "textId", "defTextId", "someRecordType"));
 
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("recordLinkId");
 		assertTrue(dataGroupValidator instanceof DataRecordLinkValidator);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataCollectionVariable() {
-		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(new CollectionVariable("collectionVariableId",
 				"nameInData", "textId", "defTextId", "collectionId"));
 
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory
 				.factor("collectionVariableId");
 		assertTrue(dataGroupValidator instanceof DataCollectionVariableValidator);
@@ -80,19 +96,15 @@ public class DataValidatorFactoryTest {
 
 	@Test
 	public void testFactorDataValidatorMetadataResourceLink() {
-		MetadataHolder metadataHolder = new MetadataHolder();
 		metadataHolder.addMetadataElement(ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(
 				"masterResource", "nameInData", "textId", "defTextId"));
 
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("masterResource");
 		assertTrue(dataGroupValidator instanceof DataResourceLinkValidator);
 	}
 
 	@Test(expectedExceptions = DataValidationException.class)
 	public void testNotIdFound() {
-		MetadataHolder metadataHolder = new MetadataHolder();
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(metadataHolder);
 		dataValidatorFactory.factor("elementNotFound");
 	}
 

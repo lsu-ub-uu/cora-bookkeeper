@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,28 +19,31 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
 public class DataRecordLinkValidatorTest {
 	private RecordLink dataLink;
 	private DataRecordLinkValidator dataLinkValidator;
 	private MetadataHolder metadataHolder = new MetadataHolder();
-
+	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 
 	@BeforeMethod
 	public void setUp() {
@@ -50,25 +53,27 @@ public class DataRecordLinkValidatorTest {
 		metadataHolder.addMetadataElement(dataLink);
 
 		TextVariable linkedRecordIdTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("linkedRecordIdTextVar",
-						"linkedRecordId", "linkedRecordIdTextVarText", "linkedRecordIdTextVarDefText",
-						"(^[0-9A-Za-z:-_]{2,50}$)");
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
+						"linkedRecordIdTextVar", "linkedRecordId", "linkedRecordIdTextVarText",
+						"linkedRecordIdTextVarDefText", "(^[0-9A-Za-z:-_]{2,50}$)");
 
 		metadataHolder.addMetadataElement(linkedRecordIdTextVar);
 
 		TextVariable linkedRepeatIdTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("linkedRepeatIdTextVar",
-						"linkedRepeatId", "linkedRepeatIdTextVarText", "linkedRepeatIdTextVarDefText",
-						"(^[0-9A-Za-z:-_]{1,50}$)");
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
+						"linkedRepeatIdTextVar", "linkedRepeatId", "linkedRepeatIdTextVarText",
+						"linkedRepeatIdTextVarDefText", "(^[0-9A-Za-z:-_]{1,50}$)");
 
 		metadataHolder.addMetadataElement(linkedRepeatIdTextVar);
 
-		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, dataLink);
+		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder, dataLink);
 	}
 
 	@Test
 	public void testValidateNoAttributes() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
@@ -78,18 +83,21 @@ public class DataRecordLinkValidatorTest {
 		addAttributeCollectionToMetadataHolder();
 
 		dataLink.addAttributeReference("linkAttributeId");
-		
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		dataRecordLink.addAttributeByIdWithValue("linkAttributeNameInData", "choice1NameInData");
-		
-		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, dataLink);
+
+		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder, dataLink);
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	private void addAttributeCollectionToMetadataHolder() {
-		CollectionVariable colVar = new CollectionVariable("linkAttributeId", "linkAttributeNameInData",
-				"linkAttributeText", "linkAttributeDefText", "collectionId");
+		CollectionVariable colVar = new CollectionVariable("linkAttributeId",
+				"linkAttributeNameInData", "linkAttributeText", "linkAttributeDefText",
+				"collectionId");
 		metadataHolder.addMetadataElement(colVar);
 		CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",
 				"choice1TextId", "choice1DefTextId");
@@ -105,10 +113,12 @@ public class DataRecordLinkValidatorTest {
 		collection.addItemReference("choice1Id");
 		collection.addItemReference("choice2Id");
 	}
-	
+
 	@Test
 	public void testInvalidAttribute() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
 
@@ -119,15 +129,18 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateInvalidRecordId() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType",
-				"myLinkedRecordIdÅÄÖ");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordIdÅÄÖ");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
 	public void testValidateRecordType() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "notMyRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"notMyRecordType", "myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -135,62 +148,124 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidateRecordTypeIsChildOfAbstractMetadataRecordType(){
+	public void testValidateRecordTypeIsChildOfAbstractMetadataRecordType() {
+		DataGroup image = DataGroup.withNameInData("image");
+		DataGroup parentId = DataGroup.withNameInData("parentId");
+		image.addChild(parentId);
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "binary"));
+		recordTypeHolder.put("image", image);
+
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
+		//
+		// MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
+		// "recordType", "imageText", "imageDefText");
+		// image.setRefParentId("binary");
+		// metadataHolder.addMetadataElement(image);
 
-		MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image", "recordType", "imageText","imageDefText");
-		image.setRefParentId("binary");
-		metadataHolder.addMetadataElement(image);
+		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+				myBinaryLink);
 
-		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, myBinaryLink);
-
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image", "image001");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
+						"image001");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 0);
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
-	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeOtherParentId(){
+	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeOtherParentId() {
+		DataGroup image = DataGroup.withNameInData("image");
+		DataGroup parentId = DataGroup.withNameInData("parentId");
+		image.addChild(parentId);
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "NOTbinary"));
+		recordTypeHolder.put("image", image);
+
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
 
-		MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image", "recordType", "imageText","imageDefText");
-		image.setRefParentId("NOTBinary");
-		metadataHolder.addMetadataElement(image);
+		// MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
+		// "recordType", "imageText", "imageDefText");
+		// image.setRefParentId("NOTBinary");
+		// metadataHolder.addMetadataElement(image);
 
-		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, myBinaryLink);
+		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+				myBinaryLink);
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image", "image001");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
+						"image001");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	@Test
-	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeNoParentId(){
+	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeNoParent() {
+		DataGroup image = DataGroup.withNameInData("image");
+		// DataGroup parentId = DataGroup.withNameInData("parentId");
+		// image.addChild(parentId);
+		// parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		// parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "NOTbinary"));
+		recordTypeHolder.put("image", image);
+
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
 
-		MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image", "recordType", "imageText","imageDefText");
-		metadataHolder.addMetadataElement(image);
+		// MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
+		// "recordType", "imageText", "imageDefText");
+		// metadataHolder.addMetadataElement(image);
 
-		dataLinkValidator = new DataRecordLinkValidator(metadataHolder, myBinaryLink);
+		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+				myBinaryLink);
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image", "image001");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
+						"image001");
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
+	// @Test
+	// public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeNoParentId() {
+	// DataGroup image = DataGroup.withNameInData("image");
+	// DataGroup parentId = DataGroup.withNameInData("parentId");
+	// image.addChild(parentId);
+	// parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+	// // parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "NOTbinary"));
+	// recordTypeHolder.put("image", image);
+	//
+	// RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
+	//
+	// // MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
+	// // "recordType", "imageText", "imageDefText");
+	// // metadataHolder.addMetadataElement(image);
+	//
+	// dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+	// myBinaryLink);
+	//
+	// DataGroup dataRecordLink = DataCreator
+	// .createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
+	// "image001");
+	// ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+	// assertEquals(validationAnswer.getErrorMessages().size(), 1);
+	// assertTrue(validationAnswer.dataIsInvalid());
+	// }
+
 	private RecordLink createAndAddBinaryToMetadataHolder(MetadataHolder abstractMetadataHolder) {
-		RecordLink myBinaryLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
-				"binary", "textId", "defTextId", "binary");
+		RecordLink myBinaryLink = RecordLink
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id", "binary",
+						"textId", "defTextId", "binary");
 		abstractMetadataHolder.addMetadataElement(myBinaryLink);
 		return myBinaryLink;
 	}
 
 	@Test
 	public void testValidateEmptyNameInData() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("", "linkedRecordType",
+						"myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -199,7 +274,9 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateEmptyRecordType() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "",
+						"myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -207,10 +284,11 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidateNoRecordType(){
+	public void testValidateNoRecordType() {
 		DataGroup dataRecordLink = DataGroup.withNameInData("nameInData");
 
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "myLinkedRecordId");
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId",
+				"myLinkedRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -220,7 +298,9 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateEmptyRecordId() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -228,10 +308,11 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidateNoRecordId(){
+	public void testValidateNoRecordId() {
 		DataGroup dataRecordLink = DataGroup.withNameInData("nameInData");
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "myLinkedRecordType");
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"myLinkedRecordType");
 		dataRecordLink.addChild(linkedRecordType);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -243,7 +324,9 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "x1");
 		dataRecordLink.addChild(linkedRepeatId);
 
@@ -255,7 +338,9 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedRepeatIdMissing() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -266,7 +351,9 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedEmptyRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "");
 		dataRecordLink.addChild(linkedRepeatId);
 
@@ -279,8 +366,9 @@ public class DataRecordLinkValidatorTest {
 	public void testValidateInvalidRepeatId() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType",
-				"myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "ÅÄÖ");
 		dataRecordLink.addChild(linkedRepeatId);
 
@@ -291,7 +379,9 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testLinkedRepeatIdShouldNotExist() {
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "x1");
 		dataRecordLink.addChild(linkedRepeatId);
 
@@ -304,7 +394,9 @@ public class DataRecordLinkValidatorTest {
 	public void testLinkedLinkedPathShouldNeverExist() {
 		dataLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData", "linkedRecordType", "myLinkedRecordId");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "myLinkedRecordId");
 		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "x1");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.addChild(DataGroup.withNameInData("linkedPath"));
@@ -318,8 +410,9 @@ public class DataRecordLinkValidatorTest {
 	public void testValidateFinalValue() {
 		dataLink.setFinalValue("someInstance");
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
-				"linkedRecordType", "someInstance");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "someInstance");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 0);
@@ -331,12 +424,12 @@ public class DataRecordLinkValidatorTest {
 
 		dataLink.setFinalValue("someInstance");
 
-		DataGroup dataRecordLink = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
-				"linkedRecordType", "wrongInstance");
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
+						"linkedRecordType", "wrongInstance");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 }
-

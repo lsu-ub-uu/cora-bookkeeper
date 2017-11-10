@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,9 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import java.util.Map;
+
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -30,8 +33,11 @@ import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 public class DataValidatorFactoryImp implements DataValidatorFactory {
 
 	private MetadataHolder metadataHolder;
+	private Map<String, DataGroup> recordTypeHolder;
 
-	public DataValidatorFactoryImp(MetadataHolder metadataHolder) {
+	public DataValidatorFactoryImp(Map<String, DataGroup> recordTypeHolder,
+			MetadataHolder metadataHolder) {
+		this.recordTypeHolder = recordTypeHolder;
 		this.metadataHolder = metadataHolder;
 	}
 
@@ -50,7 +56,8 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 					(CollectionVariable) metadataElement);
 		}
 		if (metadataElement instanceof RecordLink) {
-			return new DataRecordLinkValidator(metadataHolder, (RecordLink) metadataElement);
+			return new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+					(RecordLink) metadataElement);
 		}
 		if (metadataElement instanceof ResourceLink) {
 			return new DataResourceLinkValidator(metadataHolder);

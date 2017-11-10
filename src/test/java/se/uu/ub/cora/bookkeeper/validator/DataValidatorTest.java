@@ -19,21 +19,22 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
 /**
- * ValidateDataTest tests that the ValidateData class correctly validates data
- * based on the metadataFormat
+ * ValidateDataTest tests that the ValidateData class correctly validates data based on the
+ * metadataFormat
  * 
  * @author olov
  * 
@@ -83,5 +84,21 @@ public class DataValidatorTest {
 		dataGroup.addChild(child2);
 		assertTrue(dataValidator.validateData("group", dataGroup).dataIsValid(),
 				"The group should be validate to true");
+	}
+
+	@Test
+	public void testValidateRecordLink() {
+
+		DataGroup dataGroup = DataGroup.withNameInData("bush");
+		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
+		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"linkedRecordType1");
+		dataTestLink.addChild(linkedRecordType);
+
+		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
+		dataTestLink.addChild(linkedRecordId);
+		dataGroup.addChild(dataTestLink);
+		ValidationAnswer validationAnswer = dataValidator.validateData("bush", dataGroup);
+		assertTrue(validationAnswer.dataIsValid(), "The group should be validate to true");
 	}
 }

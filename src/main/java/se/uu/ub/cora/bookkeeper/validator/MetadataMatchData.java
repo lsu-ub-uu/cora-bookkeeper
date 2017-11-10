@@ -36,7 +36,8 @@ public final class MetadataMatchData {
 	private DataElement dataElement;
 	private ValidationAnswer validationAnswer;
 
-	public static MetadataMatchData withMetadataHolder(MetadataHolder metadataHolder) {
+	public static MetadataMatchData withMetadataHolder(
+			MetadataHolder metadataHolder) {
 		return new MetadataMatchData(metadataHolder);
 	}
 
@@ -99,8 +100,10 @@ public final class MetadataMatchData {
 	}
 
 	private void validateAttribute(String mdAttributeReference, DataAtomic dataElement) {
-		DataElementValidator attributeValidator = new DataValidatorFactoryImp(metadataHolder)
-				.factor(mdAttributeReference);
+		CollectionVariable attributeElement = (CollectionVariable) metadataHolder
+				.getMetadataElement(mdAttributeReference);
+		DataElementValidator attributeValidator = new DataCollectionVariableValidator(
+				metadataHolder, attributeElement);
 		ValidationAnswer aValidationAnswer = attributeValidator.validateData(dataElement);
 		addMessagesFromAnswerToTotalValidationAnswer(aValidationAnswer);
 	}
