@@ -127,22 +127,36 @@ public class DataGroupTermCollectorTest {
 		addChildrenToBook(book);
 
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
+		assertTrue(collectedData.containsChildWithNameInData("permission"));
+
+		DataGroup permissionTerms = collectedData.getFirstGroupWithNameInData("permission");
+		assertEquals(permissionTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
+
+		DataGroup collectedDataTerm = permissionTerms
+				.getAllGroupsWithNameInData("collectedDataTerm").get(0);
+		assertCollectTermHasRepeatIdAndTermValueAndTermId(collectedDataTerm, "0", "Kalle Kula",
+				"namePermissionTerm");
+		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData.getFirstAtomicValueWithNameInData("permissionKey"),
+				"PERMISSIONFORNAME");
 
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
 		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 3);
 
-		DataGroup collectedDataTerm = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
+		DataGroup collectedDataTerm2 = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
 				.get(1);
-		assertEquals(collectedDataTerm.getRepeatId(), "1");
-		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
-				"Kalle Kula");
-		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+		assertCollectTermHasRepeatIdAndTermValueAndTermId(collectedDataTerm2, "1", "Kalle Kula",
 				"nameIndexTerm");
+		DataGroup extraData2 = collectedDataTerm2.getFirstGroupWithNameInData("extraData");
+		assertEquals(extraData2.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
+	}
 
-		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
-
-		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
-
+	private void assertCollectTermHasRepeatIdAndTermValueAndTermId(DataGroup collectedDataTerm,
+			String repeatId, String termValue, String termId) {
+		assertEquals(collectedDataTerm.getRepeatId(), repeatId);
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+				termValue);
+		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"), termId);
 	}
 
 	@Test
@@ -156,6 +170,8 @@ public class DataGroupTermCollectorTest {
 		book.addChild(personRole);
 
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
+
+		assertTrue(collectedData.containsChildWithNameInData("permission"));
 
 		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
 		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 4);

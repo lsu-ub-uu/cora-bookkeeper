@@ -19,7 +19,9 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataElement;
@@ -42,7 +44,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private MetadataHolder metadataHolder;
 	private CollectTermHolder collectTermHolder;
 
-	private List<DataGroup> collectedTerms = new ArrayList<>();
+	private Map<String, List<DataGroup>> collectedTerms = new HashMap<>();
 
 	public DataGroupTermCollectorImp(MetadataStorage metadataStorage) {
 		this.metadataStorage = metadataStorage;
@@ -200,7 +202,14 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		String collectTermType = collectTerm.getAttribute("type");
 		DataGroup collectedTerm = createCollectedDataTerm(childDataElementValue, collectTermId,
 				collectTermType, collectTerm);
-		collectedTerms.add(collectedTerm);
+		ensureTypeHolderExistsInCollectedTerms(collectTermType);
+		collectedTerms.get(collectTermType).add(collectedTerm);
+	}
+
+	private void ensureTypeHolderExistsInCollectedTerms(String collectTermType) {
+		if (!collectedTerms.containsKey(collectTermType)) {
+			collectedTerms.put(collectTermType, new ArrayList<>());
+		}
 	}
 
 	private DataGroup createCollectedDataTerm(String childDataElementValue, String collectTermId,
@@ -239,6 +248,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
 		return new CollectedDataCreator()
-				.createCollectedDataFromCollectedTermsAndDataGroup(collectedTerms, dataGroup);
+				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
 	}
 }

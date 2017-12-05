@@ -19,61 +19,61 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class CollectedDataCreator {
-	private DataGroup collectedData;
 
-	public DataGroup createCollectedDataFromCollectedTermsAndDataGroup(
-			List<DataGroup> collectedTerms, DataGroup dataGroup) {
-		collectedData = DataGroup.withNameInData("collectedData");
-		extractTypeFromDataGroupAndSetInCollectedData(dataGroup);
-		extractIdFromDataGroupAndSetInCollectedData(dataGroup);
-		addCollectedTermsToCollectedData(collectedTerms);
+	public DataGroup createCollectedDataFromCollectedTermsAndRecord(
+			Map<String, List<DataGroup>> collectedTerms, DataGroup record) {
+		DataGroup collectedData = createCollectedDataUsingIdentityFromRecord(record);
+		addCollectedTermsToCollectedData(collectedTerms, collectedData);
 		return collectedData;
 	}
 
-	private void addCollectedTermsToCollectedData(List<DataGroup> collectedTerms) {
-		if (!collectedTerms.isEmpty()) {
-			int repeatId = 0;
-			DataGroup index = DataGroup.withNameInData("index");
-			collectedData.addChild(index);
-			for (DataGroup collectedTerm : collectedTerms) {
-				repeatId = addCollectedIndexTerm(repeatId, index, collectedTerm);
-			}
-		}
+	private DataGroup createCollectedDataUsingIdentityFromRecord(DataGroup record) {
+		String type = extractTypeFromRecord(record);
+		String id = extractIdFromDataRecord(record);
+		return createDataGroupWithTypeAndId(type, id);
 	}
 
-	private int addCollectedIndexTerm(int repeatId, DataGroup index, DataGroup collectedTerm) {
-		int newRepeatId = repeatId;
-		if ("index".equals(collectedTerm.getAttribute("type"))) {
-			collectedTerm.setRepeatId(String.valueOf(repeatId));
-			index.addChild(collectedTerm);
-			newRepeatId++;
-		}
-		return newRepeatId;
-	}
-
-	private void extractTypeFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
-		String type = extractTypeFromDataGroup(dataGroup);
-		collectedData.addChild(DataAtomic.withNameInDataAndValue("type", type));
-	}
-
-	private String extractTypeFromDataGroup(DataGroup dataGroup) {
+	private String extractTypeFromRecord(DataGroup dataGroup) {
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 		DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
 		return typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
-	private void extractIdFromDataGroupAndSetInCollectedData(DataGroup dataGroup) {
-		String id = getCollectTermId(dataGroup);
-		collectedData.addChild(DataAtomic.withNameInDataAndValue("id", id));
-	}
-
-	private String getCollectTermId(DataGroup collectTerm) {
+	private String extractIdFromDataRecord(DataGroup collectTerm) {
 		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
 		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
+
+	private DataGroup createDataGroupWithTypeAndId(String type, String id) {
+		DataGroup collectedData = DataGroup.withNameInData("collectedData");
+		collectedData.addChild(DataAtomic.withNameInDataAndValue("type", type));
+		collectedData.addChild(DataAtomic.withNameInDataAndValue("id", id));
+		return collectedData;
+	}
+
+	private void addCollectedTermsToCollectedData(Map<String, List<DataGroup>> collectedTerms,
+			DataGroup collectedData) {
+		for (Entry<String, List<DataGroup>> entry : collectedTerms.entrySet()) {
+			DataGroup termTypeGroup = DataGroup.withNameInData(entry.getKey());
+			addCollectedTermsToTermTypeGroup(termTypeGroup, entry.getValue());
+			collectedData.addChild(termTypeGroup);
+		}
+	}
+
+	private void addCollectedTermsToTermTypeGroup(DataGroup termTypeGroup, List<DataGroup> list) {
+		int repeatId = 0;
+		for (DataGroup collectedTerm : list) {
+			collectedTerm.setRepeatId(String.valueOf(repeatId));
+			termTypeGroup.addChild(collectedTerm);
+			repeatId++;
+		}
+	}
+
 }
