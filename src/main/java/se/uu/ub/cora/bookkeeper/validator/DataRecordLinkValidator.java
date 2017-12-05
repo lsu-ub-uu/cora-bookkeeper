@@ -103,7 +103,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 			return false;
 		}
 		DataGroup parentId = (DataGroup) recordType.getFirstChildWithNameInData("parentId");
-		String linkedRecordId = parentId.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String linkedRecordId = parentId.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 
 		return linkedRecordId.equals(recordLink.getLinkedRecordType());
 	}
@@ -217,7 +217,7 @@ public class DataRecordLinkValidator implements DataElementValidator {
 
 	private void validateRepeatIdValue() {
 		validateTextVariableValueByMetadataIdAndNameInData("linkedRepeatIdTextVar",
-				"linkedRepeatId");
+				LINKED_REPEAT_ID);
 	}
 
 	private boolean linkedRepeatIdIsMissing() {

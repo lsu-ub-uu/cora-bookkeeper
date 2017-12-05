@@ -87,14 +87,13 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 
 	private void convertRefParentId() {
 		DataGroup refParentGroup = dataGroup.getFirstGroupWithNameInData("refParentId");
-		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		recordLink.setRefParentId(refParentId);
 	}
-
+ 
 	private void convertAttributeReferences() {
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
-			DataGroup attributeReferences = dataGroup
-					.getFirstGroupWithNameInData("attributeReferences");
+			DataGroup attributeReferences = dataGroup	.getFirstGroupWithNameInData("attributeReferences");
 			for (DataGroup attributeReference : attributeReferences.getAllGroupsWithNameInData("ref")) {
 				String refValue = attributeReference.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 				recordLink.addAttributeReference(refValue);
