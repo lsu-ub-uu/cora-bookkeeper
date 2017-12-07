@@ -25,10 +25,10 @@ import java.util.Map.Entry;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public final class CollectedDataCreator {
+final class CollectedDataCreator {
 
-	public DataGroup createCollectedDataFromCollectedTermsAndRecord(
-			Map<String, List<DataGroup>> collectedTerms, DataGroup record) {
+	DataGroup createCollectedDataFromCollectedTermsAndRecord(Map<String, List<DataGroup>> collectedTerms,
+			DataGroup record) {
 		DataGroup collectedData = createCollectedDataUsingIdentityFromRecord(record);
 		addCollectedTermsToCollectedData(collectedTerms, collectedData);
 		return collectedData;
