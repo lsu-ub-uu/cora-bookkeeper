@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,14 +97,10 @@ public final class DataGroup implements DataPart, DataElement, Data {
 	private String possiblyReturnAtomicChildWithNameInData(String childNameInData,
 			Optional<DataAtomic> optionalFirst) {
 		if (optionalFirst.isPresent()) {
-			return getAtomicValueFromOptional(optionalFirst);
+			return optionalFirst.get().getValue();
 		}
 		throw new DataMissingException(
 				"Atomic value not found for childNameInData:" + childNameInData);
-	}
-
-	private String getAtomicValueFromOptional(Optional<DataAtomic> optionalFirst) {
-		return optionalFirst.get().getValue();
 	}
 
 	private Stream<DataAtomic> getAtomicChildrenWithNameInData(String childNameInData) {
@@ -116,14 +113,15 @@ public final class DataGroup implements DataPart, DataElement, Data {
 	}
 
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		Optional<DataGroup> findFirst = getGroupChildrenWithNameInData(childNameInData).findFirst();
+		Optional<DataGroup> findFirst = getGroupChildrenWithNameInDataStream(childNameInData)
+				.findFirst();
 		if (findFirst.isPresent()) {
 			return findFirst.get();
 		}
 		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
 	}
 
-	private Stream<DataGroup> getGroupChildrenWithNameInData(String childNameInData) {
+	private Stream<DataGroup> getGroupChildrenWithNameInDataStream(String childNameInData) {
 		return getGroupChildrenStream().filter(filterByNameInData(childNameInData))
 				.map(DataGroup.class::cast);
 	}
@@ -172,7 +170,7 @@ public final class DataGroup implements DataPart, DataElement, Data {
 	}
 
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
-		return getGroupChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+		return getGroupChildrenWithNameInDataStream(childNameInData).collect(Collectors.toList());
 	}
 
 	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
@@ -183,4 +181,65 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
 				.map(DataAtomic.class::cast);
 	}
+
+	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		return getGroupChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
+				.collect(Collectors.toList());
+	}
+
+	private Stream<DataGroup> getGroupChildrenWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		return getGroupChildrenWithNameInDataStream(childNameInData)
+				.filter(filterByAttributes(childAttributes));
+	}
+
+	private Predicate<DataElement> filterByAttributes(DataAttribute... childAttributes) {
+		return dataElement -> dataElementsHasAttributes(dataElement, childAttributes);
+	}
+
+	private boolean dataElementsHasAttributes(DataElement dataElement,
+			DataAttribute[] childAttributes) {
+		Map<String, String> attributesFromElement = dataElement.getAttributes();
+		if (diffrentNumberOfAttributesInRequestedAndExisting(childAttributes,
+				attributesFromElement)) {
+			return false;
+		}
+		return allRequestedAttributesMatchExistingAttributes(childAttributes,
+				attributesFromElement);
+	}
+
+	private boolean diffrentNumberOfAttributesInRequestedAndExisting(
+			DataAttribute[] childAttributes, Map<String, String> attributesFromElement) {
+		return childAttributes.length != attributesFromElement.size();
+	}
+
+	private boolean allRequestedAttributesMatchExistingAttributes(DataAttribute[] childAttributes,
+			Map<String, String> attributesFromElement) {
+		for (DataAttribute dataAttribute : childAttributes) {
+			if (attributesDoesNotMatch(attributesFromElement, dataAttribute)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean attributesDoesNotMatch(Map<String, String> attributesFromElement,
+			DataAttribute dataAttribute) {
+		return requestedAttributeDoesNotExists(attributesFromElement, dataAttribute)
+				|| requestedAttributeHasDifferentValueAsExisting(attributesFromElement,
+						dataAttribute);
+	}
+
+	private boolean requestedAttributeDoesNotExists(Map<String, String> attributesFromElement,
+			DataAttribute dataAttribute) {
+		return !attributesFromElement.containsKey(dataAttribute.getNameInData());
+	}
+
+	private boolean requestedAttributeHasDifferentValueAsExisting(
+			Map<String, String> attributesFromElement, DataAttribute dataAttribute) {
+		return !attributesFromElement.get(dataAttribute.getNameInData())
+				.equals(dataAttribute.getValue());
+	}
+
 }

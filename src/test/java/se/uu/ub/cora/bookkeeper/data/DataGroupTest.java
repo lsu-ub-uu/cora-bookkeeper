@@ -195,13 +195,13 @@ public class DataGroupTest {
 		DataGroup child = addAndReturnDataGroupChildWithNameInData("groupId2");
 		addAndReturnDataGroupChildWithNameInData("groupId3");
 		DataGroup child2 = addAndReturnDataGroupChildWithNameInData("groupId2");
-		addAndReturnDataAtomicWithNameInData("groupId2");
+		createDataAtomicWithNameInData("groupId2");
 		groupsFound = dataGroup.getAllGroupsWithNameInData("groupId2");
 		assertNumberOfGroupsFoundIs(2);
 		assertGroupsFoundAre(child, child2);
 	}
 
-	private DataAtomic addAndReturnDataAtomicWithNameInData(String nameInData) {
+	private DataAtomic createDataAtomicWithNameInData(String nameInData) {
 		DataAtomic child4 = DataAtomic.withNameInDataAndValue(nameInData, "someValue");
 		return child4;
 	}
@@ -235,4 +235,109 @@ public class DataGroupTest {
 		return book;
 	}
 
+	@Test
+	public void testGetAllGroupsWithNameInDataAndAttributesOneMatch() {
+		DataGroup child3 = createTestGroupForAttributesReturnChildGroupWithAttribute();
+
+		groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+
+		assertNumberOfGroupsFoundIs(1);
+		assertGroupsFoundAre(child3);
+	}
+
+	private DataGroup createTestGroupForAttributesReturnChildGroupWithAttribute() {
+		addAndReturnDataGroupChildWithNameInData("groupId2");
+		addAndReturnDataGroupChildWithNameInData("groupId3");
+		addAndReturnDataGroupChildWithNameInData("groupId2");
+		createDataAtomicWithNameInData("groupId2");
+		DataGroup child3 = addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+		return child3;
+	}
+
+	private DataGroup addAndReturnDataGroupChildWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... attributes) {
+		DataGroup child = DataGroup.withNameInData(nameInData);
+		dataGroup.addChild(child);
+		for (DataAttribute attribute : attributes) {
+			child.addAttributeByIdWithValue(attribute.getNameInData(), attribute.getValue());
+		}
+		return child;
+	}
+
+	@Test
+	public void testGetAllGroupsWithNameInDataAndAttributesTwoMatches() {
+		DataGroup child3 = createTestGroupForAttributesReturnChildGroupWithAttribute();
+		DataGroup child4 = addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+
+		groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+
+		assertNumberOfGroupsFoundIs(2);
+		assertGroupsFoundAre(child3, child4);
+	}
+
+	@Test
+	public void testGetAllGroupsWithNameInDataAndAttributesOneWrongAttributeValueTwoMatches() {
+		DataGroup child3 = createTestGroupForAttributesReturnChildGroupWithAttribute();
+		DataGroup child4 = addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+		addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value2"));
+
+		groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+
+		assertNumberOfGroupsFoundIs(2);
+		assertGroupsFoundAre(child3, child4);
+	}
+
+	@Test
+	public void testGetAllGroupsWithNameInDataAndAttributesOneWrongAttributeNameTwoMatches() {
+		DataGroup child3 = createTestGroupForAttributesReturnChildGroupWithAttribute();
+		DataGroup child4 = addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+		addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData2", "value1"));
+
+		groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"));
+
+		assertNumberOfGroupsFoundIs(2);
+		assertGroupsFoundAre(child3, child4);
+	}
+
+	@Test
+	public void testGetAllGroupsWithNameInDataAndTwoAttributesNoMatches() {
+		createTestGroupForAttributesReturnChildGroupWithAttribute();
+		addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"),
+				DataAttribute.withNameInDataAndValue("nameInData2", "value2"));
+
+		groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"),
+				DataAttribute.withNameInDataAndValue("nameInData2", "value1"));
+
+		assertNumberOfGroupsFoundIs(0);
+	}
+
+	@Test
+	public void testGetAllGroupsWithNameInDataAndTwoAttributesOneMatches() {
+		createTestGroupForAttributesReturnChildGroupWithAttribute();
+		DataGroup child4 = addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"),
+				DataAttribute.withNameInDataAndValue("nameInData2", "value2"));
+		addAndReturnDataGroupChildWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"),
+				DataAttribute.withNameInDataAndValue("nameInData3", "value2"));
+
+		groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes("groupId2",
+				DataAttribute.withNameInDataAndValue("nameInData", "value1"),
+				DataAttribute.withNameInDataAndValue("nameInData2", "value2"));
+
+		assertNumberOfGroupsFoundIs(1);
+		assertGroupsFoundAre(child4);
+	}
 }
