@@ -222,4 +222,35 @@ public class DataGroupToJsonConverterTest {
 		assertEquals(json, expectedJson);
 	}
 
+	@Test
+	public void testToJsonCompactFormatGroupWithAtomicChildAndGroupChildWithAtomicChild() {
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+
+		DataGroup dataGroup2 = DataGroup.withNameInData("groupNameInData2");
+		dataGroup.addChild(dataGroup2);
+
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
+
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForDataElement(factory, dataGroup);
+		String json = dataToJsonConverter.toJsonCompactFormat();
+
+		String expectedJson = "{\"children\":[";
+		expectedJson += "{";
+		expectedJson += "\"name\":\"atomicNameInData\",";
+		expectedJson += "\"value\":\"atomicValue\"";
+		expectedJson += "},";
+		expectedJson += "{";
+		expectedJson += "\"children\":[{";
+		expectedJson += "\"name\":\"atomicNameInData2\",";
+		expectedJson += "\"value\":\"atomicValue2\"";
+		expectedJson += "}],";
+		expectedJson += "\"name\":\"groupNameInData2\"";
+		expectedJson += "}";
+		expectedJson += "],";
+		expectedJson += "\"name\":\"groupNameInData\"";
+		expectedJson += "}";
+
+		assertEquals(json, expectedJson);
+	}
 }

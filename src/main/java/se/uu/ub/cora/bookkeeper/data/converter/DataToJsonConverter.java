@@ -31,4 +31,9 @@ public abstract class DataToJsonConverter {
 
 	abstract JsonObjectBuilder toJsonObjectBuilder();
 
+	public String toJsonCompactFormat() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
+	}
+
 }
