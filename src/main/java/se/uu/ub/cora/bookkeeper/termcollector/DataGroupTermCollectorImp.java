@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -52,6 +52,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	@Override
 	public DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup) {
+		collectedTerms = new HashMap<>();
 		metadataHolder = populateMetadataHolderFromMetadataStorage();
 		populateCollectTermHolderFromMetadataStorage();
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
@@ -77,14 +78,16 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {
-		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataGroupId);
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder
+				.getMetadataElement(metadataGroupId);
 		return metadataGroup.getChildReferences();
 	}
 
 	private void collectTermsFromDataUsingMetadataChildren(
 			List<MetadataChildReference> metadataChildReferences, DataGroup dataGroup) {
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
-			collectDataForMetadataChildIfItHasAtLeastOneCollectTerm(metadataChildReference, dataGroup);
+			collectDataForMetadataChildIfItHasAtLeastOneCollectTerm(metadataChildReference,
+					dataGroup);
 			recurseAndCollectTermsFromChildsGroupChildren(dataGroup, metadataChildReference);
 		}
 	}
@@ -103,7 +106,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		String childMetadataGroupId = childMetadataElement.getId();
 		for (DataElement childDataElement : dataGroup.getChildren()) {
 			if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-				collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childDataElement);
+				collectTermsFromDataUsingMetadata(childMetadataGroupId,
+						(DataGroup) childDataElement);
 			}
 		}
 	}
@@ -127,8 +131,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
 		String referenceId = metadataChildReference.getLinkedRecordId();
 		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
-		collectTermsFromDataGroupChildren(childMetadataElement, metadataChildReference.getCollectTerms(),
-				dataGroup);
+		collectTermsFromDataGroupChildren(childMetadataElement,
+				metadataChildReference.getCollectTerms(), dataGroup);
 	}
 
 	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
@@ -146,8 +150,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		}
 	}
 
-	private void collectTermsFromDataGroupChildMatchingMetadata(MetadataElement childMetadataElement,
-			DataElement childDataElement, List<CollectTerm> collectTerms) {
+	private void collectTermsFromDataGroupChildMatchingMetadata(
+			MetadataElement childMetadataElement, DataElement childDataElement,
+			List<CollectTerm> collectTerms) {
 		if (childMetadataElement instanceof RecordLink) {
 			createCollectTermsForRecordLink(childDataElement, collectTerms);
 		} else {
@@ -158,8 +163,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
 			DataElement dataElement) {
 		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
-		ValidationAnswer validationAnswer = metadataMatchData.metadataSpecifiesData(childMetadataElement,
-				dataElement);
+		ValidationAnswer validationAnswer = metadataMatchData
+				.metadataSpecifiesData(childMetadataElement, dataElement);
 		return validationAnswer.dataIsValid();
 	}
 
@@ -242,7 +247,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
-		return new CollectedDataCreator().createCollectedDataFromCollectedTermsAndRecord(collectedTerms,
-				dataGroup);
+		return new CollectedDataCreator()
+				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
 	}
 }
