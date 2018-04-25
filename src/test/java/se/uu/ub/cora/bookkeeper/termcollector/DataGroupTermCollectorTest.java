@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -50,6 +50,24 @@ public class DataGroupTermCollectorTest {
 
 		assertFalse(collectedData.containsChildWithNameInData("index"));
 		assertFalse(collectedData.containsChildWithNameInData("permission"));
+	}
+
+	@Test
+	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
+		DataGroup book = createBookWithNoTitle();
+		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+
+		DataGroup collectedData = collector.collectTerms("bookGroup", book);
+		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
+
+		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
+		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
+
+		DataGroup collectedData2 = collector.collectTerms("bookGroup", book);
+		assertEquals(collectedData2.getAllGroupsWithNameInData("index").size(), 1);
+
+		DataGroup indexTerms2 = collectedData2.getFirstGroupWithNameInData("index");
+		assertEquals(indexTerms2.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
 	}
 
 	@Test
@@ -122,7 +140,7 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testCollectIndexTermsWithTitleAndPersonName() {
+	public void testCollectPermissionAndIndexTermsWithTitleAndPersonName() {
 		DataGroup book = createBookWithNoTitle();
 		addChildrenToBook(book);
 
