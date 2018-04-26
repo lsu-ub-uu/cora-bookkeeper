@@ -53,8 +53,10 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	@Override
 	public DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup) {
 		collectedTerms = new HashMap<>();
-		metadataHolder = populateMetadataHolderFromMetadataStorage();
-		populateCollectTermHolderFromMetadataStorage();
+		if (metadataHolder == null) {
+			metadataHolder = populateMetadataHolderFromMetadataStorage();
+			populateCollectTermHolderFromMetadataStorage();
+		}
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
 		return createCollectedData(dataGroup);
 	}
