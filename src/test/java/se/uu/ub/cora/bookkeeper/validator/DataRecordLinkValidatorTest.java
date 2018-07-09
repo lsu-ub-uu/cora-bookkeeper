@@ -37,6 +37,7 @@ import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataGroupConverter;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataRecordLinkValidatorTest {
@@ -157,11 +158,6 @@ public class DataRecordLinkValidatorTest {
 		recordTypeHolder.put("image", image);
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-		//
-		// MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
-		// "recordType", "imageText", "imageDefText");
-		// image.setRefParentId("binary");
-		// metadataHolder.addMetadataElement(image);
 
 		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
 				myBinaryLink);
@@ -185,10 +181,6 @@ public class DataRecordLinkValidatorTest {
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
 
-		// MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
-		// "recordType", "imageText", "imageDefText");
-		// image.setRefParentId("NOTBinary");
-		// metadataHolder.addMetadataElement(image);
 
 		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
 				myBinaryLink);
@@ -204,17 +196,9 @@ public class DataRecordLinkValidatorTest {
 	@Test
 	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeNoParent() {
 		DataGroup image = DataGroup.withNameInData("image");
-		// DataGroup parentId = DataGroup.withNameInData("parentId");
-		// image.addChild(parentId);
-		// parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		// parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "NOTbinary"));
 		recordTypeHolder.put("image", image);
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-
-		// MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
-		// "recordType", "imageText", "imageDefText");
-		// metadataHolder.addMetadataElement(image);
 
 		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
 				myBinaryLink);
@@ -227,32 +211,6 @@ public class DataRecordLinkValidatorTest {
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
-	// @Test
-	// public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeNoParentId() {
-	// DataGroup image = DataGroup.withNameInData("image");
-	// DataGroup parentId = DataGroup.withNameInData("parentId");
-	// image.addChild(parentId);
-	// parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-	// // parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "NOTbinary"));
-	// recordTypeHolder.put("image", image);
-	//
-	// RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-	//
-	// // MetadataGroup image = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("image",
-	// // "recordType", "imageText", "imageDefText");
-	// // metadataHolder.addMetadataElement(image);
-	//
-	// dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-	// myBinaryLink);
-	//
-	// DataGroup dataRecordLink = DataCreator
-	// .createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
-	// "image001");
-	// ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-	// assertEquals(validationAnswer.getErrorMessages().size(), 1);
-	// assertTrue(validationAnswer.dataIsInvalid());
-	// }
-
 	private RecordLink createAndAddBinaryToMetadataHolder(MetadataHolder abstractMetadataHolder) {
 		RecordLink myBinaryLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id", "binary",
@@ -260,6 +218,37 @@ public class DataRecordLinkValidatorTest {
 		abstractMetadataHolder.addMetadataElement(myBinaryLink);
 		return myBinaryLink;
 	}
+
+	@Test
+	public void testValidateRecordTypeIsGrandChildOfAbstractMetadataRecordType() {
+		DataGroup image = DataGroup.withNameInData("image");
+		DataGroup parentId = DataGroup.withNameInData("parentId");
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "binary"));
+		image.addChild(parentId);
+		recordTypeHolder.put("image", image);
+
+		DataGroup stillImage =  DataGroup.withNameInData("stillImage");
+		DataGroup stillImageParent = DataGroup.withNameInData("parentId");
+		stillImageParent.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		stillImageParent.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "image"));
+		stillImage.addChild(stillImageParent);
+		recordTypeHolder.put("stillImage", stillImage);
+
+
+		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
+
+		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+				myBinaryLink);
+
+		DataGroup dataRecordLink = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "stillImage",
+						"stillImage001");
+		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+		assertEquals(validationAnswer.getErrorMessages().size(), 0);
+		assertTrue(validationAnswer.dataIsValid());
+	}
+
 
 	@Test
 	public void testValidateEmptyNameInData() {

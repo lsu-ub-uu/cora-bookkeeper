@@ -102,10 +102,26 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		if (recordTypeHasNoParent(recordType)) {
 			return false;
 		}
-		DataGroup parentId = (DataGroup) recordType.getFirstChildWithNameInData("parentId");
-		String linkedRecordId = parentId.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 
-		return linkedRecordId.equals(recordLink.getLinkedRecordType());
+		//TODO: kolla om recordtypen är barn till den som är specad i metadata
+		//dvs om recordLink.getLinkerRecordType är parent till linkedRecordType
+		DataGroup parentGroup = (DataGroup) recordType.getFirstChildWithNameInData("parentId");
+		String parentId = parentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+
+		boolean isParent = parentId.equals(recordLink.getLinkedRecordType());
+		if(isParent){
+		   return true;
+		}else{
+			DataGroup recordType2 = recordTypeHolder.get(parentId);
+			if (recordTypeHasNoParent(recordType2)) {
+				return false;
+			}
+			DataGroup parentGroup2 = (DataGroup) recordType2.getFirstChildWithNameInData("parentId");
+			String parentId2 = parentGroup2.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+			return parentId2.equals(recordLink.getLinkedRecordType());
+		}
+
+//		return isParent;
 	}
 
 	private boolean recordTypeDoesNotExist(String linkedRecordType) {
