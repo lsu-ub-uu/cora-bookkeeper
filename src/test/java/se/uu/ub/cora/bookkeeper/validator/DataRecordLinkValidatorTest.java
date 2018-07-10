@@ -172,11 +172,12 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeOtherParentId() {
+		String incorrectParentId = "NOTBinary";
 		DataGroup image = DataGroup.withNameInData("image");
 		DataGroup parentId = DataGroup.withNameInData("parentId");
 		image.addChild(parentId);
 		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "NOTbinary"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", incorrectParentId));
 		recordTypeHolder.put("image", image);
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
@@ -248,7 +249,6 @@ public class DataRecordLinkValidatorTest {
 		assertEquals(validationAnswer.getErrorMessages().size(), 0);
 		assertTrue(validationAnswer.dataIsValid());
 	}
-
 
 	@Test
 	public void testValidateEmptyNameInData() {
