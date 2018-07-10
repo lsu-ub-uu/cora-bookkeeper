@@ -115,19 +115,16 @@ public class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private boolean recordTypeExistsAndHasParent(String linkedRecordType) {
-		if (recordTypeDoesNotExist(linkedRecordType) || recordTypeHasNoParent(linkedRecordType)) {
-			return false;
-		}
-		return true;
+		return recordTypeExist(linkedRecordType) && recordTypeHasParent(linkedRecordType);
 	}
 
-	private boolean recordTypeDoesNotExist(String linkedRecordType) {
-		return !recordTypeHolder.containsKey(linkedRecordType);
+	private boolean recordTypeExist(String linkedRecordType) {
+		return recordTypeHolder.containsKey(linkedRecordType);
 	}
 
-	private boolean recordTypeHasNoParent(String linkedRecordType) {
+	private boolean recordTypeHasParent(String linkedRecordType) {
 		DataGroup recordType = recordTypeHolder.get(linkedRecordType);
-		return !recordType.containsChildWithNameInData("parentId");
+		return recordType.containsChildWithNameInData("parentId");
 	}
 
 	private String extractParentId(DataGroup recordType) {
