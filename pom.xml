@@ -1,4 +1,4 @@
-<!-- ~ Copyright 2015 Uppsala University Library ~ ~ This file is part of 
+<!-- ~ Copyright 2015, 2018 Uppsala University Library ~ ~ This file is part of 
 	Cora. ~ ~ Cora is free software: you can redistribute it and/or modify ~ 
 	it under the terms of the GNU General Public License as published by ~ the 
 	Free Software Foundation, either version 3 of the License, or ~ (at your 
@@ -20,37 +20,20 @@
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
-	<version>0.11-SNAPSHOT</version>
+	<version>0.12-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Bookkeeper</name>
 
 	<properties>
-		<java.release.version>10</java.release.version>
-		
-		<json.version>0.3-SNAPSHOT</json.version>
+		<json.version>0.4-SNAPSHOT</json.version>
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</connection>
-		<developerConnection>scm:git:https://git.epc.ub.uu.se/epc/metadataformat.git</developerConnection>
-		<url>https://git.epc.ub.uu.se/epc/metadataformat.git</url>
+		<connection>scm:git:https://github.com/lsu-ub-uu/metadataformat.git</connection>
+		<developerConnection>scm:git:https://github.com/lsu-ub-uu/metadataformat.git</developerConnection>
+		<url>https://github.com/lsu-ub-uu/metadataformat.git</url>
 	</scm>
-
-	<repositories>
-		<repository>
-			<id>maven-public</id>
-			<name>LSU Nexus Repository</name>
-			<url>http://epc.ub.uu.se/nexus/repository/maven-public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<updatePolicy>daily</updatePolicy>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -66,15 +49,4 @@
 		</dependency>
 	</dependencies>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<release>${java.release.version}</release>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
