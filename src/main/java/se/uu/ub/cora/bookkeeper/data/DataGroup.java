@@ -94,6 +94,15 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		return possiblyReturnAtomicChildWithNameInData(childNameInData, optionalFirst);
 	}
 
+	public String getFirstAtomicValueWithNameInDataOrDefault(String childNameInData, String defaultValue) {
+		Optional<DataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
+				.findFirst();
+		if(optionalFirst.isPresent()) {
+			return optionalFirst.get().getValue();
+		}
+		return defaultValue;
+	}
+
 	private String possiblyReturnAtomicChildWithNameInData(String childNameInData,
 			Optional<DataAtomic> optionalFirst) {
 		if (optionalFirst.isPresent()) {

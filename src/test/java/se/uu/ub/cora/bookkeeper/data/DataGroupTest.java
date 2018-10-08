@@ -340,4 +340,20 @@ public class DataGroupTest {
 		assertNumberOfGroupsFoundIs(1);
 		assertGroupsFoundAre(child4);
 	}
+
+	@Test
+	public void testDefaultOnGetFirstAtomicValueWithNameInDataOrDefault() {
+		String expected = "some default value";
+		String actual = dataGroup.getFirstAtomicValueWithNameInDataOrDefault("missing child", expected);
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testActualOnGetFirstAtomicValueWithNameInDataOrDefault() {
+		String expected = "some child value";
+		DataAtomic child = DataAtomic.withNameInDataAndValue("someChild", expected);
+		dataGroup.addChild(child);
+		String actual = dataGroup.getFirstAtomicValueWithNameInDataOrDefault("someChild", "some default value");
+		assertEquals(actual, expected);
+	}
 }
