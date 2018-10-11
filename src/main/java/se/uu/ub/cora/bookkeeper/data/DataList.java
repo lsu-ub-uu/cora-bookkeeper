@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,7 +24,7 @@ import java.util.List;
 
 public final class DataList {
 	private String containDataOfType;
-	private List<Data> dataList = new ArrayList<>();
+	private List<Data> list = new ArrayList<>();
 	private String totalNo;
 	private String fromNo;
 	private String toNo;
@@ -42,11 +42,11 @@ public final class DataList {
 	}
 
 	public void addData(Data data) {
-		dataList.add(data);
+		list.add(data);
 	}
 
 	public List<Data> getDataList() {
-		return dataList;
+		return list;
 	}
 
 	public void setTotalNo(String totalNo) {
