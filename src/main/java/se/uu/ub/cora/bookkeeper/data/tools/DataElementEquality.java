@@ -14,16 +14,6 @@ public class DataElementEquality {
 	private DataElementEquality() {
 	}
 
-	@SuppressWarnings("unused")
-	public static boolean isEqual(DataGroup ignoredDataGroup, DataAtomic ignoredDataAtomic) {
-		return false;
-	}
-
-	@SuppressWarnings("unused")
-	public static boolean isEqual(DataAtomic ignoredDataAtomic, DataGroup ignoredDataGroup) {
-		return false;
-	}
-
 	public static boolean isEqual(DataAtomic left, DataAtomic right) {
 		return bothAreNull(left, right) || theyHaveEqualDataElementAndEqualValues(left, right);
 	}
@@ -73,11 +63,11 @@ public class DataElementEquality {
 	private static boolean theyHaveEqualAttributes(DataElement left, DataElement right) {
 		var leftAttributes = left.getAttributes();
 		var rightAttributes = right.getAttributes();
-		return bothAreEmpty(leftAttributes, rightAttributes)
+		return bothAttributeMapsAreEmpty(leftAttributes, rightAttributes)
 				|| neitherIsEmptyAndTheyHaveIdenticalAttributes(leftAttributes, rightAttributes);
 	}
 
-	private static boolean bothAreEmpty(Map left, Map right) {
+	private static boolean bothAttributeMapsAreEmpty(Map left, Map right) {
 		return left.isEmpty() && right.isEmpty();
 	}
 
