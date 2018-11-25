@@ -10,8 +10,14 @@ public class StandardMetadataParameters {
 	private StandardMetadataParameters(String id, String nameInData, TextContainer textContainer) {
 		this.id = id;
 		this.nameInData = nameInData;
-		textId = textContainer.textId;
-		defTextId = textContainer.defTextId;
+		possiblySetTexts(textContainer);
+	}
+
+	private void possiblySetTexts(TextContainer textContainer) {
+		if (textContainer != null) {
+			textId = textContainer.textId;
+			defTextId = textContainer.defTextId;
+		}
 	}
 
 	public static StandardMetadataParameters usingIdNameInDataAndTextContainer(String id,

@@ -10,18 +10,19 @@ public class NumberVariableTest {
 	private LimitsContainer limits;
 	private LimitsContainer warnLimits;
 	private int numOfDecimals;
+	private StandardMetadataParameters standardParameters;
 
 	@BeforeMethod
 	public void setup() {
 		TextContainer texts = TextContainer.usingTextIdAndDefTextId("someText", "someDefText");
-		StandardMetadataParameters standardParameters = StandardMetadataParameters
-				.usingIdNameInDataAndTextContainer("someId", "metadata", texts);
+		standardParameters = StandardMetadataParameters.usingIdNameInDataAndTextContainer("someId",
+				"metadata", texts);
 
 		limits = new LimitsContainer(0, 100.4);
 		warnLimits = new LimitsContainer(2, 100);
 		numOfDecimals = 2;
-		number = NumberVariable.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParameters, limits,
-				warnLimits, numOfDecimals);
+		number = NumberVariable.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(
+				standardParameters, limits, warnLimits, numOfDecimals);
 	}
 
 	@Test
@@ -53,5 +54,4 @@ public class NumberVariableTest {
 	public void testNumOfDecimals() {
 		assertEquals(number.getNumOfDecmials(), numOfDecimals);
 	}
-
 }
