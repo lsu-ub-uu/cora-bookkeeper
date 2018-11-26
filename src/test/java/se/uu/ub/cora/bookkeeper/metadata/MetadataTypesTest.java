@@ -30,6 +30,7 @@ public class MetadataTypesTest {
 		MetadataTypes.valueOf(MetadataTypes.GROUP.toString());
 		assertEquals(MetadataTypes.GROUP.type, "metadataGroup");
 		assertEquals(MetadataTypes.TEXTVARIABLE.type, "metadataTextVariable");
+		assertEquals(MetadataTypes.NUMBERVARIABLE.type, "metadataNumberVariable");
 		assertEquals(MetadataTypes.COLLECTIONVARIABLE.type, "metadataCollectionVariable");
 		assertEquals(MetadataTypes.ITEMCOLLECTION.type, "metadataItemCollection");
 		assertEquals(MetadataTypes.COLLECTIONITEM.type, "metadataCollectionItem");
