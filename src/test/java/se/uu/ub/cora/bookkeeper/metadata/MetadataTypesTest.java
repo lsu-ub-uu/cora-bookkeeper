@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -30,6 +30,7 @@ public class MetadataTypesTest {
 		MetadataTypes.valueOf(MetadataTypes.GROUP.toString());
 		assertEquals(MetadataTypes.GROUP.type, "metadataGroup");
 		assertEquals(MetadataTypes.TEXTVARIABLE.type, "metadataTextVariable");
+		assertEquals(MetadataTypes.NUMBERVARIABLE.type, "metadataNumberVariable");
 		assertEquals(MetadataTypes.COLLECTIONVARIABLE.type, "metadataCollectionVariable");
 		assertEquals(MetadataTypes.ITEMCOLLECTION.type, "metadataItemCollection");
 		assertEquals(MetadataTypes.COLLECTIONITEM.type, "metadataCollectionItem");

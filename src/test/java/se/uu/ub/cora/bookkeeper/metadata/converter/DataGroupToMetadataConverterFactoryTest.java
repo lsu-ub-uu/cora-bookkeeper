@@ -96,6 +96,16 @@ public class DataGroupToMetadataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorNumberVariable() {
+		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		dataGroup.addAttributeByIdWithValue("type", "numberVariable");
+		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
+				.fromDataGroup(dataGroup);
+		DataGroupToMetadataConverter converter = converterFactory.factor();
+		assertTrue(converter instanceof DataGroupToNumberVariableConverter);
+	}
+
+	@Test
 	public void testFactorRecordLink() {
 		DataGroup dataGroup = DataGroup.withNameInData("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "recordLink");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -58,6 +58,9 @@ public final class DataGroupToMetadataConverterFactoryImp
 		}
 		if ("textVariable".equals(type)) {
 			return DataGroupToTextVariableConverter.fromDataGroup(dataGroup);
+		}
+		if ("numberVariable".equals(type)) {
+			return DataGroupToNumberVariableConverter.fromDataGroup(dataGroup);
 		}
 		if ("recordLink".equals(type)) {
 			return DataGroupToRecordLinkConverter.fromDataGroup(dataGroup);

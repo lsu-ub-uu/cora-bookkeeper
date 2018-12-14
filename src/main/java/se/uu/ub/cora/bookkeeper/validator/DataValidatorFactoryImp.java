@@ -26,6 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
@@ -50,6 +51,9 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 		}
 		if (metadataElement instanceof TextVariable) {
 			return new DataTextVariableValidator((TextVariable) metadataElement);
+		}
+		if (metadataElement instanceof NumberVariable) {
+			return new DataNumberVariableValidator((NumberVariable) metadataElement);
 		}
 		if (metadataElement instanceof CollectionVariable) {
 			return new DataCollectionVariableValidator(metadataHolder,

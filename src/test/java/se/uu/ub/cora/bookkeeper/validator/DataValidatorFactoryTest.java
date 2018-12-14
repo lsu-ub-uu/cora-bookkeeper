@@ -30,10 +30,14 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
+import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
+import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
+import se.uu.ub.cora.bookkeeper.metadata.TextContainer;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 
 public class DataValidatorFactoryTest {
@@ -72,6 +76,33 @@ public class DataValidatorFactoryTest {
 
 		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("textVariableId");
 		assertTrue(dataGroupValidator instanceof DataTextVariableValidator);
+	}
+
+	@Test
+	public void testFactorDataValidatorMetadataNumberVariable() {
+		NumberVariable numberVariable = createNumberVariable();
+
+		metadataHolder.addMetadataElement(numberVariable);
+
+		DataElementValidator dataGroupValidator = dataValidatorFactory
+				.factor("someNumberVariableId");
+		assertTrue(dataGroupValidator instanceof DataNumberVariableValidator);
+	}
+
+	private NumberVariable createNumberVariable() {
+		TextContainer textContainer = TextContainer.usingTextIdAndDefTextId("someText",
+				"someDefText");
+		StandardMetadataParameters standardParams = StandardMetadataParameters
+				.usingIdNameInDataAndTextContainer("someNumberVariableId", "someNameInData",
+						textContainer);
+
+		LimitsContainer limits = LimitsContainer.usingMinAndMax(1, 10);
+		LimitsContainer warnLimits = LimitsContainer.usingMinAndMax(2, 8);
+
+		NumberVariable numberVariable = NumberVariable
+				.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParams, limits,
+						warnLimits, 0);
+		return numberVariable;
 	}
 
 	@Test

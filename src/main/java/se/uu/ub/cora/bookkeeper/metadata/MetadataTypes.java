@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,8 +21,9 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 public enum MetadataTypes {
 	GROUP("metadataGroup"), TEXTVARIABLE("metadataTextVariable"), COLLECTIONVARIABLE(
-			"metadataCollectionVariable"), ITEMCOLLECTION("metadataItemCollection"), COLLECTIONITEM(
-					"metadataCollectionItem"), RECORDLINK("metadataRecordLink"), RESOURCELINK("metadataResourceLink");
+			"metadataCollectionVariable"), NUMBERVARIABLE("metadataNumberVariable"), ITEMCOLLECTION(
+					"metadataItemCollection"), COLLECTIONITEM("metadataCollectionItem"), RECORDLINK(
+							"metadataRecordLink"), RESOURCELINK("metadataResourceLink");
 
 	public final String type;
 
