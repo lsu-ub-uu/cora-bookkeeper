@@ -67,7 +67,7 @@ public class DataElementEquality {
 				|| neitherIsEmptyAndTheyHaveIdenticalAttributes(leftAttributes, rightAttributes);
 	}
 
-	private static boolean bothAttributeMapsAreEmpty(Map left, Map right) {
+	private static boolean bothAttributeMapsAreEmpty(Map<String, ?> left, Map<String, ?> right) {
 		return left.isEmpty() && right.isEmpty();
 	}
 
@@ -76,7 +76,7 @@ public class DataElementEquality {
 		return neitherIsEmpty(left, right) && theyHaveIdenticalAttributes(left, right);
 	}
 
-	private static boolean neitherIsEmpty(Map left, Map right) {
+	private static boolean neitherIsEmpty(Map<String, ?> left, Map<String, ?> right) {
 		return !left.isEmpty() && !right.isEmpty();
 	}
 
@@ -86,7 +86,7 @@ public class DataElementEquality {
 				&& theyHaveEqualAttributeCollectionsOfSameNonZeroSize(left, right);
 	}
 
-	private static boolean bothAreTheSameSize(Map left, Map right) {
+	private static boolean bothAreTheSameSize(Map<String, ?> left, Map<String, ?> right) {
 		return left.size() == right.size();
 	}
 
@@ -126,7 +126,7 @@ public class DataElementEquality {
 				|| neitherIsEmptyAndBothHaveIdenticalChildren(leftChildren, rightChildren);
 	}
 
-	private static boolean bothAreEmpty(Collection left, Collection right) {
+	private static boolean bothAreEmpty(Collection<?> left, Collection<?> right) {
 		return left.isEmpty() && right.isEmpty();
 	}
 
@@ -135,7 +135,7 @@ public class DataElementEquality {
 		return neitherIsEmpty(left, right) && bothAreSameSizeAndHaveIdenticalChildren(left, right);
 	}
 
-	private static boolean neitherIsEmpty(Collection left, Collection right) {
+	private static boolean neitherIsEmpty(Collection<?> left, Collection<?> right) {
 		return !left.isEmpty() && !right.isEmpty();
 	}
 
@@ -144,14 +144,13 @@ public class DataElementEquality {
 		return bothAreTheSameSize(left, right) && haveIdenticalChildren(left, right);
 	}
 
-	private static boolean bothAreTheSameSize(Collection left, Collection right) {
+	private static boolean bothAreTheSameSize(Collection<?> left, Collection<?> right) {
 		return left.size() == right.size();
 	}
 
 	private static boolean haveIdenticalChildren(List<DataElement> left, List<DataElement> right) {
 		var rightChildIterator = right.iterator();
-		return left.stream()
-			.allMatch(leftChild -> isEqual(rightChildIterator.next(), leftChild));
+		return left.stream().allMatch(leftChild -> isEqual(rightChildIterator.next(), leftChild));
 	}
 
 	public static boolean isEqual(DataElement left, DataElement right) {
