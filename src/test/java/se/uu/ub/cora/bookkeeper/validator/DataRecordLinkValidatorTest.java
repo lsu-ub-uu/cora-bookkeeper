@@ -37,7 +37,6 @@ import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataGroupConverter;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 
 public class DataRecordLinkValidatorTest {
@@ -182,7 +181,6 @@ public class DataRecordLinkValidatorTest {
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
 
-
 		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
 				myBinaryLink);
 
@@ -229,13 +227,13 @@ public class DataRecordLinkValidatorTest {
 		image.addChild(parentId);
 		recordTypeHolder.put("image", image);
 
-		DataGroup stillImage =  DataGroup.withNameInData("stillImage");
+		DataGroup stillImage = DataGroup.withNameInData("stillImage");
 		DataGroup stillImageParent = DataGroup.withNameInData("parentId");
-		stillImageParent.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		stillImageParent
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
 		stillImageParent.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "image"));
 		stillImage.addChild(stillImageParent);
 		recordTypeHolder.put("stillImage", stillImage);
-
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
 

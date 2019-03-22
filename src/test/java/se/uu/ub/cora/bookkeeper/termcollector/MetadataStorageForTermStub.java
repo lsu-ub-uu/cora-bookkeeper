@@ -179,12 +179,6 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		return childRefCollectTerm;
 	}
 
-	private DataGroup createSearchTitleTextVar() {
-		DataGroup searchTitleTextVar = createTextVariableWithIdAndNameInData("searchTitleTextVar",
-				"searchTitle");
-		return searchTitleTextVar;
-	}
-
 	private DataGroup createTextVariableWithIdAndNameInData(String id, String nameInData) {
 		DataGroup textVar = DataGroup.withNameInData("metadata");
 		textVar.addAttributeByIdWithValue("type", "textVariable");
@@ -353,18 +347,6 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		extraData.addChild(DataAtomic.withNameInDataAndValue("permissionKey", permissionName));
 		permissionTerm.addChild(extraData);
 		return permissionTerm;
-	}
-
-	private void addIndexTypes(DataGroup searchTerm) {
-		DataAtomic indexType = createIndexTypeWithTypeStringAndRepeatId("indexTypeString", "0");
-		searchTerm.addChild(indexType);
-
-		DataAtomic indexType2 = createIndexTypeWithTypeStringAndRepeatId("indexTypeBoolean", "1");
-		searchTerm.addChild(indexType2);
-	}
-
-	private DataAtomic createIndexTypeWithTypeStringAndRepeatId(String value, String repeatId) {
-		return DataAtomic.withNameInDataAndValueAndRepeatId("indexType", value, repeatId);
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
