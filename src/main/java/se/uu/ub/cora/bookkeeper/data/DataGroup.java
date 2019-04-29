@@ -94,10 +94,11 @@ public final class DataGroup implements DataPart, DataElement, Data {
 		return possiblyReturnAtomicChildWithNameInData(childNameInData, optionalFirst);
 	}
 
-	public String getFirstAtomicValueWithNameInDataOrDefault(String childNameInData, String defaultValue) {
+	public String getFirstAtomicValueWithNameInDataOrDefault(String childNameInData,
+			String defaultValue) {
 		Optional<DataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
 				.findFirst();
-		if(optionalFirst.isPresent()) {
+		if (optionalFirst.isPresent()) {
 			return optionalFirst.get().getValue();
 		}
 		return defaultValue;
@@ -249,6 +250,14 @@ public final class DataGroup implements DataPart, DataElement, Data {
 			Map<String, String> attributesFromElement, DataAttribute dataAttribute) {
 		return !attributesFromElement.get(dataAttribute.getNameInData())
 				.equals(dataAttribute.getValue());
+	}
+
+	public static DataGroup asLinkWithNameInDataTypeAndId(String nameInData, String type,
+			String id) {
+		DataGroup dataGroup = new DataGroup(nameInData);
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", type));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", id));
+		return dataGroup;
 	}
 
 }
