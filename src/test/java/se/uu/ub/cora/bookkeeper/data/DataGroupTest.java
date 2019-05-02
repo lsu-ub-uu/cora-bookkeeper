@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -344,7 +344,8 @@ public class DataGroupTest {
 	@Test
 	public void testDefaultOnGetFirstAtomicValueWithNameInDataOrDefault() {
 		String expected = "some default value";
-		String actual = dataGroup.getFirstAtomicValueWithNameInDataOrDefault("missing child", expected);
+		String actual = dataGroup.getFirstAtomicValueWithNameInDataOrDefault("missing child",
+				expected);
 		assertEquals(actual, expected);
 	}
 
@@ -353,7 +354,16 @@ public class DataGroupTest {
 		String expected = "some child value";
 		DataAtomic child = DataAtomic.withNameInDataAndValue("someChild", expected);
 		dataGroup.addChild(child);
-		String actual = dataGroup.getFirstAtomicValueWithNameInDataOrDefault("someChild", "some default value");
+		String actual = dataGroup.getFirstAtomicValueWithNameInDataOrDefault("someChild",
+				"some default value");
 		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testGroupAsLink() {
+		dataGroup = DataGroup.asLinkWithNameInDataAndTypeAndId("nameInData", "someType", "someId");
+		assertEquals(dataGroup.getNameInData(), "nameInData");
+		assertEquals(dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType"), "someType");
+		assertEquals(dataGroup.getFirstAtomicValueWithNameInData("linkedRecordId"), "someId");
 	}
 }
