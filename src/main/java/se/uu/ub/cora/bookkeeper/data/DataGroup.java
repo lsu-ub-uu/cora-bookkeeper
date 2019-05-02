@@ -252,7 +252,7 @@ public final class DataGroup implements DataPart, DataElement, Data {
 				.equals(dataAttribute.getValue());
 	}
 
-	public static DataGroup asLinkWithNameInDataTypeAndId(String nameInData, String type,
+	public static DataGroup asLinkWithNameInDataAndTypeAndId(String nameInData, String type,
 			String id) {
 		DataGroup dataGroup = new DataGroup(nameInData);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", type));

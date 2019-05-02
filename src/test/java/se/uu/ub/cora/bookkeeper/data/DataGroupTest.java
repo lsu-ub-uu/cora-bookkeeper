@@ -361,7 +361,7 @@ public class DataGroupTest {
 
 	@Test
 	public void testGroupAsLink() {
-		dataGroup = DataGroup.asLinkWithNameInDataTypeAndId("nameInData", "someType", "someId");
+		dataGroup = DataGroup.asLinkWithNameInDataAndTypeAndId("nameInData", "someType", "someId");
 		assertEquals(dataGroup.getNameInData(), "nameInData");
 		assertEquals(dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType"), "someType");
 		assertEquals(dataGroup.getFirstAtomicValueWithNameInData("linkedRecordId"), "someId");
