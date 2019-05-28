@@ -25,6 +25,7 @@
 
 	<properties>
 		<json.version>1.0.0</json.version>
+		<coradata.version>0.1-SNAPSHOT</coradata.version>
 	</properties>
 
 	<scm>
@@ -45,6 +46,11 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>coradata</artifactId>
+			<version>${coradata.version}</version>
 		</dependency>
 	</dependencies>
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataElement;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataElement;
 
 public final class MetadataMatchData {
 
@@ -36,8 +36,7 @@ public final class MetadataMatchData {
 	private DataElement dataElement;
 	private ValidationAnswer validationAnswer;
 
-	public static MetadataMatchData withMetadataHolder(
-			MetadataHolder metadataHolder) {
+	public static MetadataMatchData withMetadataHolder(MetadataHolder metadataHolder) {
 		return new MetadataMatchData(metadataHolder);
 	}
 

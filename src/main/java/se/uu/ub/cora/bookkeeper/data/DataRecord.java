@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,6 +21,8 @@ package se.uu.ub.cora.bookkeeper.data;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import se.uu.ub.cora.data.DataGroup;
 
 public final class DataRecord implements Data {
 	Set<String> keys = new LinkedHashSet<>();
