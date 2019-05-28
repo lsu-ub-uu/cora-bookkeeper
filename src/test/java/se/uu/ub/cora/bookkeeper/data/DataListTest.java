@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,6 +24,9 @@ import static org.testng.Assert.assertEquals;
 import java.util.List;
 
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataListTest {
 	@Test

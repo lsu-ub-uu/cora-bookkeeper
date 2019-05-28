@@ -22,6 +22,8 @@ package se.uu.ub.cora.bookkeeper.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.data.Data;
+
 public final class DataList {
 	private String containDataOfType;
 	private List<Data> list = new ArrayList<>();

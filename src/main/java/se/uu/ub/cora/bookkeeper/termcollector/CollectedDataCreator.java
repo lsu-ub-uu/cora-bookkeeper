@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 final class CollectedDataCreator {
 
-	DataGroup createCollectedDataFromCollectedTermsAndRecord(Map<String, List<DataGroup>> collectedTerms,
-			DataGroup record) {
+	DataGroup createCollectedDataFromCollectedTermsAndRecord(
+			Map<String, List<DataGroup>> collectedTerms, DataGroup record) {
 		DataGroup collectedData = createCollectedDataUsingIdentityFromRecord(record);
 		addCollectedTermsToCollectedData(collectedTerms, collectedData);
 		return collectedData;

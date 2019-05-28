@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.data.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataRecord;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
@@ -30,8 +30,8 @@ public final class DataRecordToJsonConverter {
 	private DataRecord dataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
 
-	public static DataRecordToJsonConverter usingJsonFactoryForDataRecord(JsonBuilderFactory jsonFactory,
-			DataRecord dataRecord) {
+	public static DataRecordToJsonConverter usingJsonFactoryForDataRecord(
+			JsonBuilderFactory jsonFactory, DataRecord dataRecord) {
 		return new DataRecordToJsonConverter(jsonFactory, dataRecord);
 	}
 
@@ -53,8 +53,8 @@ public final class DataRecordToJsonConverter {
 
 	private void convertMainDataGroup() {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForDataElement(jsonBuilderFactory,
-				dataRecord.getDataGroup());
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForDataElement(jsonBuilderFactory, dataRecord.getDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
 	}

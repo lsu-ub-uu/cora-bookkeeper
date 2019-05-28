@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -27,6 +27,9 @@ import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataRecordTest {
 	private DataRecord dataRecord;

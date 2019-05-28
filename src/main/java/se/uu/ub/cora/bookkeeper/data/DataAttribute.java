@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
+import se.uu.ub.cora.data.DataPart;
+
 public final class DataAttribute implements DataPart {
 
 	private String nameInData;

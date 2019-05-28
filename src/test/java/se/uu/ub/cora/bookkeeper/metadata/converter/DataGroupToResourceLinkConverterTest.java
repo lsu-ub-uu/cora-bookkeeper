@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -25,9 +25,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToResourceLinkConverterTest {
 	@BeforeMethod
@@ -69,9 +69,11 @@ public class DataGroupToResourceLinkConverterTest {
 		return dataGroup;
 	}
 
-	private DataGroup addTextWithNameInDataAndId(DataGroup dataGroup, String textIdNameInData, String textId) {
+	private DataGroup addTextWithNameInDataAndId(DataGroup dataGroup, String textIdNameInData,
+			String textId) {
 		DataGroup textIdGroup = DataGroup.withNameInData(textIdNameInData);
-		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
+		textIdGroup
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
 		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
 		dataGroup.addChild(textIdGroup);
 		return textIdGroup;

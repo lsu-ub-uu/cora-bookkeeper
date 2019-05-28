@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.data;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 
 public final class DataRecord implements Data {

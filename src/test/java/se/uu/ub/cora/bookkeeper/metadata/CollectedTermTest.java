@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,14 +22,15 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CollectedTermTest {
 	@Test
 	public void testCollectedTerm() {
 		DataGroup extraData = DataGroup.withNameInData("extraData");
-		CollectedTerm collectedTerm = CollectedTerm.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData(
-				"someType", "someId", "someNameInData", extraData);
+		CollectedTerm collectedTerm = CollectedTerm
+				.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData("someType", "someId",
+						"someNameInData", extraData);
 		assertEquals(collectedTerm.type, "someType");
 		assertEquals(collectedTerm.id, "someId");
 		assertEquals(collectedTerm.nameInData, "someNameInData");

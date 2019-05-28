@@ -1,13 +1,13 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRecordLinkCollectorMetadataCreator {
 	private MetadataHolder metadataHolder = new MetadataHolder();
@@ -31,14 +31,17 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 						id + "Link", id + "LinkTextId", id + "LinkDefTextId", "linkedRecordType");
 		metadataHolder.addMetadataElement(recordLink);
 
-		addChildReferenceParentIdChildRecordTypeIdMinMax(id + "Group", "metadataGroup", id + "Link", 1, 15);
+		addChildReferenceParentIdChildRecordTypeIdMinMax(id + "Group", "metadataGroup", id + "Link",
+				1, 15);
 	}
 
-	void addChildReferenceParentIdChildRecordTypeIdMinMax(String from, String linkedRecordType, String to, int min, int max) {
+	void addChildReferenceParentIdChildRecordTypeIdMinMax(String from, String linkedRecordType,
+			String to, int min, int max) {
 		MetadataGroup topGroup = (MetadataGroup) metadataHolder.getMetadataElement(from);
 
-		MetadataChildReference reference = MetadataChildReference.
-				withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, to, min, max);
+		MetadataChildReference reference = MetadataChildReference
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType, to,
+						min, max);
 		topGroup.addChildReference(reference);
 	}
 
@@ -52,14 +55,16 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 		metadataHolder.addMetadataElement(textVar);
 
 		MetadataChildReference textVarReference = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataTextVariable", "textVar", 1, 15);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(
+						"metadataTextVariable", "textVar", 1, 15);
 		group.addChildReference(textVarReference);
 
 		MetadataGroup subGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("subGroup",
 				"subGroup", "subGroupTextId", "subGroupDefTextId");
 		metadataHolder.addMetadataElement(subGroup);
 		MetadataChildReference subGroupReference = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "subGroup", 1, 15);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
+						"subGroup", 1, 15);
 		group.addChildReference(subGroupReference);
 	}
 
@@ -76,15 +81,18 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 	void addMetadataForOneGroupInGroupWithOneLink() {
 		addMetadataForOneGroupWithNoLink("top");
 		addMetadataForOneGroupWithOneLink("test");
-		addChildReferenceParentIdChildRecordTypeIdMinMax("topGroup", "metadataGroup", "testGroup", 1, 1);
+		addChildReferenceParentIdChildRecordTypeIdMinMax("topGroup", "metadataGroup", "testGroup",
+				1, 1);
 	}
 
 	void addMetadataForOneGroupInGroupInGroupWithOneLink() {
 		addMetadataForOneGroupWithNoLink("top");
 		addMetadataForOneGroupWithOneLink("test");
-		addChildReferenceParentIdChildRecordTypeIdMinMax("topGroup", "metadataGroup", "testGroup", 1, 1);
+		addChildReferenceParentIdChildRecordTypeIdMinMax("topGroup", "metadataGroup", "testGroup",
+				1, 1);
 		addMetadataForOneGroupWithNoLink("topTop");
-		addChildReferenceParentIdChildRecordTypeIdMinMax("topTopGroup", "metadataGroup", "topGroup", 1, 2);
+		addChildReferenceParentIdChildRecordTypeIdMinMax("topTopGroup", "metadataGroup", "topGroup",
+				1, 2);
 
 		CollectionVariable collectionVariable = new CollectionVariable("attribute1", "attribute1",
 				"textId", "defTextId", "itemCollectionId");

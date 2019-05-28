@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,7 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataAttribute;
-import se.uu.ub.cora.bookkeeper.data.DataPart;
+import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
@@ -49,7 +49,8 @@ public class JsonToDataAttributeConverterTest {
 
 	private DataAttribute createDataAttributeForJsonString(String json) {
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter.forJsonObject((JsonObject) jsonValue);
+		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter
+				.forJsonObject((JsonObject) jsonValue);
 		DataPart dataPart = jsonToDataConverter.toInstance();
 		DataAttribute dataAttribute = (DataAttribute) dataPart;
 		return dataAttribute;
@@ -68,7 +69,8 @@ public class JsonToDataAttributeConverterTest {
 		String json = "{\"id\":[]}";
 
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter.forJsonObject((JsonObject) jsonValue);
+		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter
+				.forJsonObject((JsonObject) jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -76,7 +78,8 @@ public class JsonToDataAttributeConverterTest {
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"attributeNameInData\":\"attributeValue\",\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter.forJsonObject((JsonObject) jsonValue);
+		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter
+				.forJsonObject((JsonObject) jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -84,7 +87,8 @@ public class JsonToDataAttributeConverterTest {
 	public void testToClassWrongJsonExtraArray() {
 		String json = "{\"attributeNameInData\":\"attributeValue\",\"id2\":[]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter.forJsonObject((JsonObject) jsonValue);
+		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter
+				.forJsonObject((JsonObject) jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 

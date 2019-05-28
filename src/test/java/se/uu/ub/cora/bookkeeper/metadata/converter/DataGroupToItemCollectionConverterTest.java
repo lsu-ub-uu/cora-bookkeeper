@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,14 +19,15 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.Iterator;
 
 import org.testng.annotations.Test;
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 
-import static org.testng.Assert.assertEquals;
+import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToItemCollectionConverterTest {
 	@Test
@@ -39,23 +40,23 @@ public class DataGroupToItemCollectionConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		
+
 		DataGroup text = DataGroup.withNameInData("textId");
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
-		
+
 		DataGroup defText = DataGroup.withNameInData("defTextId");
 		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
 		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 
 		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
-		
+
 		createAndAddItemReference(collectionItemReferences, "choice1", "one");
 		createAndAddItemReference(collectionItemReferences, "choice2", "two");
 		createAndAddItemReference(collectionItemReferences, "choice3", "three");
-		
+
 		dataGroup.addChild(collectionItemReferences);
 
 		DataGroupToItemCollectionConverter converter = DataGroupToItemCollectionConverter
@@ -73,10 +74,12 @@ public class DataGroupToItemCollectionConverterTest {
 		assertEquals(iterator.next(), "choice3");
 	}
 
-	private void createAndAddItemReference(DataGroup collectionItemReferences, String linkedRecordId, String repeatId) {
+	private void createAndAddItemReference(DataGroup collectionItemReferences,
+			String linkedRecordId, String repeatId) {
 		DataGroup ref1 = DataGroup.withNameInData("ref");
 		ref1.setRepeatId(repeatId);
-		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionItem"));
+		ref1.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionItem"));
 		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
 		collectionItemReferences.addChild(ref1);
 	}

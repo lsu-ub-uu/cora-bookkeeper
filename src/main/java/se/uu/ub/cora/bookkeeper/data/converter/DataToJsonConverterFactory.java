@@ -19,12 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.data.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataPart;
+import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 
 public interface DataToJsonConverterFactory {
 
-	DataToJsonConverter createForDataElement(JsonBuilderFactory factory,
-			DataPart dataPart);
+	DataToJsonConverter createForDataElement(JsonBuilderFactory factory, DataPart dataPart);
 
 }

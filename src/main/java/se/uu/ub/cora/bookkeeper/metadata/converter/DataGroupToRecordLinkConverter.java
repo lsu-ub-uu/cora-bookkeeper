@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToRecordLinkConverter implements DataGroupToMetadataConverter {
 
@@ -93,9 +93,12 @@ public final class DataGroupToRecordLinkConverter implements DataGroupToMetadata
 
 	private void convertAttributeReferences() {
 		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
-			DataGroup attributeReferences = dataGroup.getFirstGroupWithNameInData("attributeReferences");
-			for (DataGroup attributeReference : attributeReferences.getAllGroupsWithNameInData("ref")) {
-				String refValue = attributeReference.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+			DataGroup attributeReferences = dataGroup
+					.getFirstGroupWithNameInData("attributeReferences");
+			for (DataGroup attributeReference : attributeReferences
+					.getAllGroupsWithNameInData("ref")) {
+				String refValue = attributeReference
+						.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 				recordLink.addAttributeReference(refValue);
 			}
 		}

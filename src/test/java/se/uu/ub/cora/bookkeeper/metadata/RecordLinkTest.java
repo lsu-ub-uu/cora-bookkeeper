@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,22 +19,23 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.data.DataGroup;
 
 public class RecordLinkTest {
 	private RecordLink recordLink;
 
 	@BeforeMethod
 	public void setUp() {
-		recordLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
-				"id", "nameInData", "textId", "defTextId", "linkedRecordType");
+		recordLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
+				"nameInData", "textId", "defTextId", "linkedRecordType");
 	}
 
 	@Test
@@ -70,7 +71,7 @@ public class RecordLinkTest {
 		recordLink.setFinalValue("finalValue");
 		assertEquals(recordLink.getFinalValue(), "finalValue");
 	}
-	
+
 	@Test
 	public void testAddAttributeReference() {
 		recordLink.addAttributeReference("attributeReference");

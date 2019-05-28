@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -20,8 +20,8 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToResourceLinkConverter implements DataGroupToMetadataConverter {
 
@@ -44,8 +44,8 @@ public final class DataGroupToResourceLinkConverter implements DataGroupToMetada
 		String textId = extractTextIdByNameInData("textId");
 		String defTextId = extractTextIdByNameInData("defTextId");
 
-		return ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(id,
-				nameInData, textId, defTextId);
+		return ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData, textId,
+				defTextId);
 	}
 
 	private String extractTextIdByNameInData(String nameInData) {

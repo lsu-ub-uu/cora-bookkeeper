@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,9 +23,9 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataList;
-import se.uu.ub.cora.bookkeeper.data.DataRecord;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -41,7 +41,8 @@ public class DataListToJsonConverterTest {
 		dataList.setToNo("1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter.usingJsonFactoryForDataList(jsonFactory, dataList);
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
+				.usingJsonFactoryForDataList(jsonFactory, dataList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString,
 				"{\"dataList\":{\"fromNo\":\"0\",\""
@@ -59,7 +60,8 @@ public class DataListToJsonConverterTest {
 		dataList.setToNo("1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter.usingJsonFactoryForDataList(jsonFactory, dataList);
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
+				.usingJsonFactoryForDataList(jsonFactory, dataList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString,
 				"{\"dataList\":{\"fromNo\":\"0\",\"" + "data\":[{\"name\":\"groupId\"}],"

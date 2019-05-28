@@ -19,6 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.data;
 
-public interface Data {
-
-}
+// public interface Data {
+//
+// }

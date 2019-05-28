@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.bookkeeper.data.converter;
 
-import se.uu.ub.cora.bookkeeper.data.Data;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataList;
-import se.uu.ub.cora.bookkeeper.data.DataRecord;
+import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
@@ -50,7 +50,8 @@ public final class DataListToJsonConverter {
 
 	JsonObjectBuilder toJsonObjectBuilder() {
 
-		recordListJsonObjectBuilder.addKeyString("totalNo", restRecordList.getTotalNo());
+		recordListJsonObjectBuilder.addKeyString("totalNo",
+				restRecordList.getTotalNumberOfTypeInStorage());
 		recordListJsonObjectBuilder.addKeyString("fromNo", restRecordList.getFromNo());
 		recordListJsonObjectBuilder.addKeyString("toNo", restRecordList.getToNo());
 		recordListJsonObjectBuilder.addKeyString("containDataOfType",
@@ -78,15 +79,13 @@ public final class DataListToJsonConverter {
 		}
 	}
 
-	private void convertRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
-			Data data) {
+	private void convertRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
 		DataRecordToJsonConverter converter = DataRecordToJsonConverter
 				.usingJsonFactoryForDataRecord(jsonBuilderFactory, (DataRecord) data);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 
-	private void convertGroupToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
-			Data data) {
+	private void convertGroupToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
 		DataGroupToJsonConverter converter = DataGroupToJsonConverter
 				.usingJsonFactoryForDataGroup(jsonBuilderFactory, (DataGroup) data);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());

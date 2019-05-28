@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,9 +24,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToTextVariableConverterTest {
 	@BeforeMethod
@@ -67,8 +67,8 @@ public class DataGroupToTextVariableConverterTest {
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
 
-		addTextByNameInDataAndId(dataGroup, "textId","otherTextId");
-		addTextByNameInDataAndId(dataGroup, "defTextId","otherDefTextId");
+		addTextByNameInDataAndId(dataGroup, "textId", "otherTextId");
+		addTextByNameInDataAndId(dataGroup, "defTextId", "otherDefTextId");
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("regEx",
 				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
@@ -86,7 +86,8 @@ public class DataGroupToTextVariableConverterTest {
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
 		DataGroup refParentId = DataGroup.withNameInData("refParentId");
-		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
+		refParentId.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
 		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
 		dataGroup.addChild(refParentId);
 

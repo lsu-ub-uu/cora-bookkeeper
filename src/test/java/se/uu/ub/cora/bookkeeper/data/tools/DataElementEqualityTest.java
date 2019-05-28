@@ -6,8 +6,8 @@ import static se.uu.ub.cora.bookkeeper.data.tools.DataElementEquality.isEqual;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataElementEqualityTest {
 	private static final String SOME_NAME = "someName";

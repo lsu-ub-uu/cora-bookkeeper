@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,10 +24,10 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataAttribute;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataPart;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -45,7 +45,8 @@ public class DataToJsonConverterFactoryTest {
 	public void testJsonCreatorFactoryDataGroup() {
 		DataPart dataPart = DataGroup.withNameInData("groupNameInData");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForDataElement(factory, dataPart);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForDataElement(factory, dataPart);
 
 		assertTrue(dataToJsonConverter instanceof DataGroupToJsonConverter);
 	}
@@ -54,17 +55,19 @@ public class DataToJsonConverterFactoryTest {
 	public void testJsonCreatorFactoryDataAtomic() {
 		DataPart dataPart = DataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForDataElement(factory, dataPart);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForDataElement(factory, dataPart);
 
 		assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
 	}
 
 	@Test
 	public void testJsonCreatorFactoryDataAttribute() {
-		DataAttribute dataAttribute = DataAttribute.withNameInDataAndValue("attributeNameInData", "attributeValue");
+		DataAttribute dataAttribute = DataAttribute.withNameInDataAndValue("attributeNameInData",
+				"attributeValue");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForDataElement(factory,
-				dataAttribute);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForDataElement(factory, dataAttribute);
 
 		assertTrue(dataToJsonConverter instanceof DataAttributeToJsonConverter);
 	}
