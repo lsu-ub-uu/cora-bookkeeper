@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.data.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataAttribute;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;

@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.data.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataAttribute;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
