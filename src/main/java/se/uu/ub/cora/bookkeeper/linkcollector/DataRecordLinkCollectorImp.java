@@ -54,4 +54,9 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 		metadataHolder = new MetadataHolderFromStoragePopulator()
 				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
 	}
+
+	public MetadataStorage getMetadataStorage() {
+		// needed for test
+		return metadataStorage;
+	}
 }

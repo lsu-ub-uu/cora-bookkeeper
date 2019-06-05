@@ -19,13 +19,13 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * ValidationAnswerTest is a test class for ValidationAnswer

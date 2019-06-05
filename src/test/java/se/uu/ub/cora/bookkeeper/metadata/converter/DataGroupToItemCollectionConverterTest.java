@@ -19,14 +19,15 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.Iterator;
 
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataGroupToItemCollectionConverterTest {
 	@Test

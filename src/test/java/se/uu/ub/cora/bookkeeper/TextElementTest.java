@@ -19,9 +19,9 @@
 
 package se.uu.ub.cora.bookkeeper;
 
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.Test;
 
 public class TextElementTest {
 	@Test
