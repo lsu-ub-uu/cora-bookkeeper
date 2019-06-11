@@ -89,4 +89,9 @@ public class DataValidatorImp implements DataValidator {
 		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
 		return elementValidator.validateData(dataElement);
 	}
+
+	public MetadataStorage getMetadataStorage() {
+		// needed for test
+		return metadataStorage;
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.Assert;
@@ -41,11 +42,18 @@ import se.uu.ub.cora.data.DataGroup;
  */
 public class DataValidatorTest {
 	private DataValidator dataValidator;
+	private MetadataStorage metadataStorage;
 
 	@BeforeMethod
 	public void setUp() {
-		MetadataStorage metadataStorage = new MetadataStorageStub();
+		metadataStorage = new MetadataStorageStub();
 		dataValidator = new DataValidatorImp(metadataStorage);
+	}
+
+	@Test
+	public void testGetMetadataStorage() {
+		DataValidatorImp dataValidatorImp = (DataValidatorImp) dataValidator;
+		assertSame(dataValidatorImp.getMetadataStorage(), metadataStorage);
 	}
 
 	@Test

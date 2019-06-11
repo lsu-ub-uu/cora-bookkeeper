@@ -252,4 +252,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return new CollectedDataCreator()
 				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
 	}
+
+	public MetadataStorage getMetadataStorage() {
+		// needed for test
+		return metadataStorage;
+	}
 }

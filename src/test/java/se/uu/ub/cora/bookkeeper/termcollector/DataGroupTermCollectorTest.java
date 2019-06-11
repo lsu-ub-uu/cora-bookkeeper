@@ -20,6 +20,7 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -32,11 +33,17 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupTermCollectorTest {
 	private DataGroupTermCollectorImp collector;
+	private MetadataStorage metadataStorage;
 
 	@BeforeMethod
 	public void setUp() {
-		MetadataStorage metadataStorage = new MetadataStorageForTermStub();
+		metadataStorage = new MetadataStorageForTermStub();
 		collector = new DataGroupTermCollectorImp(metadataStorage);
+	}
+
+	@Test
+	public void testGetMetadataStorage() {
+		assertSame(collector.getMetadataStorage(), metadataStorage);
 	}
 
 	@Test
