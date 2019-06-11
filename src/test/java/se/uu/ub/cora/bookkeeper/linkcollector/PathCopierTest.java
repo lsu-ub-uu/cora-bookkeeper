@@ -19,15 +19,16 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import static org.testng.Assert.assertEquals;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-
-import static org.testng.Assert.assertEquals;
 
 public class PathCopierTest {
 

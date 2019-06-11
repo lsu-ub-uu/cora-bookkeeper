@@ -19,14 +19,15 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class RecordLinkTest {
 	private RecordLink recordLink;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018 Uppsala University Library
+ * Copyright 2017, 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -251,5 +251,10 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private DataGroup createCollectedData(DataGroup dataGroup) {
 		return new CollectedDataCreator()
 				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
+	}
+
+	public MetadataStorage getMetadataStorage() {
+		// needed for test
+		return metadataStorage;
 	}
 }

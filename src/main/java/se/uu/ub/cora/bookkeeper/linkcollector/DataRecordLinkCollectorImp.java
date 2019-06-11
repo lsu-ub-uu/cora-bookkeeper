@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017 Uppsala University Library
+ * Copyright 2015, 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -53,5 +53,10 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	private void getMetadataFromStorage() {
 		metadataHolder = new MetadataHolderFromStoragePopulator()
 				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
+	}
+
+	public MetadataStorage getMetadataStorage() {
+		// needed for test
+		return metadataStorage;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017 Uppsala University Library
+ * Copyright 2015, 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -88,5 +88,10 @@ public class DataValidatorImp implements DataValidator {
 				metadataHolder);
 		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
 		return elementValidator.validateData(dataElement);
+	}
+
+	public MetadataStorage getMetadataStorage() {
+		// needed for test
+		return metadataStorage;
 	}
 }

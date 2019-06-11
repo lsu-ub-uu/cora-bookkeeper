@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
@@ -35,11 +36,18 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 
 public class DataRecordLinkCollectorTest {
 	private DataRecordLinkCollector linkCollector;
+	private MetadataStorage metadataStorage;
 
 	@BeforeMethod
 	public void setUp() {
-		MetadataStorage metadataStorage = new MetadataStorageStub();
+		metadataStorage = new MetadataStorageStub();
 		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
+	}
+
+	@Test
+	public void testGetMetadataStorage() {
+		DataRecordLinkCollectorImp collectorImp = (DataRecordLinkCollectorImp) linkCollector;
+		assertSame(collectorImp.getMetadataStorage(), metadataStorage);
 	}
 
 	@Test
