@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.data.DataMissingException;
-
 public final class CollectedTermHolder {
 
 	private Map<String, List<CollectedTerm>> collectedTerms = new HashMap<>();

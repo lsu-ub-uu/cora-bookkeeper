@@ -17,7 +17,7 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.bookkeeper.data;
+package se.uu.ub.cora.bookkeeper.metadata;
 
 public class DataMissingException extends RuntimeException {
 	private static final long serialVersionUID = -8633879374606975210L;
