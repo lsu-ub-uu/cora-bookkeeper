@@ -23,8 +23,8 @@ import java.util.Collection;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.storage.MetadataStorage;
 
 public final class MetadataHolderFromStoragePopulator {
 
