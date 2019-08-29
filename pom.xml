@@ -25,7 +25,7 @@
 
 	<properties>
 		<coradata.version>1.0.0</coradata.version>
-		<storage.version>1.2-SNAPSHOT</storage.version>
+		<storage.version>1.2.0</storage.version>
 	</properties>
 
 	<scm>
