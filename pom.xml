@@ -24,7 +24,8 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<json.version>1.0.0</json.version>
+		<coradata.version>1.0.0</coradata.version>
+		<storage.version>1.2.0</storage.version>
 	</properties>
 
 	<scm>
@@ -43,8 +44,14 @@
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>json</artifactId>
-			<version>${json.version}</version>
+			<artifactId>coradata</artifactId>
+			<version>${coradata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>storage</artifactId>
+			<version>${storage.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	

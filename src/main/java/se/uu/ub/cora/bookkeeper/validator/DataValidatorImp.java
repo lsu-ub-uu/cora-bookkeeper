@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.storage.MetadataStorage;
 
 /**
  * ValidateData is a class to validate if a set of data is valid according to its metadataFormat

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,10 +23,10 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToCollectionVariableConverterTest {
 	@Test
@@ -51,17 +51,20 @@ public class DataGroupToCollectionVariableConverterTest {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
-		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "textId", "otherTextId", "testSystem");
-		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "defTextId", "otherDefTextId", "testSystem");
-//		dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
-//		dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
-		
+		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "textId",
+				"otherTextId", "testSystem");
+		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "defTextId",
+				"otherDefTextId", "testSystem");
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("textId", "otherTextId"));
+		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("defTextId", "otherDefTextId"));
+
 		DataGroup refCollection = DataGroup.withNameInData("refCollection");
-		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
-		refCollection.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refCollection"));
+		refCollection.addChild(
+				DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
+		refCollection
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refCollection"));
 		dataGroup.addChild(refCollection);
 
-		
 		return dataGroup;
 	}
 
@@ -79,7 +82,8 @@ public class DataGroupToCollectionVariableConverterTest {
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
 		DataGroup refParentGroup = DataGroup.withNameInData("refParentId");
-		refParentGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionVariable"));
+		refParentGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"metadataCollectionVariable"));
 		refParentGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
 		dataGroup.addChild(refParentGroup);
 

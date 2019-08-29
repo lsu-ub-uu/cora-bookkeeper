@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,9 +19,9 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToItemCollectionConverter implements DataGroupToMetadataConverter {
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
@@ -40,7 +40,7 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
 		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-		
+
 		String textId = extractTextIdByNameInData("textId");
 		String defTextId = extractTextIdByNameInData("defTextId");
 
@@ -49,7 +49,7 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 		DataGroup collectionItemReferences = dataGroup
 				.getFirstGroupWithNameInData("collectionItemReferences");
 		for (DataElement dataElement : collectionItemReferences.getChildren()) {
-			DataGroup itemRefElement = (DataGroup)dataElement;
+			DataGroup itemRefElement = (DataGroup) dataElement;
 			String itemRefId = itemRefElement.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 			itemCollection.addItemReference(itemRefId);
 		}

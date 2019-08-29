@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,7 +22,7 @@ package se.uu.ub.cora.bookkeeper.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class RecordLink extends MetadataElement {
 	private String linkedRecordType;
@@ -36,13 +36,11 @@ public final class RecordLink extends MetadataElement {
 		super(id, nameInData, textId, defTextId);
 		this.linkedRecordType = linkedRecordType;
 	}
-	
-	public static RecordLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
-			String id, String nameInData, String textId, String defTextId,
-			String linkedRecordType) {
+
+	public static RecordLink withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(String id,
+			String nameInData, String textId, String defTextId, String linkedRecordType) {
 		return new RecordLink(id, nameInData, textId, defTextId, linkedRecordType);
 	}
-
 
 	public String getLinkedRecordType() {
 		return linkedRecordType;
@@ -71,7 +69,7 @@ public final class RecordLink extends MetadataElement {
 	public void setFinalValue(String finalValue) {
 		this.finalValue = finalValue;
 	}
-	
+
 	@Override
 	public List<String> getAttributeReferences() {
 		return attributeReferences;

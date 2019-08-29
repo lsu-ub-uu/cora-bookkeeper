@@ -27,8 +27,6 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -39,6 +37,8 @@ import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
 import se.uu.ub.cora.bookkeeper.metadata.TextContainer;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataValidatorFactoryTest {
 

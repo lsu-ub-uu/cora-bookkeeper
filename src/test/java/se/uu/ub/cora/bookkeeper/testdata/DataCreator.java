@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,8 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.testdata;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
@@ -29,6 +27,8 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataCreator {
 	public static MetadataGroup createMetaDataGroup(String id, MetadataHolder metadataHolder) {
@@ -49,7 +49,8 @@ public class DataCreator {
 	public static void addDataGroupAsMetadataChildReferenceToParent(MetadataGroup child,
 			MetadataGroup parent) {
 		MetadataChildReference linkChild = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", child.getId(), 1, 1);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
+						child.getId(), 1, 1);
 		parent.addChildReference(linkChild);
 	}
 
@@ -62,7 +63,8 @@ public class DataCreator {
 		metadataHolder.addMetadataElement(recordLink);
 
 		MetadataChildReference linkChild = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataRecordLink", id + "Id", 1, 1);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataRecordLink",
+						id + "Id", 1, 1);
 
 		group.addChildReference(linkChild);
 	}
@@ -88,12 +90,13 @@ public class DataCreator {
 		metadataHolder.addMetadataElement(textVar);
 
 		MetadataChildReference groupChild = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id + "Id", 1, repeatMax);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
+						id + "Id", 1, repeatMax);
 		group.addChildReference(groupChild);
 	}
 
-	public static void addTextVarChildReferenceToGroupMinMax(String id, int repeatMin, int repeatMax,
-													   MetadataGroup group, MetadataHolder metadataHolder) {
+	public static void addTextVarChildReferenceToGroupMinMax(String id, int repeatMin,
+			int repeatMax, MetadataGroup group, MetadataHolder metadataHolder) {
 		TextVariable textVar = TextVariable
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id + "Id",
 						id + "NameInData", id + "Text", id + "DefText",
@@ -101,7 +104,8 @@ public class DataCreator {
 		metadataHolder.addMetadataElement(textVar);
 
 		MetadataChildReference groupChild = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id + "Id", repeatMin, repeatMax);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
+						id + "Id", repeatMin, repeatMax);
 		group.addChildReference(groupChild);
 	}
 
@@ -113,7 +117,8 @@ public class DataCreator {
 		metadataHolder.addMetadataElement(textVar);
 
 		MetadataChildReference groupChild = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id, 1, 1);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", id,
+						1, 1);
 		group.addChildReference(groupChild);
 	}
 
@@ -167,7 +172,6 @@ public class DataCreator {
 		return dataResourceLink;
 	}
 
-
 	public static void addAttributesToDataGroup(DataGroup dataGroup) {
 		DataGroup attributeReference = DataGroup.withNameInData("attributeReferences");
 
@@ -177,15 +181,18 @@ public class DataCreator {
 		dataGroup.addChild(attributeReference);
 	}
 
-	private static void createAndAddRefWithLinkedRecordIdAndRepeatId(DataGroup attributeReference, String linkedRecordId, String repeatId) {
+	private static void createAndAddRefWithLinkedRecordIdAndRepeatId(DataGroup attributeReference,
+			String linkedRecordId, String repeatId) {
 		DataGroup ref = DataGroup.withNameInData("ref");
-		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+				"metadataCollectionVariable"));
 		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
 		ref.setRepeatId(repeatId);
 		attributeReference.addChild(ref);
 	}
 
-	public static void addTextToGroupWithNameInDataLinkedIdAndLinkedType(DataGroup dataGroup, String nameInData, String linkedRecordId, String linkedRecordType){
+	public static void addTextToGroupWithNameInDataLinkedIdAndLinkedType(DataGroup dataGroup,
+			String nameInData, String linkedRecordId, String linkedRecordType) {
 		DataGroup text = DataGroup.withNameInData(nameInData);
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
 		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));

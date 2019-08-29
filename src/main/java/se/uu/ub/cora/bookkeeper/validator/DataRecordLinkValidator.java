@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017 Uppsala University Library
+ * Copyright 2015, 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,12 +21,12 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataRecordLinkValidator implements DataElementValidator {
 
@@ -109,8 +109,8 @@ public class DataRecordLinkValidator implements DataElementValidator {
 		String parentId = extractParentId(recordType);
 
 		if (matchesRecordTypeInLink(parentId)) {
-            return true;
-        }
+			return true;
+		}
 		return recordTypeChildOfRecordTypeSpecifiedInMetadata(parentId);
 	}
 

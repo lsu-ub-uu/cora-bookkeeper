@@ -21,10 +21,10 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 

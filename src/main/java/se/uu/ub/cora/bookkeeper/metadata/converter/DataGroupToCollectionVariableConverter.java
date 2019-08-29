@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToCollectionVariableConverter implements DataGroupToMetadataConverter {
 
@@ -42,8 +42,9 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
 		String textId = extractTextIdByNameInData("textId");
 		String defTextId = extractTextIdByNameInData("defTextId");
-		
-		DataGroup refCollection = (DataGroup) dataGroup.getFirstChildWithNameInData("refCollection");
+
+		DataGroup refCollection = (DataGroup) dataGroup
+				.getFirstChildWithNameInData("refCollection");
 		String refCollectionId = refCollection.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 
 		CollectionVariable collectionVariable = new CollectionVariable(id, nameInData, textId,

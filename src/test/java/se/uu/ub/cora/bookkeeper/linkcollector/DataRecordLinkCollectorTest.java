@@ -28,11 +28,11 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataRecordLinkCollectorTest {
 	private DataRecordLinkCollector linkCollector;

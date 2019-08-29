@@ -23,6 +23,8 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
+
 public class DataMissingExceptionTest {
 	@Test
 	public void testInitWithMessage() {

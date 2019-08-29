@@ -23,9 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
@@ -34,9 +31,12 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 

@@ -25,14 +25,14 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataElement;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public class MetadataMatchDataTest {
 	private static final String NAME_IN_DATA = "nameInData";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,12 +18,12 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
 import se.uu.ub.cora.bookkeeper.metadata.TextContainer;
+import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToNumberVariableConverter implements DataGroupToMetadataConverter {
 

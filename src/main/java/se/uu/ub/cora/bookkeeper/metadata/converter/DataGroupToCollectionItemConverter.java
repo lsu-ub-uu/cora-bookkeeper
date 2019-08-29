@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToCollectionItemConverter implements DataGroupToMetadataConverter {
 
