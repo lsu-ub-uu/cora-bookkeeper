@@ -24,7 +24,8 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>1.0.0</coradata.version>
+<!-- 		<basicdata.version>1.0-SNAPSHOT</basicdata.version> -->
+		<coradata.version>1.1-SNAPSHOT</coradata.version>
 		<storage.version>1.3.0</storage.version>
 	</properties>
 
@@ -42,6 +43,11 @@
 			<version>${testng.version}</version>
 			<scope>test</scope>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>se.uu.ub.cora</groupId> -->
+<!-- 			<artifactId>basicdata</artifactId> -->
+<!-- 			<version>${basicdata.version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>coradata</artifactId>

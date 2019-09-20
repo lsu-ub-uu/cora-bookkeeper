@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataFactoryProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
@@ -41,7 +42,8 @@ public class DataRecordLinkCollectorTest {
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageStub();
-		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
+		DataFactoryProvider factoryProvider = new DataFactoryProviderSpy();
+		linkCollector = new DataRecordLinkCollectorImp(metadataStorage, factoryProvider);
 	}
 
 	@Test
@@ -52,7 +54,8 @@ public class DataRecordLinkCollectorTest {
 
 	@Test
 	public void testCollectLinksGroupWithoutLink() {
-		DataGroup dataGroup = DataGroup.withNameInData("bush");
+		DataGroup dataGroup = DataGroupSpy.withNameInData();
+		DataGroup.withNameInData("bush");
 		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
 				"recordId");
 		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");

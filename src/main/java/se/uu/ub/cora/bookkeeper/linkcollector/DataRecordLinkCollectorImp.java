@@ -23,23 +23,30 @@ import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
+import se.uu.ub.cora.data.DataFactoryProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupFactory;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 
 	private MetadataStorage metadataStorage;
 	private MetadataHolder metadataHolder;
+	private DataFactoryProvider factoryProvider;
 
-	public DataRecordLinkCollectorImp(MetadataStorage metadataStorage) {
+	public DataRecordLinkCollectorImp(MetadataStorage metadataStorage,
+			DataFactoryProvider factoryProvider) {
 		this.metadataStorage = metadataStorage;
+		this.factoryProvider = factoryProvider;
 	}
 
 	@Override
 	public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
 			String fromRecordId) {
 		getMetadataFromStorage();
-
+		DataGroupFactory dataGroupFactory = factoryProvider.getDataGroupFactory();
+		// dataGroupFactory.factorUsingNameInData("");
+		// DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
 		DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
 				fromRecordType, fromRecordId);

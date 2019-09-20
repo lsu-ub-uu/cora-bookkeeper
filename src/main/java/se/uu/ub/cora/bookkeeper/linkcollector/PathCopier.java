@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import se.uu.ub.cora.basicdata.CoraDataAtomic;
+import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
@@ -46,22 +48,22 @@ public final class PathCopier {
 	}
 
 	private static DataGroup copyBaseDataGroup(DataGroup pathToCopy) {
-		DataGroup pathCopy = DataGroup.withNameInData(LINKED_PATH);
-		pathCopy.addChild(DataAtomic.withNameInDataAndValue(NAME_IN_DATA,
+		DataGroup pathCopy = CoraDataGroup.withNameInData(LINKED_PATH);
+		pathCopy.addChild(CoraDataAtomic.withNameInDataAndValue(NAME_IN_DATA,
 				pathToCopy.getFirstAtomicValueWithNameInData(NAME_IN_DATA)));
 		return pathCopy;
 	}
 
 	private static void copyRepeatId(DataGroup pathToCopy, DataGroup pathCopy) {
 		if (pathToCopy.containsChildWithNameInData(REPEAT_ID)) {
-			pathCopy.addChild(DataAtomic.withNameInDataAndValue(REPEAT_ID,
+			pathCopy.addChild(CoraDataAtomic.withNameInDataAndValue(REPEAT_ID,
 					pathToCopy.getFirstAtomicValueWithNameInData(REPEAT_ID)));
 		}
 	}
 
 	private static void copyAttributes(DataGroup pathToCopy, DataGroup pathCopy) {
 		if (pathToCopy.containsChildWithNameInData(ATTRIBUTES)) {
-			DataGroup attributes = DataGroup.withNameInData(ATTRIBUTES);
+			DataGroup attributes = CoraDataGroup.withNameInData(ATTRIBUTES);
 			pathCopy.addChild(attributes);
 			for (DataElement attributeToCopy : pathToCopy.getFirstGroupWithNameInData(ATTRIBUTES)
 					.getChildren()) {
@@ -71,9 +73,9 @@ public final class PathCopier {
 	}
 
 	private static void copyAttribute(DataGroup attributes, DataElement attributeToCopy) {
-		DataGroup attribute = DataGroup.withNameInData(ATTRIBUTE);
+		DataGroup attribute = CoraDataGroup.withNameInData(ATTRIBUTE);
 		attributes.addChild(attribute);
-		for (DataElement attributePart : ((DataGroup) attributeToCopy).getChildren()) {
+		for (DataElement attributePart : ((CoraDataGroup) attributeToCopy).getChildren()) {
 			attribute.addChild(DataAtomic.withNameInDataAndValue(attributePart.getNameInData(),
 					((DataAtomic) attributePart).getValue()));
 		}
