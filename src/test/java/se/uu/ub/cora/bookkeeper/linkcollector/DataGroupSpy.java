@@ -28,14 +28,12 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return null;
+		return "someAtomicValueFromSpyFor" + nameInData;
 	}
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-		return null;
+		return new DataGroupSpy(childNameInData);
 	}
 
 	@Override
@@ -52,6 +50,12 @@ public class DataGroupSpy implements DataGroup {
 	public boolean containsChildWithNameInData(String nameInData) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void setRepeatId(String repeatId) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

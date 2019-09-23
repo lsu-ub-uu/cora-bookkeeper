@@ -19,11 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
-import se.uu.ub.cora.basicdata.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 public final class PathCopier {
 	private static final String ATTRIBUTE = "attribute";
@@ -48,22 +48,22 @@ public final class PathCopier {
 	}
 
 	private static DataGroup copyBaseDataGroup(DataGroup pathToCopy) {
-		DataGroup pathCopy = CoraDataGroup.withNameInData(LINKED_PATH);
-		pathCopy.addChild(CoraDataAtomic.withNameInDataAndValue(NAME_IN_DATA,
+		DataGroup pathCopy = DataGroupProvider.getDataGroupUsingNameInData(LINKED_PATH);
+		pathCopy.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(NAME_IN_DATA,
 				pathToCopy.getFirstAtomicValueWithNameInData(NAME_IN_DATA)));
 		return pathCopy;
 	}
 
 	private static void copyRepeatId(DataGroup pathToCopy, DataGroup pathCopy) {
 		if (pathToCopy.containsChildWithNameInData(REPEAT_ID)) {
-			pathCopy.addChild(CoraDataAtomic.withNameInDataAndValue(REPEAT_ID,
+			pathCopy.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(REPEAT_ID,
 					pathToCopy.getFirstAtomicValueWithNameInData(REPEAT_ID)));
 		}
 	}
 
 	private static void copyAttributes(DataGroup pathToCopy, DataGroup pathCopy) {
 		if (pathToCopy.containsChildWithNameInData(ATTRIBUTES)) {
-			DataGroup attributes = CoraDataGroup.withNameInData(ATTRIBUTES);
+			DataGroup attributes = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTES);
 			pathCopy.addChild(attributes);
 			for (DataElement attributeToCopy : pathToCopy.getFirstGroupWithNameInData(ATTRIBUTES)
 					.getChildren()) {
@@ -73,11 +73,11 @@ public final class PathCopier {
 	}
 
 	private static void copyAttribute(DataGroup attributes, DataElement attributeToCopy) {
-		DataGroup attribute = CoraDataGroup.withNameInData(ATTRIBUTE);
+		DataGroup attribute = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTE);
 		attributes.addChild(attribute);
-		for (DataElement attributePart : ((CoraDataGroup) attributeToCopy).getChildren()) {
-			attribute.addChild(DataAtomic.withNameInDataAndValue(attributePart.getNameInData(),
-					((DataAtomic) attributePart).getValue()));
+		for (DataElement attributePart : ((DataGroup) attributeToCopy).getChildren()) {
+			attribute.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
+					attributePart.getNameInData(), ((DataAtomic) attributePart).getValue()));
 		}
 	}
 

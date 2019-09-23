@@ -165,17 +165,12 @@ public class DataGroupRecordLinkCollector {
 	private void addRecordTypeToFromPart(DataGroup from) {
 		DataAtomic linkedRecordType = DataAtomicProvider
 				.getDataAtomicUsingNameInDataAndValue(LINKED_RECORD_TYPE, fromRecordType);
-		// CoraDataAtomic linkedRecordType =
-		// CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE,
-		// fromRecordType);
 		from.addChild(linkedRecordType);
 	}
 
 	private void addRecordIdToFromPart(DataGroup from) {
 		DataAtomic linkedRecordId = DataAtomicProvider
 				.getDataAtomicUsingNameInDataAndValue(LINKED_RECORD_ID, fromRecordId);
-		// CoraDataAtomic linkedRecordId = CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID,
-		// fromRecordId);
 		from.addChild(linkedRecordId);
 	}
 
@@ -183,9 +178,6 @@ public class DataGroupRecordLinkCollector {
 		if (hasNonEmptyRepeatId(dataElement)) {
 			DataAtomic linkedRepeatId = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 					LINKED_REPEAT_ID, dataElement.getRepeatId());
-			// CoraDataAtomic linkedRepeatId =
-			// CoraDataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID,
-			// dataElement.getRepeatId());
 			from.addChild(linkedRepeatId);
 		}
 	}
@@ -196,7 +188,6 @@ public class DataGroupRecordLinkCollector {
 
 	private DataGroup createToPart(DataElement dataElement, RecordLink recordLink) {
 		DataGroup to = DataGroupProvider.getDataGroupUsingNameInData("to");
-		// CoraDataGroup to = CoraDataGroup.withNameInData("to");
 		DataGroup dataElementGroup = (DataGroup) dataElement;
 
 		addChildrenToToPart(recordLink, to, dataElementGroup);
@@ -207,7 +198,7 @@ public class DataGroupRecordLinkCollector {
 		addRecordTypeToToPart(to, dataGroup);
 		addRecordIdToToPart(to, dataGroup);
 		addLinkedPathToToPart(recordLink, to);
-		addLinkedRepeatIdToToPart(to, dataGroup);
+		possiblyAddLinkedRepeatIdToToPart(to, dataGroup);
 	}
 
 	private void addRecordTypeToToPart(DataGroup to, DataGroup dataGroup) {
@@ -233,7 +224,7 @@ public class DataGroupRecordLinkCollector {
 		}
 	}
 
-	private void addLinkedRepeatIdToToPart(DataGroup to, DataGroup dataGroup) {
+	private void possiblyAddLinkedRepeatIdToToPart(DataGroup to, DataGroup dataGroup) {
 		if (dataGroup.containsChildWithNameInData(LINKED_REPEAT_ID)) {
 			DataAtomic linkedRepeatId = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 					LINKED_REPEAT_ID,
