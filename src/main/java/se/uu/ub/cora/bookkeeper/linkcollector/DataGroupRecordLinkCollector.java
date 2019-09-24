@@ -139,7 +139,6 @@ public class DataGroupRecordLinkCollector {
 
 	private void createRecordToRecordLink(RecordLink recordLink, DataElement dataElement,
 			DataGroup fromPath) {
-		// DataGroup recordToRecordLink = CoraDataGroup.withNameInData("recordToRecordLink");
 		DataGroup recordToRecordLink = DataGroupProvider
 				.getDataGroupUsingNameInData("recordToRecordLink");
 		recordToRecordLink.addChild(createFromPart(dataElement, fromPath));
@@ -149,7 +148,6 @@ public class DataGroupRecordLinkCollector {
 
 	private DataGroup createFromPart(DataElement dataElement, DataGroup fromPath) {
 		DataGroup from = DataGroupProvider.getDataGroupUsingNameInData("from");
-		// DataGroup from = DataGroup.withNameInData("from");
 		addChildrenToFromPart(dataElement, fromPath, from);
 		return from;
 	}
@@ -205,16 +203,12 @@ public class DataGroupRecordLinkCollector {
 		DataAtomic linkedRecordType = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 				LINKED_RECORD_TYPE,
 				dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE));
-		// DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE,
-		// dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE));
 		to.addChild(linkedRecordType);
 	}
 
 	private void addRecordIdToToPart(DataGroup to, DataGroup dataGroup) {
 		DataAtomic linkedRecordId = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 				LINKED_RECORD_ID, dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID));
-		// DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue(LINKED_RECORD_ID,
-		// dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID));
 		to.addChild(linkedRecordId);
 	}
 
@@ -229,8 +223,6 @@ public class DataGroupRecordLinkCollector {
 			DataAtomic linkedRepeatId = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 					LINKED_REPEAT_ID,
 					dataGroup.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID));
-			// DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID,
-			// dataGroup.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID));
 			to.addChild(linkedRepeatId);
 		}
 	}

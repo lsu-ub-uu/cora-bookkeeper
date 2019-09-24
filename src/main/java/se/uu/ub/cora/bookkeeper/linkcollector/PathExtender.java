@@ -45,11 +45,8 @@ public final class PathExtender {
 
 	private static DataGroup createPathForDataElement(DataElement dataElement) {
 		DataGroup elementPath = DataGroupProvider.getDataGroupUsingNameInData(LINKED_PATH);
-		// DataGroup elementPath = DataGroup.withNameInData(LINKED_PATH);
 		elementPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(NAME_IN_DATA,
 				dataElement.getNameInData()));
-		// elementPath.addChild(
-		// DataAtomic.withNameInDataAndValue(NAME_IN_DATA, dataElement.getNameInData()));
 		extendPathWithAttributes(dataElement, elementPath);
 		extendPathWithRepeatId(dataElement, elementPath);
 		return elementPath;
@@ -66,20 +63,14 @@ public final class PathExtender {
 		if (!subGroup.getAttributes().isEmpty()) {
 
 			DataGroup attributes = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTES);
-			// DataGroup attributes = DataGroup.withNameInData(ATTRIBUTES);
 			currentPath.addChild(attributes);
 			for (Entry<String, String> entry : subGroup.getAttributes().entrySet()) {
 				DataGroup attribute = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTE);
-				// DataGroup attribute = DataGroup.withNameInData(ATTRIBUTE);
 				attributes.addChild(attribute);
 				attribute.addChild(DataAtomicProvider
 						.getDataAtomicUsingNameInDataAndValue("attributeName", entry.getKey()));
-				// attribute.addChild(
-				// DataAtomic.withNameInDataAndValue("attributeName", entry.getKey()));
 				attribute.addChild(DataAtomicProvider
 						.getDataAtomicUsingNameInDataAndValue("attributeValue", entry.getValue()));
-				// attribute.addChild(
-				// DataAtomic.withNameInDataAndValue("attributeValue", entry.getValue()));
 			}
 		}
 	}
@@ -88,8 +79,6 @@ public final class PathExtender {
 		if (dataElement.getRepeatId() != null) {
 			currentPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(REPEAT_ID,
 					dataElement.getRepeatId()));
-			// currentPath.addChild(
-			// DataAtomic.withNameInDataAndValue(REPEAT_ID, dataElement.getRepeatId()));
 		}
 	}
 

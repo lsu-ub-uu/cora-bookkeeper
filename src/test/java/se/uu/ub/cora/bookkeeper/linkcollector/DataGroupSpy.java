@@ -1,7 +1,9 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
@@ -10,6 +12,7 @@ public class DataGroupSpy implements DataGroup {
 
 	public String nameInData;
 	public List<DataElement> children = new ArrayList<>();
+	private Map<String, String> attributes = new HashMap<>();
 
 	public DataGroupSpy(String nameInData) {
 		this.nameInData = nameInData;
@@ -56,6 +59,16 @@ public class DataGroupSpy implements DataGroup {
 	public void setRepeatId(String repeatId) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void addAttributeByIdWithValue(String id, String value) {
+		attributes.put(id, value);
+	}
+
+	@Override
+	public Map<String, String> getAttributes() {
+		return attributes;
 	}
 
 }
