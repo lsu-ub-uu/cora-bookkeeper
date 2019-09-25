@@ -33,16 +33,20 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataFactoryProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataRecordLinkCollectorTest {
 	private DataRecordLinkCollector linkCollector;
 	private MetadataStorage metadataStorage;
+	private DataGroupFactorySpy dataGroupFactory;
 
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageStub();
 		DataFactoryProvider factoryProvider = new DataFactoryProviderSpy();
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
 		linkCollector = new DataRecordLinkCollectorImp(metadataStorage, factoryProvider);
 	}
 
@@ -54,23 +58,25 @@ public class DataRecordLinkCollectorTest {
 
 	@Test
 	public void testCollectLinksGroupWithoutLink() {
-		DataGroup dataGroup = DataGroupSpy.withNameInData();
-		DataGroup.withNameInData("bush");
+		DataGroup dataGroup = new DataGroupSpy("bush");
 		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
 				"recordId");
 		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
 		assertTrue(collectedLinks.getChildren().isEmpty());
+
+		assertEquals(dataGroupFactory.usedNameInDatas.size(), 1);
+		// assertEquals(dataAtomicFactory.usedNameInDatas.size(), 0);
 	}
 
 	@Test
 	public void testCollectLinksGroupWithOneLink() {
-		DataGroup dataGroup = DataGroup.withNameInData("bush");
-		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
+		DataGroup dataGroup = new DataGroupSpy("bush");
+		DataGroup dataTestLink = new DataGroupSpy("testLink");
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "bush");
+		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "bush");
 		dataTestLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
+		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "bush1");
 		dataTestLink.addChild(linkedRecordId);
 		dataGroup.addChild(dataTestLink);
 

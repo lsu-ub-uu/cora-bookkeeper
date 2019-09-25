@@ -12,7 +12,10 @@ public class DataGroupSpy implements DataGroup {
 
 	public String nameInData;
 	public List<DataElement> children = new ArrayList<>();
-	private Map<String, String> attributes = new HashMap<>();
+	public Map<String, String> attributes = new HashMap<>();
+	public List<DataGroup> groupsWithNameInData = new ArrayList<>();
+	public Map<String, String> atomicValues = new HashMap<>();
+	public Map<String, DataGroupSpy> dataGroups = new HashMap<>();
 
 	public DataGroupSpy(String nameInData) {
 		this.nameInData = nameInData;
@@ -31,16 +34,28 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String nameInData) {
-		return "someAtomicValueFromSpyFor" + nameInData;
+		return atomicValues.get(nameInData);
+		// return "someAtomicValueFromSpyFor" + nameInData;
 	}
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
+		if (dataGroups.containsKey(childNameInData)) {
+			return dataGroups.get(childNameInData);
+		}
 		return new DataGroupSpy(childNameInData);
 	}
 
 	@Override
 	public void addChild(DataElement dataElement) {
+		if (dataElement instanceof DataAtomicSpy) {
+			DataAtomicSpy atomicSpyChild = (DataAtomicSpy) dataElement;
+			atomicValues.put(atomicSpyChild.nameInData, atomicSpyChild.value);
+
+		} else if (dataElement instanceof DataGroupSpy) {
+			DataGroupSpy dataGroup = (DataGroupSpy) dataElement;
+			dataGroups.put(dataGroup.nameInData, dataGroup);
+		}
 		children.add(dataElement);
 	}
 
@@ -69,6 +84,20 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public Map<String, String> getAttributes() {
 		return attributes;
+	}
+
+	@Override
+	public DataElement getFirstChildWithNameInData(String nameInData) {
+		DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
+		if ("refCollection".contentEquals(nameInData)) {
+			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someSpyLinkedRecordId"));
+		}
+		return dataGroupSpy;
+	}
+
+	@Override
+	public List<DataGroup> getAllGroupsWithNameInData(String nameInData) {
+		return groupsWithNameInData;
 	}
 
 }
