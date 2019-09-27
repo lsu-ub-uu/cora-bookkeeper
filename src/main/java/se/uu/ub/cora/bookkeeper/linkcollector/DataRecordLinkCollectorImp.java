@@ -23,7 +23,6 @@ import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
-import se.uu.ub.cora.data.DataFactoryProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
@@ -32,31 +31,34 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 
 	private MetadataStorage metadataStorage;
 	private MetadataHolder metadataHolder;
-	private DataFactoryProvider factoryProvider;
 
-	public DataRecordLinkCollectorImp(MetadataStorage metadataStorage,
-			DataFactoryProvider factoryProvider) {
+	public DataRecordLinkCollectorImp(MetadataStorage metadataStorage) {
 		this.metadataStorage = metadataStorage;
-		this.factoryProvider = factoryProvider;
 	}
 
 	@Override
 	public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
 			String fromRecordId) {
 		getMetadataFromStorage();
-		// DataGroupFactory dataGroupFactory = factoryProvider.getDataGroupFactory();
-		// dataGroupFactory.factorUsingNameInData("");
-		// DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
-		// DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
-		DataGroup collectedDataLinks = DataGroupProvider
-				.getDataGroupUsingNameInData("collectedDataLinks");
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
 				fromRecordType, fromRecordId);
+		return collectLinksAndAddToDataGroup(metadataId, dataGroup,
+				collector);
+	}
+
+	private DataGroup collectLinksAndAddToDataGroup(String metadataId, DataGroup dataGroup,
+			DataGroupRecordLinkCollector collector) {
 		List<DataGroup> collectedLinks = collector.collectLinks(metadataId, dataGroup);
+		DataGroup collectedDataLinks = DataGroupProvider
+				.getDataGroupUsingNameInData("collectedDataLinks");
+		addLinksToDataGroup(collectedLinks, collectedDataLinks);
+		return collectedDataLinks;
+	}
+
+	private void addLinksToDataGroup(List<DataGroup> collectedLinks, DataGroup collectedDataLinks) {
 		for (DataGroup collectedLink : collectedLinks) {
 			collectedDataLinks.addChild(collectedLink);
 		}
-		return collectedDataLinks;
 	}
 
 	private void getMetadataFromStorage() {

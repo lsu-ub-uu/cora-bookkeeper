@@ -30,8 +30,8 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.DataFactoryProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
@@ -40,14 +40,16 @@ public class DataRecordLinkCollectorTest {
 	private DataRecordLinkCollector linkCollector;
 	private MetadataStorage metadataStorage;
 	private DataGroupFactorySpy dataGroupFactory;
+	private DataAtomicFactorySpy dataAtomicFactory;
 
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageStub();
-		DataFactoryProvider factoryProvider = new DataFactoryProviderSpy();
 		dataGroupFactory = new DataGroupFactorySpy();
 		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
-		linkCollector = new DataRecordLinkCollectorImp(metadataStorage, factoryProvider);
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
+		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
 	}
 
 	@Test
@@ -64,8 +66,10 @@ public class DataRecordLinkCollectorTest {
 		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
 		assertTrue(collectedLinks.getChildren().isEmpty());
 
-		assertEquals(dataGroupFactory.usedNameInDatas.size(), 1);
-		// assertEquals(dataAtomicFactory.usedNameInDatas.size(), 0);
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "collectedDataLinks");
 	}
 
 	@Test
@@ -80,12 +84,45 @@ public class DataRecordLinkCollectorTest {
 		dataTestLink.addChild(linkedRecordId);
 		dataGroup.addChild(dataTestLink);
 
-		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
-				"recordId");
-
-		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
+		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "fromRecordType",
+				"fromRecordId");
 		List<DataElement> linkList = collectedLinks.getChildren();
 		assertEquals(linkList.size(), 1);
+
+		assertCorrectFactoredGroupsAndAtomics();
+
+		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
+
+	}
+
+	private void assertCorrectFactoredGroupsAndAtomics() {
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+
+		assertEquals(namesOfGroupsFactored.size(), 5);
+
+		assertEquals(namesOfGroupsFactored.get(0), "collectedDataLinks");
+		assertEquals(namesOfGroupsFactored.get(1), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(2), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(3), "from");
+		assertEquals(namesOfGroupsFactored.get(4), "to");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 5);
+		assertEquals(dataAtomicFactory.usedValues.size(), 5);
+
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testLink");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "linkedRecordType",
+				"fromRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType", "bush");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "bush1");
+	}
+
+	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
+			String value) {
+		List<String> namesOfAtomicDataFactored = dataAtomicFactory.usedNameInDatas;
+		List<String> valuesOfAtomicDataFactored = dataAtomicFactory.usedValues;
+		assertEquals(namesOfAtomicDataFactored.get(index), nameInData);
+		assertEquals(valuesOfAtomicDataFactored.get(index), value);
 
 	}
 }
