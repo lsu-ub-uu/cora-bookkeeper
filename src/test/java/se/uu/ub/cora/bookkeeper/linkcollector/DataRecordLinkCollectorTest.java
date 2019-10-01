@@ -28,6 +28,8 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;

@@ -1,4 +1,4 @@
-package se.uu.ub.cora.bookkeeper.linkcollector;
+package se.uu.ub.cora.bookkeeper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,8 @@ public class DataGroupSpy implements DataGroup {
 	public List<DataGroup> groupsWithNameInData = new ArrayList<>();
 	public Map<String, String> atomicValues = new HashMap<>();
 	public Map<String, DataGroupSpy> dataGroups = new HashMap<>();
+	private String repeatId;
+	public Map<String, Integer> numOfGetAllGroupsWithNameInDataToReturn = new HashMap<>();
 
 	public DataGroupSpy(String nameInData) {
 		this.nameInData = nameInData;
@@ -23,8 +25,7 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getRepeatId() {
-		// TODO Auto-generated method stub
-		return null;
+		return repeatId;
 	}
 
 	@Override
@@ -66,13 +67,15 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
+		if (atomicValues.containsKey(nameInData) || dataGroups.containsKey(nameInData)) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public void setRepeatId(String repeatId) {
-		// TODO Auto-generated method stub
+		this.repeatId = repeatId;
 
 	}
 
@@ -86,8 +89,21 @@ public class DataGroupSpy implements DataGroup {
 		return attributes;
 	}
 
+	// @Override
+	// public DataElement getFirstChildWithNameInData(String nameInData) {
+	// DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
+	// if ("refCollection".contentEquals(nameInData)) {
+	// dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someSpyLinkedRecordId"));
+	// }
+	// return dataGroupSpy;
+	// }
 	@Override
 	public DataElement getFirstChildWithNameInData(String nameInData) {
+		if (dataGroups.containsKey(nameInData)) {
+			return dataGroups.get(nameInData);
+		} else if (atomicValues.containsKey(nameInData)) {
+			return new DataAtomicSpy(nameInData, atomicValues.get(nameInData));
+		}
 		DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
 		if ("refCollection".contentEquals(nameInData)) {
 			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someSpyLinkedRecordId"));
@@ -97,7 +113,31 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String nameInData) {
-		return groupsWithNameInData;
+		List<DataGroup> matchingDataGroups = new ArrayList<>();
+		if (numOfGetAllGroupsWithNameInDataToReturn.containsKey(nameInData)) {
+			for (int i = 0; i < numOfGetAllGroupsWithNameInDataToReturn.get(nameInData); i++) {
+				DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
+				addChildrenIfCollectionTerm(nameInData, dataGroupSpy);
+				matchingDataGroups.add(dataGroupSpy);
+			}
+
+		}
+
+		// requestedGetAllGroupsWithNameInData.add(nameInData)
+		return matchingDataGroups;
+	}
+
+	private void addChildrenIfCollectionTerm(String nameInData, DataGroupSpy dataGroupSpy) {
+		if ("childRefCollectTerm".equals(nameInData)) {
+			dataGroupSpy.addChild(
+					new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
+			dataGroupSpy.addAttributeByIdWithValue("type", "someAttributeTypeFromSpy");
+		}
+	}
+
+	@Override
+	public String getAttribute(String attributeId) {
+		return attributes.get(attributeId);
 	}
 
 }

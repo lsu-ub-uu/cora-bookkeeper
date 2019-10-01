@@ -1,4 +1,4 @@
-package se.uu.ub.cora.bookkeeper.linkcollector;
+package se.uu.ub.cora.bookkeeper;
 
 import se.uu.ub.cora.data.DataAtomic;
 

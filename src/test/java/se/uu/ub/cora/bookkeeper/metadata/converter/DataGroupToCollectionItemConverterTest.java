@@ -23,21 +23,22 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToCollectionItemConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
 		addTexts(dataGroup);
 
@@ -52,14 +53,14 @@ public class DataGroupToCollectionItemConverterTest {
 	}
 
 	private void addTexts(DataGroup dataGroup) {
-		DataGroup text = DataGroup.withNameInData("textId");
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		DataGroup text = new DataGroupSpy("textId");
+		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = DataGroup.withNameInData("defTextId");
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		DataGroup defText = new DataGroupSpy("defTextId");
+		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 	}
 }

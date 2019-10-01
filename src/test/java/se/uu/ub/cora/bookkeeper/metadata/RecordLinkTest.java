@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 
 public class RecordLinkTest {
 	private RecordLink recordLink;
@@ -51,7 +51,8 @@ public class RecordLinkTest {
 
 	@Test
 	public void testInitWithPath() {
-		recordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
+		recordLink.setLinkedPath(new DataGroupSpy("linkedPath"));
+		// recordLink.setLinkedPath(DataGroup.withNameInData("linkedPath"));
 		assertEquals(recordLink.getId(), "id");
 		assertEquals(recordLink.getNameInData(), "nameInData");
 		assertEquals(recordLink.getTextId(), "textId");

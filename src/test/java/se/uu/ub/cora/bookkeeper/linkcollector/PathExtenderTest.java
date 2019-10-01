@@ -20,17 +20,34 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 public class PathExtenderTest {
+
+	private DataGroupFactorySpy dataGroupFactory;
+	private DataAtomicFactorySpy dataAtomicFactory;
+
+	@BeforeMethod
+	public void setUp() {
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
+	}
+
 	@Test(expectedExceptions = InvocationTargetException.class)
 	public void testHiddenConstructor() throws Exception {
 		final Constructor<PathExtender> pathExtender = PathExtender.class.getDeclaredConstructor();
@@ -43,12 +60,27 @@ public class PathExtenderTest {
 		DataGroup dataGroup = createDataGroup();
 
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null, dataGroup);
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
 
 		checkExtendedPath(extendedPath);
 	}
 
+	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
+			String value) {
+		List<String> namesOfAtomicDataFactored = dataAtomicFactory.usedNameInDatas;
+		List<String> valuesOfAtomicDataFactored = dataAtomicFactory.usedValues;
+		assertEquals(namesOfAtomicDataFactored.get(index), nameInData);
+		assertEquals(valuesOfAtomicDataFactored.get(index), value);
+
+	}
+
 	private DataGroup createDataGroup() {
-		return DataGroup.withNameInData("someData");
+		return new DataGroupSpy("someData");
 	}
 
 	private void checkExtendedPath(DataGroup extendedPath) {
@@ -58,18 +90,23 @@ public class PathExtenderTest {
 
 	@Test
 	public void testExtendPathUsingDataRecordLink() {
-		DataGroup dataRecordLink = DataGroup.withNameInData("someData");
+		DataGroup dataRecordLink = new DataGroupSpy("someData");
 
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
-				"someRecordType");
+		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "someRecordType");
 		dataRecordLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId",
-				"someRecordId");
+		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "someRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,
 				dataRecordLink);
+
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
 
 		checkExtendedPath(extendedPath);
 	}
@@ -79,14 +116,18 @@ public class PathExtenderTest {
 		DataGroup dataGroup = createDataGroup();
 		dataGroup.addAttributeByIdWithValue("attribute1", "attribute1Value");
 
-		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null, dataGroup);
+		PathExtender.extendPathWithElementInformation(null, dataGroup);
 
-		checkExtendedPath(extendedPath);
-		DataGroup attributes = extendedPath.getFirstGroupWithNameInData("attributes");
-		DataGroup attribute = attributes.getFirstGroupWithNameInData("attribute");
-		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeName"), "attribute1");
-		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeValue"),
-				"attribute1Value");
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 3);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "attributes");
+		assertEquals(namesOfGroupsFactored.get(2), "attribute");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 3);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "attributeName", "attribute1");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "attributeValue", "attribute1Value");
 	}
 
 	@Test
@@ -94,10 +135,16 @@ public class PathExtenderTest {
 		DataGroup dataGroup = createDataGroup();
 		dataGroup.setRepeatId("e");
 
-		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null, dataGroup);
+		PathExtender.extendPathWithElementInformation(null, dataGroup);
 
-		checkExtendedPath(extendedPath);
-		assertEquals(extendedPath.getFirstAtomicValueWithNameInData("repeatId"), "e");
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 2);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "repeatId", "e");
+
 	}
 
 	@Test
@@ -108,6 +155,13 @@ public class PathExtenderTest {
 		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(parentPath,
 				dataGroup);
 
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
+
 		assertEquals(extendedPath.getNameInData(), "linkedPath");
 		assertEquals(extendedPath.getFirstAtomicValueWithNameInData("nameInData"),
 				"someNameInData");
@@ -115,8 +169,8 @@ public class PathExtenderTest {
 	}
 
 	private DataGroup createPath() {
-		DataGroup pathToCopy = DataGroup.withNameInData("linkedPath");
-		pathToCopy.addChild(DataAtomic.withNameInDataAndValue("nameInData", "someNameInData"));
+		DataGroup pathToCopy = new DataGroupSpy("linkedPath");
+		pathToCopy.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
 		return pathToCopy;
 	}
 
@@ -140,14 +194,26 @@ public class PathExtenderTest {
 
 		checkExtendedPath(extendedPath.getFirstGroupWithNameInData("linkedPath")
 				.getFirstGroupWithNameInData("linkedPath"));
+
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
 	}
 
 	@Test
 	public void testExtendPathWithAtomicElement() {
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
-				"someRecordType");
-		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null,
-				linkedRecordType);
-		assertFalse(extendedPath.containsChildWithNameInData("attributes"));
+		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "someRecordType");
+
+		PathExtender.extendPathWithElementInformation(null, linkedRecordType);
+
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "linkedRecordType");
 	}
 }

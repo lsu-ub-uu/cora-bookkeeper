@@ -25,6 +25,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class CollectedTermHolderTest {
@@ -44,7 +45,7 @@ public class CollectedTermHolderTest {
 	}
 
 	private void addOneCollectIndexTermCollectedTermToHolderWithId(String id) {
-		extraData = DataGroup.withNameInData("extraData");
+		extraData = new DataGroupSpy("extraData");
 		collectedTerm = CollectedTerm.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData(
 				"collectIndexTerm", id, "someTerm", extraData);
 		collectedTermHolder.addCollectedTerm(collectedTerm);
@@ -95,7 +96,7 @@ public class CollectedTermHolderTest {
 	}
 
 	private void addOneCollectPermissionTermCollectedTermToHolder() {
-		DataGroup extraData = DataGroup.withNameInData("extraData");
+		DataGroup extraData = new DataGroupSpy("extraData");
 		CollectedTerm collectedTerm = CollectedTerm
 				.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData("collectPermissionTerm",
 						"somePermissionTerm", "someTerm", extraData);

@@ -3,6 +3,7 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicFactory;
 

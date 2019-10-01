@@ -29,6 +29,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
@@ -66,7 +68,7 @@ public class PathCopierTest {
 	public void testCopyPath() {
 		DataGroup pathToCopy = createPathToCopy();
 
-		DataGroup copiedPath = PathCopier.copyPath(pathToCopy);
+		PathCopier.copyPath(pathToCopy);
 
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
 		assertEquals(namesOfGroupsFactored.size(), 1);
@@ -74,18 +76,12 @@ public class PathCopierTest {
 
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someNameInData");
-		checkCopiedPath(copiedPath);
 	}
 
 	private DataGroup createPathToCopy() {
 		DataGroup pathToCopy = new DataGroupSpy("linkedPath");
 		pathToCopy.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
 		return pathToCopy;
-	}
-
-	private void checkCopiedPath(DataGroup copiedPath) {
-		assertEquals(copiedPath.getNameInData(), "linkedPath");
-		assertEquals(copiedPath.getFirstAtomicValueWithNameInData("nameInData"), "someNameInData");
 	}
 
 	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
@@ -110,8 +106,8 @@ public class PathCopierTest {
 
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 2);
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someNameInData");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "repeatId", "c");
 
-		checkCopiedPath(copiedPath);
 		assertEquals(copiedPath.getFirstAtomicValueWithNameInData("repeatId"), "c");
 	}
 
@@ -122,7 +118,17 @@ public class PathCopierTest {
 
 		DataGroup copiedPath = PathCopier.copyPath(pathToCopy);
 
-		checkCopiedPath(copiedPath);
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 3);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "attributes");
+		assertEquals(namesOfGroupsFactored.get(2), "attribute");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 3);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someNameInData");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "attributeName", "type");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "attributeValue", "person");
+
 		DataGroup attributes = copiedPath.getFirstGroupWithNameInData("attributes");
 		DataGroup attribute = attributes.getFirstGroupWithNameInData("attribute");
 		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeName"), "type");
@@ -130,13 +136,10 @@ public class PathCopierTest {
 	}
 
 	private DataGroup createAttributes() {
-		// DataGroup attributes = DataGroup.withNameInData("attributes");
 		DataGroup attributes = new DataGroupSpy("attributes");
 		DataGroup attribute = new DataGroupSpy("attribute");
 		attributes.addChild(attribute);
-		// attribute.addChild(DataAtomic.withNameInDataAndValue("attributeName", "type"));
 		attribute.addChild(new DataAtomicSpy("attributeName", "type"));
-		// attribute.addChild(DataAtomic.withNameInDataAndValue("attributeValue", "person"));
 		attribute.addChild(new DataAtomicSpy("attributeValue", "person"));
 		return attributes;
 	}
@@ -147,10 +150,16 @@ public class PathCopierTest {
 		DataGroup pathToCopy2 = createPathToCopy();
 		pathToCopy.addChild(pathToCopy2);
 
-		DataGroup copiedPath = PathCopier.copyPath(pathToCopy);
+		PathCopier.copyPath(pathToCopy);
 
-		checkCopiedPath(copiedPath);
-		DataGroup copiedSubPath = copiedPath.getFirstGroupWithNameInData("linkedPath");
-		checkCopiedPath(copiedSubPath);
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 2);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "linkedPath");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 2);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someNameInData");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData", "someNameInData");
+
 	}
 }

@@ -1,5 +1,7 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;

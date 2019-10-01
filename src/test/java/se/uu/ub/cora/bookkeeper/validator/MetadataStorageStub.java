@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
