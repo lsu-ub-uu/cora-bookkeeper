@@ -26,9 +26,10 @@ import java.util.Iterator;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToRecordLinkConverterTest {
@@ -43,37 +44,35 @@ public class DataGroupToRecordLinkConverterTest {
 	}
 
 	private DataGroup createDataGroupContainingRecordLink() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "recordLink");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 		addTexts(dataGroup);
 
-		DataGroup linkedRecordType = DataGroup.withNameInData("linkedRecordType");
-		linkedRecordType
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		linkedRecordType
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordType"));
+		DataGroup linkedRecordType = new DataGroupSpy("linkedRecordType");
+		linkedRecordType.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		linkedRecordType.addChild(new DataAtomicSpy("linkedRecordId", "someRecordType"));
 		dataGroup.addChild(linkedRecordType);
-		// dataGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType",
+		// dataGroup.addChild(new DataAtomicSpy("linkedRecordType",
 		// "someRecordType"));
 		return dataGroup;
 	}
 
 	private void addTexts(DataGroup dataGroup) {
-		DataGroup text = DataGroup.withNameInData("textId");
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		DataGroup text = new DataGroupSpy("textId");
+		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = DataGroup.withNameInData("defTextId");
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		DataGroup defText = new DataGroupSpy("defTextId");
+		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 	}
 
@@ -90,7 +89,7 @@ public class DataGroupToRecordLinkConverterTest {
 
 	@Test
 	public void testToMetadataWithLinkedPath() {
-		dataGroup.addChild(DataGroup.withNameInData("linkedPath"));
+		dataGroup.addChild(new DataGroupSpy("linkedPath"));
 
 		RecordLink recordLink = converter.toMetadata();
 
@@ -99,7 +98,7 @@ public class DataGroupToRecordLinkConverterTest {
 
 	@Test
 	public void testToMetadataWithFinalValue() {
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("finalValue", "someInstance"));
+		dataGroup.addChild(new DataAtomicSpy("finalValue", "someInstance"));
 
 		RecordLink recordLink = converter.toMetadata();
 
@@ -108,10 +107,9 @@ public class DataGroupToRecordLinkConverterTest {
 
 	@Test
 	public void testToMetadataWithRefParentId() {
-		DataGroup refParentId = DataGroup.withNameInData("refParentId");
-		refParentId.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataRecordLink"));
-		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "someParent"));
+		DataGroup refParentId = new DataGroupSpy("refParentId");
+		refParentId.addChild(new DataAtomicSpy("linkedRecordType", "metadataRecordLink"));
+		refParentId.addChild(new DataAtomicSpy("linkedRecordId", "someParent"));
 		dataGroup.addChild(refParentId);
 
 		RecordLink recordLink = converter.toMetadata();
@@ -123,6 +121,10 @@ public class DataGroupToRecordLinkConverterTest {
 	public void testToMetadataWithAttributeReferences() {
 		DataGroup recordLinkDataGroup = createDataGroupContainingRecordLink();
 		DataCreator.addAttributesToDataGroup(recordLinkDataGroup);
+
+		DataGroupSpy attributesGroup = (DataGroupSpy) recordLinkDataGroup
+				.getFirstGroupWithNameInData("attributeReferences");
+		attributesGroup.numOfGetAllGroupsWithNameInDataToReturn.put("ref", 3);
 
 		DataGroupToMetadataConverter converter = DataGroupToRecordLinkConverter
 				.fromDataGroup(recordLinkDataGroup);
@@ -139,9 +141,9 @@ public class DataGroupToRecordLinkConverterTest {
 	private void assertAttributesBasedOnDataGroup(RecordLink recordLink) {
 		Iterator<String> attributeReferenceIterator = recordLink.getAttributeReferences()
 				.iterator();
-		assertEquals(attributeReferenceIterator.next(), "attribute1");
-		assertEquals(attributeReferenceIterator.next(), "attribute2");
-		assertEquals(attributeReferenceIterator.next(), "attribute3");
+		assertEquals(attributeReferenceIterator.next(), "someLinkedRecordIdFromSpy");
+		assertEquals(attributeReferenceIterator.next(), "someLinkedRecordIdFromSpy");
+		assertEquals(attributeReferenceIterator.next(), "someLinkedRecordIdFromSpy");
 	}
 
 }

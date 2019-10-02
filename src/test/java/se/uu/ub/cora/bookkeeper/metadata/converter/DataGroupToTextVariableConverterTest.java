@@ -24,8 +24,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToTextVariableConverterTest {
@@ -57,38 +58,37 @@ public class DataGroupToTextVariableConverterTest {
 	}
 
 	private DataGroup createDataGroup() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "textVar");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
 		addTextByNameInDataAndId(dataGroup, "textId", "otherTextId");
 		addTextByNameInDataAndId(dataGroup, "defTextId", "otherDefTextId");
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("regEx",
-				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
+		dataGroup.addChild(
+				new DataAtomicSpy("regEx", "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
 		return dataGroup;
 	}
 
 	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
-		DataGroup text = DataGroup.withNameInData(nameInData);
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		DataGroup text = new DataGroupSpy(nameInData);
+		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		dataGroup.addChild(text);
 	}
 
 	@Test
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
-		DataGroup refParentId = DataGroup.withNameInData("refParentId");
-		refParentId.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataTextVariable"));
-		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
+		DataGroup refParentId = new DataGroupSpy("refParentId");
+		refParentId.addChild(new DataAtomicSpy("linkedRecordType", "metadataTextVariable"));
+		refParentId.addChild(new DataAtomicSpy("linkedRecordId", "refParentId"));
 		dataGroup.addChild(refParentId);
 
 		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
@@ -102,7 +102,7 @@ public class DataGroupToTextVariableConverterTest {
 	@Test
 	public void testToMetadataWithFinalValue() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("finalValue", "finalValue"));
+		dataGroup.addChild(new DataAtomicSpy("finalValue", "finalValue"));
 
 		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
 				.fromDataGroup(dataGroup);

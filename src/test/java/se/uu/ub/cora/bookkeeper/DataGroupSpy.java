@@ -117,7 +117,7 @@ public class DataGroupSpy implements DataGroup {
 		if (numOfGetAllGroupsWithNameInDataToReturn.containsKey(nameInData)) {
 			for (int i = 0; i < numOfGetAllGroupsWithNameInDataToReturn.get(nameInData); i++) {
 				DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
-				addChildrenIfCollectionTerm(nameInData, dataGroupSpy);
+				possiblyAddChildren(nameInData, dataGroupSpy);
 				matchingDataGroups.add(dataGroupSpy);
 			}
 
@@ -127,12 +127,14 @@ public class DataGroupSpy implements DataGroup {
 		return matchingDataGroups;
 	}
 
-	private void addChildrenIfCollectionTerm(String nameInData, DataGroupSpy dataGroupSpy) {
+	private void possiblyAddChildren(String nameInData, DataGroupSpy dataGroupSpy) {
 		if ("childRefCollectTerm".equals(nameInData)) {
-			dataGroupSpy.addChild(
-					new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
+			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 			dataGroupSpy.addAttributeByIdWithValue("type", "someAttributeTypeFromSpy");
+		} else if ("ref".equals(nameInData)) {
+			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 		}
+
 	}
 
 	@Override
