@@ -23,6 +23,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
@@ -54,37 +55,37 @@ public class DataNumberVariableValidatorTest {
 
 	@Test
 	public void testInvalidNumberBelowMinimum() {
-		DataAtomic number = DataAtomic.withNameInDataAndValue("nameInData", "0");
+		DataAtomic number = new DataAtomicSpy("nameInData", "0");
 		assertTrue(numberDataValidator.validateData(number).dataIsInvalid());
 	}
 
 	@Test
 	public void testInvalidNumberOverMaximum() {
-		DataAtomic number = DataAtomic.withNameInDataAndValue("nameInData", "12");
+		DataAtomic number = new DataAtomicSpy("nameInData", "12");
 		assertTrue(numberDataValidator.validateData(number).dataIsInvalid());
 	}
 
 	@Test
 	public void testValidNumberSameAsMin() {
-		DataAtomic number = DataAtomic.withNameInDataAndValue("nameInData", String.valueOf(min));
+		DataAtomic number = new DataAtomicSpy("nameInData", String.valueOf(min));
 		assertTrue(numberDataValidator.validateData(number).dataIsValid());
 	}
 
 	@Test
 	public void testValidNumberSameAsMax() {
-		DataAtomic number = DataAtomic.withNameInDataAndValue("nameInData", String.valueOf(max));
+		DataAtomic number = new DataAtomicSpy("nameInData", String.valueOf(max));
 		assertTrue(numberDataValidator.validateData(number).dataIsValid());
 	}
 
 	@Test
 	public void testValidNumberBetweenMinAndMax() {
-		DataAtomic number = DataAtomic.withNameInDataAndValue("nameInData", "3");
+		DataAtomic number = new DataAtomicSpy("nameInData", "3");
 		assertTrue(numberDataValidator.validateData(number).dataIsValid());
 	}
 
 	@Test
 	public void testValidNumberBetweenMinAndMaxButTooManyDecimals() {
-		DataAtomic number = DataAtomic.withNameInDataAndValue("nameInData", "3.12");
+		DataAtomic number = new DataAtomicSpy("nameInData", "3.12");
 		assertTrue(numberDataValidator.validateData(number).dataIsInvalid());
 	}
 }

@@ -22,8 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 final class CollectedDataCreator {
 
@@ -52,16 +53,17 @@ final class CollectedDataCreator {
 	}
 
 	private DataGroup createDataGroupWithTypeAndId(String type, String id) {
-		DataGroup collectedData = DataGroup.withNameInData("collectedData");
-		collectedData.addChild(DataAtomic.withNameInDataAndValue("type", type));
-		collectedData.addChild(DataAtomic.withNameInDataAndValue("id", id));
+		DataGroup collectedData = DataGroupProvider.getDataGroupUsingNameInData("collectedData");
+		collectedData
+				.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue("type", type));
+		collectedData.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue("id", id));
 		return collectedData;
 	}
 
 	private void addCollectedTermsToCollectedData(Map<String, List<DataGroup>> collectedTerms,
 			DataGroup collectedData) {
 		for (Entry<String, List<DataGroup>> entry : collectedTerms.entrySet()) {
-			DataGroup termTypeGroup = DataGroup.withNameInData(entry.getKey());
+			DataGroup termTypeGroup = DataGroupProvider.getDataGroupUsingNameInData(entry.getKey());
 			addCollectedTermsToTermTypeGroup(termTypeGroup, entry.getValue());
 			collectedData.addChild(termTypeGroup);
 		}

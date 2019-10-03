@@ -25,22 +25,33 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 public class MetadataMatchDataTest {
 	private static final String NAME_IN_DATA = "nameInData";
 	private MetadataHolder metadataHolder;
 	private MetadataMatchData metadataMatch;
+	private DataGroupFactorySpy dataGroupFactory;
+	private DataAtomicFactorySpy dataAtomicFactory;
 
 	@BeforeMethod
 	public void setUp() {
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		metadataHolder = new MetadataHolder();
 		metadataMatch = MetadataMatchData.withMetadataHolder(metadataHolder);
 	}
@@ -49,7 +60,7 @@ public class MetadataMatchDataTest {
 	public void testMatchingNameInDataOnGroup() {
 		MetadataElement metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
 				"id", NAME_IN_DATA, "textId", "defTextId");
-		DataElement dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataElement dataElement = new DataGroupSpy(NAME_IN_DATA);
 
 		assertTrue(dataIsMatching(metadataElement, dataElement));
 	}
@@ -62,7 +73,7 @@ public class MetadataMatchDataTest {
 	public void testNoMatchNameInDataOnGroupWrongNameInData() {
 		MetadataElement metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
 				"id", NAME_IN_DATA, "textId", "defTextId");
-		DataElement dataElement = DataGroup.withNameInData("NOT_nameInData");
+		DataElement dataElement = new DataGroupSpy("NOT_nameInData");
 
 		assertFalse(dataIsMatching(metadataElement, dataElement));
 	}
@@ -75,7 +86,7 @@ public class MetadataMatchDataTest {
 				NAME_IN_DATA, "textId", "defTextId");
 		metadataElement.addAttributeReference("collectionVariableChildId");
 
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("collectionVariableNameInData",
 				"collectionItem2NameInData");
 		assertTrue(dataIsMatching(metadataElement, dataElement));
@@ -126,7 +137,7 @@ public class MetadataMatchDataTest {
 				NAME_IN_DATA, "textId", "defTextId");
 		metadataElement.addAttributeReference("collectionVariableChildId");
 
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("collectionVariableNameInData",
 				"collectionItem1NameInData");
 		assertFalse(dataIsMatching(metadataElement, dataElement));
@@ -140,7 +151,7 @@ public class MetadataMatchDataTest {
 				NAME_IN_DATA, "textId", "defTextId");
 		metadataElement.addAttributeReference("collectionVariableChildId");
 
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		assertFalse(dataIsMatching(metadataElement, dataElement));
 	}
 
@@ -152,7 +163,7 @@ public class MetadataMatchDataTest {
 				NAME_IN_DATA, "textId", "defTextId");
 		metadataElement.addAttributeReference("collectionVariableChildId");
 
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("NOT_collectionVariableNameInData",
 				"collectionItem2NameInData");
 		assertFalse(dataIsMatching(metadataElement, dataElement));
@@ -166,7 +177,7 @@ public class MetadataMatchDataTest {
 				NAME_IN_DATA, "textId", "defTextId");
 		metadataElement.addAttributeReference("collectionVariableChildId");
 
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("collectionVariableNameInData",
 				"collectionItem2NameInData");
 		dataElement.addAttributeByIdWithValue("NOT_collectionVariableNameInData",
@@ -178,7 +189,7 @@ public class MetadataMatchDataTest {
 	public void testNoMatchMetadataDoesNotSpecifyAnyAttributeExtraAttributeInData() {
 		MetadataElement metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
 				"id", NAME_IN_DATA, "textId", "defTextId");
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("collectionVariableNameInData",
 				"collectionItem2NameInData");
 
@@ -196,7 +207,7 @@ public class MetadataMatchDataTest {
 		metadataElement.addAttributeReference("collectionVariableChildId");
 		metadataElement.addAttributeReference("collectionVariableChild3Id");
 
-		DataGroup dataElement = DataGroup.withNameInData(NAME_IN_DATA);
+		DataGroup dataElement = new DataGroupSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("collectionVariableNameInData",
 				"collectionItem2NameInData");
 		dataElement.addAttributeByIdWithValue("collectionVariable3NameInData",
