@@ -42,9 +42,12 @@ public class DataValidatorImp implements DataValidator {
 	private String metadataId;
 	private DataElement dataElement;
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
+	private DataValidatorFactory validatorFactory;
 
-	public DataValidatorImp(MetadataStorage metadataStorage) {
+	public DataValidatorImp(MetadataStorage metadataStorage,
+			DataValidatorFactory validatorFactory) {
 		this.metadataStorage = metadataStorage;
+		this.validatorFactory = validatorFactory;
 	}
 
 	@Override
@@ -86,6 +89,7 @@ public class DataValidatorImp implements DataValidator {
 	private ValidationAnswer validateDataUsingDataValidator() {
 		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(recordTypeHolder,
 				metadataHolder);
+		validatorFactory.factor(metadataId);
 		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
 		return elementValidator.validateData(dataElement);
 	}
@@ -94,4 +98,10 @@ public class DataValidatorImp implements DataValidator {
 		// needed for test
 		return metadataStorage;
 	}
+
+	Map<String, DataGroup> getRecordTypeHolder() {
+		// needed for test
+		return recordTypeHolder;
+	}
+
 }

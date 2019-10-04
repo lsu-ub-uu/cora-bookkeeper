@@ -20,16 +20,16 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-import org.testng.Assert;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
@@ -41,72 +41,113 @@ import se.uu.ub.cora.storage.MetadataStorage;
  * 
  */
 public class DataValidatorTest {
-	private DataValidator dataValidator;
+	private DataValidatorImp dataValidator;
 	private MetadataStorage metadataStorage;
+	private DataGroup dataGroupToValidate;
+	private DataValidatorFactorySpy validatorFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		metadataStorage = new MetadataStorageStub();
-		dataValidator = new DataValidatorImp(metadataStorage);
+		// metadataStorage = new MetadataStorageStub();
+		metadataStorage = new MetadataStorageForDataValidatorSpy();
+		validatorFactory = new DataValidatorFactorySpy();
+		dataValidator = new DataValidatorImp(metadataStorage, validatorFactory);
+		dataGroupToValidate = DataGroup.withNameInData("someGroup");
 	}
 
 	@Test
 	public void testGetMetadataStorage() {
-		DataValidatorImp dataValidatorImp = (DataValidatorImp) dataValidator;
+		DataValidatorImp dataValidatorImp = dataValidator;
 		assertSame(dataValidatorImp.getMetadataStorage(), metadataStorage);
 	}
 
 	@Test
-	public void testValidateWhereMetadataIdNotPresentInMetadata() {
-		DataElement data = DataAtomic.withNameInDataAndValue("anId", "12:12");
-		ValidationAnswer validationAnswer = dataValidator.validateData("doesNotExist", data);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertFalse(validationAnswer.dataIsValid(),
-				"The regular expression should be validated to false");
+	public void testRecordTypeHolderCreatedCorrectly() {
+		dataValidator.validateData("someMetadataId", dataGroupToValidate);
+		Map<String, DataGroup> recordTypeHolder = dataValidator.getRecordTypeHolder();
+		assertEquals(recordTypeHolder.size(), 1);
+
+		assertSameDataGroupInHolderAsReturnedFromSpy(recordTypeHolder, "someRecordId", 0);
+	}
+
+	private void assertSameDataGroupInHolderAsReturnedFromSpy(
+			Map<String, DataGroup> recordTypeHolder, String recordTypeId, int index) {
+		MetadataStorageForDataValidatorSpy metadataStorageSpy = (MetadataStorageForDataValidatorSpy) metadataStorage;
+		List<DataGroup> recordTypesAsList = new ArrayList<>();
+		recordTypesAsList.addAll(metadataStorageSpy.recordTypes);
+		DataGroup dataGroup = recordTypeHolder.get(recordTypeId);
+		assertSame(dataGroup, recordTypesAsList.get(index));
 	}
 
 	@Test
-	public void testValidateTextVariable() {
-		DataElement data = DataAtomic.withNameInDataAndValue("textVar2", "12:12");
-		assertTrue(dataValidator.validateData("textVar2", data).dataIsValid(),
-				"The regular expression should be validated to true");
+	public void testMetadataHolderCreatedCorrectly() {
+		// DataGroup dataGroupToValidate = DataGroup.withNameInData("someGroup");
+		dataValidator.validateData("someMetadataId", dataGroupToValidate);
+		MetadataStorageForDataValidatorSpy metadataStorageSpy = (MetadataStorageForDataValidatorSpy) metadataStorage;
+		assertTrue(metadataStorageSpy.getMetadataElementsWasCalled);
 	}
 
 	@Test
-	public void testValidateCollectionVariable() {
-		DataElement data = DataAtomic.withNameInDataAndValue("collectionVar2", "person");
-		Assert.assertEquals(dataValidator.validateData("collectionVar2", data).dataIsValid(), true);
-		DataElement data2 = DataAtomic.withNameInDataAndValue("collectionVar2", "place");
-		assertTrue(dataValidator.validateData("collectionVar2", data2).dataIsValid());
+	public void testDataValidatorFactoryWasCalled() {
+		dataValidator.validateData("someMetadataId", dataGroupToValidate);
+		assertTrue(validatorFactory.factorWasCalled);
+		assertEquals(validatorFactory.metadataIdSentToFactory, "someMetadataId");
+
+		// TODO: kolla att validatorn från psyen har blivit anropad till validateData
+		// validatorFactory
 	}
 
-	@Test
-	public void testValidateMetadataGroup() {
-		DataGroup dataGroup = DataGroup.withNameInData("group");
-		dataGroup.addAttributeByIdWithValue("groupTypeVar", "groupType1");
-		DataAtomic child1 = DataAtomic.withNameInDataAndValue("textVarNameInData", "10:10");
-		child1.setRepeatId("4");
-		dataGroup.addChild(child1);
-		DataAtomic child2 = DataAtomic.withNameInDataAndValue("textVarNameInData", "11:11");
-		child2.setRepeatId("3");
-		dataGroup.addChild(child2);
-		assertTrue(dataValidator.validateData("group", dataGroup).dataIsValid(),
-				"The group should be validate to true");
-	}
-
-	@Test
-	public void testValidateRecordLink() {
-
-		DataGroup dataGroup = DataGroup.withNameInData("bush");
-		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
-				"linkedRecordType1");
-		dataTestLink.addChild(linkedRecordType);
-
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
-		dataTestLink.addChild(linkedRecordId);
-		dataGroup.addChild(dataTestLink);
-		ValidationAnswer validationAnswer = dataValidator.validateData("bush", dataGroup);
-		assertTrue(validationAnswer.dataIsValid(), "The group should be validate to true");
-	}
+	// @Test
+	// public void testValidateWhereMetadataIdNotPresentInMetadata() {
+	// DataElement data = DataAtomic.withNameInDataAndValue("anId", "12:12");
+	// ValidationAnswer validationAnswer = dataValidator.validateData("doesNotExist", data);
+	// assertEquals(validationAnswer.getErrorMessages().size(), 1);
+	// assertFalse(validationAnswer.dataIsValid(),
+	// "The regular expression should be validated to false");
+	// }
+	//
+	// @Test
+	// public void testValidateTextVariable() {
+	// DataElement data = DataAtomic.withNameInDataAndValue("textVar2", "12:12");
+	// assertTrue(dataValidator.validateData("textVar2", data).dataIsValid(),
+	// "The regular expression should be validated to true");
+	// }
+	//
+	// @Test
+	// public void testValidateCollectionVariable() {
+	// DataElement data = DataAtomic.withNameInDataAndValue("collectionVar2", "person");
+	// Assert.assertEquals(dataValidator.validateData("collectionVar2", data).dataIsValid(), true);
+	// DataElement data2 = DataAtomic.withNameInDataAndValue("collectionVar2", "place");
+	// assertTrue(dataValidator.validateData("collectionVar2", data2).dataIsValid());
+	// }
+	//
+	// @Test
+	// public void testValidateMetadataGroup() {
+	// DataGroup dataGroup = DataGroup.withNameInData("group");
+	// dataGroup.addAttributeByIdWithValue("groupTypeVar", "groupType1");
+	// DataAtomic child1 = DataAtomic.withNameInDataAndValue("textVarNameInData", "10:10");
+	// child1.setRepeatId("4");
+	// dataGroup.addChild(child1);
+	// DataAtomic child2 = DataAtomic.withNameInDataAndValue("textVarNameInData", "11:11");
+	// child2.setRepeatId("3");
+	// dataGroup.addChild(child2);
+	// assertTrue(dataValidator.validateData("group", dataGroup).dataIsValid(),
+	// "The group should be validate to true");
+	// }
+	//
+	// @Test
+	// public void testValidateRecordLink() {
+	//
+	// DataGroup dataGroup = DataGroup.withNameInData("bush");
+	// DataGroup dataTestLink = DataGroup.withNameInData("testLink");
+	// DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
+	// "linkedRecordType1");
+	// dataTestLink.addChild(linkedRecordType);
+	//
+	// DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
+	// dataTestLink.addChild(linkedRecordId);
+	// dataGroup.addChild(dataTestLink);
+	// ValidationAnswer validationAnswer = dataValidator.validateData("bush", dataGroup);
+	// assertTrue(validationAnswer.dataIsValid(), "The group should be validate to true");
+	// }
 }
