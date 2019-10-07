@@ -19,14 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
 import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 /**
@@ -38,10 +31,8 @@ import se.uu.ub.cora.storage.MetadataStorage;
 public class DataValidatorImp implements DataValidator {
 
 	private MetadataStorage metadataStorage;
-	private MetadataHolder metadataHolder;
 	private String metadataId;
 	private DataElement dataElement;
-	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 	private DataValidatorFactory validatorFactory;
 
 	public DataValidatorImp(MetadataStorage metadataStorage,
@@ -67,30 +58,11 @@ public class DataValidatorImp implements DataValidator {
 	}
 
 	private ValidationAnswer tryToValidateData() {
-		getRecordTypesFromStorage();
-		getMetadataFromStorage();
 		return validateDataUsingDataValidator();
 	}
 
-	private void getRecordTypesFromStorage() {
-		Collection<DataGroup> recordTypes = metadataStorage.getRecordTypes();
-		for (DataGroup dataGroup : recordTypes) {
-			DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-			String recordId = recordInfo.getFirstAtomicValueWithNameInData("id");
-			recordTypeHolder.put(recordId, dataGroup);
-		}
-	}
-
-	private void getMetadataFromStorage() {
-		metadataHolder = new MetadataHolderFromStoragePopulator()
-				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
-	}
-
 	private ValidationAnswer validateDataUsingDataValidator() {
-		DataValidatorFactory dataValidatorFactory = new DataValidatorFactoryImp(recordTypeHolder,
-				metadataHolder);
-		validatorFactory.factor(metadataId);
-		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
+		DataElementValidator elementValidator = validatorFactory.factor(metadataId);
 		return elementValidator.validateData(dataElement);
 	}
 
@@ -98,10 +70,4 @@ public class DataValidatorImp implements DataValidator {
 		// needed for test
 		return metadataStorage;
 	}
-
-	Map<String, DataGroup> getRecordTypeHolder() {
-		// needed for test
-		return recordTypeHolder;
-	}
-
 }
