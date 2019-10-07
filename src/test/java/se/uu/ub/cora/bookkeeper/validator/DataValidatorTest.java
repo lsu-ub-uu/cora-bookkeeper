@@ -24,12 +24,12 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-import org.testng.Assert;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
@@ -41,72 +41,85 @@ import se.uu.ub.cora.storage.MetadataStorage;
  * 
  */
 public class DataValidatorTest {
-	private DataValidator dataValidator;
+	private DataValidatorImp dataValidator;
 	private MetadataStorage metadataStorage;
+	private DataGroup dataGroupToValidate;
+	private DataValidatorFactorySpy validatorFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		metadataStorage = new MetadataStorageStub();
-		dataValidator = new DataValidatorImp(metadataStorage);
+		metadataStorage = new MetadataStorageForDataValidatorSpy();
+		validatorFactory = new DataValidatorFactorySpy();
+		dataValidator = new DataValidatorImp(metadataStorage, validatorFactory);
+		dataGroupToValidate = DataGroup.withNameInData("someGroup");
 	}
 
 	@Test
 	public void testGetMetadataStorage() {
-		DataValidatorImp dataValidatorImp = (DataValidatorImp) dataValidator;
+		DataValidatorImp dataValidatorImp = dataValidator;
 		assertSame(dataValidatorImp.getMetadataStorage(), metadataStorage);
 	}
 
 	@Test
-	public void testValidateWhereMetadataIdNotPresentInMetadata() {
-		DataElement data = DataAtomic.withNameInDataAndValue("anId", "12:12");
-		ValidationAnswer validationAnswer = dataValidator.validateData("doesNotExist", data);
+	public void testDataValidatorDataIsInvalidOneMessage() {
+		validatorFactory.numOfInvalidMessages = 1;
+		ValidationAnswer validationAnswer = dataValidator.validateData("someMetadataId",
+				dataGroupToValidate);
+		assertFalse(validationAnswer.dataIsValid());
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertFalse(validationAnswer.dataIsValid(),
-				"The regular expression should be validated to false");
+		List<String> errorMessagesAsList = getErrorMessagesAsList(validationAnswer);
+		assertEquals(errorMessagesAsList.get(0), "an errorMessageFromSpy 0");
+
+	}
+
+	private List<String> getErrorMessagesAsList(ValidationAnswer validationAnswer) {
+		List<String> errorMessagesAsList = new ArrayList<>();
+		errorMessagesAsList.addAll(validationAnswer.getErrorMessages());
+		return errorMessagesAsList;
 	}
 
 	@Test
-	public void testValidateTextVariable() {
-		DataElement data = DataAtomic.withNameInDataAndValue("textVar2", "12:12");
-		assertTrue(dataValidator.validateData("textVar2", data).dataIsValid(),
-				"The regular expression should be validated to true");
+	public void testDataValidatorDataIsInvalidThreeMessage() {
+		validatorFactory.numOfInvalidMessages = 3;
+		ValidationAnswer validationAnswer = dataValidator.validateData("someMetadataId",
+				dataGroupToValidate);
+		assertFalse(validationAnswer.dataIsValid());
+		assertEquals(validationAnswer.getErrorMessages().size(), 3);
+		List<String> errorMessagesAsList = getErrorMessagesAsList(validationAnswer);
+		assertEquals(errorMessagesAsList.get(0), "an errorMessageFromSpy 0");
+		assertEquals(errorMessagesAsList.get(1), "an errorMessageFromSpy 1");
+		assertEquals(errorMessagesAsList.get(2), "an errorMessageFromSpy 2");
 	}
 
 	@Test
-	public void testValidateCollectionVariable() {
-		DataElement data = DataAtomic.withNameInDataAndValue("collectionVar2", "person");
-		Assert.assertEquals(dataValidator.validateData("collectionVar2", data).dataIsValid(), true);
-		DataElement data2 = DataAtomic.withNameInDataAndValue("collectionVar2", "place");
-		assertTrue(dataValidator.validateData("collectionVar2", data2).dataIsValid());
+	public void testDataValidatorDataIsValid() {
+		ValidationAnswer validationAnswer = dataValidator.validateData("someMetadataId",
+				dataGroupToValidate);
+		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
-	public void testValidateMetadataGroup() {
-		DataGroup dataGroup = DataGroup.withNameInData("group");
-		dataGroup.addAttributeByIdWithValue("groupTypeVar", "groupType1");
-		DataAtomic child1 = DataAtomic.withNameInDataAndValue("textVarNameInData", "10:10");
-		child1.setRepeatId("4");
-		dataGroup.addChild(child1);
-		DataAtomic child2 = DataAtomic.withNameInDataAndValue("textVarNameInData", "11:11");
-		child2.setRepeatId("3");
-		dataGroup.addChild(child2);
-		assertTrue(dataValidator.validateData("group", dataGroup).dataIsValid(),
-				"The group should be validate to true");
+	public void testDataValidatorFactoryWasCalled() {
+		dataValidator.validateData("someMetadataId", dataGroupToValidate);
+		assertTrue(validatorFactory.factorWasCalled);
+		assertEquals(validatorFactory.metadataIdSentToFactory, "someMetadataId");
+
+		DataElementValidatorSpy elementValidator = validatorFactory.elementValidator;
+		assertEquals(elementValidator.dataElement, dataGroupToValidate);
 	}
 
 	@Test
-	public void testValidateRecordLink() {
+	public void testNoValidatorFactored() {
+		validatorFactory.throwError = true;
+		ValidationAnswer validationAnswer = dataValidator.validateData("someMetadataId",
+				dataGroupToValidate);
+		assertTrue(validatorFactory.factorWasCalled);
 
-		DataGroup dataGroup = DataGroup.withNameInData("bush");
-		DataGroup dataTestLink = DataGroup.withNameInData("testLink");
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
-				"linkedRecordType1");
-		dataTestLink.addChild(linkedRecordType);
-
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "bush1");
-		dataTestLink.addChild(linkedRecordId);
-		dataGroup.addChild(dataTestLink);
-		ValidationAnswer validationAnswer = dataValidator.validateData("bush", dataGroup);
-		assertTrue(validationAnswer.dataIsValid(), "The group should be validate to true");
+		List<String> errorMessagesAsList = getErrorMessagesAsList(validationAnswer);
+		assertEquals(errorMessagesAsList.size(), 1);
+		assertEquals(errorMessagesAsList.get(0),
+				"DataElementValidator not created for the requested metadataId: "
+						+ "someMetadataId with error: Error from validatorFactorySpy");
 	}
+
 }
