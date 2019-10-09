@@ -102,11 +102,11 @@ public class DataRecordLinkCollectorTest {
 
 		assertEquals(namesOfGroupsFactored.size(), 5);
 
-		assertEquals(namesOfGroupsFactored.get(0), "collectedDataLinks");
-		assertEquals(namesOfGroupsFactored.get(1), "linkedPath");
-		assertEquals(namesOfGroupsFactored.get(2), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(3), "from");
-		assertEquals(namesOfGroupsFactored.get(4), "to");
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(2), "from");
+		assertEquals(namesOfGroupsFactored.get(3), "to");
+		assertEquals(namesOfGroupsFactored.get(4), "collectedDataLinks");
 
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 5);
 		assertEquals(dataAtomicFactory.usedValues.size(), 5);

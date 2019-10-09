@@ -76,6 +76,7 @@ public class DataGroupTermCollectorTest {
 	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
 		DataGroup book = createBookWithNoTitle();
 		book.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		setNumOfChildRefCollectTermsToReturnFromSpy(book, 1);
 
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
 		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
@@ -88,6 +89,12 @@ public class DataGroupTermCollectorTest {
 
 		DataGroup indexTerms2 = collectedData2.getFirstGroupWithNameInData("index");
 		assertEquals(indexTerms2.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
+	}
+
+	private void setNumOfChildRefCollectTermsToReturnFromSpy(DataGroup dataGroup,
+			int numOfCollectTermsToReturn) {
+		((DataGroupSpy) dataGroup).numOfGetAllGroupsWithNameInDataToReturn
+				.put("childRefCollectTerm", numOfCollectTermsToReturn);
 	}
 
 	@Test

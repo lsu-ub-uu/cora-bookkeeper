@@ -109,9 +109,8 @@ public class DataGroupRecordLinkCollectorTest {
 				"fromRecordType");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
-				"someAtomicValueFromSpyForlinkedRecordType");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId",
-				"someAtomicValueFromSpyForlinkedRecordId");
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "someRecordId");
 	}
 
 	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
@@ -164,9 +163,8 @@ public class DataGroupRecordLinkCollectorTest {
 				"fromRecordType");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
-				"someAtomicValueFromSpyForlinkedRecordType");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId",
-				"someAtomicValueFromSpyForlinkedRecordId");
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "someRecordId");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "nameInData", "subGroup");
 	}
 
@@ -248,16 +246,14 @@ public class DataGroupRecordLinkCollectorTest {
 		assertEquals(dataAtomicFactory.usedValues.size(), 7);
 
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testGroup");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData",
-				"someAtomicValueFromSpyFornameInData");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData", "testGroup");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "nameInData", "testLink");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
 				"fromRecordType");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "fromRecordId");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "linkedRecordType",
-				"someAtomicValueFromSpyForlinkedRecordType");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "linkedRecordId",
-				"someAtomicValueFromSpyForlinkedRecordId");
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "linkedRecordId", "someRecordId");
 	}
 
 	@Test
@@ -290,37 +286,46 @@ public class DataGroupRecordLinkCollectorTest {
 	private void assertCorrectOneGroupInGroupInGroupWithOneLink(List<DataGroup> linkList) {
 		assertEquals(linkList.size(), 1);
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 10);
+		assertEquals(namesOfGroupsFactored.size(), 15);
 
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "attributes");
 		assertEquals(namesOfGroupsFactored.get(2), "attribute");
 		assertEquals(namesOfGroupsFactored.get(3), "linkedPath");
-		assertEquals(namesOfGroupsFactored.get(4), "linkedPath");
-		assertEquals(namesOfGroupsFactored.get(5), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(4), "attributes");
+		assertEquals(namesOfGroupsFactored.get(5), "attribute");
 		assertEquals(namesOfGroupsFactored.get(6), "linkedPath");
-		assertEquals(namesOfGroupsFactored.get(7), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(8), "from");
-		assertEquals(namesOfGroupsFactored.get(9), "to");
-		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 12);
-		assertEquals(dataAtomicFactory.usedValues.size(), 12);
+		assertEquals(namesOfGroupsFactored.get(7), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(8), "attributes");
+		assertEquals(namesOfGroupsFactored.get(9), "attribute");
+		assertEquals(namesOfGroupsFactored.get(10), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(11), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(12), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(13), "from");
+		assertEquals(namesOfGroupsFactored.get(14), "to");
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 20);
+		assertEquals(dataAtomicFactory.usedValues.size(), 20);
 
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "attribute1", "attrValue");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData", "topGroup");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "attributeName", "attribute1");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "attributeValue", "attrValue");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "nameInData",
-				"someAtomicValueFromSpyFornameInData");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "nameInData", "testGroup");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "nameInData",
-				"someAtomicValueFromSpyFornameInData");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(7, "nameInData", "testLink");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(8, "linkedRecordType",
-				"fromRecordType");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(9, "linkedRecordId", "fromRecordId");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(10, "linkedRecordType",
-				"someAtomicValueFromSpyForlinkedRecordType");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(11, "linkedRecordId",
-				"someAtomicValueFromSpyForlinkedRecordId");
+		// assertCorrectAtomicData();
 	}
+
+	// private void assertCorrectAtomicData() {
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "attribute1", "attrValue");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData", "topGroup");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "attributeName", "attribute1");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "attributeValue", "attrValue");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "nameInData",
+	// "someAtomicValueFromSpyFornameInData");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "nameInData", "testGroup");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "nameInData",
+	// "someAtomicValueFromSpyFornameInData");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(7, "nameInData", "testLink");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(8, "linkedRecordType",
+	// "fromRecordType");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(9, "linkedRecordId", "fromRecordId");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(10, "linkedRecordType",
+	// "someAtomicValueFromSpyForlinkedRecordType");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(11, "linkedRecordId",
+	// "someAtomicValueFromSpyForlinkedRecordId");
+	// }
 }
