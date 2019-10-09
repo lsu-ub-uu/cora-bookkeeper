@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -145,6 +146,17 @@ public class PathExtenderTest {
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "someData");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "repeatId", "e");
 
+	}
+
+	@Test
+	public void testExtendPathUsingDataGroupWithEmptyRepeatId() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.setRepeatId("");
+
+		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null, dataGroup);
+
+		checkExtendedPath(extendedPath);
+		assertFalse(extendedPath.containsChildWithNameInData("repeatId"));
 	}
 
 	@Test

@@ -76,10 +76,14 @@ public final class PathExtender {
 	}
 
 	private static void extendPathWithRepeatId(DataElement dataElement, DataGroup currentPath) {
-		if (dataElement.getRepeatId() != null) {
+		if (hasNonEmptyRepeatId(dataElement)) {
 			currentPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(REPEAT_ID,
 					dataElement.getRepeatId()));
 		}
+	}
+
+	private static boolean hasNonEmptyRepeatId(DataElement dataElement) {
+		return dataElement.getRepeatId() != null && !"".equals(dataElement.getRepeatId());
 	}
 
 	private static DataGroup extendPathWithElementPath(DataGroup parentPath,
