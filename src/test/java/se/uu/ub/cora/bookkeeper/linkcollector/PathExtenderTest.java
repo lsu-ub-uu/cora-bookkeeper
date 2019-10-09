@@ -101,6 +101,17 @@ public class PathExtenderTest {
 	}
 
 	@Test
+	public void testExtendPathUsingDataGroupWithEmptyRepeatId() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.setRepeatId("");
+
+		DataGroup extendedPath = PathExtender.extendPathWithElementInformation(null, dataGroup);
+
+		checkExtendedPath(extendedPath);
+		assertFalse(extendedPath.containsChildWithNameInData("repeatId"));
+	}
+
+	@Test
 	public void testExtendPathUsingDataGroupWithParentPath() {
 		DataGroup dataGroup = createDataGroup();
 		DataGroup parentPath = createPath();
