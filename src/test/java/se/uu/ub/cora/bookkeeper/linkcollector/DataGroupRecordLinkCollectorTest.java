@@ -231,6 +231,9 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup recordToRecordLink = linkList.get(0);
 		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
 		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
+
+		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
+		assertFalse(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
 	}
 
 	@Test
