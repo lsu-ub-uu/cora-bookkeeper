@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 import java.util.List;
 
@@ -94,12 +95,7 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup recordToRecordLink = linkList.get(0);
 		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
 
-		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 4);
-		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
-		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(2), "from");
-		assertEquals(namesOfGroupsFactored.get(3), "to");
+		assertCorrectGroupsFactoredForOneGroupWithOneLink();
 
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 5);
 		assertEquals(dataAtomicFactory.usedValues.size(), 5);
@@ -111,6 +107,15 @@ public class DataGroupRecordLinkCollectorTest {
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
 				"someRecordType");
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "someRecordId");
+	}
+
+	private void assertCorrectGroupsFactoredForOneGroupWithOneLink() {
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 4);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(2), "from");
+		assertEquals(namesOfGroupsFactored.get(3), "to");
 	}
 
 	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
@@ -169,17 +174,37 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	@Test
-	public void testOneGroupWithOneLinkWithPath() {
+	public void testOneGroupWithOneLinkWithPathAndRepeatId() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
-		DataGroup dataGroup = createDataGroupContainingLink();
+		DataGroup dataGroup = createDataGroupContainingLinkWithRepeatId();
 
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
+
 		assertEquals(linkList.size(), 1);
 
-		assertCorrectOneGroupWithOneLink(linkList);
+		DataGroup recordToRecordLink = linkList.get(0);
+		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
+
+		assertCorrectGroupsFactoredForOneGroupWithOneLink();
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 8);
+		assertEquals(dataAtomicFactory.usedValues.size(), 8);
+
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testLink");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "repeatId", "e3");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordType",
+				"fromRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordId", "fromRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRepeatId", "e3");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "linkedRecordType",
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "linkedRecordId", "someRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(7, "linkedRepeatId", "e3");
+
+		// assertCorrectOneGroupWithOneLink(linkList);
 	}
 
-	private DataGroup createDataGroupContainingLink() {
+	private DataGroup createDataGroupContainingLinkWithRepeatId() {
 		// DataGroup dataGroup = DataGroupProvider.getDataGroupUsingNameInData("testGroup");
 		DataGroup dataGroup = new DataGroupSpy("testGroup");
 
@@ -208,6 +233,12 @@ public class DataGroupRecordLinkCollectorTest {
 		assertEquals(linkList.size(), 1);
 
 		assertCorrectOneGroupWithOneLink(linkList);
+		DataGroup recordToRecordLink = linkList.get(0);
+		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
+		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
+
+		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
+		assertFalse(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
 	}
 
 	@Test
