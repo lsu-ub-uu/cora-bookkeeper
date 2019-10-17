@@ -227,7 +227,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedDataTermDataGroupWithType(String collectType) {
-		// DataGroup collectedDataTerm = DataGroup.withNameInData("collectedDataTerm");
 		DataGroup collectedDataTerm = DataGroupProvider
 				.getDataGroupUsingNameInData("collectedDataTerm");
 		collectedDataTerm.addAttributeByIdWithValue("type", collectType);
@@ -242,8 +241,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void createAndAddCollectDataTermId(String collectTermId, DataGroup collectedDataTerm) {
 		DataAtomic collectedDataTermId = DataAtomicProvider
 				.getDataAtomicUsingNameInDataAndValue("collectTermId", collectTermId);
-		// DataAtomic collectedDataTermId = DataAtomic.withNameInDataAndValue("collectTermId",
-		// collectTermId);
 		collectedDataTerm.addChild(collectedDataTermId);
 	}
 
@@ -251,8 +248,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 			DataGroup collectedDataTerm) {
 		DataAtomic collectDataTermValue = DataAtomicProvider
 				.getDataAtomicUsingNameInDataAndValue("collectTermValue", childDataElementValue);
-		// DataAtomic collectDataTermValue = DataAtomic.withNameInDataAndValue("collectTermValue",
-		// childDataElementValue);
 		collectedDataTerm.addChild(collectDataTermValue);
 	}
 

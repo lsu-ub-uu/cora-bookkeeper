@@ -70,13 +70,23 @@ public class DataGroupTermCollectorTest {
 
 		assertFalse(collectedData.containsChildWithNameInData("index"));
 		assertFalse(collectedData.containsChildWithNameInData("permission"));
+
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 1);
+		assertEquals(namesOfGroupsFactored.get(0), "collectedData");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 2);
+		assertEquals(dataAtomicFactory.usedValues.size(), 2);
+
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "type", "book");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "id", "book1");
 	}
 
 	@Test
 	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
 		DataGroup book = createBookWithNoTitle();
 		book.addChild(new DataAtomicSpy("bookTitle", "Some title"));
-		setNumOfChildRefCollectTermsToReturnFromSpy(book, 1);
+		// setNumOfChildRefCollectTermsToReturnFromSpy(book, 1);
 
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
 		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
@@ -91,15 +101,9 @@ public class DataGroupTermCollectorTest {
 		assertEquals(indexTerms2.getAllGroupsWithNameInData("collectedDataTerm").size(), 1);
 	}
 
-	private void setNumOfChildRefCollectTermsToReturnFromSpy(DataGroup dataGroup,
-			int numOfCollectTermsToReturn) {
-		((DataGroupSpy) dataGroup).numOfGetAllGroupsWithNameInDataToReturn
-				.put("childRefCollectTerm", numOfCollectTermsToReturn);
-	}
-
 	@Test
 	public void testCollectTermsTitle() {
-		DataGroup book = createBookWithNoTitle();
+		DataGroupSpy book = (DataGroupSpy) createBookWithNoTitle();
 		book.addChild(new DataAtomicSpy("bookTitle", "Some title"));
 
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
@@ -126,27 +130,31 @@ public class DataGroupTermCollectorTest {
 		DataGroup collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup", book);
 		assertEquals(collectedData.getAllGroupsWithNameInData("index").size(), 1);
 
-		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
-		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 2);
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 4);
+		assertEquals(namesOfGroupsFactored.get(0), "collectedDataTerm");
 
-		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
-		assertEquals(collectedDataTerm.getRepeatId(), "0");
-		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
-				"Some title");
-		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
-				"titleIndexTerm");
-		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
-		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
+		assertEquals(namesOfGroupsFactored.get(1), "collectedDataTerm");
+		assertEquals(namesOfGroupsFactored.get(2), "collectedData");
+		assertEquals(namesOfGroupsFactored.get(3), "index");
 
-		DataGroup collectedDataTerm2 = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
-				.get(1);
-		assertEquals(collectedDataTerm2.getRepeatId(), "1");
-		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermValue"),
-				"Some title");
-		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermId"),
+		DataGroup indexGroup = collectedData.getFirstGroupWithNameInData("index");
+
+		List<DataGroup> collectedDataTerms = indexGroup
+				.getAllGroupsWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerms.get(0).getRepeatId(), "0");
+		assertEquals(collectedDataTerms.get(1).getRepeatId(), "1");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 6);
+		assertEquals(dataAtomicFactory.usedValues.size(), 6);
+
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "collectTermId", "titleIndexTerm");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "collectTermValue", "Some title");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "collectTermId",
 				"titleSecondIndexTerm");
-		DataGroup extraData2 = collectedDataTerm2.getFirstGroupWithNameInData("extraData");
-		assertEquals(extraData2.getFirstAtomicValueWithNameInData("indexType"), "indexTypeString");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "collectTermValue", "Some title");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "type", "book");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "id", "book1");
 
 	}
 
@@ -158,19 +166,36 @@ public class DataGroupTermCollectorTest {
 		book.addChild(new DataAtomicSpy("bookSubTitle", "Some other subtitle", "1"));
 
 		DataGroup collectedData = collector.collectTerms("bookGroup", book);
-		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
+		DataGroup indexGroup = collectedData.getFirstGroupWithNameInData("index");
+
+		List<DataGroup> collectedDataTerms = indexGroup
+				.getAllGroupsWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerms.get(0).getRepeatId(), "0");
+		assertEquals(collectedDataTerms.get(1).getRepeatId(), "1");
+		assertEquals(collectedDataTerms.get(2).getRepeatId(), "2");
 
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 1);
-		assertEquals(namesOfGroupsFactored.get(0), "collectedData");
+		assertEquals(namesOfGroupsFactored.size(), 5);
+		assertEquals(namesOfGroupsFactored.get(0), "collectedDataTerm");
+		assertEquals(namesOfGroupsFactored.get(1), "collectedDataTerm");
+		assertEquals(namesOfGroupsFactored.get(2), "collectedDataTerm");
+		assertEquals(namesOfGroupsFactored.get(3), "collectedData");
+		assertEquals(namesOfGroupsFactored.get(4), "index");
 
-		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 2);
-		assertEquals(dataAtomicFactory.usedValues.size(), 2);
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 8);
+		assertEquals(dataAtomicFactory.usedValues.size(), 8);
 
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "type", "book");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "id", "book1");
-
-		// assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 3);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "collectTermId", "titleIndexTerm");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "collectTermValue", "Some title");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "collectTermId",
+				"subTitleIndexTerm");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "collectTermValue", "Some subtitle");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "collectTermId",
+				"subTitleIndexTerm");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "collectTermValue",
+				"Some other subtitle");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "type", "book");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(7, "id", "book1");
 
 	}
 
@@ -321,34 +346,36 @@ public class DataGroupTermCollectorTest {
 		addLinkToOtherBook(book);
 
 		DataGroup collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup", book);
-		assertEquals(collectedData.getNameInData(), "collectedData");
-		assertEquals(collectedData.getFirstAtomicValueWithNameInData("id"), "book1");
-		assertEquals(collectedData.getFirstAtomicValueWithNameInData("type"), "book");
 
-		assertTrue(collectedData.containsChildWithNameInData("index"));
-		assertFalse(collectedData.containsChildWithNameInData("permission"));
+		DataGroup indexGroup = collectedData.getFirstGroupWithNameInData("index");
 
-		DataGroup indexTerms = collectedData.getFirstGroupWithNameInData("index");
-		assertEquals(indexTerms.getAllGroupsWithNameInData("collectedDataTerm").size(), 2);
+		List<DataGroup> collectedDataTerms = indexGroup
+				.getAllGroupsWithNameInData("collectedDataTerm");
+		assertEquals(collectedDataTerms.get(0).getRepeatId(), "0");
+		assertTrue(collectedDataTerms.get(0).containsChildWithNameInData("extraData"));
+		assertEquals(collectedDataTerms.get(1).getRepeatId(), "1");
+		assertTrue(collectedDataTerms.get(1).containsChildWithNameInData("extraData"));
 
-		DataGroup collectedDataTerm = indexTerms.getFirstGroupWithNameInData("collectedDataTerm");
-		assertEquals(collectedDataTerm.getRepeatId(), "0");
-		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId"),
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 4);
+		assertEquals(namesOfGroupsFactored.get(0), "collectedDataTerm");
+		assertEquals(namesOfGroupsFactored.get(1), "collectedDataTerm");
+		assertEquals(namesOfGroupsFactored.get(2), "collectedData");
+		assertEquals(namesOfGroupsFactored.get(3), "index");
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 6);
+		assertEquals(dataAtomicFactory.usedValues.size(), 6);
+
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "collectTermId",
 				"otherBookIndexTerm");
-		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "collectTermValue",
 				"book_someOtherBookId");
-		DataGroup extraData = collectedDataTerm.getFirstGroupWithNameInData("extraData");
-		assertEquals(extraData.getFirstAtomicValueWithNameInData("indexType"), "indexTypeId");
-
-		DataGroup collectedDataTerm2 = indexTerms.getAllGroupsWithNameInData("collectedDataTerm")
-				.get(1);
-		assertEquals(collectedDataTerm2.getRepeatId(), "1");
-		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermId"),
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "collectTermId",
 				"otherBookSecondIndexTerm");
-		assertEquals(collectedDataTerm2.getFirstAtomicValueWithNameInData("collectTermValue"),
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "collectTermValue",
 				"book_someOtherBookId");
-		DataGroup extraData2 = collectedDataTerm2.getFirstGroupWithNameInData("extraData");
-		assertEquals(extraData2.getFirstAtomicValueWithNameInData("indexType"), "indexTypeId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "type", "book");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "id", "book1");
 	}
 
 }

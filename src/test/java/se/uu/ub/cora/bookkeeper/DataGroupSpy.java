@@ -16,6 +16,7 @@ public class DataGroupSpy implements DataGroup {
 	public List<DataGroup> groupsWithNameInData = new ArrayList<>();
 	public Map<String, String> atomicValues = new HashMap<>();
 	public Map<String, DataGroupSpy> dataGroups = new HashMap<>();
+	public Map<String, List<DataGroupSpy>> dataGroupsAsList = new HashMap<>();
 	private String repeatId;
 	public Map<String, Integer> numOfGetAllGroupsWithNameInDataToReturn = new HashMap<>();
 
@@ -55,7 +56,14 @@ public class DataGroupSpy implements DataGroup {
 
 		} else if (dataElement instanceof DataGroupSpy) {
 			DataGroupSpy dataGroup = (DataGroupSpy) dataElement;
-			dataGroups.put(dataGroup.nameInData, dataGroup);
+			String dataGroupNameInData = dataGroup.nameInData;
+			dataGroups.put(dataGroupNameInData, dataGroup);
+
+			if (!dataGroupsAsList.containsKey(dataGroupNameInData)) {
+				dataGroupsAsList.put(dataGroupNameInData, new ArrayList<>());
+			}
+			dataGroupsAsList.get(dataGroupNameInData).add(dataGroup);
+
 		}
 		children.add(dataElement);
 	}
@@ -120,10 +128,11 @@ public class DataGroupSpy implements DataGroup {
 				possiblyAddChildren(nameInData, dataGroupSpy);
 				matchingDataGroups.add(dataGroupSpy);
 			}
-
+		} else if (dataGroupsAsList.containsKey(nameInData)) {
+			matchingDataGroups.addAll(dataGroupsAsList.get(nameInData));
+		} else if (dataGroups.containsKey(nameInData)) {
+			matchingDataGroups.add(dataGroups.get(nameInData));
 		}
-
-		// requestedGetAllGroupsWithNameInData.add(nameInData)
 		return matchingDataGroups;
 	}
 
