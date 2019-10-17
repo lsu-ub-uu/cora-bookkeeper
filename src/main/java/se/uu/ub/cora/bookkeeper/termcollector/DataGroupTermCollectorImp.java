@@ -249,7 +249,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
-		return new CollectedDataCreator()
+		return new CollectedDataCreatorImp()
 				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
 	}
 
