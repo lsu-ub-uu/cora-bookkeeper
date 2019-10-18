@@ -45,9 +45,12 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private CollectTermHolder collectTermHolder;
 
 	private Map<String, List<DataGroup>> collectedTerms = new HashMap<>();
+	private CollectedDataCreator collectedDataCreator;
 
-	public DataGroupTermCollectorImp(MetadataStorage metadataStorage) {
+	public DataGroupTermCollectorImp(MetadataStorage metadataStorage,
+			CollectedDataCreator collectedDataCreator) {
 		this.metadataStorage = metadataStorage;
+		this.collectedDataCreator = collectedDataCreator;
 	}
 
 	@Override
@@ -249,8 +252,10 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
-		return new CollectedDataCreatorImp()
-				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
+		return collectedDataCreator.createCollectedDataFromCollectedTermsAndRecord(collectedTerms,
+				dataGroup);
+		// return new CollectedDataCreatorImp()
+		// .createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
 	}
 
 	public MetadataStorage getMetadataStorage() {

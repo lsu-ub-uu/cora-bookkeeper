@@ -23,6 +23,8 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.util.List;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -34,17 +36,56 @@ import se.uu.ub.cora.storage.MetadataStorage;
 public class DataGroupTermCollectorTest {
 	private DataGroupTermCollectorImp collector;
 	private MetadataStorage metadataStorage;
+	private CollectedDataCreatorSpy collectedDataCreator;
+	private DataGroup basicDataGroup;
 
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageForTermStub();
-		collector = new DataGroupTermCollectorImp(metadataStorage);
+		collectedDataCreator = new CollectedDataCreatorSpy();
+		collector = new DataGroupTermCollectorImp(metadataStorage, collectedDataCreator);
+		basicDataGroup = createBookWithNoTitle();
 	}
 
 	@Test
 	public void testGetMetadataStorage() {
 		assertSame(collector.getMetadataStorage(), metadataStorage);
 	}
+
+	@Test
+	public void testCollectedDataCreatorCalledAndDataGroupPassedOn() {
+		collector.collectTerms("bookGroup", basicDataGroup);
+		assertTrue(collectedDataCreator.createWasCalled);
+		assertSame(collectedDataCreator.dataGroup, basicDataGroup);
+	}
+
+	@Test
+	public void testResultFromTermCollectorNoCollectedTerms() {
+		DataGroup collectedTerms = collector.collectTerms("bookGroup", basicDataGroup);
+		assertEquals(collectedTerms.getNameInData(), "collectedDataFromSpy");
+		assertEquals(collectedTerms.getChildren().size(), 0);
+	}
+
+	@Test
+	public void testTermCollectorNoCollectedTerms() {
+		collector.collectTerms("bookGroup", basicDataGroup);
+		assertTrue(collectedDataCreator.collectedTerms.isEmpty());
+	}
+
+	@Test
+	public void testTermCollectorOneCollectedTerm() {
+		basicDataGroup.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		collector.collectTerms("bookGroup", basicDataGroup);
+		assertEquals(collectedDataCreator.collectedTerms.size(), 1);
+
+		List<DataGroup> collectedTermList = collectedDataCreator.collectedTerms.get("index");
+		assertEquals(collectedTermList.size(), 1);
+		assertEquals(collectedTermList.get(0).getNameInData(), "collectedDataTerm");
+		// TODO:collectedDataTerm har 3 barn, collectTermId, collectTermValue och extraData
+		// assertTrue(collectedDataCreator.collectedTerms.isEmpty());
+	}
+
+	/*********************************************************************************************/
 
 	@Test
 	public void testCollectTermsNoTitle() {

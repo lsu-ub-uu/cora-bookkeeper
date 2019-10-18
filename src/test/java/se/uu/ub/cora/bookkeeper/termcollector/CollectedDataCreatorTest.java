@@ -33,7 +33,7 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class CollectedDataCreatorTest {
 
-	private CollectedDataCreatorImp dataCreator;
+	private CollectedDataCreator dataCreator;
 	private Map<String, List<DataGroup>> collectedTerms;
 	private List<DataGroup> indexDataGroups;
 

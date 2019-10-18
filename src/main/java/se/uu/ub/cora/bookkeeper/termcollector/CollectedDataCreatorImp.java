@@ -27,7 +27,8 @@ import se.uu.ub.cora.data.DataGroup;
 
 final class CollectedDataCreatorImp implements CollectedDataCreator {
 
-	DataGroup createCollectedDataFromCollectedTermsAndRecord(
+	@Override
+	public DataGroup createCollectedDataFromCollectedTermsAndRecord(
 			Map<String, List<DataGroup>> collectedTerms, DataGroup record) {
 		DataGroup collectedData = createCollectedDataUsingIdentityFromRecord(record);
 		addCollectedTermsToCollectedData(collectedTerms, collectedData);
