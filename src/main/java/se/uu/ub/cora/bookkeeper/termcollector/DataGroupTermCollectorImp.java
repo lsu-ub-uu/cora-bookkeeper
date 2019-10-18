@@ -141,27 +141,28 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
-			List<CollectTerm> collectTerms, DataGroup dataGroup) {
+			List<CollectTerm> collectTermsForChildReference, DataGroup dataGroup) {
 		for (DataElement childDataElement : dataGroup.getChildren()) {
-			collectTermsFromDataGroupChild(childMetadataElement, childDataElement, collectTerms);
+			collectTermsFromDataGroupChild(childMetadataElement, childDataElement,
+					collectTermsForChildReference);
 		}
 	}
 
 	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement, List<CollectTerm> collectTerms) {
+			DataElement childDataElement, List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, childDataElement,
-					collectTerms);
+					collectTermsForChildReference);
 		}
 	}
 
 	private void collectTermsFromDataGroupChildMatchingMetadata(
 			MetadataElement childMetadataElement, DataElement childDataElement,
-			List<CollectTerm> collectTerms) {
+			List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataElement instanceof RecordLink) {
-			createCollectTermsForRecordLink(childDataElement, collectTerms);
+			createCollectTermsForRecordLink(childDataElement, collectTermsForChildReference);
 		} else {
-			possiblyCreateCollectedTerms(childDataElement, collectTerms);
+			possiblyCreateCollectedTerms(childDataElement, collectTermsForChildReference);
 		}
 	}
 
@@ -261,5 +262,10 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	public MetadataStorage getMetadataStorage() {
 		// needed for test
 		return metadataStorage;
+	}
+
+	CollectTermHolder getCollectTermHolder() {
+		//needed for test
+		return collectTermHolder;
 	}
 }
