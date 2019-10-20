@@ -255,8 +255,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private DataGroup createCollectedData(DataGroup dataGroup) {
 		return collectedDataCreator.createCollectedDataFromCollectedTermsAndRecord(collectedTerms,
 				dataGroup);
-		// return new CollectedDataCreatorImp()
-		// .createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
 	}
 
 	public MetadataStorage getMetadataStorage() {
@@ -265,7 +263,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	CollectTermHolder getCollectTermHolder() {
-		//needed for test
+		// needed for test
 		return collectTermHolder;
 	}
 }
