@@ -69,4 +69,14 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 		throw DataValidationException
 				.withMessage("No validator created for element with id: " + elementId);
 	}
+
+	public MetadataHolder getMetadataHolder() {
+		// needed for test
+		return metadataHolder;
+	}
+
+	public Map<String, DataGroup> getRecordTypeHolder() {
+		// needed for test
+		return recordTypeHolder;
+	}
 }

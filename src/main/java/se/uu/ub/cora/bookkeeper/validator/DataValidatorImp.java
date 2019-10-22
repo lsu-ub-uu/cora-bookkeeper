@@ -33,12 +33,12 @@ public class DataValidatorImp implements DataValidator {
 	private MetadataStorage metadataStorage;
 	private String metadataId;
 	private DataElement dataElement;
-	private DataValidatorFactory validatorFactory;
+	private DataValidatorFactory dataValidatorFactory;
 
 	public DataValidatorImp(MetadataStorage metadataStorage,
 			DataValidatorFactory validatorFactory) {
 		this.metadataStorage = metadataStorage;
-		this.validatorFactory = validatorFactory;
+		this.dataValidatorFactory = validatorFactory;
 	}
 
 	@Override
@@ -62,12 +62,17 @@ public class DataValidatorImp implements DataValidator {
 	}
 
 	private ValidationAnswer validateDataUsingDataValidator() {
-		DataElementValidator elementValidator = validatorFactory.factor(metadataId);
+		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
 		return elementValidator.validateData(dataElement);
 	}
 
 	public MetadataStorage getMetadataStorage() {
 		// needed for test
 		return metadataStorage;
+	}
+
+	public DataValidatorFactory getDataValidatorFactory() {
+		// needed for test
+		return dataValidatorFactory;
 	}
 }
