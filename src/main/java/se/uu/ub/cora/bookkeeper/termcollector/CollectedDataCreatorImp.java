@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
-final class CollectedDataCreatorImp implements CollectedDataCreator {
+public final class CollectedDataCreatorImp implements CollectedDataCreator {
 
 	@Override
 	public DataGroup createCollectedDataFromCollectedTermsAndRecord(

@@ -266,4 +266,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		// needed for test
 		return collectTermHolder;
 	}
+
+	public CollectedDataCreator getCollectedDataCreator() {
+		// needed for test
+		return collectedDataCreator;
+	}
 }
