@@ -86,4 +86,15 @@ public class ValidationAnswerTest {
 
 		assertEquals(errorMessages.iterator().next(), "Test error");
 	}
+
+	@Test
+	public void testGetErrorMessagesIsNotInternalList() {
+		ValidationAnswer answer = new ValidationAnswer();
+		answer.addErrorMessage("Test error");
+		Collection<String> errorMessages = answer.getErrorMessages();
+		int errorMessagesSize = errorMessages.size();
+		errorMessages.clear();
+
+		assertEquals(answer.getErrorMessages().size(), errorMessagesSize);
+	}
 }

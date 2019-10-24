@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.9.0</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
@@ -24,8 +24,8 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>1.0.0</coradata.version>
-		<storage.version>1.3.0</storage.version>
+		<coradata.version>2.0.0</coradata.version>
+		<storage.version>2.0.0</storage.version>
 	</properties>
 
 	<scm>

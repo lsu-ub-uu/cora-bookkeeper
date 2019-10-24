@@ -160,7 +160,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 			MetadataElement childMetadataElement, DataElement childDataElement,
 			List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataElement instanceof RecordLink) {
-			createCollectTermsForRecordLink(childDataElement, collectTermsForChildReference);
+			createCollectTermsForRecordLink((DataGroup) childDataElement, collectTermsForChildReference);
 		} else {
 			possiblyCreateCollectedTerms(childDataElement, collectTermsForChildReference);
 		}
@@ -174,7 +174,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return validationAnswer.dataIsValid();
 	}
 
-	private void createCollectTermsForRecordLink(DataElement childDataElement,
+	private void createCollectTermsForRecordLink(DataGroup childDataElement,
 			List<CollectTerm> collectTerms) {
 		String childDataElementValue = createValueForLinkedData(childDataElement);
 		for (CollectTerm collectTerm : collectTerms) {
@@ -182,8 +182,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		}
 	}
 
-	private String createValueForLinkedData(DataElement childDataElement) {
-		DataGroup linkGroup = (DataGroup) childDataElement;
+	private String createValueForLinkedData(DataGroup linkGroup) {
 		String recordType = linkGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
 		String recordId = linkGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 		return recordType + "_" + recordId;
