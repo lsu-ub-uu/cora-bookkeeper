@@ -13,7 +13,7 @@ public class StandardMetadataParameters {
 		possiblySetTexts(textContainer);
 	}
 
-	private void possiblySetTexts(TextContainer textContainer) {
+	private final void possiblySetTexts(TextContainer textContainer) {
 		if (textContainer != null) {
 			textId = textContainer.textId;
 			defTextId = textContainer.defTextId;
