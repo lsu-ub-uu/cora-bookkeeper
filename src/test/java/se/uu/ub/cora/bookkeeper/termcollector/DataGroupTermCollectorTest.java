@@ -261,4 +261,8 @@ public class DataGroupTermCollectorTest {
 		return recordInfo;
 	}
 
+	@Test
+	public void testGetCollectedDataCreator() {
+		assertSame(collector.getCollectedDataCreator(), collectedDataCreator);
+	}
 }
