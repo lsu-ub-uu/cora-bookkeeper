@@ -178,7 +178,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private boolean hasNonEmptyRepeatId(DataElement dataElement) {
-		return dataElement.getRepeatId() != null && !dataElement.getRepeatId().equals("");
+		return dataElement.getRepeatId() != null && !"".equals(dataElement.getRepeatId());
 	}
 
 	private DataGroup createToPart(DataElement dataElement, RecordLink recordLink) {
