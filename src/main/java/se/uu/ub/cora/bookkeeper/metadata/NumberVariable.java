@@ -33,7 +33,7 @@ public class NumberVariable extends MetadataElement {
 		setNumberSpecificFields(limits, warnLimits, numOfDecimals);
 	}
 
-	private void setNumberSpecificFields(LimitsContainer limits, LimitsContainer warnLimits,
+	private final void setNumberSpecificFields(LimitsContainer limits, LimitsContainer warnLimits,
 			int numOfDecimals) {
 		min = limits.min;
 		max = limits.max;

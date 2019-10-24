@@ -34,14 +34,13 @@ public class DataNumberVariableValidator implements DataElementValidator {
 
 	@Override
 	public ValidationAnswer validateData(DataElement dataElement) {
-		dataValue = getDataValueAsDouble(dataElement);
+		dataValue = getDataValueAsDouble((DataAtomic) dataElement);
 		ValidationAnswer validationAnswer = new ValidationAnswer();
 		addErrorIfDataIsNotValid(validationAnswer);
 		return validationAnswer;
 	}
 
-	private double getDataValueAsDouble(DataElement dataElement) {
-		DataAtomic dataAtomic = (DataAtomic) dataElement;
+	private double getDataValueAsDouble(DataAtomic dataAtomic) {
 		dataStringValue = dataAtomic.getValue();
 		return Double.parseDouble(dataStringValue);
 	}

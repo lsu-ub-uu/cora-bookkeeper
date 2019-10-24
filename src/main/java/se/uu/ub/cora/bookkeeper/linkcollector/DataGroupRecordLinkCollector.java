@@ -139,7 +139,7 @@ public class DataGroupRecordLinkCollector {
 			DataGroup fromPath) {
 		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
 		recordToRecordLink.addChild(createFromPart(dataElement, fromPath));
-		recordToRecordLink.addChild(createToPart(dataElement, recordLink));
+		recordToRecordLink.addChild(createToPart((DataGroup) dataElement, recordLink));
 		linkList.add(recordToRecordLink);
 	}
 
@@ -181,10 +181,8 @@ public class DataGroupRecordLinkCollector {
 		return dataElement.getRepeatId() != null && !"".equals(dataElement.getRepeatId());
 	}
 
-	private DataGroup createToPart(DataElement dataElement, RecordLink recordLink) {
+	private DataGroup createToPart(DataGroup dataElementGroup, RecordLink recordLink) {
 		DataGroup to = DataGroup.withNameInData("to");
-		DataGroup dataElementGroup = (DataGroup) dataElement;
-
 		addChildrenToToPart(recordLink, to, dataElementGroup);
 		return to;
 	}
