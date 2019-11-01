@@ -213,7 +213,7 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	@Test
-	public void testOneGroupWithOneLinkWithEmptyLinkedRepeatId() {
+	public void testOneGroupWithOneLinkWithEmptyFromLinkedRepeatId() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
 		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
 
@@ -233,7 +233,7 @@ public class DataGroupRecordLinkCollectorTest {
 		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
 
 		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
-		assertFalse(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
+		assertTrue(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
 	}
 
 	@Test
