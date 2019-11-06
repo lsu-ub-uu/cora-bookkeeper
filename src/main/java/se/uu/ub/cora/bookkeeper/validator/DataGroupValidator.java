@@ -35,15 +35,15 @@ import se.uu.ub.cora.data.DataGroup;
 
 class DataGroupValidator implements DataElementValidator {
 
-	private DataValidatorFactoryImp dataValidatorFactoryImp;
+	private DataValidatorFactory dataValidatorFactory;
 	private final MetadataGroup metadataGroup;
 	private MetadataHolder metadataHolder;
 	protected DataGroup dataGroup;
 	protected ValidationAnswer validationAnswer;
 
-	DataGroupValidator(DataValidatorFactoryImp dataValidatorFactoryImp,
-			MetadataHolder metadataHolder, MetadataGroup metadataGroup) {
-		this.dataValidatorFactoryImp = dataValidatorFactoryImp;
+	DataGroupValidator(DataValidatorFactory dataValidatorFactory, MetadataHolder metadataHolder,
+			MetadataGroup metadataGroup) {
+		this.dataValidatorFactory = dataValidatorFactory;
 		this.metadataHolder = metadataHolder;
 		this.metadataGroup = metadataGroup;
 	}
@@ -207,7 +207,7 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateChildElementData(String referenceId, DataElement childData) {
-		DataElementValidator childValidator = dataValidatorFactoryImp.factor(referenceId);
+		DataElementValidator childValidator = dataValidatorFactory.factor(referenceId);
 		ValidationAnswer va = childValidator.validateData(childData);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}

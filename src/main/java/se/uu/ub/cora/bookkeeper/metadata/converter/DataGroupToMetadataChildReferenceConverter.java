@@ -80,7 +80,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		if ("X".equalsIgnoreCase(repeatMaxString)) {
 			return Integer.MAX_VALUE;
 		}
-		return Integer.valueOf(repeatMaxString);
+		return Integer.parseInt(repeatMaxString);
 	}
 
 	private void possiblyConvertCollectTerms() {

@@ -123,4 +123,9 @@ public class DataValidatorTest {
 						+ "someMetadataId with error: Error from validatorFactorySpy");
 	}
 
+	@Test
+	public void testGetDataValidatorFactory() {
+		assertSame(dataValidator.getDataValidatorFactory(), validatorFactory);
+	}
+
 }

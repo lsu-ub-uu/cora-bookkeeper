@@ -219,7 +219,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void possiblyAddLinkedRepeatIdToToPart(DataGroup to, DataGroup dataGroup) {
-		if (hasNonEmptyRepeatId(dataGroup)) {
+		if (dataGroup.containsChildWithNameInData(LINKED_REPEAT_ID)) {
 			DataAtomic linkedRepeatId = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 					LINKED_REPEAT_ID,
 					dataGroup.getFirstAtomicValueWithNameInData(LINKED_REPEAT_ID));

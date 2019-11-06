@@ -47,9 +47,12 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private CollectTermHolder collectTermHolder;
 
 	private Map<String, List<DataGroup>> collectedTerms = new HashMap<>();
+	private CollectedDataCreator collectedDataCreator;
 
-	public DataGroupTermCollectorImp(MetadataStorage metadataStorage) {
+	public DataGroupTermCollectorImp(MetadataStorage metadataStorage,
+			CollectedDataCreator collectedDataCreator) {
 		this.metadataStorage = metadataStorage;
+		this.collectedDataCreator = collectedDataCreator;
 	}
 
 	@Override
@@ -140,27 +143,29 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
-			List<CollectTerm> collectTerms, DataGroup dataGroup) {
+			List<CollectTerm> collectTermsForChildReference, DataGroup dataGroup) {
 		for (DataElement childDataElement : dataGroup.getChildren()) {
-			collectTermsFromDataGroupChild(childMetadataElement, childDataElement, collectTerms);
+			collectTermsFromDataGroupChild(childMetadataElement, childDataElement,
+					collectTermsForChildReference);
 		}
 	}
 
 	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement, List<CollectTerm> collectTerms) {
+			DataElement childDataElement, List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, childDataElement,
-					collectTerms);
+					collectTermsForChildReference);
 		}
 	}
 
 	private void collectTermsFromDataGroupChildMatchingMetadata(
 			MetadataElement childMetadataElement, DataElement childDataElement,
-			List<CollectTerm> collectTerms) {
+			List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataElement instanceof RecordLink) {
-			createCollectTermsForRecordLink(childDataElement, collectTerms);
+			createCollectTermsForRecordLink((DataGroup) childDataElement,
+					collectTermsForChildReference);
 		} else {
-			possiblyCreateCollectedTerms(childDataElement, collectTerms);
+			possiblyCreateCollectedTerms(childDataElement, collectTermsForChildReference);
 		}
 	}
 
@@ -172,7 +177,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return validationAnswer.dataIsValid();
 	}
 
-	private void createCollectTermsForRecordLink(DataElement childDataElement,
+	private void createCollectTermsForRecordLink(DataGroup childDataElement,
 			List<CollectTerm> collectTerms) {
 		String childDataElementValue = createValueForLinkedData(childDataElement);
 		for (CollectTerm collectTerm : collectTerms) {
@@ -180,8 +185,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		}
 	}
 
-	private String createValueForLinkedData(DataElement childDataElement) {
-		DataGroup linkGroup = (DataGroup) childDataElement;
+	private String createValueForLinkedData(DataGroup linkGroup) {
 		String recordType = linkGroup.getFirstAtomicValueWithNameInData("linkedRecordType");
 		String recordId = linkGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 		return recordType + "_" + recordId;
@@ -252,12 +256,22 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedData(DataGroup dataGroup) {
-		return new CollectedDataCreator()
-				.createCollectedDataFromCollectedTermsAndRecord(collectedTerms, dataGroup);
+		return collectedDataCreator.createCollectedDataFromCollectedTermsAndRecord(collectedTerms,
+				dataGroup);
 	}
 
 	public MetadataStorage getMetadataStorage() {
 		// needed for test
 		return metadataStorage;
+	}
+
+	CollectTermHolder getCollectTermHolder() {
+		// needed for test
+		return collectTermHolder;
+	}
+
+	public CollectedDataCreator getCollectedDataCreator() {
+		// needed for test
+		return collectedDataCreator;
 	}
 }

@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 
@@ -218,8 +219,8 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	@Test
-	public void testOneGroupWithOneLinkWithEmptyLinkedRepeatId() {
-		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
+	public void testOneGroupWithOneLinkWithEmptyFromLinkedRepeatId() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
 		DataGroup dataGroup = new DataGroupSpy("testGroup");
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
@@ -238,7 +239,7 @@ public class DataGroupRecordLinkCollectorTest {
 		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
 
 		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
-		assertFalse(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
+		assertTrue(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
 	}
 
 	@Test

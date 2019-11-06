@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class DataValidatorFactoryTest {
 
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 	private MetadataHolder metadataHolder;
-	private DataValidatorFactory dataValidatorFactory;
+	private DataValidatorFactoryImp dataValidatorFactory;
 
 	@BeforeMethod
 	public void setup() {
@@ -140,4 +141,13 @@ public class DataValidatorFactoryTest {
 		dataValidatorFactory.factor("elementNotFound");
 	}
 
+	@Test
+	public void testGetMetadataHolder() {
+		assertSame(dataValidatorFactory.getMetadataHolder(), metadataHolder);
+	}
+
+	@Test
+	public void testGetRecordTypeHolder() {
+		assertSame(dataValidatorFactory.getRecordTypeHolder(), recordTypeHolder);
+	}
 }
