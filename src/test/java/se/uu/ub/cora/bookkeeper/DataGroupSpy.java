@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -149,6 +150,18 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
+	}
+
+	@Override
+	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeFirstChildWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
