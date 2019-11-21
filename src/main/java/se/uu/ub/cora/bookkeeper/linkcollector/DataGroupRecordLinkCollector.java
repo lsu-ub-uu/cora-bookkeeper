@@ -125,8 +125,8 @@ public class DataGroupRecordLinkCollector {
 		DataGroup childPath = createChildPath(childDataElement);
 
 		if (isRecordLink(childMetadataElement)) {
-			createRecordToRecordLink((RecordLink) childMetadataElement, childDataElement,
-					childPath);
+			createRecordToRecordLink((RecordLink) childMetadataElement,
+					(DataGroup) childDataElement, childPath);
 		} else {
 			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, childPath);
 		}
@@ -137,7 +137,7 @@ public class DataGroupRecordLinkCollector {
 		return PathExtender.extendPathWithElementInformation(pathCopy, childDataElement);
 	}
 
-	private void createRecordToRecordLink(RecordLink recordLink, DataElement dataElement,
+	private void createRecordToRecordLink(RecordLink recordLink, DataGroup dataElement,
 			DataGroup fromPath) {
 		DataGroup recordToRecordLink = DataGroupProvider
 				.getDataGroupUsingNameInData("recordToRecordLink");
@@ -181,14 +181,13 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private boolean hasNonEmptyRepeatId(DataElement dataElement) {
-		return dataElement.getRepeatId() != null && !dataElement.getRepeatId().equals("");
+		return dataElement.getRepeatId() != null && !"".equals(dataElement.getRepeatId());
 	}
 
-	private DataGroup createToPart(DataElement dataElement, RecordLink recordLink) {
+	private DataGroup createToPart(DataGroup dataElement, RecordLink recordLink) {
 		DataGroup to = DataGroupProvider.getDataGroupUsingNameInData("to");
-		DataGroup dataElementGroup = (DataGroup) dataElement;
 
-		addChildrenToToPart(recordLink, to, dataElementGroup);
+		addChildrenToToPart(recordLink, to, dataElement);
 		return to;
 	}
 

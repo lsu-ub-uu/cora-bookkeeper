@@ -98,7 +98,6 @@ public final class MetadataMatchData {
 		String value = dataAttributes.get(nameInData);
 
 		return DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(nameInData, value);
-		// return DataAtomic.withNameInDataAndValue(nameInData, value);
 	}
 
 	private void validateAttribute(String mdAttributeReference, DataAtomic dataElement) {
