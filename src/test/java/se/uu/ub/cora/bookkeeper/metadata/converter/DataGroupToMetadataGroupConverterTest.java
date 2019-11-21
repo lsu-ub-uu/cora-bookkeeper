@@ -25,10 +25,11 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToMetadataGroupConverterTest {
@@ -45,45 +46,45 @@ public class DataGroupToMetadataGroupConverterTest {
 	}
 
 	private DataGroup createDataGroup() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "group");
 
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 		addTexts(dataGroup);
 
-		DataGroup childReferences = DataGroup.withNameInData("childReferences");
+		DataGroup childReferences = new DataGroupSpy("childReferences");
 		dataGroup.addChild(childReferences);
 
-		DataGroup childReference = DataGroup.withNameInData("childReference");
-		DataGroup ref = DataGroup.withNameInData("ref");
+		DataGroup childReference = new DataGroupSpy("childReference");
+		DataGroup ref = new DataGroupSpy("ref");
 		ref.addAttributeByIdWithValue("type", "group");
-		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
-		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherMetadata"));
+		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataGroup"));
+		ref.addChild(new DataAtomicSpy("linkedRecordId", "otherMetadata"));
 		childReference.addChild(ref);
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", "0"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMinKey", "SOME_KEY"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", "16"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("secret", "true"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("secretKey", "SECRET_KEY"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnly", "true"));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("readOnlyKey", "READONLY_KEY"));
+		childReference.addChild(new DataAtomicSpy("repeatMin", "0"));
+		childReference.addChild(new DataAtomicSpy("repeatMinKey", "SOME_KEY"));
+		childReference.addChild(new DataAtomicSpy("repeatMax", "16"));
+		childReference.addChild(new DataAtomicSpy("secret", "true"));
+		childReference.addChild(new DataAtomicSpy("secretKey", "SECRET_KEY"));
+		childReference.addChild(new DataAtomicSpy("readOnly", "true"));
+		childReference.addChild(new DataAtomicSpy("readOnlyKey", "READONLY_KEY"));
 		childReferences.addChild(childReference);
 		return dataGroup;
 	}
 
 	private void addTexts(DataGroup dataGroup) {
-		DataGroup text = DataGroup.withNameInData("textId");
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		DataGroup text = new DataGroupSpy("textId");
+		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = DataGroup.withNameInData("defTextId");
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		DataGroup defText = new DataGroupSpy("defTextId");
+		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 	}
 
@@ -112,6 +113,10 @@ public class DataGroupToMetadataGroupConverterTest {
 		DataGroup dataGroup = createDataGroup();
 		DataCreator.addAttributesToDataGroup(dataGroup);
 
+		DataGroupSpy attributesGroup = (DataGroupSpy) dataGroup
+				.getFirstGroupWithNameInData("attributeReferences");
+		attributesGroup.numOfGetAllGroupsWithNameInDataToReturn.put("ref", 3);
+
 		DataGroupToMetadataConverter converter = DataGroupToMetadataGroupConverter
 				.fromDataGroup(dataGroup);
 		MetadataGroup metadataGroup = (MetadataGroup) converter.toMetadata();
@@ -123,18 +128,17 @@ public class DataGroupToMetadataGroupConverterTest {
 	private void assertAttributesBasedOnDataGroup(MetadataGroup metadataGroup) {
 		Iterator<String> attributeReferenceIterator = metadataGroup.getAttributeReferences()
 				.iterator();
-		assertEquals(attributeReferenceIterator.next(), "attribute1");
-		assertEquals(attributeReferenceIterator.next(), "attribute2");
-		assertEquals(attributeReferenceIterator.next(), "attribute3");
+		assertEquals(attributeReferenceIterator.next(), "someLinkedRecordIdFromSpy");
+		assertEquals(attributeReferenceIterator.next(), "someLinkedRecordIdFromSpy");
+		assertEquals(attributeReferenceIterator.next(), "someLinkedRecordIdFromSpy");
 	}
 
 	@Test
 	public void testToMetadataAsChildGroup() {
 		DataGroup dataGroup = createDataGroup();
-		DataGroup refParentId = DataGroup.withNameInData("refParentId");
-		refParentId
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataGroup"));
-		refParentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "refParentId"));
+		DataGroup refParentId = new DataGroupSpy("refParentId");
+		refParentId.addChild(new DataAtomicSpy("linkedRecordType", "metadataGroup"));
+		refParentId.addChild(new DataAtomicSpy("linkedRecordId", "refParentId"));
 		dataGroup.addChild(refParentId);
 
 		DataGroupToMetadataGroupConverter converter = DataGroupToMetadataGroupConverter

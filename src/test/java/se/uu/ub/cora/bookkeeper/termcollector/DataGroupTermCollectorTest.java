@@ -27,20 +27,33 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataGroupTermCollectorTest {
 	private DataGroupTermCollectorImp collector;
 	private MetadataStorage metadataStorage;
 	private CollectedDataCreatorSpy collectedDataCreator;
+	private DataGroupFactorySpy dataGroupFactory;
+	private DataAtomicFactorySpy dataAtomicFactory;
+
 	private DataGroup basicDataGroup;
 
 	@BeforeMethod
 	public void setUp() {
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
+
 		metadataStorage = new MetadataStorageForTermStub();
 		collectedDataCreator = new CollectedDataCreatorSpy();
 		collector = new DataGroupTermCollectorImp(metadataStorage, collectedDataCreator);
@@ -74,7 +87,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testTermCollectorOneCollectedTermAtomicValue() {
-		basicDataGroup.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
 		collector.collectTerms("bookGroup", basicDataGroup);
 		assertEquals(collectedDataCreator.collectedTerms.size(), 1);
 
@@ -87,7 +100,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testTermCollectorTwoCollectedTermSameAtomicValue() {
-		basicDataGroup.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
 		collector.collectTerms("bookWithMoreCollectTermsGroup", basicDataGroup);
 
 		assertEquals(collectedDataCreator.collectedTerms.size(), 1);
@@ -103,11 +116,9 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testTermCollectorThreeCollectedTermTwoWithSameAtomicValue() {
-		basicDataGroup.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
-		basicDataGroup.addChild(
-				DataAtomic.withNameInDataAndValueAndRepeatId("bookSubTitle", "Some subtitle", "0"));
-		basicDataGroup.addChild(DataAtomic.withNameInDataAndValueAndRepeatId("bookSubTitle",
-				"Some other subtitle", "1"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookSubTitle", "Some subtitle", "0"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookSubTitle", "Some other subtitle", "1"));
 
 		collector.collectTerms("bookGroup", basicDataGroup);
 
@@ -203,7 +214,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
-		basicDataGroup.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
 
 		collector.collectTerms("bookGroup", basicDataGroup);
 
@@ -223,7 +234,7 @@ public class DataGroupTermCollectorTest {
 	}
 
 	private DataGroup createBookWithNoTitle() {
-		DataGroup book = DataGroup.withNameInData("book");
+		DataGroup book = new DataGroupSpy("book");
 		DataGroup recordInfo = createRecordInfo();
 		book.addChild(recordInfo);
 
@@ -231,26 +242,25 @@ public class DataGroupTermCollectorTest {
 	}
 
 	private void addChildrenToBook(DataGroup book) {
-		book.addChild(DataAtomic.withNameInDataAndValue("bookTitle", "Some title"));
-		book.addChild(DataAtomic.withNameInDataAndValue("bookSubTitle", "Some subtitle"));
-		DataGroup personRole = DataGroup.withNameInData("personRole");
-		personRole.addChild(DataAtomic.withNameInDataAndValue("name", "Kalle Kula"));
+		book.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		book.addChild(new DataAtomicSpy("bookSubTitle", "Some subtitle"));
+		DataGroup personRole = new DataGroupSpy("personRole");
+		personRole.addChild(new DataAtomicSpy("name", "Kalle Kula"));
 		personRole.setRepeatId("0");
 		book.addChild(personRole);
 	}
 
 	private void addLinkToOtherBook(DataGroup book) {
-		DataGroup otherBookLink = DataGroup.withNameInData("otherBook");
-		otherBookLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "book"));
-		otherBookLink
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "someOtherBookId"));
+		DataGroup otherBookLink = new DataGroupSpy("otherBook");
+		otherBookLink.addChild(new DataAtomicSpy("linkedRecordType", "book"));
+		otherBookLink.addChild(new DataAtomicSpy("linkedRecordId", "someOtherBookId"));
 		otherBookLink.setRepeatId("0");
 		book.addChild(otherBookLink);
 	}
 
 	private DataGroup createRecordInfo() {
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "book1"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "book1"));
 		DataGroup type = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
 				"type", "recordType", "book");
 		recordInfo.addChild(type);

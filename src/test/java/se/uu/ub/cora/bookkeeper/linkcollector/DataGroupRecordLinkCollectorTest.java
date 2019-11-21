@@ -21,7 +21,6 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
@@ -29,12 +28,19 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 public class DataGroupRecordLinkCollectorTest {
 	private DataGroupRecordLinkCollector linkCollector;
 	private DataGroupRecordLinkCollectorMetadataCreator dataGroupRecordLinkCollectorMetadataCreator;
+
+	private DataGroupFactorySpy dataGroupFactory;
+	private DataAtomicFactorySpy dataAtomicFactory;
 
 	@BeforeMethod
 	public void setUp() {
@@ -42,13 +48,19 @@ public class DataGroupRecordLinkCollectorTest {
 		linkCollector = new DataGroupRecordLinkCollector(
 				dataGroupRecordLinkCollectorMetadataCreator.getMetadataHolder(), "fromRecordType",
 				"fromRecordId");
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 	}
 
 	@Test
 	public void testOneGroupWithNoLink() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithNoLink("test");
-		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+		DataGroup dataGroup = new DataGroupSpy("testGroup");
 
+		assertEquals(dataGroupFactory.usedNameInDatas.size(), 0);
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 0);
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 		assertEquals(linkList.size(), 0);
 	}
@@ -59,54 +71,65 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup dataGroup = createDataGroupWithOneLink();
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 
-		assertCorrectOneGroupWithOneLink(linkList);
+		assertCorrectOneGroupWithOneLink(linkList, 5);
 	}
 
 	private DataGroup createDataGroupWithOneLink() {
-		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+		DataGroup dataGroup = new DataGroupSpy("testGroup");
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
 		return dataGroup;
 	}
 
 	private DataGroup createTestLinkWithRecordTypeAndRecordId() {
-		DataGroup dataRecordLink = DataGroup.withNameInData("testLink");
-		DataAtomic linkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType",
-				"linkedRecordType");
+		DataGroup dataRecordLink = new DataGroupSpy("testLink");
+		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "someRecordType");
 		dataRecordLink.addChild(linkedRecordType);
-
-		DataAtomic linkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId",
-				"linkedRecordId");
+		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "someRecordId");
 		dataRecordLink.addChild(linkedRecordId);
-
 		return dataRecordLink;
 	}
 
-	private void assertCorrectOneGroupWithOneLink(List<DataGroup> linkList) {
+	private void assertCorrectOneGroupWithOneLink(List<DataGroup> linkList,
+			int numOfAtomicFactored) {
 		assertEquals(linkList.size(), 1);
-
 		DataGroup recordToRecordLink = linkList.get(0);
 		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
 
-		assertCorrectFromPartOfRecordLink(recordToRecordLink);
-		assertCorrectToPartOfRecordLink(recordToRecordLink);
+		assertCorrectGroupsFactoredForOneGroupWithOneLink();
+
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), numOfAtomicFactored);
+		assertEquals(dataAtomicFactory.usedValues.size(), numOfAtomicFactored);
+
+		assertCorrectChildrenForBasicLink();
 	}
 
-	private void assertCorrectFromPartOfRecordLink(DataGroup recordToRecordLink) {
-		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
+	private void assertCorrectChildrenForBasicLink() {
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testLink");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "linkedRecordType",
 				"fromRecordType");
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"fromRecordId");
-		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "someRecordId");
 	}
 
-	private void assertCorrectToPartOfRecordLink(DataGroup recordToRecordLink) {
-		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
-				"linkedRecordType");
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"linkedRecordId");
+	private void assertCorrectGroupsFactoredForOneGroupWithOneLink() {
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 4);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(2), "from");
+		assertEquals(namesOfGroupsFactored.get(3), "to");
+	}
+
+	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
+			String value) {
+		List<String> namesOfAtomicDataFactored = dataAtomicFactory.usedNameInDatas;
+		List<String> valuesOfAtomicDataFactored = dataAtomicFactory.usedValues;
+		assertEquals(namesOfAtomicDataFactored.get(index), nameInData);
+		assertEquals(valuesOfAtomicDataFactored.get(index), value);
+
 	}
 
 	@Test
@@ -118,13 +141,22 @@ public class DataGroupRecordLinkCollectorTest {
 
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 5);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(2), "from");
+		assertEquals(namesOfGroupsFactored.get(3), "to");
+		// since one child is a group, a path is created (though not used if no links in child
+		// group)
+		assertEquals(namesOfGroupsFactored.get(4), "linkedPath");
 		assertCorrectOneGroupWithOneLinkAndOtherChildren(linkList);
 	}
 
 	private void addOtherChild(DataGroup dataGroup) {
-		DataAtomic dataAtomic = DataAtomic.withNameInDataAndValue("textVar", "some text");
+		DataAtomic dataAtomic = new DataAtomicSpy("textVar", "some text");
 		dataGroup.addChild(dataAtomic);
-		DataGroup dataSubGroup = DataGroup.withNameInData("subGroup");
+		DataGroup dataSubGroup = new DataGroupSpy("subGroup");
 		dataGroup.addChild(dataSubGroup);
 	}
 
@@ -133,80 +165,52 @@ public class DataGroupRecordLinkCollectorTest {
 
 		DataGroup recordToRecordLink = linkList.get(0);
 		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 6);
+		assertEquals(dataAtomicFactory.usedValues.size(), 6);
 
-		assertCorrectFromPartOfRecordLink(recordToRecordLink);
-		assertCorrectToPartOfRecordLinkContainingPathAndRepeatId(recordToRecordLink);
-	}
-
-	private void assertCorrectToPartOfRecordLinkContainingPathAndRepeatId(
-			DataGroup recordToRecordLink) {
-		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
-				"linkedRecordType");
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"linkedRecordId");
-		assertFalse(toRecordLink.containsChildWithNameInData("linkedPath"));
-		assertFalse(toRecordLink.containsChildWithNameInData("repeatId"));
+		assertCorrectChildrenForBasicLink();
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "nameInData", "subGroup");
 	}
 
 	@Test
-	public void testOneGroupWithOneLinkWithPath() {
+	public void testOneGroupWithOneLinkWithPathAndRepeatId() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
-		DataGroup dataGroup = createDataGroupContainingLink();
+		DataGroup dataGroup = createDataGroupContainingLinkWithRepeatId();
 
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
+
 		assertEquals(linkList.size(), 1);
 
-		assertCorrectOneGroupWithOneLinkWithPath(linkList);
-	}
-
-	private void assertCorrectOneGroupWithOneLinkWithPath(List<DataGroup> linkList) {
 		DataGroup recordToRecordLink = linkList.get(0);
 		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
 
-		assertCorrectOneGroupWithOneLinkWithPathFromPart(recordToRecordLink);
+		assertCorrectGroupsFactoredForOneGroupWithOneLink();
 
-		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
-		assertCorrectOneGroupWithOneLinkWithPathToPart(toRecordLink);
-		assertCorrectOneGroupWithOneLinkWithPathPathPart(toRecordLink);
-	}
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 8);
+		assertEquals(dataAtomicFactory.usedValues.size(), 8);
 
-	private void assertCorrectOneGroupWithOneLinkWithPathFromPart(DataGroup recordToRecordLink) {
-		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
-
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testLink");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "repeatId", "e3");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordType",
 				"fromRecordType");
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"fromRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordId", "fromRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRepeatId", "e3");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "linkedRecordType",
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "linkedRecordId", "someRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(7, "linkedRepeatId", "e3");
 
-		String fromLinkedRepeatId = fromRecordLink
-				.getFirstAtomicValueWithNameInData("linkedRepeatId");
-		assertEquals(fromLinkedRepeatId, "e3");
+		// assertCorrectOneGroupWithOneLink(linkList);
 	}
 
-	private void assertCorrectOneGroupWithOneLinkWithPathToPart(DataGroup toRecordLink) {
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
-				"linkedRecordType");
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"linkedRecordId");
-
-		assertEquals(toRecordLink.getFirstAtomicValueWithNameInData("linkedRepeatId"), "e3");
-	}
-
-	private void assertCorrectOneGroupWithOneLinkWithPathPathPart(DataGroup toRecordLink) {
-		DataGroup linkedPath = toRecordLink.getFirstGroupWithNameInData("linkedPath");
-		assertNotNull(linkedPath);
-		assertEquals(linkedPath.getNameInData(), "linkedPath");
-		assertEquals(linkedPath.getFirstAtomicValueWithNameInData("nameInData"), "someNameInData");
-	}
-
-	private DataGroup createDataGroupContainingLink() {
-		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+	private DataGroup createDataGroupContainingLinkWithRepeatId() {
+		// DataGroup dataGroup = DataGroupProvider.getDataGroupUsingNameInData("testGroup");
+		DataGroup dataGroup = new DataGroupSpy("testGroup");
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
 
-		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId", "e3");
+		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "e3");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.setRepeatId("e3");
 		return dataGroup;
@@ -214,19 +218,22 @@ public class DataGroupRecordLinkCollectorTest {
 
 	@Test
 	public void testOneGroupWithOneLinkWithEmptyFromLinkedRepeatId() {
-		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
-		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
+		DataGroup dataGroup = new DataGroupSpy("testGroup");
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
 
-		DataAtomic linkedRepeatId = DataAtomic.withNameInDataAndValue("linkedRepeatId",
-				"someLinkedRepeatId");
+		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "someLinkedRepeatId");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.setRepeatId("");
 
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 		assertEquals(linkList.size(), 1);
+
+		assertCorrectOneGroupWithOneLink(linkList, 6);
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "linkedRepeatId",
+				"someLinkedRepeatId");
 
 		DataGroup recordToRecordLink = linkList.get(0);
 		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
@@ -247,8 +254,8 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	private DataGroup createGroupInGroupWithOneLink() {
-		DataGroup topDataGroup = DataGroup.withNameInData("topGroup");
-		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+		DataGroup topDataGroup = new DataGroupSpy("topGroup");
+		DataGroup dataGroup = new DataGroupSpy("testGroup");
 		topDataGroup.addChild(dataGroup);
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
@@ -259,38 +266,27 @@ public class DataGroupRecordLinkCollectorTest {
 	private void assertCorrectOneGroupInGroupWithOneLink(List<DataGroup> linkList) {
 		assertEquals(linkList.size(), 1);
 
-		DataGroup recordToRecordLink = linkList.get(0);
-		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 6);
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(2), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(3), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(4), "from");
+		assertEquals(namesOfGroupsFactored.get(5), "to");
 
-		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 7);
+		assertEquals(dataAtomicFactory.usedValues.size(), 7);
 
-		assertCorrectOneGroupInGroupWithOneLinkFromPart(fromRecordLink);
-		assertCorrectOneGroupInGroupWithOneLinkLinkedPathPart(fromRecordLink);
-		assertCorrectToPartOfRecordLink(recordToRecordLink);
-	}
-
-	private void assertCorrectOneGroupInGroupWithOneLinkFromPart(DataGroup fromRecordLink) {
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testGroup");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData", "testGroup");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "nameInData", "testLink");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
 				"fromRecordType");
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"fromRecordId");
-	}
-
-	private void assertCorrectOneGroupInGroupWithOneLinkLinkedPathPart(DataGroup fromRecordLink) {
-		DataGroup fromLinkedPath = fromRecordLink.getFirstGroupWithNameInData("linkedPath");
-
-		assertNotNull(fromLinkedPath);
-		assertEquals(fromLinkedPath.getFirstAtomicValueWithNameInData("nameInData"), "testGroup");
-		assertTrue(fromLinkedPath.containsChildWithNameInData("linkedPath"));
-		assertFalse(fromLinkedPath.containsChildWithNameInData("repeatId"));
-		assertFalse(fromLinkedPath.containsChildWithNameInData("attributes"));
-
-		DataGroup fromLinkedPathSub1 = fromLinkedPath.getFirstGroupWithNameInData("linkedPath");
-		assertFalse(fromLinkedPathSub1.containsChildWithNameInData("repeatId"));
-		assertEquals(fromLinkedPathSub1.getFirstAtomicValueWithNameInData("nameInData"),
-				"testLink");
-		assertFalse(fromLinkedPathSub1.containsChildWithNameInData("attributes"));
-		assertFalse(fromLinkedPathSub1.containsChildWithNameInData("linkedPath"));
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "fromRecordId");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "linkedRecordType",
+				"someRecordType");
+		assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "linkedRecordId", "someRecordId");
 	}
 
 	@Test
@@ -300,18 +296,19 @@ public class DataGroupRecordLinkCollectorTest {
 
 		DataGroup topTopDataGroup = createGroupInGroupInGroupWithOneLink();
 		List<DataGroup> linkList = linkCollector.collectLinks("topTopGroup", topTopDataGroup);
+
 		assertCorrectOneGroupInGroupInGroupWithOneLink(linkList);
 	}
 
 	private DataGroup createGroupInGroupInGroupWithOneLink() {
-		DataGroup topTopDataGroup = DataGroup.withNameInData("topTopGroup");
+		DataGroup topTopDataGroup = new DataGroupSpy("topTopGroup");
 
-		DataGroup topDataGroup = DataGroup.withNameInData("topGroup");
+		DataGroup topDataGroup = new DataGroupSpy("topGroup");
 		topDataGroup.addAttributeByIdWithValue("attribute1", "attrValue");
 		topDataGroup.setRepeatId("g6");
 		topTopDataGroup.addChild(topDataGroup);
 
-		DataGroup dataGroup = DataGroup.withNameInData("testGroup");
+		DataGroup dataGroup = new DataGroupSpy("testGroup");
 		topDataGroup.addChild(dataGroup);
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
@@ -321,73 +318,47 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private void assertCorrectOneGroupInGroupInGroupWithOneLink(List<DataGroup> linkList) {
 		assertEquals(linkList.size(), 1);
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.size(), 15);
 
-		DataGroup recordToRecordLink = linkList.get(0);
-		assertEquals(recordToRecordLink.getNameInData(), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(1), "attributes");
+		assertEquals(namesOfGroupsFactored.get(2), "attribute");
+		assertEquals(namesOfGroupsFactored.get(3), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(4), "attributes");
+		assertEquals(namesOfGroupsFactored.get(5), "attribute");
+		assertEquals(namesOfGroupsFactored.get(6), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(7), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(8), "attributes");
+		assertEquals(namesOfGroupsFactored.get(9), "attribute");
+		assertEquals(namesOfGroupsFactored.get(10), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(11), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(12), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(13), "from");
+		assertEquals(namesOfGroupsFactored.get(14), "to");
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 20);
+		assertEquals(dataAtomicFactory.usedValues.size(), 20);
 
-		assertCorrectFromPartOfOneGroupInGroupInGroupWithOneLink(recordToRecordLink);
-		assertCorrectToPartOfOneGroupInGroupInGroupWithOneLink(recordToRecordLink);
+		// assertCorrectAtomicData();
 	}
 
-	private void assertCorrectFromPartOfOneGroupInGroupInGroupWithOneLink(
-			DataGroup recordToRecordLink) {
-		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
-				"fromRecordType");
-		assertEquals(fromRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				"fromRecordId");
-
-		DataGroup fromLinkedPath = fromRecordLink.getFirstGroupWithNameInData("linkedPath");
-
-		assertCorrectFromLinkedPathOfOneGroupInGroupInGroupWithOneLink(fromLinkedPath);
-		assertCorrectAttributesOfOneGroupInGroupInGroupWithOneLink(fromLinkedPath);
-		assertCorrectSubLinkedPathOfOneGroupInGroupInGroupWithOneLink(fromLinkedPath);
-	}
-
-	private void assertCorrectFromLinkedPathOfOneGroupInGroupInGroupWithOneLink(
-			DataGroup fromLinkedPath) {
-		assertNotNull(fromLinkedPath);
-		assertTrue(fromLinkedPath.containsChildWithNameInData("repeatId"));
-		assertEquals(fromLinkedPath.getFirstAtomicValueWithNameInData("nameInData"), "topGroup");
-		assertTrue(fromLinkedPath.containsChildWithNameInData("attributes"));
-	}
-
-	private void assertCorrectAttributesOfOneGroupInGroupInGroupWithOneLink(
-			DataGroup fromLinkedPath) {
-		DataGroup attributes = fromLinkedPath.getFirstGroupWithNameInData("attributes");
-		DataGroup attribute = attributes.getFirstGroupWithNameInData("attribute");
-		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeName"), "attribute1");
-		assertEquals(attribute.getFirstAtomicValueWithNameInData("attributeValue"), "attrValue");
-		assertTrue(fromLinkedPath.containsChildWithNameInData("linkedPath"));
-	}
-
-	private void assertCorrectSubLinkedPathOfOneGroupInGroupInGroupWithOneLink(
-			DataGroup fromLinkedPath) {
-		DataGroup fromLinkedPathSub1 = fromLinkedPath.getFirstGroupWithNameInData("linkedPath");
-		assertCorrectSubLinkedPath(fromLinkedPathSub1);
-
-		assertCorrectSubLinkedPathOfSubLinkedPath(fromLinkedPathSub1);
-	}
-
-	private void assertCorrectSubLinkedPath(DataGroup fromLinkedPathSub1) {
-		assertFalse(fromLinkedPathSub1.containsChildWithNameInData("repeatId"));
-		assertEquals(fromLinkedPathSub1.getFirstAtomicValueWithNameInData("nameInData"),
-				"testGroup");
-		assertFalse(fromLinkedPathSub1.containsChildWithNameInData("attributes"));
-		assertTrue(fromLinkedPathSub1.containsChildWithNameInData("linkedPath"));
-	}
-
-	private void assertCorrectSubLinkedPathOfSubLinkedPath(DataGroup fromLinkedPathSub1) {
-		DataGroup fromLinkedPathSub2 = fromLinkedPathSub1.getFirstGroupWithNameInData("linkedPath");
-		assertFalse(fromLinkedPathSub2.containsChildWithNameInData("repeatId"));
-		assertEquals(fromLinkedPathSub2.getFirstAtomicValueWithNameInData("nameInData"),
-				"testLink");
-		assertFalse(fromLinkedPathSub2.containsChildWithNameInData("attributes"));
-		assertFalse(fromLinkedPathSub2.containsChildWithNameInData("linkedPath"));
-	}
-
-	private void assertCorrectToPartOfOneGroupInGroupInGroupWithOneLink(
-			DataGroup recordToRecordLink) {
-		assertCorrectToPartOfRecordLink(recordToRecordLink);
-	}
+	// private void assertCorrectAtomicData() {
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "attribute1", "attrValue");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "nameInData", "topGroup");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "attributeName", "attribute1");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "attributeValue", "attrValue");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "nameInData",
+	// "someAtomicValueFromSpyFornameInData");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(5, "nameInData", "testGroup");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(6, "nameInData",
+	// "someAtomicValueFromSpyFornameInData");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(7, "nameInData", "testLink");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(8, "linkedRecordType",
+	// "fromRecordType");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(9, "linkedRecordId", "fromRecordId");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(10, "linkedRecordType",
+	// "someAtomicValueFromSpyForlinkedRecordType");
+	// assertCorrectAtomicDataUsingIndexNameInDataAndValue(11, "linkedRecordId",
+	// "someAtomicValueFromSpyForlinkedRecordId");
+	// }
 }

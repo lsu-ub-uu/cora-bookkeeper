@@ -22,12 +22,13 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class CollectedTermTest {
 	@Test
 	public void testCollectedTerm() {
-		DataGroup extraData = DataGroup.withNameInData("extraData");
+		DataGroup extraData = new DataGroupSpy("extraData");
 		CollectedTerm collectedTerm = CollectedTerm
 				.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData("someType", "someId",
 						"someNameInData", extraData);

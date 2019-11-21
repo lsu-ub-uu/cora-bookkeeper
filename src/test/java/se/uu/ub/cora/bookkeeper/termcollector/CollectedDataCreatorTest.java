@@ -28,18 +28,29 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 public class CollectedDataCreatorTest {
 
 	private CollectedDataCreator dataCreator;
 	private Map<String, List<DataGroup>> collectedTerms;
 	private List<DataGroup> indexDataGroups;
+	private DataGroupFactorySpy dataGroupFactory;
+	private DataAtomicFactorySpy dataAtomicFactory;
 
 	@BeforeMethod
 	public void setUp() {
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
 		dataCreator = new CollectedDataCreatorImp();
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		collectedTerms = new HashMap<>();
 		indexDataGroups = new ArrayList<>();
 	}
@@ -141,7 +152,7 @@ public class CollectedDataCreatorTest {
 	}
 
 	private DataGroup createBasicDataGroup() {
-		DataGroup book = DataGroup.withNameInData("book");
+		DataGroup book = new DataGroupSpy("book");
 		DataGroup recordInfo = createRecordInfo("book", "book:111", "testSystem");
 		book.addChild(recordInfo);
 
@@ -149,23 +160,25 @@ public class CollectedDataCreatorTest {
 	}
 
 	private DataGroup createRecordInfo(String type, String id, String dataDivider) {
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
-		DataGroup typeGroup = DataGroup.asLinkWithNameInDataAndTypeAndId("type", "recordType",
-				type);
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", id));
+		DataGroup typeGroup = new DataGroupSpy("type");
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordId", type));
 		recordInfo.addChild(typeGroup);
-		DataGroup dataDividerGroup = DataGroup.asLinkWithNameInDataAndTypeAndId("dataDivider",
-				"system", dataDivider);
+		DataGroup dataDividerGroup = new DataGroupSpy("dataDivider");
+		dataDividerGroup.addChild(new DataAtomicSpy("linkedRecordType", "system"));
+		dataDividerGroup.addChild(new DataAtomicSpy("linkedRecordId", dataDivider));
 		recordInfo.addChild(dataDividerGroup);
 		return recordInfo;
 	}
 
 	private DataGroup createCollectedDataTerm(String collectTermValue, String collectTermId) {
-		DataGroup dataTerm = DataGroup.withNameInData("collectedDataTerm");
-		dataTerm.addChild(DataAtomic.withNameInDataAndValue("collectTermId", collectTermId));
-		dataTerm.addChild(DataAtomic.withNameInDataAndValue("collectTermValue", collectTermValue));
-		DataGroup extraData = DataGroup.withNameInData("extraData");
-		extraData.addChild(DataAtomic.withNameInDataAndValue("indexType", "indexTypeString"));
+		DataGroup dataTerm = new DataGroupSpy("collectedDataTerm");
+		dataTerm.addChild(new DataAtomicSpy("collectTermId", collectTermId));
+		dataTerm.addChild(new DataAtomicSpy("collectTermValue", collectTermValue));
+		DataGroup extraData = new DataGroupSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("indexType", "indexTypeString"));
 		dataTerm.addChild(extraData);
 		dataTerm.addAttributeByIdWithValue("type", "index");
 		return dataTerm;

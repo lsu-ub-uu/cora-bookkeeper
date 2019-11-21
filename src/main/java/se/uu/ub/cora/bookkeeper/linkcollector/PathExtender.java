@@ -21,9 +21,10 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 
 public final class PathExtender {
 	private static final String ATTRIBUTE = "attribute";
@@ -43,9 +44,9 @@ public final class PathExtender {
 	}
 
 	private static DataGroup createPathForDataElement(DataElement dataElement) {
-		DataGroup elementPath = DataGroup.withNameInData(LINKED_PATH);
-		elementPath.addChild(
-				DataAtomic.withNameInDataAndValue(NAME_IN_DATA, dataElement.getNameInData()));
+		DataGroup elementPath = DataGroupProvider.getDataGroupUsingNameInData(LINKED_PATH);
+		elementPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(NAME_IN_DATA,
+				dataElement.getNameInData()));
 		extendPathWithAttributes(dataElement, elementPath);
 		extendPathWithRepeatId(dataElement, elementPath);
 		return elementPath;
@@ -61,23 +62,23 @@ public final class PathExtender {
 	private static void addAttributesIfExist(DataGroup currentPath, DataGroup subGroup) {
 		if (!subGroup.getAttributes().isEmpty()) {
 
-			DataGroup attributes = DataGroup.withNameInData(ATTRIBUTES);
+			DataGroup attributes = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTES);
 			currentPath.addChild(attributes);
 			for (Entry<String, String> entry : subGroup.getAttributes().entrySet()) {
-				DataGroup attribute = DataGroup.withNameInData(ATTRIBUTE);
+				DataGroup attribute = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTE);
 				attributes.addChild(attribute);
-				attribute.addChild(
-						DataAtomic.withNameInDataAndValue("attributeName", entry.getKey()));
-				attribute.addChild(
-						DataAtomic.withNameInDataAndValue("attributeValue", entry.getValue()));
+				attribute.addChild(DataAtomicProvider
+						.getDataAtomicUsingNameInDataAndValue("attributeName", entry.getKey()));
+				attribute.addChild(DataAtomicProvider
+						.getDataAtomicUsingNameInDataAndValue("attributeValue", entry.getValue()));
 			}
 		}
 	}
 
 	private static void extendPathWithRepeatId(DataElement dataElement, DataGroup currentPath) {
 		if (hasNonEmptyRepeatId(dataElement)) {
-			currentPath.addChild(
-					DataAtomic.withNameInDataAndValue(REPEAT_ID, dataElement.getRepeatId()));
+			currentPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(REPEAT_ID,
+					dataElement.getRepeatId()));
 		}
 	}
 

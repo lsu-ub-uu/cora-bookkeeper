@@ -25,8 +25,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToResourceLinkConverterTest {
@@ -54,15 +55,15 @@ public class DataGroupToResourceLinkConverterTest {
 	}
 
 	private DataGroup createDataGroup() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "resourceLink");
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
 		addTextWithNameInDataAndId(dataGroup, "textId", "otherTextId");
 		addTextWithNameInDataAndId(dataGroup, "defTextId", "otherDefTextId");
@@ -71,10 +72,9 @@ public class DataGroupToResourceLinkConverterTest {
 
 	private DataGroup addTextWithNameInDataAndId(DataGroup dataGroup, String textIdNameInData,
 			String textId) {
-		DataGroup textIdGroup = DataGroup.withNameInData(textIdNameInData);
-		textIdGroup
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType"));
-		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		DataGroup textIdGroup = new DataGroupSpy(textIdNameInData);
+		textIdGroup.addChild(new DataAtomicSpy("linkedRecordType", "someRecordType"));
+		textIdGroup.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		dataGroup.addChild(textIdGroup);
 		return textIdGroup;
 	}

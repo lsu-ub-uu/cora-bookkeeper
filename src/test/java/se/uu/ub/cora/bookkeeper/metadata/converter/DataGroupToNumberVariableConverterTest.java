@@ -23,8 +23,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToNumberVariableConverterTest {
@@ -58,31 +59,31 @@ public class DataGroupToNumberVariableConverterTest {
 
 	private DataGroup createDataGroup() {
 		DataGroup dataGroup = createRecordInfo();
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "someNameInData"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
 		dataGroup.addChild(createTextGroupUsingNameInDataAndTextId("textId", "someText"));
 		dataGroup.addChild(createTextGroupUsingNameInDataAndTextId("defTextId", "someDefText"));
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("min", "0"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("max", "5"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("warningMin", "1"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("warningMax", "4"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("warningMax", "4"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("numberOfDecimals", "1"));
+		dataGroup.addChild(new DataAtomicSpy("min", "0"));
+		dataGroup.addChild(new DataAtomicSpy("max", "5"));
+		dataGroup.addChild(new DataAtomicSpy("warningMin", "1"));
+		dataGroup.addChild(new DataAtomicSpy("warningMax", "4"));
+		dataGroup.addChild(new DataAtomicSpy("warningMax", "4"));
+		dataGroup.addChild(new DataAtomicSpy("numberOfDecimals", "1"));
 		return dataGroup;
 	}
 
 	private DataGroup createRecordInfo() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "someNumberVar"));
+		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "someNumberVar"));
 		dataGroup.addChild(recordInfo);
 		return dataGroup;
 	}
 
 	private DataGroup createTextGroupUsingNameInDataAndTextId(String nameInData, String textId) {
-		DataGroup textIdGroup = DataGroup.withNameInData(nameInData);
-		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "coraText"));
-		textIdGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		DataGroup textIdGroup = new DataGroupSpy(nameInData);
+		textIdGroup.addChild(new DataAtomicSpy("linkedRecordType", "coraText"));
+		textIdGroup.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		return textIdGroup;
 	}
 

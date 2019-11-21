@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
@@ -60,11 +61,11 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 	private DataGroup createBookMetadataGroup() {
 
-		DataGroup book = DataGroup.withNameInData("metadata");
+		DataGroup book = new DataGroupSpy("metadata");
 		book.addAttributeByIdWithValue("type", "group");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("bookGroup", "metadataGroup");
 		book.addChild(recordInfo);
-		book.addChild(DataAtomic.withNameInDataAndValue("nameInData", "book"));
+		book.addChild(new DataAtomicSpy("nameInData", "book"));
 		addTextByNameInDataAndId(book, "textId", "bookTextId");
 		addTextByNameInDataAndId(book, "defTextId", "bookDefTextId");
 
@@ -74,7 +75,7 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 	}
 
 	private DataGroup createChildReferencesForBook() {
-		DataGroup childReferences = DataGroup.withNameInData("childReferences");
+		DataGroup childReferences = new DataGroupSpy("childReferences");
 
 		DataGroup childReferenceTitle = createChildReferenceWithIdRepeatMinAndRepeatMax(
 				"bookTitleTextVar", "1", "1");
@@ -109,12 +110,12 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 	private DataGroup createBookWithMoreCollectTermsMetadataGroup() {
 
-		DataGroup book = DataGroup.withNameInData("metadata");
+		DataGroup book = new DataGroupSpy("metadata");
 		book.addAttributeByIdWithValue("type", "group");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("bookWithMoreCollectTermsGroup",
 				"metadataGroup");
 		book.addChild(recordInfo);
-		book.addChild(DataAtomic.withNameInDataAndValue("nameInData", "book"));
+		book.addChild(new DataAtomicSpy("nameInData", "book"));
 		addTextByNameInDataAndId(book, "textId", "bookTextId");
 		addTextByNameInDataAndId(book, "defTextId", "bookDefTextId");
 
@@ -124,7 +125,7 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 	}
 
 	private DataGroup createChildReferencesForBookWithMoreCollectTerms() {
-		DataGroup childReferences = DataGroup.withNameInData("childReferences");
+		DataGroup childReferences = new DataGroupSpy("childReferences");
 
 		DataGroup childReferenceTitle = createChildReferenceWithIdRepeatMinAndRepeatMax(
 				"bookTitleTextVar", "1", "1");
@@ -165,47 +166,44 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 	private DataGroup createChildReferenceWithIdRepeatMinAndRepeatMax(String id, String repeatMin,
 			String repeatMax) {
-		DataGroup childReference = DataGroup.withNameInData("childReference");
-		DataGroup ref = DataGroup.withNameInData("ref");
-		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
-		ref.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", id));
+		DataGroup childReference = new DataGroupSpy("childReference");
+		DataGroup ref = new DataGroupSpy("ref");
+		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadata"));
+		ref.addChild(new DataAtomicSpy("linkedRecordId", id));
 		childReference.addChild(ref);
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMin", repeatMin));
-		childReference.addChild(DataAtomic.withNameInDataAndValue("repeatMax", repeatMax));
+		childReference.addChild(new DataAtomicSpy("repeatMin", repeatMin));
+		childReference.addChild(new DataAtomicSpy("repeatMax", repeatMax));
 		return childReference;
 	}
 
 	private DataGroup createCollectIndexTermWithNameAndRepeatId(String collectIndexTermId,
 			String repeatId) {
-		DataGroup childRefCollectTerm = DataGroup.withNameInData("childRefCollectTerm");
-		childRefCollectTerm.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "collectIndexTerm"));
-		childRefCollectTerm
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", collectIndexTermId));
+		DataGroup childRefCollectTerm = new DataGroupSpy("childRefCollectTerm");
+		childRefCollectTerm.addChild(new DataAtomicSpy("linkedRecordType", "collectIndexTerm"));
+		childRefCollectTerm.addChild(new DataAtomicSpy("linkedRecordId", collectIndexTermId));
 		childRefCollectTerm.setRepeatId(repeatId);
 		childRefCollectTerm.addAttributeByIdWithValue("type", "index");
 		return childRefCollectTerm;
 	}
 
 	private DataGroup createCollectPermissionTerm(String collectPermissionTermId) {
-		DataGroup childRefCollectTerm = DataGroup.withNameInData("childRefCollectTerm");
-		childRefCollectTerm.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "collectPermissionTerm"));
-		childRefCollectTerm.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordId", collectPermissionTermId));
+		DataGroup childRefCollectTerm = new DataGroupSpy("childRefCollectTerm");
+		childRefCollectTerm
+				.addChild(new DataAtomicSpy("linkedRecordType", "collectPermissionTerm"));
+		childRefCollectTerm.addChild(new DataAtomicSpy("linkedRecordId", collectPermissionTermId));
 		childRefCollectTerm.addAttributeByIdWithValue("type", "permission");
 		return childRefCollectTerm;
 	}
 
 	private DataGroup createTextVariableWithIdAndNameInData(String id, String nameInData) {
-		DataGroup textVar = DataGroup.withNameInData("metadata");
+		DataGroup textVar = new DataGroupSpy("metadata");
 		textVar.addAttributeByIdWithValue("type", "textVariable");
 
 		DataGroup recordInfo = createRecordInfoWithIdAndType(id, "textVariable");
 		textVar.addChild(recordInfo);
-		textVar.addChild(DataAtomic.withNameInDataAndValue("nameInData", nameInData));
-		textVar.addChild(DataAtomic.withNameInDataAndValue("regEx",
-				"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
+		textVar.addChild(new DataAtomicSpy("nameInData", nameInData));
+		textVar.addChild(
+				new DataAtomicSpy("regEx", "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
 		addTextByNameInDataAndId(textVar, "textId", id + "TextId");
 		addTextByNameInDataAndId(textVar, "defTextId", id + "DefTextId");
 		return textVar;
@@ -224,24 +222,24 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 	}
 
 	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
-		DataGroup text = DataGroup.withNameInData(nameInData);
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		DataGroup text = new DataGroupSpy(nameInData);
+		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		dataGroup.addChild(text);
 	}
 
 	private DataGroup createPersonRoleGroup() {
-		DataGroup personRoleGroup = DataGroup.withNameInData("metadata");
+		DataGroup personRoleGroup = new DataGroupSpy("metadata");
 		personRoleGroup.addAttributeByIdWithValue("type", "group");
 
 		DataGroup recordInfo = createRecordInfoWithIdAndType("personRoleGroup", "metadataGroup");
 		personRoleGroup.addChild(recordInfo);
 
-		personRoleGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "personRole"));
+		personRoleGroup.addChild(new DataAtomicSpy("nameInData", "personRole"));
 		addTextByNameInDataAndId(personRoleGroup, "textId", "personRoleTextId");
 		addTextByNameInDataAndId(personRoleGroup, "defTextId", "personRoleDefTextId");
 
-		DataGroup childReferences = DataGroup.withNameInData("childReferences");
+		DataGroup childReferences = new DataGroupSpy("childReferences");
 		DataGroup childReferenceName = createChildReferenceWithIdRepeatMinAndRepeatMax(
 				"nameTextVar", "1", "1");
 
@@ -259,13 +257,13 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 	}
 
 	private DataGroup createOtherBookLink() {
-		DataGroup otherBookLink = DataGroup.withNameInData("metadata");
+		DataGroup otherBookLink = new DataGroupSpy("metadata");
 		otherBookLink.addAttributeByIdWithValue("type", "recordLink");
 
 		DataGroup recordInfo = createRecordInfoWithIdAndType("otherBookLink", "metadataRecordLink");
 		otherBookLink.addChild(recordInfo);
 
-		otherBookLink.addChild(DataAtomic.withNameInDataAndValue("nameInData", "otherBook"));
+		otherBookLink.addChild(new DataAtomicSpy("nameInData", "otherBook"));
 		addTextByNameInDataAndId(otherBookLink, "textId", "otherBookLinkText");
 		addTextByNameInDataAndId(otherBookLink, "defTextId", "otherBookLinkDefText");
 
@@ -275,9 +273,9 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 	private void addLinkToGroupByNameInDataAndId(DataGroup dataGroup, String nameInData,
 			String textId) {
-		DataGroup text = DataGroup.withNameInData(nameInData);
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", textId));
+		DataGroup text = new DataGroupSpy(nameInData);
+		text.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		dataGroup.addChild(text);
 	}
 
@@ -340,19 +338,19 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		String recordType = "collectIndexTerm";
 		DataGroup titleIndexTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
 				id, "index", nameInData, recordType);
-		DataGroup extraData = DataGroup.withNameInData("extraData");
-		extraData.addChild(DataAtomic.withNameInDataAndValue("indexType", indexType));
+		DataGroup extraData = new DataGroupSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("indexType", indexType));
 		titleIndexTerm.addChild(extraData);
 		return titleIndexTerm;
 	}
 
 	private DataGroup createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
 			String id, String collectType, String nameInData, String recordType) {
-		DataGroup indexTerm = DataGroup.withNameInData("collectTerm");
+		DataGroup indexTerm = new DataGroupSpy("collectTerm");
 		indexTerm.addAttributeByIdWithValue("type", collectType);
 		DataGroup recordInfo = createRecordInfoWithIdAndType(id, recordType);
 		indexTerm.addChild(recordInfo);
-		indexTerm.addChild(DataAtomic.withNameInDataAndValue("nameInData", nameInData));
+		indexTerm.addChild(new DataAtomicSpy("nameInData", nameInData));
 		return indexTerm;
 	}
 
@@ -361,18 +359,18 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		String recordType = "collectPermissionTerm";
 		DataGroup permissionTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
 				id, "permission", nameInData, recordType);
-		DataGroup extraData = DataGroup.withNameInData("extraData");
-		extraData.addChild(DataAtomic.withNameInDataAndValue("permissionKey", permissionName));
+		DataGroup extraData = new DataGroupSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("permissionKey", permissionName));
 		permissionTerm.addChild(extraData);
 		return permissionTerm;
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
-		DataGroup type = DataGroup.withNameInData("type");
-		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", typeString));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", id));
+		DataGroup type = new DataGroupSpy("type");
+		type.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		type.addChild(new DataAtomicSpy("linkedRecordId", typeString));
 		recordInfo.addChild(type);
 		return recordInfo;
 	}

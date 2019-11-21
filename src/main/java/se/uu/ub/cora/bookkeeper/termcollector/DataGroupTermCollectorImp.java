@@ -34,8 +34,10 @@ import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
@@ -160,7 +162,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 			MetadataElement childMetadataElement, DataElement childDataElement,
 			List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataElement instanceof RecordLink) {
-			createCollectTermsForRecordLink((DataGroup) childDataElement, collectTermsForChildReference);
+			createCollectTermsForRecordLink((DataGroup) childDataElement,
+					collectTermsForChildReference);
 		} else {
 			possiblyCreateCollectedTerms(childDataElement, collectTermsForChildReference);
 		}
@@ -228,7 +231,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private DataGroup createCollectedDataTermDataGroupWithType(String collectType) {
-		DataGroup collectedDataTerm = DataGroup.withNameInData("collectedDataTerm");
+		DataGroup collectedDataTerm = DataGroupProvider
+				.getDataGroupUsingNameInData("collectedDataTerm");
 		collectedDataTerm.addAttributeByIdWithValue("type", collectType);
 		return collectedDataTerm;
 	}
@@ -239,15 +243,15 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void createAndAddCollectDataTermId(String collectTermId, DataGroup collectedDataTerm) {
-		DataAtomic collectedDataTermId = DataAtomic.withNameInDataAndValue("collectTermId",
-				collectTermId);
+		DataAtomic collectedDataTermId = DataAtomicProvider
+				.getDataAtomicUsingNameInDataAndValue("collectTermId", collectTermId);
 		collectedDataTerm.addChild(collectedDataTermId);
 	}
 
 	private void createAndAddCollectDataTermValue(String childDataElementValue,
 			DataGroup collectedDataTerm) {
-		DataAtomic collectDataTermValue = DataAtomic.withNameInDataAndValue("collectTermValue",
-				childDataElementValue);
+		DataAtomic collectDataTermValue = DataAtomicProvider
+				.getDataAtomicUsingNameInDataAndValue("collectTermValue", childDataElementValue);
 		collectedDataTerm.addChild(collectDataTermValue);
 	}
 

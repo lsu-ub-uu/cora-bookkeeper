@@ -22,21 +22,21 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class CollectTermHolderTest {
 	@Test
 	public void testInit() {
 		CollectTermHolder collectTermHolder = new CollectTermHolder();
-		DataGroup searchTerm = DataGroup.withNameInData("searchTerm");
+		DataGroup searchTerm = new DataGroupSpy("searchTerm");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
 		searchTerm.addChild(recordInfo);
-		searchTerm.addChild(DataAtomic.withNameInDataAndValue("searchTermType", "final"));
-		DataGroup searchFieldRef = DataGroup.withNameInData("searchFieldRef");
-		searchFieldRef.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "metadata"));
-		searchFieldRef.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordId", "searchTitleTextVar"));
+		searchTerm.addChild(new DataAtomicSpy("searchTermType", "final"));
+		DataGroup searchFieldRef = new DataGroupSpy("searchFieldRef");
+		searchFieldRef.addChild(new DataAtomicSpy("linkedRecordType", "metadata"));
+		searchFieldRef.addChild(new DataAtomicSpy("linkedRecordId", "searchTitleTextVar"));
 
 		searchTerm.addChild(searchFieldRef);
 
@@ -47,11 +47,11 @@ public class CollectTermHolderTest {
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
-		DataGroup type = DataGroup.withNameInData("type");
-		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", typeString));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", id));
+		DataGroup type = new DataGroupSpy("type");
+		type.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		type.addChild(new DataAtomicSpy("linkedRecordId", typeString));
 		recordInfo.addChild(type);
 		return recordInfo;
 	}

@@ -25,6 +25,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataAtomic;
 
@@ -47,7 +48,7 @@ public class DataTextVariableValidatorTest {
 	}
 
 	private void validateDataAndAssertValid(String value) {
-		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", value);
+		DataAtomic data = new DataAtomicSpy("nameInData", value);
 		assertTrue(textDataValidator.validateData(data).dataIsValid());
 	}
 
@@ -62,7 +63,7 @@ public class DataTextVariableValidatorTest {
 	}
 
 	private void validateDataAndAssertInvalid(String value) {
-		DataAtomic data = DataAtomic.withNameInDataAndValue("nameInData", value);
+		DataAtomic data = new DataAtomicSpy("nameInData", value);
 		assertFalse(textDataValidator.validateData(data).dataIsValid());
 	}
 

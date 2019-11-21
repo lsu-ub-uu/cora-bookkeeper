@@ -1,12 +1,13 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRecordLinkCollectorMetadataCreator {
@@ -73,9 +74,11 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 
 		RecordLink recordLink = (RecordLink) metadataHolder.getMetadataElement("testLink");
 
-		DataGroup linkedPath = DataGroup.withNameInData("linkedPath");
+		// DataGroup linkedPath = DataGroup.withNameInData("linkedPath");
+		DataGroup linkedPath = new DataGroupSpy("linkedPath");
 		recordLink.setLinkedPath(linkedPath);
-		linkedPath.addChild(DataAtomic.withNameInDataAndValue("nameInData", "someNameInData"));
+		// linkedPath.addChild(DataAtomic.withNameInDataAndValue("nameInData", "someNameInData"));
+		linkedPath.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
 	}
 
 	void addMetadataForOneGroupInGroupWithOneLink() {

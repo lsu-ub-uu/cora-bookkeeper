@@ -28,6 +28,8 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -38,7 +40,6 @@ import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
 import se.uu.ub.cora.bookkeeper.metadata.TextContainer;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataValidatorFactoryTest {
@@ -49,11 +50,11 @@ public class DataValidatorFactoryTest {
 
 	@BeforeMethod
 	public void setup() {
-		DataGroup image = DataGroup.withNameInData("image");
-		DataGroup parentId = DataGroup.withNameInData("parentId");
+		DataGroup image = new DataGroupSpy("image");
+		DataGroup parentId = new DataGroupSpy("parentId");
 		image.addChild(parentId);
-		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "binary"));
+		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));
 		recordTypeHolder.put("image", image);
 
 		metadataHolder = new MetadataHolder();

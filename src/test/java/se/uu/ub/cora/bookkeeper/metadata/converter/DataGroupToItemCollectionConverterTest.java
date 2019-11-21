@@ -25,33 +25,34 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToItemCollectionConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = DataGroup.withNameInData("metadata");
+		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
 
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "otherId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup text = DataGroup.withNameInData("textId");
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		text.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherTextId"));
+		DataGroup text = new DataGroupSpy("textId");
+		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = DataGroup.withNameInData("defTextId");
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "textSystemOne"));
-		defText.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "otherDefTextId"));
+		DataGroup defText = new DataGroupSpy("defTextId");
+		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
+		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 
-		DataGroup collectionItemReferences = DataGroup.withNameInData("collectionItemReferences");
+		DataGroup collectionItemReferences = new DataGroupSpy("collectionItemReferences");
 
 		createAndAddItemReference(collectionItemReferences, "choice1", "one");
 		createAndAddItemReference(collectionItemReferences, "choice2", "two");
@@ -76,11 +77,10 @@ public class DataGroupToItemCollectionConverterTest {
 
 	private void createAndAddItemReference(DataGroup collectionItemReferences,
 			String linkedRecordId, String repeatId) {
-		DataGroup ref1 = DataGroup.withNameInData("ref");
+		DataGroup ref1 = new DataGroupSpy("ref");
 		ref1.setRepeatId(repeatId);
-		ref1.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "metadataCollectionItem"));
-		ref1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		ref1.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionItem"));
+		ref1.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
 		collectionItemReferences.addChild(ref1);
 	}
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
@@ -51,7 +52,7 @@ public class DataValidatorTest {
 		metadataStorage = new MetadataStorageForDataValidatorSpy();
 		validatorFactory = new DataValidatorFactorySpy();
 		dataValidator = new DataValidatorImp(metadataStorage, validatorFactory);
-		dataGroupToValidate = DataGroup.withNameInData("someGroup");
+		dataGroupToValidate = new DataGroupSpy("someGroup");
 	}
 
 	@Test

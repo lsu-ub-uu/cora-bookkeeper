@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class CollectedDataCreatorSpy implements CollectedDataCreator {
@@ -19,7 +20,7 @@ public class CollectedDataCreatorSpy implements CollectedDataCreator {
 		createWasCalled = true;
 		dataGroup = record;
 
-		DataGroup collectedData = DataGroup.withNameInData("collectedDataFromSpy");
+		DataGroup collectedData = new DataGroupSpy("collectedDataFromSpy");
 		return collectedData;
 	}
 
