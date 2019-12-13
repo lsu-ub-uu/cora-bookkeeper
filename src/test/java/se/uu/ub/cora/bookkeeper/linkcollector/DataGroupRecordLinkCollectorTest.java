@@ -41,6 +41,7 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private DataGroupFactorySpy dataGroupFactory;
 	private DataAtomicFactorySpy dataAtomicFactory;
+	private DataRecordLinkFactory dataReordLinkFactory;
 
 	@BeforeMethod
 	public void setUp() {
@@ -72,6 +73,19 @@ public class DataGroupRecordLinkCollectorTest {
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 
 		assertCorrectOneGroupWithOneLink(linkList, 5);
+	}
+
+	@Test
+	public void testFromAndToPartsAreCorrectTypes() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
+		DataGroup dataGroup = createDataGroupWithOneLink();
+		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
+
+		List<String> namesOfGroupsFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
+		assertEquals(namesOfGroupsFactored.get(2), "from");
+		assertEquals(namesOfGroupsFactored.get(3), "to");
+
 	}
 
 	private DataGroup createDataGroupWithOneLink() {
