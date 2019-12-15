@@ -34,6 +34,8 @@ import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.DataRecordLinkProvider;
 
 public class DataGroupRecordLinkCollector {
 
@@ -147,20 +149,20 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private DataGroup createFromPart(DataElement dataElement, DataGroup fromPath) {
-		DataGroup from = DataGroupProvider.getDataGroupUsingNameInData("from");
+		DataRecordLink from = DataRecordLinkProvider.getDataRecordLinkUsingNameInData("from");
 		addChildrenToFromPart(dataElement, fromPath, from);
 		return from;
 	}
 
 	private void addChildrenToFromPart(DataElement dataElement, DataGroup fromPath,
-			DataGroup from) {
+			DataRecordLink from) {
 		addRecordTypeToFromPart(from);
 		addRecordIdToFromPart(from);
 		addLinkedRepeatIdToFromPart(dataElement, from);
 		from.addChild(fromPath);
 	}
 
-	private void addRecordTypeToFromPart(DataGroup from) {
+	private void addRecordTypeToFromPart(DataRecordLink from) {
 		DataAtomic linkedRecordType = DataAtomicProvider
 				.getDataAtomicUsingNameInDataAndValue(LINKED_RECORD_TYPE, fromRecordType);
 		from.addChild(linkedRecordType);
@@ -185,20 +187,21 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private DataGroup createToPart(DataGroup dataElement, RecordLink recordLink) {
-		DataGroup to = DataGroupProvider.getDataGroupUsingNameInData("to");
+		DataRecordLink to = DataRecordLinkProvider.getDataRecordLinkUsingNameInData("to");
 
 		addChildrenToToPart(recordLink, to, dataElement);
 		return to;
 	}
 
-	private void addChildrenToToPart(RecordLink recordLink, DataGroup to, DataGroup dataGroup) {
+	private void addChildrenToToPart(RecordLink recordLink, DataRecordLink to,
+			DataGroup dataGroup) {
 		addRecordTypeToToPart(to, dataGroup);
 		addRecordIdToToPart(to, dataGroup);
 		addLinkedPathToToPart(recordLink, to);
 		possiblyAddLinkedRepeatIdToToPart(to, dataGroup);
 	}
 
-	private void addRecordTypeToToPart(DataGroup to, DataGroup dataGroup) {
+	private void addRecordTypeToToPart(DataRecordLink to, DataGroup dataGroup) {
 		DataAtomic linkedRecordType = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 				LINKED_RECORD_TYPE,
 				dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE));

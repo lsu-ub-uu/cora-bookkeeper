@@ -36,6 +36,7 @@ import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataRecordLinkProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataRecordLinkCollectorTest {
@@ -43,12 +44,15 @@ public class DataRecordLinkCollectorTest {
 	private MetadataStorage metadataStorage;
 	private DataGroupFactorySpy dataGroupFactory;
 	private DataAtomicFactorySpy dataAtomicFactory;
+	private DataRecordLinkFactorySpy dataRecordLinkFactory;
 
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageStub();
 		dataGroupFactory = new DataGroupFactorySpy();
 		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		dataRecordLinkFactory = new DataRecordLinkFactorySpy();
+		DataRecordLinkProvider.setDataRecordLinkFactory(dataRecordLinkFactory);
 		dataAtomicFactory = new DataAtomicFactorySpy();
 		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
@@ -99,14 +103,16 @@ public class DataRecordLinkCollectorTest {
 
 	private void assertCorrectFactoredGroupsAndAtomics() {
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-
-		assertEquals(namesOfGroupsFactored.size(), 5);
+		assertEquals(namesOfGroupsFactored.size(), 3);
 
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(2), "from");
-		assertEquals(namesOfGroupsFactored.get(3), "to");
-		assertEquals(namesOfGroupsFactored.get(4), "collectedDataLinks");
+		assertEquals(namesOfGroupsFactored.get(2), "collectedDataLinks");
+
+		List<String> namesOfRecordLinksFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfRecordLinksFactored.size(), 2);
+		assertEquals(namesOfRecordLinksFactored.get(0), "from");
+		assertEquals(namesOfRecordLinksFactored.get(1), "to");
 
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 5);
 		assertEquals(dataAtomicFactory.usedValues.size(), 5);
