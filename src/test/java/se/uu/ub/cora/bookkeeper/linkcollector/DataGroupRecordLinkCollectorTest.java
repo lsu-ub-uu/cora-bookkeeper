@@ -34,6 +34,8 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.DataRecordLinkProvider;
 
 public class DataGroupRecordLinkCollectorTest {
 	private DataGroupRecordLinkCollector linkCollector;
@@ -41,9 +43,12 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private DataGroupFactorySpy dataGroupFactory;
 	private DataAtomicFactorySpy dataAtomicFactory;
+	private DataRecordLinkFactorySpy dataRecordLinkFactory;
 
 	@BeforeMethod
 	public void setUp() {
+		dataRecordLinkFactory = new DataRecordLinkFactorySpy();
+		DataRecordLinkProvider.setDataRecordLinkFactory(dataRecordLinkFactory);
 		dataGroupRecordLinkCollectorMetadataCreator = new DataGroupRecordLinkCollectorMetadataCreator();
 		linkCollector = new DataGroupRecordLinkCollector(
 				dataGroupRecordLinkCollectorMetadataCreator.getMetadataHolder(), "fromRecordType",
@@ -72,6 +77,21 @@ public class DataGroupRecordLinkCollectorTest {
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 
 		assertCorrectOneGroupWithOneLink(linkList, 5);
+	}
+
+	@Test
+	public void testFromAndToPartsAreCorrectTypes() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
+		DataGroup dataGroup = createDataGroupWithOneLink();
+		linkCollector.collectLinks("testGroup", dataGroup);
+
+		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
+		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
+
+		List<String> namesOfLinksFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfLinksFactored.get(0), "from");
+		assertEquals(namesOfLinksFactored.get(1), "to");
+
 	}
 
 	private DataGroup createDataGroupWithOneLink() {
@@ -116,11 +136,14 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private void assertCorrectGroupsFactoredForOneGroupWithOneLink() {
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 4);
+		assertEquals(namesOfGroupsFactored.size(), 2);
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(2), "from");
-		assertEquals(namesOfGroupsFactored.get(3), "to");
+
+		List<String> namesOfRecordLinksFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfRecordLinksFactored.size(), 2);
+		assertEquals(namesOfRecordLinksFactored.get(0), "from");
+		assertEquals(namesOfRecordLinksFactored.get(1), "to");
 	}
 
 	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
@@ -142,14 +165,17 @@ public class DataGroupRecordLinkCollectorTest {
 		List<DataGroup> linkList = linkCollector.collectLinks("testGroup", dataGroup);
 
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 5);
+		assertEquals(namesOfGroupsFactored.size(), 3);
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(2), "from");
-		assertEquals(namesOfGroupsFactored.get(3), "to");
 		// since one child is a group, a path is created (though not used if no links in child
 		// group)
-		assertEquals(namesOfGroupsFactored.get(4), "linkedPath");
+		assertEquals(namesOfGroupsFactored.get(2), "linkedPath");
+
+		List<String> namesOfRecordLinksFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfRecordLinksFactored.size(), 2);
+		assertEquals(namesOfRecordLinksFactored.get(0), "from");
+		assertEquals(namesOfRecordLinksFactored.get(1), "to");
 		assertCorrectOneGroupWithOneLinkAndOtherChildren(linkList);
 	}
 
@@ -239,7 +265,8 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup fromRecordLink = recordToRecordLink.getFirstGroupWithNameInData("from");
 		assertFalse(fromRecordLink.containsChildWithNameInData("linkedRepeatId"));
 
-		DataGroup toRecordLink = recordToRecordLink.getFirstGroupWithNameInData("to");
+		DataRecordLink toRecordLink = (DataRecordLink) recordToRecordLink
+				.getFirstGroupWithNameInData("to");
 		assertTrue(toRecordLink.containsChildWithNameInData("linkedRepeatId"));
 	}
 
@@ -267,13 +294,16 @@ public class DataGroupRecordLinkCollectorTest {
 		assertEquals(linkList.size(), 1);
 
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 6);
+		assertEquals(namesOfGroupsFactored.size(), 4);
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(2), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(3), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(4), "from");
-		assertEquals(namesOfGroupsFactored.get(5), "to");
+
+		List<String> namesOfRecordLinksFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfRecordLinksFactored.size(), 2);
+		assertEquals(namesOfRecordLinksFactored.get(0), "from");
+		assertEquals(namesOfRecordLinksFactored.get(1), "to");
 
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 7);
 		assertEquals(dataAtomicFactory.usedValues.size(), 7);
@@ -319,7 +349,7 @@ public class DataGroupRecordLinkCollectorTest {
 	private void assertCorrectOneGroupInGroupInGroupWithOneLink(List<DataGroup> linkList) {
 		assertEquals(linkList.size(), 1);
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 15);
+		assertEquals(namesOfGroupsFactored.size(), 13);
 
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "attributes");
@@ -334,8 +364,12 @@ public class DataGroupRecordLinkCollectorTest {
 		assertEquals(namesOfGroupsFactored.get(10), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(11), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(12), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(13), "from");
-		assertEquals(namesOfGroupsFactored.get(14), "to");
+
+		List<String> namesOfLinksFactored = dataRecordLinkFactory.usedNameInDatas;
+		assertEquals(namesOfLinksFactored.size(), 2);
+
+		assertEquals(namesOfLinksFactored.get(0), "from");
+		assertEquals(namesOfLinksFactored.get(1), "to");
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 20);
 		assertEquals(dataAtomicFactory.usedValues.size(), 20);
 
