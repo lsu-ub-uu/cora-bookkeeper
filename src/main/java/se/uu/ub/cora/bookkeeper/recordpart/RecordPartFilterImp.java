@@ -18,27 +18,16 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import static org.testng.Assert.assertTrue;
-
-import java.util.Collections;
 import java.util.List;
 
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
-public class RecordPartFilterTest {
+public class RecordPartFilterImp implements RecordPartFilter {
 
-	@Test
-	public void testInit() throws Exception {
-		DataGroup dataGroup = new DataGroupSpy("someDataGroup");
-		dataGroup.addChild(new DataAtomicSpy("someChildId", "someChildValue"));
-		List<String> recordPartPermissions = Collections.emptyList();
+	@Override
+	public void filter(DataGroup recordRead, List<String> collectedReadRecordPartPermissions) {
+		// TODO Auto-generated method stub
 
-		RecordPartFilter recordPartFilter = new RecordPartFilterImp();
-		recordPartFilter.filter(dataGroup, recordPartPermissions);
-		assertTrue(dataGroup.containsChildWithNameInData("someChildId"));
 	}
+
 }
