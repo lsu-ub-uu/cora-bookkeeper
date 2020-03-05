@@ -25,6 +25,7 @@ import se.uu.ub.cora.data.DataGroup;
 
 public interface RecordPartFilter {
 
-	void filterReadRecorPartsUsingPermissions(DataGroup recordRead, List<String> collectedReadRecordPartPermissions);
+	DataGroup filterReadRecorPartsUsingPermissions(DataGroup metadataGroup, DataGroup recordRead,
+			List<String> collectedReadRecordPartPermissions);
 
 }

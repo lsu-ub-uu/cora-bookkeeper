@@ -25,10 +25,9 @@ import se.uu.ub.cora.data.DataGroup;
 public class RecordPartFilterImp implements RecordPartFilter {
 
 	@Override
-	public void filterReadRecorPartsUsingPermissions(DataGroup recordRead,
-			List<String> collectedReadRecordPartPermissions) {
-		// TODO Auto-generated method stub
-
+	public DataGroup filterReadRecorPartsUsingPermissions(DataGroup metadataGroup,
+			DataGroup recordRead, List<String> collectedReadRecordPartPermissions) {
+		return recordRead;
 	}
 
 }
