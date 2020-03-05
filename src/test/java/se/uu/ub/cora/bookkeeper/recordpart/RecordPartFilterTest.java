@@ -38,7 +38,7 @@ public class RecordPartFilterTest {
 		List<String> recordPartPermissions = Collections.emptyList();
 
 		RecordPartFilter recordPartFilter = new RecordPartFilterImp();
-		recordPartFilter.filter(dataGroup, recordPartPermissions);
+		recordPartFilter.filterReadRecorPartsUsingPermissions(dataGroup, recordPartPermissions);
 		assertTrue(dataGroup.containsChildWithNameInData("someChildId"));
 	}
 }
