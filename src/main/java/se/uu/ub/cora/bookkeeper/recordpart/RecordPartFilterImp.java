@@ -19,15 +19,31 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import se.uu.ub.cora.data.DataGroup;
 
 public class RecordPartFilterImp implements RecordPartFilter {
 
 	@Override
-	public DataGroup filterReadRecorPartsUsingPermissions(DataGroup metadataGroup,
-			DataGroup recordRead, List<String> collectedReadRecordPartPermissions) {
-		return recordRead;
+	public DataGroup filterReadRecordPartsUsingPermissions(String groupNameInData,
+			DataGroup dataGroup, Map<String, String> recordPartConstraints,
+			List<String> recordPartReadPermissions) {
+
+		for (Entry<String, String> entry : recordPartConstraints.entrySet()) {
+			String key = entry.getKey();
+			if (noPermissionExist(groupNameInData, recordPartReadPermissions, key)) {
+				dataGroup.removeFirstChildWithNameInData(key);
+			}
+		}
+
+		return dataGroup;
+	}
+
+	private boolean noPermissionExist(String groupNameInData,
+			List<String> recordPartReadPermissions, String key) {
+		return !recordPartReadPermissions.contains(groupNameInData + "." + key);
 	}
 
 }

@@ -18,12 +18,15 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,25 +38,25 @@ import se.uu.ub.cora.data.DataGroup;
 public class RecordPartFilterTest {
 
 	private DataGroup dataGroup;
-	private DataGroup metadataGroup;
+	// private DataGroup metadataGroup;
 	private RecordPartFilter recordPartFilter;
+	private String groupNameInData = "book";
 
 	@BeforeMethod
 	public void setUp() {
 		// ska ta en map med nameInData på barnen, readRedcord och permissions
 		dataGroup = new DataGroupSpy("someDataGroup");
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "book"));
-		dataGroup.addChild(new DataAtomicSpy("someChildId", "someChildValue"));
-		metadataGroup = createMetadataGroup();
+		dataGroup.addChild(new DataAtomicSpy("title", "someChildValue"));
+		// metadataGroup = createMetadataGroup();
 		recordPartFilter = new RecordPartFilterImp();
 	}
 
-	private DataGroup createMetadataGroup() {
-		DataGroup metadataGroup = new DataGroupSpy("metadata");
-		addChildReferences(metadataGroup);
-		metadataGroup.addChild(new DataAtomicSpy("id", "someId"));
-		return metadataGroup;
-	}
+	// private DataGroup createMetadataGroup() {
+	// DataGroup metadataGroup = new DataGroupSpy("metadata");
+	// addChildReferences(metadataGroup);
+	// metadataGroup.addChild(new DataAtomicSpy("title", "someId"));
+	// return metadataGroup;
+	// }
 
 	private void addChildReferences(DataGroup metadataGroup) {
 		DataGroupSpy childReferences = new DataGroupSpy("childReferences");
@@ -72,41 +75,60 @@ public class RecordPartFilterTest {
 
 	@Test
 	public void testNoConstraintsNoPermissions() throws Exception {
-
-		RecordPartFilter recordPartFilter = new RecordPartFilterImp();
-		DataGroup filteredDataGroup = recordPartFilter.filterReadRecorPartsUsingPermissions(
-				metadataGroup, dataGroup, Collections.emptyList());
+		Map<String, String> recordPartConstraints = Collections.emptyMap();
+		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
+				groupNameInData, dataGroup, recordPartConstraints, Collections.emptyList());
 		assertNotNull(filteredDataGroup);
-		assertTrue(dataGroup.containsChildWithNameInData("someChildId"));
+		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
 
 	@Test
 	public void testNoConstraintsButPermissions() throws Exception {
+		Map<String, String> recordPartConstraints = Collections.emptyMap();
 		List<String> recordPartPermissions = new ArrayList<>();
-		recordPartPermissions.add("book.id");
+		recordPartPermissions.add("book.title");
 
-		DataGroup filteredDataGroup = recordPartFilter.filterReadRecorPartsUsingPermissions(
-				metadataGroup, dataGroup, recordPartPermissions);
+		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
+				groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
 		assertNotNull(filteredDataGroup);
-		assertTrue(dataGroup.containsChildWithNameInData("someChildId"));
+		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
 
 	@Test
 	public void testReadWriteConstraintsAndPermissions() throws Exception {
-		addReadWriteReferenceToIdChildReference();
-
+		Map<String, String> recordPartConstraints = new HashMap<>();
+		recordPartConstraints.put("title", "readWrite");
 		List<String> recordPartPermissions = new ArrayList<>();
-		recordPartPermissions.add("book.id");
+		recordPartPermissions.add("book.title");
 
-		DataGroup filteredDataGroup = recordPartFilter.filterReadRecorPartsUsingPermissions(
-				metadataGroup, dataGroup, recordPartPermissions);
+		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
+				groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
 		assertNotNull(filteredDataGroup);
-		assertTrue(dataGroup.containsChildWithNameInData("someChildId"));
+		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
 
-	private void addReadWriteReferenceToIdChildReference() {
-		DataGroup childReferences = metadataGroup.getFirstGroupWithNameInData("childReferences");
-		DataGroup childReference = childReferences.getFirstGroupWithNameInData("childReference");
-		childReference.addChild(new DataAtomicSpy("recordPartConstraint", "readWrite"));
+	@Test
+	public void testReadWriteConstraintsNoPermissions() throws Exception {
+		Map<String, String> recordPartConstraints = new HashMap<>();
+		recordPartConstraints.put("title", "readWrite");
+		List<String> recordPartPermissions = new ArrayList<>();
+
+		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
+				groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
+		assertNotNull(filteredDataGroup);
+		assertFalse(filteredDataGroup.containsChildWithNameInData("title"));
 	}
+	//
+	// @Test
+	// public void testWriteConstraintsNoPermissions() throws Exception {
+	// Map<String, String> recordPartConstraints = new HashMap<>();
+	// recordPartConstraints.put("title", "write");
+	// List<String> recordPartPermissions = new ArrayList<>();
+	// // recordPartPermissions.add("book.title");
+	//
+	// DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
+	// groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
+	// assertNotNull(filteredDataGroup);
+	// assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
+	// }
 }

@@ -20,12 +20,13 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.List;
+import java.util.Map;
 
 import se.uu.ub.cora.data.DataGroup;
 
 public interface RecordPartFilter {
 
-	DataGroup filterReadRecorPartsUsingPermissions(DataGroup metadataGroup, DataGroup recordRead,
-			List<String> collectedReadRecordPartPermissions);
+	DataGroup filterReadRecordPartsUsingPermissions(String groupNameInData, DataGroup dataGroup,
+			Map<String, String> recordPartConstraints, List<String> emptyList);
 
 }
