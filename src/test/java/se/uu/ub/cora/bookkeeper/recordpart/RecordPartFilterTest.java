@@ -38,46 +38,20 @@ import se.uu.ub.cora.data.DataGroup;
 public class RecordPartFilterTest {
 
 	private DataGroup dataGroup;
-	// private DataGroup metadataGroup;
 	private RecordPartFilter recordPartFilter;
-	private String groupNameInData = "book";
 
 	@BeforeMethod
 	public void setUp() {
-		// ska ta en map med nameInData på barnen, readRedcord och permissions
 		dataGroup = new DataGroupSpy("someDataGroup");
 		dataGroup.addChild(new DataAtomicSpy("title", "someChildValue"));
-		// metadataGroup = createMetadataGroup();
 		recordPartFilter = new RecordPartFilterImp();
-	}
-
-	// private DataGroup createMetadataGroup() {
-	// DataGroup metadataGroup = new DataGroupSpy("metadata");
-	// addChildReferences(metadataGroup);
-	// metadataGroup.addChild(new DataAtomicSpy("title", "someId"));
-	// return metadataGroup;
-	// }
-
-	private void addChildReferences(DataGroup metadataGroup) {
-		DataGroupSpy childReferences = new DataGroupSpy("childReferences");
-		DataGroupSpy childReference = new DataGroupSpy("childReference");
-		createAndAddRef(childReference);
-		childReferences.addChild(childReference);
-		metadataGroup.addChild(childReferences);
-	}
-
-	private void createAndAddRef(DataGroupSpy childReference) {
-		DataGroupSpy ref = new DataGroupSpy("ref");
-		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataTextVariable"));
-		ref.addChild(new DataAtomicSpy("linkedRecordId", "idTextVar"));
-		childReference.addChild(ref);
 	}
 
 	@Test
 	public void testNoConstraintsNoPermissions() throws Exception {
 		Map<String, String> recordPartConstraints = Collections.emptyMap();
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
-				groupNameInData, dataGroup, recordPartConstraints, Collections.emptyList());
+				dataGroup, recordPartConstraints, Collections.emptyList());
 		assertNotNull(filteredDataGroup);
 		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
@@ -86,10 +60,10 @@ public class RecordPartFilterTest {
 	public void testNoConstraintsButPermissions() throws Exception {
 		Map<String, String> recordPartConstraints = Collections.emptyMap();
 		List<String> recordPartPermissions = new ArrayList<>();
-		recordPartPermissions.add("book.title");
+		recordPartPermissions.add("title");
 
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
-				groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
+				dataGroup, recordPartConstraints, recordPartPermissions);
 		assertNotNull(filteredDataGroup);
 		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
@@ -99,10 +73,10 @@ public class RecordPartFilterTest {
 		Map<String, String> recordPartConstraints = new HashMap<>();
 		recordPartConstraints.put("title", "readWrite");
 		List<String> recordPartPermissions = new ArrayList<>();
-		recordPartPermissions.add("book.title");
+		recordPartPermissions.add("title");
 
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
-				groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
+				dataGroup, recordPartConstraints, recordPartPermissions);
 		assertNotNull(filteredDataGroup);
 		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
@@ -114,21 +88,8 @@ public class RecordPartFilterTest {
 		List<String> recordPartPermissions = new ArrayList<>();
 
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
-				groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
+				dataGroup, recordPartConstraints, recordPartPermissions);
 		assertNotNull(filteredDataGroup);
 		assertFalse(filteredDataGroup.containsChildWithNameInData("title"));
 	}
-	//
-	// @Test
-	// public void testWriteConstraintsNoPermissions() throws Exception {
-	// Map<String, String> recordPartConstraints = new HashMap<>();
-	// recordPartConstraints.put("title", "write");
-	// List<String> recordPartPermissions = new ArrayList<>();
-	// // recordPartPermissions.add("book.title");
-	//
-	// DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
-	// groupNameInData, dataGroup, recordPartConstraints, recordPartPermissions);
-	// assertNotNull(filteredDataGroup);
-	// assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
-	// }
 }
