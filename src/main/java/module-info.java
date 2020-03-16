@@ -6,4 +6,5 @@ module se.uu.ub.cora.bookkeeper {
 	exports se.uu.ub.cora.bookkeeper.metadata;
 	exports se.uu.ub.cora.bookkeeper.termcollector;
 	exports se.uu.ub.cora.bookkeeper.validator;
+	exports se.uu.ub.cora.bookkeeper.recordpart;
 }
