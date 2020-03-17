@@ -92,4 +92,18 @@ public class RecordPartFilterTest {
 		assertNotNull(filteredDataGroup);
 		assertFalse(filteredDataGroup.containsChildWithNameInData("title"));
 	}
+
+	@Test
+	public void testReplaceRecordPartsUsingPermissions() throws Exception {
+
+		DataGroup originalDataGroup = new DataGroupSpy("originalDataGroup");
+		DataGroup changedDataGroup = new DataGroupSpy("changedDataGroup");
+
+		Map<String, String> recordPartConstraints = Collections.emptyMap();
+		List<String> recordPartPermissions = Collections.emptyList();
+
+		DataGroup replacedDataGroup = recordPartFilter.replaceRecordPartsUsingPermissions(
+				originalDataGroup, changedDataGroup, recordPartConstraints, recordPartPermissions);
+		// assertNotNull(replacedDataGroup);
+	}
 }

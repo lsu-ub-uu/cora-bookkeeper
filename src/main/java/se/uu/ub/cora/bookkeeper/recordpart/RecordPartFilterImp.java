@@ -26,6 +26,7 @@ import se.uu.ub.cora.data.DataGroup;
 public class RecordPartFilterImp implements RecordPartFilter {
 
 	@Override
+
 	public DataGroup filterReadRecordPartsUsingPermissions(DataGroup dataGroup,
 			Map<String, String> recordPartConstraints, List<String> recordPartReadPermissions) {
 
@@ -45,6 +46,14 @@ public class RecordPartFilterImp implements RecordPartFilter {
 
 	private boolean noPermissionExist(List<String> recordPartReadPermissions, String key) {
 		return !recordPartReadPermissions.contains(key);
+	}
+
+	@Override
+	public DataGroup replaceRecordPartsUsingPermissions(DataGroup originalDataGroup,
+			DataGroup changedDataGroup, Map<String, String> recordPartConstraints,
+			List<String> recordPartPermissions) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
