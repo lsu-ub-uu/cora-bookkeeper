@@ -25,27 +25,8 @@ import java.util.Map;
 import se.uu.ub.cora.data.DataGroup;
 
 public interface RecordPartFilter {
-	/**
-	 * 
-	 * @param dataGroup
-	 * @param recordPartConstraints
-	 * @param recordPartReadPermissions
-	 * @return
-	 */
-	DataGroup filterReadRecordPartsUsingPermissions(DataGroup dataGroup,
-			Map<String, String> recordPartConstraints, List<String> recordPartReadPermissions);
 
-	/**
-	 * replaceRecordPartsUsingPermissions
-	 * 
-	 * @param originalDataGroup
-	 * @param changedDataGroup
-	 * @param recordPartConstraints
-	 * @param recordPartPermissions
-	 * @return
-	 */
-	DataGroup replaceRecordPartsUsingPermissions(DataGroup originalDataGroup,
-			DataGroup changedDataGroup, Map<String, String> recordPartConstraints,
-			List<String> recordPartPermissions);
+	DataGroup filterReadRecordPartsUsingPermissions(DataGroup dataGroup, Map<String, String> recordPartConstraints,
+			List<String> recordPartReadPermissions);
 
 }
