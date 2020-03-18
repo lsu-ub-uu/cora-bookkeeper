@@ -29,12 +29,14 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public final class MetadataMatchData {
 
 	private MetadataHolder metadataHolder;
 	private MetadataElement metadataElement;
 	private DataElement dataElement;
+	private DataGroup dataElementAsGroup;
 	private ValidationAnswer validationAnswer;
 
 	public static MetadataMatchData withMetadataHolder(MetadataHolder metadataHolder) {
@@ -65,8 +67,11 @@ public final class MetadataMatchData {
 	}
 
 	private void validateAttributes() {
-		validateDataContainsAllRequiredAttributesWithCorrectValues();
-		validateDataContainsNoUnspecifiedAttributes();
+		if (dataElement instanceof DataGroup) {
+			dataElementAsGroup = (DataGroup) dataElement;
+			validateDataContainsAllRequiredAttributesWithCorrectValues();
+			validateDataContainsNoUnspecifiedAttributes();
+		}
 	}
 
 	private void validateDataContainsAllRequiredAttributesWithCorrectValues() {
@@ -80,7 +85,7 @@ public final class MetadataMatchData {
 			String mdAttributeReference) {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
 
-		Map<String, String> dataAttributes = dataElement.getAttributes();
+		Map<String, String> dataAttributes = dataElementAsGroup.getAttributes();
 		boolean dataAttributesContainsValueForAttribute = dataAttributes.containsKey(nameInData);
 		if (dataAttributesContainsValueForAttribute) {
 			DataAtomic dataAtomicElement = createDataAtomicFromAttribute(mdAttributeReference,
@@ -120,7 +125,7 @@ public final class MetadataMatchData {
 	}
 
 	private void validateDataContainsNoUnspecifiedAttributes() {
-		Map<String, String> dAttributes = dataElement.getAttributes();
+		Map<String, String> dAttributes = dataElementAsGroup.getAttributes();
 		for (Entry<String, String> attribute : dAttributes.entrySet()) {
 			String nameInDataFromDataAttribute = attribute.getKey();
 			validateNameInDataFromDataAttributeIsSpecifiedInMetadata(nameInDataFromDataAttribute);

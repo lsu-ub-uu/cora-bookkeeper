@@ -177,4 +177,10 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 	public Map<String, String> getAttributes() {
 		return null;
 	}
+
+	@Override
+	public void removeAllChildrenWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+
+	}
 }

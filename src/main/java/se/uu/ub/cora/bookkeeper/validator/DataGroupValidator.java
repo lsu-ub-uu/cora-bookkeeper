@@ -238,13 +238,17 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private String getAttributesText(DataElement childData) {
-		if (childData.getAttributes().isEmpty()) {
-			return "";
+		// if (childData.getAttributes().isEmpty()) {
+		// return "";
+		// }
+		// return getTextForExistingDataAttributes(childData);
+		if (childData instanceof DataGroup) {
+			return getTextForExistingDataAttributes((DataGroup) childData);
 		}
-		return getTextForExistingDataAttributes(childData);
+		return "";
 	}
 
-	private String getTextForExistingDataAttributes(DataElement childData) {
+	private String getTextForExistingDataAttributes(DataGroup childData) {
 		StringJoiner joiner = new StringJoiner(", ");
 		for (Entry<String, String> entry : childData.getAttributes().entrySet()) {
 			joiner.add(entry.getKey() + ":" + entry.getValue());

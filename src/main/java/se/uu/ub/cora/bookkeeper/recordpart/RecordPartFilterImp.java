@@ -40,7 +40,7 @@ public class RecordPartFilterImp implements RecordPartFilter {
 	private void removeChildIfNoPermission(DataGroup dataGroup, String key,
 			List<String> recordPartReadPermissions) {
 		if (noPermissionExist(recordPartReadPermissions, key)) {
-			dataGroup.removeFirstChildWithNameInData(key);
+			dataGroup.removeAllChildrenWithNameInData(key);
 		}
 	}
 

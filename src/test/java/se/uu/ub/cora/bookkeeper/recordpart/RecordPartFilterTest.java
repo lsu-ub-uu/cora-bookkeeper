@@ -18,7 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -43,7 +43,7 @@ public class RecordPartFilterTest {
 	@BeforeMethod
 	public void setUp() {
 		dataGroup = new DataGroupSpy("someDataGroup");
-		dataGroup.addChild(new DataAtomicSpy("title", "someChildValue"));
+		dataGroup.addChild(new DataAtomicSpy("title", "someChildValue", "0"));
 		recordPartFilter = new RecordPartFilterImp();
 	}
 
@@ -59,8 +59,7 @@ public class RecordPartFilterTest {
 	@Test
 	public void testNoConstraintsButPermissions() throws Exception {
 		Map<String, String> recordPartConstraints = Collections.emptyMap();
-		List<String> recordPartPermissions = new ArrayList<>();
-		recordPartPermissions.add("title");
+		List<String> recordPartPermissions = createReadPermissionForTitle();
 
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
 				dataGroup, recordPartConstraints, recordPartPermissions);
@@ -70,10 +69,8 @@ public class RecordPartFilterTest {
 
 	@Test
 	public void testReadWriteConstraintsAndPermissions() throws Exception {
-		Map<String, String> recordPartConstraints = new HashMap<>();
-		recordPartConstraints.put("title", "readWrite");
-		List<String> recordPartPermissions = new ArrayList<>();
-		recordPartPermissions.add("title");
+		Map<String, String> recordPartConstraints = createReadConstraintForTitle();
+		List<String> recordPartPermissions = createReadPermissionForTitle();
 
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
 				dataGroup, recordPartConstraints, recordPartPermissions);
@@ -81,23 +78,57 @@ public class RecordPartFilterTest {
 		assertTrue(filteredDataGroup.containsChildWithNameInData("title"));
 	}
 
-	@Test
-	public void testReadWriteConstraintsNoPermissions() throws Exception {
+	private List<String> createReadPermissionForTitle() {
+		List<String> recordPartPermissions = new ArrayList<>();
+		recordPartPermissions.add("title");
+		return recordPartPermissions;
+	}
+
+	private Map<String, String> createReadConstraintForTitle() {
 		Map<String, String> recordPartConstraints = new HashMap<>();
 		recordPartConstraints.put("title", "readWrite");
+		return recordPartConstraints;
+	}
+
+	@Test
+	public void testReadWriteConstraintsNoPermissions() throws Exception {
+		Map<String, String> recordPartConstraints = createReadConstraintForTitle();
 		List<String> recordPartPermissions = new ArrayList<>();
 
+		DataGroupForRecordPartFilterSpy dataGroupSpy = new DataGroupForRecordPartFilterSpy(
+				"someDataGroup");
+
+		dataGroupSpy.addChild(new DataAtomicSpy("title", "someChildValue", "0"));
+
 		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
-				dataGroup, recordPartConstraints, recordPartPermissions);
+				dataGroupSpy, recordPartConstraints, recordPartPermissions);
 		assertNotNull(filteredDataGroup);
-		assertFalse(filteredDataGroup.containsChildWithNameInData("title"));
+		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
+		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
+	}
+
+	@Test
+	public void testReadWriteConstraintsNoPermissionsRepeatingData() throws Exception {
+		Map<String, String> recordPartConstraints = createReadConstraintForTitle();
+		List<String> recordPartPermissions = new ArrayList<>();
+
+		DataGroupForRecordPartFilterSpy dataGroupSpy = new DataGroupForRecordPartFilterSpy(
+				"someDataGroup");
+
+		dataGroupSpy.addChild(new DataAtomicSpy("title", "someChildValue", "0"));
+		dataGroupSpy.addChild(new DataAtomicSpy("title", "someChildValue", "1"));
+
+		DataGroup filteredDataGroup = recordPartFilter.filterReadRecordPartsUsingPermissions(
+				dataGroupSpy, recordPartConstraints, recordPartPermissions);
+		assertNotNull(filteredDataGroup);
+		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
+		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
 	}
 
 	@Test
 	public void testReplaceRecordPartsUsingPermissions() throws Exception {
-
-		DataGroup originalDataGroup = new DataGroupSpy("originalDataGroup");
-		DataGroup changedDataGroup = new DataGroupSpy("changedDataGroup");
+		DataGroup originalDataGroup = new DataGroupForRecordPartFilterSpy("originalDataGroup");
+		DataGroup changedDataGroup = new DataGroupForRecordPartFilterSpy("changedDataGroup");
 
 		Map<String, String> recordPartConstraints = Collections.emptyMap();
 		List<String> recordPartPermissions = Collections.emptyList();

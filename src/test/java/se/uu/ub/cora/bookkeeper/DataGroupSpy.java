@@ -71,6 +71,7 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public void addChild(DataElement dataElement) {
 		if (dataElement instanceof DataAtomicSpy) {
+			// det här går ju inte, njaeeaae
 			DataAtomicSpy atomicSpyChild = (DataAtomicSpy) dataElement;
 			atomicValues.put(atomicSpyChild.nameInData, atomicSpyChild.value);
 
@@ -200,6 +201,12 @@ public class DataGroupSpy implements DataGroup {
 			DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void removeAllChildrenWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

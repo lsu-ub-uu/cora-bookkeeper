@@ -24,7 +24,7 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>3.3.0</coradata.version>
+		<coradata.version>3.4-SNAPSHOT</coradata.version>
 		<storage.version>3.3.0</storage.version>
 	</properties>
 
