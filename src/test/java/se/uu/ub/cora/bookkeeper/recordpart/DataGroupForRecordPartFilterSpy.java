@@ -18,10 +18,12 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
@@ -30,10 +32,19 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupForRecordPartFilterSpy implements DataGroup {
 
 	public boolean removeAllChildrenWasCalled = false;
+	public boolean containsChildWithNameInDataWasCalled = false;
 	public String childNameInDataToRemove;
+	public List<String> childNamesInDataToRemoveAll = new ArrayList<>();
+	public List<String> nameInDatasContainsChildWithNameInData = new ArrayList<>();
+	public boolean childExists = true;
+	public boolean addChildWasCalled = false;
+	Collection<DataElement> titleCollection = new ArrayList<>();
+	Collection<Collection<DataElement>> addedChildrenCollections = new ArrayList<>();
+	Collection<DataElement> otherConstraintCollection = new ArrayList<>();
 
 	public DataGroupForRecordPartFilterSpy(String nameInData) {
-		// TODO Auto-generated constructor stub
+		titleCollection.add(new DataAtomicSpy("title", "some title"));
+		otherConstraintCollection.add(new DataAtomicSpy("otherConstraint", "other"));
 	}
 
 	@Override
@@ -74,13 +85,15 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return false;
+		containsChildWithNameInDataWasCalled = true;
+		nameInDatasContainsChildWithNameInData.add(nameInData);
+		return childExists;
 	}
 
 	@Override
 	public void addChild(DataElement dataElement) {
 		// TODO Auto-generated method stub
+		addChildWasCalled = true;
 
 	}
 
@@ -137,6 +150,30 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 	public void removeAllChildrenWithNameInData(String childNameInData) {
 		childNameInDataToRemove = childNameInData;
 		removeAllChildrenWasCalled = true;
+		childNamesInDataToRemoveAll.add(childNameInData);
+
+	}
+
+	@Override
+	public DataAtomic getFirstDataAtomicWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addChildren(Collection<DataElement> dataElements) {
+		addedChildrenCollections.add(dataElements);
+	}
+
+	@Override
+	public Collection<DataElement> getAllChildrenWithNameInData(String nameInData) {
+		if ("title".equals(nameInData)) {
+			return titleCollection;
+		}
+		if ("otherConstraint".equals(nameInData)) {
+			return otherConstraintCollection;
+		}
+		return null;
 	}
 
 }

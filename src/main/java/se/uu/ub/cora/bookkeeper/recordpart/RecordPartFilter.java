@@ -19,33 +19,46 @@
 
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
 
 public interface RecordPartFilter {
 	/**
+	 * removeChildrenForConstraintsWithoutPermissions is used to remove children from the entered
+	 * DataGroup, based on the set of entered contraints that is not matched by the entered
+	 * permissions. The set of constraints consists of the nameInData for the children that has
+	 * constraints, so children are removed based on their nameInData.
 	 * 
 	 * @param dataGroup
+	 *            DataGroup to remove children from
 	 * @param recordPartConstraints
-	 * @param recordPartReadPermissions
-	 * @return
+	 *            Set of constraints, containing nameInData, to restrict access to
+	 * @param recordPartPermissions
+	 *            Set of permissions for the dataGroup.
+	 * @return DataGroup which might have had children removed
 	 */
-	DataGroup filterReadRecordPartsUsingPermissions(DataGroup dataGroup,
-			Map<String, String> recordPartConstraints, List<String> recordPartReadPermissions);
+	DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
+			Set<String> recordPartConstraints, Set<String> recordPartPermissions);
 
 	/**
-	 * replaceRecordPartsUsingPermissions
+	 * replaceChildrenForConstraintsWithoutPermissions is used to replace children with the original
+	 * value of the children. The children will be replaced ONLY when the the permission does not
+	 * match the constraints. The set of constraints consists of the nameInData for the children
+	 * that has constraints, so children are replaced based on their nameInData.
 	 * 
 	 * @param originalDataGroup
+	 *            Is the current version of the datagroup which will changed.
 	 * @param changedDataGroup
+	 *            Is the datagGroup containing the changes to be updated.
 	 * @param recordPartConstraints
+	 *            Set of constraints valid for the dataGroupType.
 	 * @param recordPartPermissions
-	 * @return
+	 *            Set of permissions for the dataGroupType.
+	 * @return DataGroup which might have had children replaced
 	 */
-	DataGroup replaceRecordPartsUsingPermissions(DataGroup originalDataGroup,
-			DataGroup changedDataGroup, Map<String, String> recordPartConstraints,
-			List<String> recordPartPermissions);
+	DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
+			DataGroup changedDataGroup, Set<String> recordPartConstraints,
+			Set<String> recordPartPermissions);
 
 }

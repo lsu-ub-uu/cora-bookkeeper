@@ -18,42 +18,58 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
 
 public class RecordPartFilterImp implements RecordPartFilter {
 
 	@Override
-
-	public DataGroup filterReadRecordPartsUsingPermissions(DataGroup dataGroup,
-			Map<String, String> recordPartConstraints, List<String> recordPartReadPermissions) {
-
-		for (String key : recordPartConstraints.keySet()) {
-			removeChildIfNoPermission(dataGroup, key, recordPartReadPermissions);
+	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
+			Set<String> recordPartConstraints, Set<String> recordPartReadPermissions) {
+		for (String constraint : recordPartConstraints) {
+			removeChildIfNoPermission(dataGroup, constraint, recordPartReadPermissions);
 		}
-
 		return dataGroup;
 	}
 
-	private void removeChildIfNoPermission(DataGroup dataGroup, String key,
-			List<String> recordPartReadPermissions) {
-		if (noPermissionExist(recordPartReadPermissions, key)) {
-			dataGroup.removeAllChildrenWithNameInData(key);
+	private void removeChildIfNoPermission(DataGroup dataGroup, String constraint,
+			Set<String> recordPartReadPermissions) {
+		if (noPermissionAndChildExists(dataGroup, constraint, recordPartReadPermissions)) {
+			dataGroup.removeAllChildrenWithNameInData(constraint);
 		}
 	}
 
-	private boolean noPermissionExist(List<String> recordPartReadPermissions, String key) {
-		return !recordPartReadPermissions.contains(key);
+	private boolean noPermissionAndChildExists(DataGroup dataGroup, String constraint,
+			Set<String> recordPartReadPermissions) {
+		return noPermissionExist(recordPartReadPermissions, constraint)
+				&& dataGroup.containsChildWithNameInData(constraint);
+	}
+
+	private boolean noPermissionExist(Set<String> recordPartReadPermissions, String constraint) {
+		return !recordPartReadPermissions.contains(constraint);
 	}
 
 	@Override
-	public DataGroup replaceRecordPartsUsingPermissions(DataGroup originalDataGroup,
-			DataGroup changedDataGroup, Map<String, String> recordPartConstraints,
-			List<String> recordPartPermissions) {
-		// TODO Auto-generated method stub
-		return null;
+	public DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
+			DataGroup updatedDataGroup, Set<String> recordPartConstraints,
+			Set<String> recordPartPermissions) {
+
+		for (String constraint : recordPartConstraints) {
+			if (!recordPartPermissions.contains(constraint)) {
+
+				if (updatedDataGroup.containsChildWithNameInData(constraint)) {
+					updatedDataGroup.removeAllChildrenWithNameInData(constraint);
+					updatedDataGroup.addChildren(
+							originalDataGroup.getAllChildrenWithNameInData(constraint));
+					// originalDataGroup.getAllChildrenWithNameInData(constraint);
+					/// TODO: what happens if we do not have children in original? is an error
+					// thrown? what does the interface say?
+				}
+			}
+		}
+		// }
+		return updatedDataGroup;
 	}
 
 }
