@@ -196,13 +196,11 @@ public class RecordPartFilterTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		// assertSame(replacedDataGroup, updatedDataGroup);
 		assertTrue(updatedDataGroup.containsChildWithNameInDataWasCalled);
 		assertEquals(updatedDataGroup.nameInDatasContainsChildWithNameInData.get(0), "title");
 		assertEquals(updatedDataGroup.childNameInDataToRemove, "title");
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
 				originalDataGroup.getAllChildrenWithNameInData("title"));
-		// assertEquals(updatedDataGroup.addChildNameInDatas(), "title");
 
 	}
 
