@@ -20,14 +20,14 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 
 public final class MetadataMatchData {
@@ -80,22 +80,42 @@ public final class MetadataMatchData {
 			String mdAttributeReference) {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
 
-		Map<String, String> dataAttributes = dataElement.getAttributes();
-		boolean dataAttributesContainsValueForAttribute = dataAttributes.containsKey(nameInData);
-		if (dataAttributesContainsValueForAttribute) {
+		Set<DataAttribute> dataAttributes = dataElement.getAttributes();
+		// boolean dataAttributesContainsValueForAttribute = dataAttributes.containsKey(nameInData);
+		try {
+			DataAttribute foundDataAttribute = getDataAttributeUsingAttributeName(nameInData);
 			DataAtomic dataAtomicElement = createDataAtomicFromAttribute(mdAttributeReference,
-					dataAttributes);
+					foundDataAttribute);
 			validateAttribute(mdAttributeReference, dataAtomicElement);
-		} else {
+		} catch (DataValidationException e) {
 			validationAnswer.addErrorMessage(
 					"Attribute with nameInData: " + nameInData + " does not exist in data.");
 		}
+
+		// if (dataAttributesContainsValueForAttribute) {
+		// DataAtomic dataAtomicElement = createDataAtomicFromAttribute(mdAttributeReference,
+		// dataAttributes);
+		// validateAttribute(mdAttributeReference, dataAtomicElement);
+		// } else {
+		// validationAnswer.addErrorMessage(
+		// "Attribute with nameInData: " + nameInData + " does not exist in data.");
+		// }
+	}
+
+	private DataAttribute getDataAttributeUsingAttributeName(String nameInData) {
+		for (DataAttribute dataAttribute : dataElement.getAttributes()) {
+			if (dataAttribute.getNameInData().equals(nameInData)) {
+				return dataAttribute;
+			}
+
+		}
+		throw DataValidationException.withMessage("No attribute found for " + nameInData);
 	}
 
 	private DataAtomic createDataAtomicFromAttribute(String mdAttributeReference,
-			Map<String, String> dataAttributes) {
+			DataAttribute dataAttribute) {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
-		String value = dataAttributes.get(nameInData);
+		String value = dataAttribute.getValue();
 
 		return DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(nameInData, value);
 	}
@@ -120,9 +140,9 @@ public final class MetadataMatchData {
 	}
 
 	private void validateDataContainsNoUnspecifiedAttributes() {
-		Map<String, String> dAttributes = dataElement.getAttributes();
-		for (Entry<String, String> attribute : dAttributes.entrySet()) {
-			String nameInDataFromDataAttribute = attribute.getKey();
+		Set<DataAttribute> dAttributes = dataElement.getAttributes();
+		for (DataAttribute attribute : dAttributes) {
+			String nameInDataFromDataAttribute = attribute.getNameInData();
 			validateNameInDataFromDataAttributeIsSpecifiedInMetadata(nameInDataFromDataAttribute);
 		}
 	}

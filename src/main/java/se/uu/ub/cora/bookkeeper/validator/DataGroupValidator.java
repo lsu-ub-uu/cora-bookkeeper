@@ -21,7 +21,6 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -30,6 +29,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -246,8 +246,8 @@ class DataGroupValidator implements DataElementValidator {
 
 	private String getTextForExistingDataAttributes(DataElement childData) {
 		StringJoiner joiner = new StringJoiner(", ");
-		for (Entry<String, String> entry : childData.getAttributes().entrySet()) {
-			joiner.add(entry.getKey() + ":" + entry.getValue());
+		for (DataAttribute dataAttribute : childData.getAttributes()) {
+			joiner.add(dataAttribute.getNameInData() + ":" + dataAttribute.getValue());
 		}
 		return " and attributes: " + joiner.toString();
 	}

@@ -19,9 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
-import java.util.Map.Entry;
-
 import se.uu.ub.cora.data.DataAtomicProvider;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
@@ -64,13 +63,13 @@ public final class PathExtender {
 
 			DataGroup attributes = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTES);
 			currentPath.addChild(attributes);
-			for (Entry<String, String> entry : subGroup.getAttributes().entrySet()) {
+			for (DataAttribute dataAttribute : subGroup.getAttributes()) {
 				DataGroup attribute = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTE);
 				attributes.addChild(attribute);
-				attribute.addChild(DataAtomicProvider
-						.getDataAtomicUsingNameInDataAndValue("attributeName", entry.getKey()));
-				attribute.addChild(DataAtomicProvider
-						.getDataAtomicUsingNameInDataAndValue("attributeValue", entry.getValue()));
+				attribute.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
+						"attributeName", dataAttribute.getNameInData()));
+				attribute.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
+						"attributeValue", dataAttribute.getValue()));
 			}
 		}
 	}

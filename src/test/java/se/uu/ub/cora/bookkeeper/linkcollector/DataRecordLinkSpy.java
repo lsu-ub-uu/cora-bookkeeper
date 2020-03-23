@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
@@ -161,9 +162,8 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 	}
 
 	@Override
-	public void removeFirstChildWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-
+	public boolean removeFirstChildWithNameInData(String childNameInData) {
+		return false;
 	}
 
 	@Override
@@ -174,14 +174,13 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 	}
 
 	@Override
-	public Map<String, String> getAttributes() {
+	public Set<DataAttribute> getAttributes() {
 		return null;
 	}
 
 	@Override
-	public void removeAllChildrenWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-
+	public boolean removeAllChildrenWithNameInData(String childNameInData) {
+		return false;
 	}
 
 	@Override

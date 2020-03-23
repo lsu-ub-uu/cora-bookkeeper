@@ -43,7 +43,7 @@ public final class DataGroupToMetadataConverterFactoryImp
 	}
 
 	private DataGroupToMetadataConverter createConverterBasedOnMetadataType() {
-		String type = dataGroup.getAttributes().get("type");
+		String type = dataGroup.getAttribute("type");
 		if ("group".equals(type)) {
 			return DataGroupToMetadataGroupConverter.fromDataGroup(dataGroup);
 		}

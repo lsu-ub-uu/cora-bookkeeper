@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.data.DataAtomic;
@@ -78,8 +78,7 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 	}
 
 	@Override
-	public Map<String, String> getAttributes() {
-		// TODO Auto-generated method stub
+	public Set<DataAttribute> getAttributes() {
 		return null;
 	}
 
@@ -141,16 +140,16 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 	}
 
 	@Override
-	public void removeFirstChildWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-
+	public boolean removeFirstChildWithNameInData(String childNameInData) {
+		return false;
 	}
 
 	@Override
-	public void removeAllChildrenWithNameInData(String childNameInData) {
+	public boolean removeAllChildrenWithNameInData(String childNameInData) {
 		childNameInDataToRemove = childNameInData;
 		removeAllChildrenWasCalled = true;
 		childNamesInDataToRemoveAll.add(childNameInData);
+		return true;
 
 	}
 

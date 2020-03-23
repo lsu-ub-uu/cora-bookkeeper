@@ -21,8 +21,10 @@ package se.uu.ub.cora.bookkeeper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
@@ -33,7 +35,7 @@ public class DataGroupSpy implements DataGroup {
 
 	public String nameInData;
 	public List<DataElement> children = new ArrayList<>();
-	public Map<String, String> attributes = new HashMap<>();
+	public Set<DataAttribute> attributes = new HashSet<>();
 	public List<DataGroup> groupsWithNameInData = new ArrayList<>();
 	public Map<String, String> atomicValues = new HashMap<>();
 	public Map<String, DataGroup> dataGroups = new HashMap<>();
@@ -110,11 +112,11 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public void addAttributeByIdWithValue(String id, String value) {
-		attributes.put(id, value);
+		attributes.add(new DataAttributeSpy(id, value));
 	}
 
 	@Override
-	public Map<String, String> getAttributes() {
+	public Set<DataAttribute> getAttributes() {
 		return attributes;
 	}
 
@@ -161,7 +163,12 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getAttribute(String attributeId) {
-		return attributes.get(attributeId);
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(attributeId)) {
+				return dataAttribute.getValue();
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -171,16 +178,19 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public void removeFirstChildWithNameInData(String childNameInData) {
+	public boolean removeFirstChildWithNameInData(String childNameInData) {
 		DataElement foundElement = tryToFindElementToRemove(childNameInData);
 		if (foundElement != null) {
 			getChildren().remove(foundElement);
 			if (foundElement instanceof DataAtomic) {
 				atomicValues.remove(foundElement.getNameInData());
+				return true;
 			} else if (foundElement instanceof DataGroup) {
 				dataGroups.remove(foundElement.getNameInData());
+				return true;
 			}
 		}
+		return false;
 	}
 
 	private DataElement tryToFindElementToRemove(String childNameInData) {
@@ -204,9 +214,8 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public void removeAllChildrenWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-
+	public boolean removeAllChildrenWithNameInData(String childNameInData) {
+		return false;
 	}
 
 	@Override
