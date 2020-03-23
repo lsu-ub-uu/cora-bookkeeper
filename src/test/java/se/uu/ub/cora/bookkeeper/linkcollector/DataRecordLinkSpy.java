@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
@@ -174,7 +173,7 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 	}
 
 	@Override
-	public Set<DataAttribute> getAttributes() {
+	public Collection<DataAttribute> getAttributes() {
 		return null;
 	}
 

@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
-import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
@@ -129,7 +128,7 @@ public final class MetadataMatchData {
 	}
 
 	private void validateDataContainsNoUnspecifiedAttributes() {
-		Set<DataAttribute> dAttributes = dataElement.getAttributes();
+		Collection<DataAttribute> dAttributes = dataElement.getAttributes();
 		for (DataAttribute attribute : dAttributes) {
 			String nameInDataFromDataAttribute = attribute.getNameInData();
 			validateNameInDataFromDataAttributeIsSpecifiedInMetadata(nameInDataFromDataAttribute);

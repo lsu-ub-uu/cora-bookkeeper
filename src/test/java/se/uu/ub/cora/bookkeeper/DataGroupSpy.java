@@ -116,7 +116,7 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public Set<DataAttribute> getAttributes() {
+	public Collection<DataAttribute> getAttributes() {
 		return attributes;
 	}
 
