@@ -174,4 +174,9 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 		return null;
 	}
 
+	@Override
+	public boolean hasChildren() {
+		return childExists;
+	}
+
 }

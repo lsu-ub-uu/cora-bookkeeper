@@ -79,7 +79,7 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateHasChildren() {
-		if (dataGroup.getChildren().isEmpty()) {
+		if (!dataGroup.hasChildren()) {
 			validationAnswer.addErrorMessage("DataGroup " + metadataGroup.getNameInData()
 					+ " should have children, it does not.");
 		}
@@ -238,10 +238,10 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private String getAttributesText(DataElement childData) {
-		if (childData.getAttributes().isEmpty()) {
-			return "";
+		if (childData.hasAttributes()) {
+			return getTextForExistingDataAttributes(childData);
 		}
-		return getTextForExistingDataAttributes(childData);
+		return "";
 	}
 
 	private String getTextForExistingDataAttributes(DataElement childData) {

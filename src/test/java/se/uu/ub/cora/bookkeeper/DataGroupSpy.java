@@ -111,6 +111,11 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
+	public boolean hasAttributes() {
+		return !attributes.isEmpty();
+	}
+
+	@Override
 	public void addAttributeByIdWithValue(String id, String value) {
 		attributes.add(new DataAttributeSpy(id, value));
 	}
@@ -234,6 +239,11 @@ public class DataGroupSpy implements DataGroup {
 	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return !children.isEmpty();
 	}
 
 }

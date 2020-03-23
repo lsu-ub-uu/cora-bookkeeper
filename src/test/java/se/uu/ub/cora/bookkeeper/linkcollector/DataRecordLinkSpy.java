@@ -199,4 +199,9 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean hasChildren() {
+		return !children.isEmpty();
+	}
 }

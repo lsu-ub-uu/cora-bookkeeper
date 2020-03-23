@@ -59,7 +59,7 @@ public final class PathExtender {
 	}
 
 	private static void addAttributesIfExist(DataGroup currentPath, DataGroup subGroup) {
-		if (!subGroup.getAttributes().isEmpty()) {
+		if (subGroup.hasAttributes()) {
 
 			DataGroup attributes = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTES);
 			currentPath.addChild(attributes);
