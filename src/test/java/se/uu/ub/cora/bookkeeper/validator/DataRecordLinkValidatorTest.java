@@ -130,7 +130,6 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"linkedRecordType", "myLinkedRecordId");
-		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);

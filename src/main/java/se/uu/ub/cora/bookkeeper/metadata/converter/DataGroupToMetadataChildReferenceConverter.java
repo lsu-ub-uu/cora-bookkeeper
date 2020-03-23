@@ -100,7 +100,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 	private void addCollectIndexTermToChildReference(DataGroup collectIndexTermGroup) {
 		String collectTermId = collectIndexTermGroup
 				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		String type = collectIndexTermGroup.getAttribute("type");
+		String type = collectIndexTermGroup.getAttribute("type").getValue();
 		CollectTerm collectTerm = CollectTerm.createCollectTermWithTypeAndId(type, collectTermId);
 
 		childReference.addCollectIndexTerm(collectTerm);

@@ -208,7 +208,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void createAndAddCollectedTermUsingIdAndValue(String collectTermId,
 			String childDataElementValue) {
 		DataGroup collectTerm = collectTermHolder.getCollectTerm(collectTermId);
-		String collectTermType = collectTerm.getAttribute("type");
+		String collectTermType = collectTerm.getAttribute("type").getValue();
 		DataGroup collectedTerm = createCollectedDataTerm(childDataElementValue, collectTermId,
 				collectTermType, collectTerm);
 		ensureTypeHolderExistsInCollectedTerms(collectTermType);

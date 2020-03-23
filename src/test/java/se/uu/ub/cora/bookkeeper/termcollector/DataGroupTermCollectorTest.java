@@ -146,7 +146,7 @@ public class DataGroupTermCollectorTest {
 		assertEquals(collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermValue"),
 				collectTermValue);
 
-		assertEquals(collectedDataTerm.getAttribute("type"), type);
+		assertEquals(collectedDataTerm.getAttribute("type").getValue(), type);
 
 		assertCollectedExtraDataIsSameAsInCollectTerm(collectedDataTerm, collectTermId);
 	}

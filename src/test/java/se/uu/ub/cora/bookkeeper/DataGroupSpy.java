@@ -162,10 +162,10 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public String getAttribute(String attributeId) {
+	public DataAttribute getAttribute(String attributeId) {
 		for (DataAttribute dataAttribute : attributes) {
 			if (dataAttribute.getNameInData().equals(attributeId)) {
-				return dataAttribute.getValue();
+				return dataAttribute;
 			}
 		}
 		return null;

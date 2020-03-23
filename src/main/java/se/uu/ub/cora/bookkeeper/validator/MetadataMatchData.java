@@ -80,8 +80,6 @@ public final class MetadataMatchData {
 			String mdAttributeReference) {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
 
-		Set<DataAttribute> dataAttributes = dataElement.getAttributes();
-		// boolean dataAttributesContainsValueForAttribute = dataAttributes.containsKey(nameInData);
 		try {
 			DataAttribute foundDataAttribute = getDataAttributeUsingAttributeName(nameInData);
 			DataAtomic dataAtomicElement = createDataAtomicFromAttribute(mdAttributeReference,
@@ -91,15 +89,6 @@ public final class MetadataMatchData {
 			validationAnswer.addErrorMessage(
 					"Attribute with nameInData: " + nameInData + " does not exist in data.");
 		}
-
-		// if (dataAttributesContainsValueForAttribute) {
-		// DataAtomic dataAtomicElement = createDataAtomicFromAttribute(mdAttributeReference,
-		// dataAttributes);
-		// validateAttribute(mdAttributeReference, dataAtomicElement);
-		// } else {
-		// validationAnswer.addErrorMessage(
-		// "Attribute with nameInData: " + nameInData + " does not exist in data.");
-		// }
 	}
 
 	private DataAttribute getDataAttributeUsingAttributeName(String nameInData) {
