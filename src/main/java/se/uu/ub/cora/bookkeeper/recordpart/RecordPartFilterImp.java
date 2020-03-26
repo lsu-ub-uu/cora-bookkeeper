@@ -25,7 +25,7 @@ import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
 public class RecordPartFilterImp implements RecordPartFilter {
-
+ 
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
 			Set<String> constraints, Set<String> permissions) {

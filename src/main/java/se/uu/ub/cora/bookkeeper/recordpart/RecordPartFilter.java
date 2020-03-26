@@ -22,7 +22,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
-
+ 
 public interface RecordPartFilter {
 	/**
 	 * removeChildrenForConstraintsWithoutPermissions is used to remove children from the entered
