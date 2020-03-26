@@ -1,5 +1,3 @@
-package se.uu.ub.cora.bookkeeper.metadata;
-
 /*
  * Copyright 2018 Uppsala University Library
  *
@@ -18,6 +16,8 @@ package se.uu.ub.cora.bookkeeper.metadata;
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.bookkeeper.metadata;
+
 public class NumberVariable extends MetadataElement {
 
 	private double min;
