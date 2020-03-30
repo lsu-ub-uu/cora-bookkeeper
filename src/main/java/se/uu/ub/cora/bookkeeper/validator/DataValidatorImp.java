@@ -19,20 +19,17 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 /**
  * ValidateData is a class to validate if a set of data is valid according to its metadataFormat
- * 
- * @author olov
- * 
  */
 public class DataValidatorImp implements DataValidator {
 
 	private MetadataStorage metadataStorage;
 	private String metadataId;
-	private DataElement dataElement;
+	private DataGroup dataGroup;
 	private DataValidatorFactory dataValidatorFactory;
 
 	public DataValidatorImp(MetadataStorage metadataStorage,
@@ -42,9 +39,9 @@ public class DataValidatorImp implements DataValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateData(String metadataId, DataElement dataElement) {
+	public ValidationAnswer validateData(String metadataId, DataGroup dataGroup) {
 		this.metadataId = metadataId;
-		this.dataElement = dataElement;
+		this.dataGroup = dataGroup;
 		try {
 			return tryToValidateData();
 		} catch (Exception exception) {
@@ -63,7 +60,7 @@ public class DataValidatorImp implements DataValidator {
 
 	private ValidationAnswer validateDataUsingDataValidator() {
 		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
-		return elementValidator.validateData(dataElement);
+		return elementValidator.validateData(dataGroup);
 	}
 
 	public MetadataStorage getMetadataStorage() {

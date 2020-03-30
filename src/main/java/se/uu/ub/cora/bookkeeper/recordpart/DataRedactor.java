@@ -22,8 +22,12 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
- 
-public interface RecordPartFilter {
+
+/**
+ * DataRedactor defines methods needed to hide or remove confidential parts of a DataGroup before
+ * storing or returning it.
+ */
+public interface DataRedactor {
 	/**
 	 * removeChildrenForConstraintsWithoutPermissions is used to remove children from the entered
 	 * DataGroup, based on the set of entered contraints that is not matched by the entered

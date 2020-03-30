@@ -39,7 +39,7 @@ import se.uu.ub.cora.data.DataGroup;
 public class RecordPartFilterTest {
 
 	private DataGroupForRecordPartFilterSpy dataGroupSpy;
-	private RecordPartFilter recordPartFilter;
+	private DataRedactor recordPartFilter;
 	private Set<String> emptyConstraints;
 	private Set<String> emptyPermissions;
 	private Set<String> titleConstraints;
@@ -50,7 +50,7 @@ public class RecordPartFilterTest {
 	@BeforeMethod
 	public void setUp() {
 		dataGroupSpy = new DataGroupForRecordPartFilterSpy("someDataGroup");
-		recordPartFilter = new RecordPartFilterImp();
+		recordPartFilter = new DataRedactorImp();
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
 		titleConstraints = createReadConstraintForTitle();

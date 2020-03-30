@@ -19,9 +19,23 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
+/**
+ * DataValidator defines the methods used for validating data according to how it is defined in
+ * metadata.
+ */
 public interface DataValidator {
-
-	ValidationAnswer validateData(String metadataId, DataElement dataGroup);
+	/**
+	 * ValidateData validates the given DataGroup against the metadata specified by the
+	 * metadataGroupId. The result of the validation is returned in a ValidationAnswer. If the
+	 * validation finds any errors SHOULD as many as possible be returned as part of the answer.
+	 * 
+	 * @param metadataGroupId
+	 *            A String with the id of the metadataGroup to validate against
+	 * @param dataGroup
+	 *            A DataGroup to validate against the specified metadata
+	 * @return A ValidationAnswer with the result of the validation
+	 */
+	ValidationAnswer validateData(String metadataGroupId, DataGroup dataGroup);
 }

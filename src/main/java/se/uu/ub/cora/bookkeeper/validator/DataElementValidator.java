@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.data.DataElement;
 
-public interface DataElementValidator {
+interface DataElementValidator {
 
 	ValidationAnswer validateData(DataElement dataElement);
 

@@ -26,9 +26,6 @@ import java.util.List;
 /**
  * ValidationAnswer is a class to deliver a validation answer, it contains a boolean with the
  * validation status and a list with errors if the data was not valid
- * 
- * @author olov
- * 
  */
 public class ValidationAnswer {
 

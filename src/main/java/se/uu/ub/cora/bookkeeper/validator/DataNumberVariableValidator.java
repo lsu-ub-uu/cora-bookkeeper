@@ -22,7 +22,7 @@ import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 
-public class DataNumberVariableValidator implements DataElementValidator {
+class DataNumberVariableValidator implements DataElementValidator {
 
 	private NumberVariable numberVariable;
 	private double dataValue;

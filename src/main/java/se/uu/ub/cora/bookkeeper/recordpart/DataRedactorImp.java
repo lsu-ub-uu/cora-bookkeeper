@@ -24,7 +24,7 @@ import java.util.Set;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class RecordPartFilterImp implements RecordPartFilter {
+public class DataRedactorImp implements DataRedactor {
  
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
