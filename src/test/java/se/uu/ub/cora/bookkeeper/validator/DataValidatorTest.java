@@ -38,8 +38,6 @@ import se.uu.ub.cora.storage.MetadataStorage;
  * ValidateDataTest tests that the ValidateData class correctly validates data based on the
  * metadataFormat
  * 
- * @author olov
- * 
  */
 public class DataValidatorTest {
 	private DataValidatorImp dataValidator;

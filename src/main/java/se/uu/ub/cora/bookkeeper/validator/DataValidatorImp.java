@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -71,5 +71,11 @@ public class DataValidatorImp implements DataValidator {
 	public DataValidatorFactory getDataValidatorFactory() {
 		// needed for test
 		return dataValidatorFactory;
+	}
+
+	@Override
+	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -38,4 +38,24 @@ public interface DataValidator {
 	 * @return A ValidationAnswer with the result of the validation
 	 */
 	ValidationAnswer validateData(String metadataGroupId, DataGroup dataGroup);
+
+	/**
+	 * ValidateListFilter validates the given DataGroup against the metadataGroup specified as
+	 * filter by the given recordType. The result of the validation is returned in a
+	 * ValidationAnswer. If the validation finds any errors SHOULD as many as possible be returned
+	 * as part of the answer.
+	 * <p>
+	 * If the specified recordType does not have a filter specified MUST a
+	 * {@link DataValidationException} be throw to indicate this. It is expected that all
+	 * RecordTypes will have filters once pagination is implemented.
+	 * 
+	 * @param recordType
+	 *            A String with the id of the recordType, to validate list filter against
+	 * @param filterDataGroup
+	 *            A DataGroup with filter information
+	 * 
+	 * @return A ValidationAnswer with the result of the validation
+	 */
+	ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup);
+
 }
