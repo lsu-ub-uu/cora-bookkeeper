@@ -45,9 +45,8 @@ public interface DataValidator {
 	 * ValidationAnswer. If the validation finds any errors SHOULD as many as possible be returned
 	 * as part of the answer.
 	 * <p>
-	 * If the specified recordType does not have a filter specified MUST a
-	 * {@link DataValidationException} be throw to indicate this. It is expected that all
-	 * RecordTypes will have filters once pagination is implemented.
+	 * If the specified recordType does not have a filter specified a
+	 * {@link DataValidationException} MUST be thrown to indicate this.
 	 * 
 	 * @param recordType
 	 *            A String with the id of the recordType, to validate list filter against
