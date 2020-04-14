@@ -24,10 +24,10 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>3.4.0</coradata.version>
-		<storage.version>3.3.0</storage.version>
+		<coradata.version>3.5-SNAPSHOT</coradata.version>
+		<storage.version>3.5-SNAPSHOT</storage.version>
 	</properties>
-
+ 
 	<scm>
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-bookkeeper.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-bookkeeper.git</developerConnection>
