@@ -24,8 +24,8 @@ import java.util.Set;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class RecordPartFilterImp implements RecordPartFilter {
- 
+public class DataRedactorImp implements DataRedactor {
+
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
 			Set<String> constraints, Set<String> permissions) {
@@ -37,15 +37,9 @@ public class RecordPartFilterImp implements RecordPartFilter {
 
 	private void possiblyRemoveChildIfNoPermission(DataGroup dataGroup, String constraint,
 			Set<String> permissions) {
-		if (noPermissionAndChildExists(dataGroup, constraint, permissions)) {
+		if (noPermissionExist(permissions, constraint)) {
 			dataGroup.removeAllChildrenWithNameInData(constraint);
 		}
-	}
-
-	private boolean noPermissionAndChildExists(DataGroup dataGroup, String constraint,
-			Set<String> permissions) {
-		return noPermissionExist(permissions, constraint)
-				&& dataGroup.containsChildWithNameInData(constraint);
 	}
 
 	private boolean noPermissionExist(Set<String> permissions, String constraint) {
@@ -64,7 +58,7 @@ public class RecordPartFilterImp implements RecordPartFilter {
 
 	private void possiblyReplaceChildIfNoPermission(DataGroup originalDataGroup,
 			DataGroup updatedDataGroup, Set<String> permissions, String constraint) {
-		if (noPermissionAndChildExists(updatedDataGroup, constraint, permissions)) {
+		if (noPermissionExist(permissions, constraint)) {
 			replaceChild(originalDataGroup, updatedDataGroup, constraint);
 		}
 	}

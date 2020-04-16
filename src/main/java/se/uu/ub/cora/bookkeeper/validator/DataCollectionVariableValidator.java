@@ -26,7 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 
-public class DataCollectionVariableValidator implements DataElementValidator {
+class DataCollectionVariableValidator implements DataElementValidator {
 
 	protected MetadataHolder metadataHolder;
 	protected CollectionVariable collectionVariable;

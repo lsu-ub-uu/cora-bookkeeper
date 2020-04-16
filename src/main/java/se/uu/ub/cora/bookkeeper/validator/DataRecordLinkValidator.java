@@ -28,7 +28,7 @@ import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataRecordLinkValidator implements DataElementValidator {
+class DataRecordLinkValidator implements DataElementValidator {
 
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";

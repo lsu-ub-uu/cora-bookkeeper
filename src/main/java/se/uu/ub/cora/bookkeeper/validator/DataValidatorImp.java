@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,51 +19,77 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.data.DataElement;
+import java.util.Map;
+
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 /**
  * ValidateData is a class to validate if a set of data is valid according to its metadataFormat
- * 
- * @author olov
- * 
  */
 public class DataValidatorImp implements DataValidator {
 
 	private MetadataStorage metadataStorage;
-	private String metadataId;
-	private DataElement dataElement;
 	private DataValidatorFactory dataValidatorFactory;
+	private Map<String, DataGroup> recordTypeHolder;
 
-	public DataValidatorImp(MetadataStorage metadataStorage,
-			DataValidatorFactory validatorFactory) {
+	public DataValidatorImp(MetadataStorage metadataStorage, DataValidatorFactory validatorFactory,
+			Map<String, DataGroup> recordTypeHolder) {
 		this.metadataStorage = metadataStorage;
 		this.dataValidatorFactory = validatorFactory;
+		this.recordTypeHolder = recordTypeHolder;
 	}
 
 	@Override
-	public ValidationAnswer validateData(String metadataId, DataElement dataElement) {
-		this.metadataId = metadataId;
-		this.dataElement = dataElement;
+	public ValidationAnswer validateData(String metadataId, DataGroup dataGroup) {
 		try {
-			return tryToValidateData();
+			return tryToValidateData(metadataId, dataGroup);
 		} catch (Exception exception) {
-			ValidationAnswer validationAnswer = new ValidationAnswer();
-			validationAnswer.addErrorMessageAndAppendErrorMessageFromExceptionToMessage(
-					"DataElementValidator not created for the requested metadataId: " + metadataId
-							+ " with error:",
-					exception);
-			return validationAnswer;
+			return createValidationAnswer(metadataId, exception);
 		}
 	}
 
-	private ValidationAnswer tryToValidateData() {
-		return validateDataUsingDataValidator();
+	private ValidationAnswer tryToValidateData(String metadataId, DataGroup dataGroup) {
+		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
+		return elementValidator.validateData(dataGroup);
 	}
 
-	private ValidationAnswer validateDataUsingDataValidator() {
-		DataElementValidator elementValidator = dataValidatorFactory.factor(metadataId);
-		return elementValidator.validateData(dataElement);
+	private ValidationAnswer createValidationAnswer(String metadataId, Exception exception) {
+		ValidationAnswer validationAnswer = new ValidationAnswer();
+		validationAnswer.addErrorMessageAndAppendErrorMessageFromExceptionToMessage(
+				"DataElementValidator not created for the requested metadataId: " + metadataId
+						+ " with error:",
+				exception);
+		return validationAnswer;
+	}
+
+	@Override
+	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
+		String filterId = extractFilterIdOrThrowErrorIfMissing(recordType);
+		try {
+			return tryToValidateData(filterId, filterDataGroup);
+		} catch (Exception exception) {
+			return createValidationAnswer(filterId, exception);
+		}
+	}
+
+	private String extractFilterIdOrThrowErrorIfMissing(String recordType) {
+		DataGroup recordTypeGroup = recordTypeHolder.get(recordType);
+		throwErrorIfRecordTypeHasNoDefinedFilter(recordType, recordTypeGroup);
+		return extractFilterId(recordTypeGroup);
+	}
+
+	private String extractFilterId(DataGroup recordTypeGroup) {
+		DataGroup filterGroup = recordTypeGroup.getFirstGroupWithNameInData("filter");
+		return filterGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+	}
+
+	private void throwErrorIfRecordTypeHasNoDefinedFilter(String recordType,
+			DataGroup recordTypeDataGroup) {
+		if (!recordTypeDataGroup.containsChildWithNameInData("filter")) {
+			throw DataValidationException
+					.withMessage("No filter exists for recordType: " + recordType);
+		}
 	}
 
 	public MetadataStorage getMetadataStorage() {
@@ -74,5 +100,10 @@ public class DataValidatorImp implements DataValidator {
 	public DataValidatorFactory getDataValidatorFactory() {
 		// needed for test
 		return dataValidatorFactory;
+	}
+
+	public Map<String, DataGroup> getRecordTypeHolder() {
+		// needed for test
+		return recordTypeHolder;
 	}
 }

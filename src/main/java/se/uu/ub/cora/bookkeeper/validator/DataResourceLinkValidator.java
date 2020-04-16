@@ -26,7 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataResourceLinkValidator implements DataElementValidator {
+class DataResourceLinkValidator implements DataElementValidator {
 
 	private static final String STREAM_ID = "streamId";
 	private ValidationAnswer validationAnswer;

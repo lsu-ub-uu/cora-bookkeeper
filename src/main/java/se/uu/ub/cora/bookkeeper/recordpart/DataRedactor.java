@@ -22,13 +22,18 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
- 
-public interface RecordPartFilter {
+
+/**
+ * DataRedactor defines methods needed to hide or remove confidential parts of a DataGroup before
+ * storing or returning it.
+ */
+public interface DataRedactor {
 	/**
 	 * removeChildrenForConstraintsWithoutPermissions is used to remove children from the entered
 	 * DataGroup, based on the set of entered contraints that is not matched by the entered
 	 * permissions. The set of constraints consists of the nameInData for the children that has
-	 * constraints, so children are removed based on their nameInData.
+	 * constraints, so children are removed based on their nameInData. If an empty set of
+	 * constraints is entered should no children be removed.
 	 * 
 	 * @param dataGroup
 	 *            DataGroup to remove children from
@@ -45,7 +50,8 @@ public interface RecordPartFilter {
 	 * replaceChildrenForConstraintsWithoutPermissions is used to replace children with the original
 	 * value of the children. The children will be replaced ONLY when the the permission does not
 	 * match the constraints. The set of constraints consists of the nameInData for the children
-	 * that has constraints, so children are replaced based on their nameInData.
+	 * that has constraints, so children are replaced based on their nameInData. If an empty set of
+	 * constraints is entered should no children be removed.
 	 * 
 	 * @param originalDataGroup
 	 *            Is the current version of the datagroup which will changed.

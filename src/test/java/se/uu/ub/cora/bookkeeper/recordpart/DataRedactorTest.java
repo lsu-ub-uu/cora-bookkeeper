@@ -22,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
- 
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,10 +36,10 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class RecordPartFilterTest {
+public class DataRedactorTest {
 
 	private DataGroupForRecordPartFilterSpy dataGroupSpy;
-	private RecordPartFilter recordPartFilter;
+	private DataRedactor recordPartFilter;
 	private Set<String> emptyConstraints;
 	private Set<String> emptyPermissions;
 	private Set<String> titleConstraints;
@@ -50,7 +50,7 @@ public class RecordPartFilterTest {
 	@BeforeMethod
 	public void setUp() {
 		dataGroupSpy = new DataGroupForRecordPartFilterSpy("someDataGroup");
-		recordPartFilter = new RecordPartFilterImp();
+		recordPartFilter = new DataRedactorImp();
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
 		titleConstraints = createReadConstraintForTitle();
@@ -111,8 +111,8 @@ public class RecordPartFilterTest {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.containsChildWithNameInDataWasCalled);
-		assertFalse(dataGroupSpy.removeAllChildrenWasCalled);
+		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
+		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
 	}
 
 	@Test
@@ -120,7 +120,6 @@ public class RecordPartFilterTest {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.containsChildWithNameInDataWasCalled);
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
 	}
@@ -132,7 +131,6 @@ public class RecordPartFilterTest {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.containsChildWithNameInDataWasCalled);
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		List<String> childNamesInDataToRemoveAll = dataGroupSpy.childNamesInDataToRemoveAll;
 		assertEquals(childNamesInDataToRemoveAll.get(0), "title");
@@ -179,13 +177,9 @@ public class RecordPartFilterTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, titlePermissions);
 
-		assertTrue(updatedDataGroup.containsChildWithNameInDataWasCalled);
 		assertTrue(updatedDataGroup.removeAllChildrenWasCalled);
 		assertTrue(updatedDataGroup.childNamesInDataToRemoveAll.contains("otherConstraint"));
 		assertFalse(updatedDataGroup.childNamesInDataToRemoveAll.contains("title"));
-		assertTrue(updatedDataGroup.nameInDatasContainsChildWithNameInData
-				.contains("otherConstraint"));
-		assertFalse(updatedDataGroup.nameInDatasContainsChildWithNameInData.contains("title"));
 
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
 				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
@@ -196,8 +190,6 @@ public class RecordPartFilterTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertTrue(updatedDataGroup.containsChildWithNameInDataWasCalled);
-		assertEquals(updatedDataGroup.nameInDatasContainsChildWithNameInData.get(0), "title");
 		assertEquals(updatedDataGroup.childNameInDataToRemove, "title");
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
 				originalDataGroup.getAllChildrenWithNameInData("title"));
@@ -211,9 +203,6 @@ public class RecordPartFilterTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertEquals(updatedDataGroup.nameInDatasContainsChildWithNameInData.get(0), "title");
-		assertEquals(updatedDataGroup.nameInDatasContainsChildWithNameInData.get(1),
-				"otherConstraint");
 		assertEquals(updatedDataGroup.childNamesInDataToRemoveAll.get(0), "title");
 		assertEquals(updatedDataGroup.childNamesInDataToRemoveAll.get(1), "otherConstraint");
 
@@ -233,8 +222,7 @@ public class RecordPartFilterTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertTrue(updatedDataGroup.containsChildWithNameInDataWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWasCalled);
+		assertTrue(updatedDataGroup.removeAllChildrenWasCalled);
+		assertTrue(updatedDataGroup.childNamesInDataToRemoveAll.contains("title"));
 	}
-
 }

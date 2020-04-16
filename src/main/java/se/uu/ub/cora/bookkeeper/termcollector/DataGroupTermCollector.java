@@ -20,6 +20,27 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 
 import se.uu.ub.cora.data.DataGroup;
 
+/**
+ * DataGroupTermCollector collects terms specified in metadata for a DataGroup.
+ * <p>
+ * There are three different kinds of collect terms, permission, storage and index.
+ */
 public interface DataGroupTermCollector {
+	/**
+	 * collectTerms is used to extract collect terms from a dataGroup based on the meta information
+	 * found in the metadataGroup identified by the provided metadataGroupId.
+	 * 
+	 * @param metadataGroupId
+	 *            A String with the id of the metadataGroup that describes the metadata for the
+	 *            entered DataGroup
+	 * @param dataGroup
+	 *            A DataGroup to extract collect terms from
+	 * @return A DataGroup with the extracted collect terms. The DataGroup has collectedData as
+	 *         nameInData and an Atomic child, type, with the dataGroups type, and another Atomic
+	 *         child, id, with the DataGroups id.
+	 *         <p>
+	 *         The collected terms are added in sub DataGroups with nameInData, permission, storage,
+	 *         and index respectivly.
+	 */
 	DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup);
 }
