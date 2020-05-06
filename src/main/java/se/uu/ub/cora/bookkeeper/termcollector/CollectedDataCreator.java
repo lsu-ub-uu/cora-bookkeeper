@@ -28,4 +28,7 @@ public interface CollectedDataCreator {
 	DataGroup createCollectedDataFromCollectedTermsAndRecord(
 			Map<String, List<DataGroup>> collectedTerms, DataGroup record);
 
+	DataGroup createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(
+			Map<String, List<DataGroup>> collectedTerms);
+
 }

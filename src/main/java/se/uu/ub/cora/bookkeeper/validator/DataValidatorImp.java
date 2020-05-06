@@ -102,4 +102,8 @@ public class DataValidatorImp implements DataValidator {
 		return dataValidatorFactory;
 	}
 
+	public Map<String, DataGroup> getRecordTypeHolder() {
+		// needed for test
+		return recordTypeHolder;
+	}
 }

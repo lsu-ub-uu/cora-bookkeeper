@@ -40,7 +40,26 @@ public interface DataGroupTermCollector {
 	 *         child, id, with the DataGroups id.
 	 *         <p>
 	 *         The collected terms are added in sub DataGroups with nameInData, permission, storage,
-	 *         and index respectivly.
+	 *         and index respectively.
 	 */
 	DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup);
+
+	/**
+	 * collectTermsWithoutTypeAndId is used to extract collect terms from a dataGroup based on the
+	 * meta information found in the metadataGroup identified by the provided metadataGroupId
+	 * ignoring Type and Id. This method is similar to {@link #collectTerms(String, DataGroup)} but
+	 * ignoring Type and Id.
+	 * 
+	 * @param metadataGroupId
+	 *            A String with the id of the metadataGroup that describes the metadata for the
+	 *            entered DataGroup
+	 * @param dataGroup
+	 *            A DataGroup to extract collect terms from
+	 * @return A DataGroup with the extracted collect terms. The DataGroup has collectedData as
+	 *         nameInData.
+	 *         <p>
+	 *         The collected terms are added in sub DataGroups with nameInData, permission, storage,
+	 *         and index respectively.
+	 */
+	DataGroup collectTermsWithoutTypeAndId(String metadataGroupId, DataGroup dataGroup);
 }

@@ -79,4 +79,11 @@ public final class CollectedDataCreatorImp implements CollectedDataCreator {
 		}
 	}
 
+	@Override
+	public DataGroup createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(
+			Map<String, List<DataGroup>> collectedTerms) {
+		DataGroup collectedData = DataGroupProvider.getDataGroupUsingNameInData("collectedData");
+		addCollectedTermsToCollectedData(collectedTerms, collectedData);
+		return collectedData;
+	}
 }

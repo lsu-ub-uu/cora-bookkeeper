@@ -57,13 +57,17 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	@Override
 	public DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup) {
+		prepareAndCollectTermsFromData(metadataGroupId, dataGroup);
+		return createCollectedData(dataGroup);
+	}
+
+	private void prepareAndCollectTermsFromData(String metadataGroupId, DataGroup dataGroup) {
 		collectedTerms = new HashMap<>();
 		if (metadataHolder == null) {
 			metadataHolder = populateMetadataHolderFromMetadataStorage();
 			populateCollectTermHolderFromMetadataStorage();
 		}
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
-		return createCollectedData(dataGroup);
 	}
 
 	private MetadataHolder populateMetadataHolderFromMetadataStorage() {
@@ -273,5 +277,12 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	public CollectedDataCreator getCollectedDataCreator() {
 		// needed for test
 		return collectedDataCreator;
+	}
+
+	@Override
+	public DataGroup collectTermsWithoutTypeAndId(String metadataGroupId, DataGroup dataGroup) {
+		prepareAndCollectTermsFromData(metadataGroupId, dataGroup);
+		return collectedDataCreator
+				.createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(collectedTerms);
 	}
 }

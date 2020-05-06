@@ -184,4 +184,84 @@ public class CollectedDataCreatorTest {
 		return dataTerm;
 	}
 
+	/**
+	 * WTAI Without Type and Id
+	 */
+
+	@Test
+	public void testWATICreateCollectedDataNoCollectTerms() {
+		HashMap<String, List<DataGroup>> collectedTerms = new HashMap<>();
+
+		DataGroup returnedCollectedData = dataCreator
+				.createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(collectedTerms);
+
+		assertEquals(returnedCollectedData.getNameInData(), "collectedData");
+		assertEquals(returnedCollectedData.getChildren().size(), 0);
+	}
+
+	@Test
+	public void testWTAICreateCollectedDataOneCollectIndexTerm() {
+		DataGroup dataTerm = createCollectedDataTerm("Some title", "titleIndexTerm");
+		indexDataGroups.add(dataTerm);
+		collectedTerms.put("index", indexDataGroups);
+
+		DataGroup returnedCollectedData = dataCreator
+				.createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(collectedTerms);
+
+		assertEquals(returnedCollectedData.getNameInData(), "collectedData");
+		assertEquals(returnedCollectedData.getChildren().size(), 1);
+
+		DataGroup indexDataGroup = returnedCollectedData.getFirstGroupWithNameInData("index");
+		assertCollectedTermInReturnedGroupIsSameAsSentIn(indexDataGroup, 0, "index");
+	}
+
+	@Test
+	public void testWTAICreateCollectedDataTwoCollectTerms() {
+
+		DataGroup dataTerm = createCollectedDataTerm("Some title", "titleIndexTerm");
+		indexDataGroups.add(dataTerm);
+		DataGroup dataTerm2 = createCollectedDataTerm("Some title", "titleSecondIndexTerm");
+		indexDataGroups.add(dataTerm2);
+		collectedTerms.put("index", indexDataGroups);
+
+		DataGroup returnedCollectedData = dataCreator
+				.createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(collectedTerms);
+
+		assertEquals(returnedCollectedData.getNameInData(), "collectedData");
+		assertEquals(returnedCollectedData.getChildren().size(), 1);
+
+		DataGroup indexDataGroup = returnedCollectedData.getFirstGroupWithNameInData("index");
+		assertCollectedTermInReturnedGroupIsSameAsSentIn(indexDataGroup, 0, "index");
+		assertCollectedTermInReturnedGroupIsSameAsSentIn(indexDataGroup, 1, "index");
+
+	}
+
+	@Test
+	public void testWTAICreateCollectedDataTwoDifferentTypesOfCollectTerms() {
+
+		DataGroup indexDataTerm = createCollectedDataTerm("Some title", "titleIndexTerm");
+		indexDataGroups.add(indexDataTerm);
+		DataGroup indexDataTerm2 = createCollectedDataTerm("Some sub title", "subTitleIndexTerm");
+		indexDataGroups.add(indexDataTerm2);
+		collectedTerms.put("index", indexDataGroups);
+
+		List<DataGroup> storageDataGroups = new ArrayList<>();
+		DataGroup storageDataTerm = createCollectedDataTerm("Some name", "nameIndexTerm");
+		storageDataGroups.add(storageDataTerm);
+		collectedTerms.put("storage", storageDataGroups);
+
+		DataGroup result = dataCreator
+				.createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId(collectedTerms);
+
+		assertEquals(result.getNameInData(), "collectedData");
+		assertEquals(result.getChildren().size(), 2);
+
+		DataGroup indexDataGroup = result.getFirstGroupWithNameInData("index");
+		assertCollectedTermInReturnedGroupIsSameAsSentIn(indexDataGroup, 0, "index");
+		assertCollectedTermInReturnedGroupIsSameAsSentIn(indexDataGroup, 1, "index");
+
+		DataGroup storageDataGroup = result.getFirstGroupWithNameInData("storage");
+		assertCollectedTermInReturnedGroupIsSameAsSentIn(storageDataGroup, 0, "storage");
+
+	}
 }

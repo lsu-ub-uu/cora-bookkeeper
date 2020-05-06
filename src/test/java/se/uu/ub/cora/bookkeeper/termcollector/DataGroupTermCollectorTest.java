@@ -23,6 +23,7 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -67,9 +68,13 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testCollectedDataCreatorCalledAndDataGroupPassedOn() {
+
 		collector.collectTerms("bookGroup", basicDataGroup);
-		assertTrue(collectedDataCreator.createWasCalled);
-		assertSame(collectedDataCreator.dataGroup, basicDataGroup);
+
+		collectedDataCreator.MCR
+				.assertMethodWasCalled("createCollectedDataFromCollectedTermsAndRecord");
+		collectedDataCreator.MCR.assertParameter("createCollectedDataFromCollectedTermsAndRecord",
+				0, "record", basicDataGroup);
 	}
 
 	@Test
@@ -274,5 +279,166 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testGetCollectedDataCreator() {
 		assertSame(collector.getCollectedDataCreator(), collectedDataCreator);
+	}
+
+	/**
+	 * WTAI stands for WithoutTypeAndId
+	 */
+
+	@Test
+	public void testWTAIResultFromcollectTermsNoCollectedTerms() {
+		DataGroup collectedData = collector.collectTermsWithoutTypeAndId("bookGroup",
+				basicDataGroup);
+		collectedDataCreator.MCR.assertReturn(
+				"createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId", 0, collectedData);
+	}
+
+	@Test
+	public void testWTAITermCollectorNoCollectedTerms() {
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+
+		assertTrue(collectedTerms.isEmpty());
+	}
+
+	private Map<String, List<DataGroup>> getCollectedTermsFromCollectedDataCreator() {
+		Map<String, Object> parametersForMethodAndCallNumber = collectedDataCreator.MCR
+				.getParametersForMethodAndCallNumber(
+						"createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId", 0);
+		Map<String, List<DataGroup>> collectedTerms = (Map<String, List<DataGroup>>) parametersForMethodAndCallNumber
+				.get("collectedTerms");
+		return collectedTerms;
+	}
+
+	@Test
+	public void testWTAITermCollectorOneCollectedTermAtomicValue() {
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+
+		assertEquals(collectedTerms.size(), 1);
+		List<DataGroup> collectedIndexTermList = collectedTerms.get("index");
+		assertEquals(collectedIndexTermList.size(), 1);
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 0, "titleIndexTerm", "Some title",
+				"index");
+	}
+
+	@Test
+	public void testWTAITermCollectorTwoCollectedTermSameAtomicValue() {
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+
+		collector.collectTermsWithoutTypeAndId("bookWithMoreCollectTermsGroup", basicDataGroup);
+
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+		assertEquals(collectedTerms.size(), 1);
+		List<DataGroup> collectedIndexTermList = collectedTerms.get("index");
+		assertEquals(collectedIndexTermList.size(), 2);
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 0, "titleIndexTerm", "Some title",
+				"index");
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 1, "titleSecondIndexTerm",
+				"Some title", "index");
+	}
+
+	@Test
+	public void testWTAITermCollectorThreeCollectedTermTwoWithSameAtomicValue() {
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookSubTitle", "Some subtitle", "0"));
+		basicDataGroup.addChild(new DataAtomicSpy("bookSubTitle", "Some other subtitle", "1"));
+
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+		assertEquals(collectedTerms.size(), 1);
+		List<DataGroup> collectedIndexTermList = collectedTerms.get("index");
+		assertEquals(collectedIndexTermList.size(), 3);
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 0, "titleIndexTerm", "Some title",
+				"index");
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 1, "subTitleIndexTerm",
+				"Some subtitle", "index");
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 2, "subTitleIndexTerm",
+				"Some other subtitle", "index");
+	}
+
+	@Test
+	public void testWTAITermCollectorOnePermissionAndOneIndexTermAtomicValues() {
+		addChildrenToBook(basicDataGroup);
+
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+
+		assertEquals(collectedTerms.size(), 2);
+
+		List<DataGroup> collectedPermissionTerms = collectedTerms.get("permission");
+		assertEquals(collectedPermissionTerms.size(), 1);
+		assertCorrectCollectedDataTerm(collectedPermissionTerms, 0, "namePermissionTerm",
+				"Kalle Kula", "permission");
+
+		List<DataGroup> collectedIndexTerms = collectedTerms.get("index");
+		assertEquals(collectedIndexTerms.size(), 3);
+		assertCorrectCollectedDataTerm(collectedIndexTerms, 0, "titleIndexTerm", "Some title",
+				"index");
+		assertCorrectCollectedDataTerm(collectedIndexTerms, 1, "nameIndexTerm", "Kalle Kula",
+				"index");
+		assertCorrectCollectedDataTerm(collectedIndexTerms, 2, "subTitleIndexTerm", "Some subtitle",
+				"index");
+	}
+
+	@Test
+	public void testWTAITermCollectorOneIndexTermsLink() {
+		addLinkToOtherBook(basicDataGroup);
+
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+
+		List<DataGroup> collectedIndexTerms = collectedTerms.get("index");
+		assertEquals(collectedIndexTerms.size(), 1);
+
+		assertCorrectCollectedDataTerm(collectedIndexTerms, 0, "otherBookIndexTerm",
+				"book_someOtherBookId", "index");
+
+	}
+
+	@Test
+	public void testWTAITermCollectorTwoIndexTermsSameLink() {
+		addLinkToOtherBook(basicDataGroup);
+
+		collector.collectTermsWithoutTypeAndId("bookWithMoreCollectTermsGroup", basicDataGroup);
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+
+		List<DataGroup> collectedIndexTerms = collectedTerms.get("index");
+		assertEquals(collectedIndexTerms.size(), 2);
+		assertCorrectCollectedDataTerm(collectedIndexTerms, 0, "otherBookIndexTerm",
+				"book_someOtherBookId", "index");
+		assertCorrectCollectedDataTerm(collectedIndexTerms, 1, "otherBookSecondIndexTerm",
+				"book_someOtherBookId", "index");
+	}
+
+	@Test
+	public void testWTAICollectTermsCalledTwiceReturnsTheSameResult() {
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+
+		Map<String, List<DataGroup>> collectedTerms = getCollectedTermsFromCollectedDataCreator();
+		List<DataGroup> collectedIndexTermList = collectedTerms.get("index");
+		assertEquals(collectedIndexTermList.size(), 1);
+		assertCorrectCollectedDataTerm(collectedIndexTermList, 0, "titleIndexTerm", "Some title",
+				"index");
+
+		collector.collectTermsWithoutTypeAndId("bookGroup", basicDataGroup);
+		Map<String, Object> parametersForMethodAndCallNumber = collectedDataCreator.MCR
+				.getParametersForMethodAndCallNumber(
+						"createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId", 1);
+		Map<String, List<DataGroup>> collectedTerms1 = (Map<String, List<DataGroup>>) parametersForMethodAndCallNumber
+				.get("collectedTerms");
+
+		Map<String, List<DataGroup>> collectedTerms2 = collectedTerms1;
+		List<DataGroup> collectedIndexTermList2 = collectedTerms2.get("index");
+		assertEquals(collectedIndexTermList2.size(), 1);
+		assertCorrectCollectedDataTerm(collectedIndexTermList2, 0, "titleIndexTerm", "Some title",
+				"index");
 	}
 }
