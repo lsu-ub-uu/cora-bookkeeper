@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
@@ -206,6 +207,11 @@ public class DataValidatorTest {
 		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
 		dataValidator.validateListFilter("someRecordTypeWithoutFilter", filterDataGroup);
 
+	}
+
+	@Test
+	public void testgetRecordTypeHolder() throws Exception {
+		assertNotNull(dataValidator.getRecordTypeHolder());
 	}
 
 }
