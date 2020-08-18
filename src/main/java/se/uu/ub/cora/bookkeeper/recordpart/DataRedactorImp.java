@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.List;
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -48,10 +49,11 @@ public class DataRedactorImp implements DataRedactor {
 
 	@Override
 	public DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<String> constraints, Set<String> permissions) {
-		for (String constraint : constraints) {
+			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions) {
+		for (Constraint constraint : constraints) {
+			String nameInData = constraint.getNameInData();
 			possiblyReplaceChildIfNoPermission(originalDataGroup, updatedDataGroup, permissions,
-					constraint);
+					nameInData);
 		}
 		return updatedDataGroup;
 	}

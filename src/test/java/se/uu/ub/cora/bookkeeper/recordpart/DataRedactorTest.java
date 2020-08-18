@@ -33,6 +33,7 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -40,9 +41,11 @@ public class DataRedactorTest {
 
 	private DataGroupForRecordPartFilterSpy dataGroupSpy;
 	private DataRedactor recordPartFilter;
-	private Set<String> emptyConstraints;
+	private Set<String> emptyStringConstraints;
+	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
-	private Set<String> titleConstraints;
+	private Set<String> titleStringConstraints;
+	private Set<Constraint> titleConstraints;
 	private Set<String> titlePermissions;
 	private DataGroupForRecordPartFilterSpy originalDataGroup;
 	private DataGroupForRecordPartFilterSpy updatedDataGroup;
@@ -51,17 +54,27 @@ public class DataRedactorTest {
 	public void setUp() {
 		dataGroupSpy = new DataGroupForRecordPartFilterSpy("someDataGroup");
 		recordPartFilter = new DataRedactorImp();
+		emptyStringConstraints = Collections.emptySet();
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
+		titleStringConstraints = createStringReadConstraintForTitle();
 		titleConstraints = createReadConstraintForTitle();
 		titlePermissions = createReadPermissionForTitle();
 		originalDataGroup = new DataGroupForRecordPartFilterSpy("originalDataGroup");
 		updatedDataGroup = new DataGroupForRecordPartFilterSpy("changedDataGroup");
 	}
 
-	private Set<String> createReadConstraintForTitle() {
+	private Set<String> createStringReadConstraintForTitle() {
 		Set<String> recordPartConstraints = new HashSet<>();
 		recordPartConstraints.add("title");
+		return recordPartConstraints;
+	}
+
+	private Set<Constraint> createReadConstraintForTitle() {
+		Set<Constraint> recordPartConstraints = new HashSet<>();
+		Constraint constraint = new Constraint("title");
+		recordPartConstraints.add(constraint);
+		// recordPartConstraints.add("title");
 		return recordPartConstraints;
 	}
 
@@ -74,8 +87,8 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveNoConstraintsNoPermissions() throws Exception {
 		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, emptyConstraints,
-						emptyPermissions);
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
+						emptyStringConstraints, emptyPermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
 		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
@@ -85,8 +98,8 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveNoConstraintsButPermissions() throws Exception {
 		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, emptyConstraints,
-						titlePermissions);
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
+						emptyStringConstraints, titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
 		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
@@ -96,8 +109,8 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveConstraintsAndPermissions() throws Exception {
 		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, titleConstraints,
-						titlePermissions);
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
+						titleStringConstraints, titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
 		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
@@ -109,7 +122,7 @@ public class DataRedactorTest {
 		dataGroupSpy.childExists = false;
 
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleConstraints, emptyPermissions);
+				titleStringConstraints, emptyPermissions);
 
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
@@ -118,7 +131,7 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveConstraintsNoPermissions() throws Exception {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleConstraints, emptyPermissions);
+				titleStringConstraints, emptyPermissions);
 
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
@@ -126,10 +139,10 @@ public class DataRedactorTest {
 
 	@Test
 	public void testRemoveMultipleConstraintsNoPermissions() throws Exception {
-		titleConstraints.add("otherConstraint");
+		titleStringConstraints.add("otherConstraint");
 
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleConstraints, emptyPermissions);
+				titleStringConstraints, emptyPermissions);
 
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		List<String> childNamesInDataToRemoveAll = dataGroupSpy.childNamesInDataToRemoveAll;
@@ -172,7 +185,7 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceMultipleConstraintsMatchingMultiplePermissions() throws Exception {
-		titleConstraints.add("otherConstraint");
+		titleConstraints.add(new Constraint("otherConstraint"));
 
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, titlePermissions);
@@ -198,7 +211,7 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceMultipleConstraintsNoPermissions() throws Exception {
-		titleConstraints.add("otherConstraint");
+		titleConstraints.add(new Constraint("otherConstraint"));
 
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
