@@ -50,10 +50,21 @@ public class Constraint {
 			return false;
 		}
 		Constraint constraint = (Constraint) object;
-		if (!constraint.getNameInData().equals(nameInData)) {
+		if (differentNameInData(constraint)) {
+			return false;
+		}
+		if (differentNumberOfAttributes(constraint)) {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean differentNameInData(Constraint constraint) {
+		return !constraint.getNameInData().equals(nameInData);
+	}
+
+	private boolean differentNumberOfAttributes(Constraint constraint) {
+		return constraint.getDataAttributes().size() != dataAttributes.size();
 	}
 
 }

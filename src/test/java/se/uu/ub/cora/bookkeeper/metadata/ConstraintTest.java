@@ -47,8 +47,7 @@ public class ConstraintTest {
 
 	@Test
 	public void testAddAttribute() {
-		DataAttribute dataAttribute = new DataAttributeSpy("someName", "someValue");
-		constraint.addAttribute(dataAttribute);
+		addAttributeToDefaultConstraint();
 		List<DataAttribute> dataAttributes = constraint.getDataAttributes();
 		assertEquals(dataAttributes.size(), 1);
 
@@ -68,12 +67,6 @@ public class ConstraintTest {
 	// }
 
 	@Test
-	public void testEqualsNoAttributes() {
-		Constraint secondConstraint = new Constraint("someNameInData");
-		assertTrue(constraint.equals(secondConstraint));
-	}
-
-	@Test
 	public void testNOTEqualsNoAttributes() {
 		Constraint secondConstraint = new Constraint("someOtherNameInData");
 		assertFalse(constraint.equals(secondConstraint));
@@ -81,10 +74,44 @@ public class ConstraintTest {
 
 	@Test
 	public void testNOTEqualsNoAttributesButOneAttributeInOther() {
+		addAttributeToDefaultConstraint();
+
 		Constraint secondConstraint = new Constraint("someNameInData");
 		DataAttribute dataAttribute = new DataAttributeSpy("someName", "someValue");
 		secondConstraint.addAttribute(dataAttribute);
 		assertFalse(constraint.equals(secondConstraint));
+	}
+
+	private void addAttributeToDefaultConstraint() {
+		DataAttribute dataAttribute = new DataAttributeSpy("someName", "someValue");
+		constraint.addAttribute(dataAttribute);
+	}
+
+	@Test
+	public void testNOTEqualsDifferentAttributeName() {
+		addAttributeToDefaultConstraint();
+
+		Constraint secondConstraint = new Constraint("someNameInData");
+		DataAttribute dataAttribute = new DataAttributeSpy("someOtherName", "someValue");
+
+		secondConstraint.addAttribute(dataAttribute);
+		assertFalse(constraint.equals(secondConstraint));
+	}
+
+	@Test
+	public void testEqualsNoAttributes() {
+		Constraint secondConstraint = new Constraint("someNameInData");
+		assertTrue(constraint.equals(secondConstraint));
+	}
+
+	@Test
+	public void testEqualsOneAttribute() {
+		addAttributeToDefaultConstraint();
+
+		Constraint secondConstraint = new Constraint("someNameInData");
+		DataAttribute dataAttribute2 = new DataAttributeSpy("someName", "someValue");
+		secondConstraint.addAttribute(dataAttribute2);
+		assertTrue(constraint.equals(secondConstraint));
 	}
 
 }
