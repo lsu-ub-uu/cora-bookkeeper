@@ -22,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -32,32 +32,32 @@ import se.uu.ub.cora.data.DataAttribute;
 
 public class ConstraintTest {
 
-	private Constraint constraint;
+	private Constraint defaultConstraint;
 	String nameInData = "someNameInData";
 
 	@BeforeMethod
 	public void setUp() {
-		constraint = new Constraint(nameInData);
+		defaultConstraint = new Constraint(nameInData);
 	}
 
 	@Test
 	public void testNameInData() {
-		assertEquals(constraint.getNameInData(), nameInData);
+		assertEquals(defaultConstraint.getNameInData(), nameInData);
 	}
 
 	@Test
 	public void testAddAttribute() {
-		addAttributeToDefaultConstraint();
-		List<DataAttribute> dataAttributes = constraint.getDataAttributes();
+		addAttributeToDefaultConstraint("someName", "someValue");
+		Set<DataAttribute> dataAttributes = defaultConstraint.getDataAttributes();
 		assertEquals(dataAttributes.size(), 1);
 
-		assertEquals(dataAttributes.get(0).getNameInData(), "someName");
-		assertEquals(dataAttributes.get(0).getValue(), "someValue");
+		assertEquals(dataAttributes.iterator().next().getNameInData(), "someName");
+		assertEquals(dataAttributes.iterator().next().getValue(), "someValue");
 	}
 
 	@Test
 	public void testNOTEqualsNotAConstraint() {
-		assertFalse(constraint.equals("someNameInData"));
+		assertFalse(defaultConstraint.equals("someNameInData"));
 	}
 
 	// @Test
@@ -69,49 +69,99 @@ public class ConstraintTest {
 	@Test
 	public void testNOTEqualsNoAttributes() {
 		Constraint secondConstraint = new Constraint("someOtherNameInData");
-		assertFalse(constraint.equals(secondConstraint));
+		assertFalse(defaultConstraint.equals(secondConstraint));
 	}
 
 	@Test
 	public void testNOTEqualsNoAttributesButOneAttributeInOther() {
-		addAttributeToDefaultConstraint();
-
 		Constraint secondConstraint = new Constraint("someNameInData");
 		DataAttribute dataAttribute = new DataAttributeSpy("someName", "someValue");
 		secondConstraint.addAttribute(dataAttribute);
-		assertFalse(constraint.equals(secondConstraint));
+		assertFalse(defaultConstraint.equals(secondConstraint));
 	}
 
-	private void addAttributeToDefaultConstraint() {
-		DataAttribute dataAttribute = new DataAttributeSpy("someName", "someValue");
-		constraint.addAttribute(dataAttribute);
+	private void addAttributeToDefaultConstraint(String nameInData, String value) {
+		DataAttribute dataAttribute = new DataAttributeSpy(nameInData, value);
+		defaultConstraint.addAttribute(dataAttribute);
 	}
 
 	@Test
 	public void testNOTEqualsDifferentAttributeName() {
-		addAttributeToDefaultConstraint();
+		addAttributeToDefaultConstraint("someName", "someValue");
 
 		Constraint secondConstraint = new Constraint("someNameInData");
 		DataAttribute dataAttribute = new DataAttributeSpy("someOtherName", "someValue");
 
 		secondConstraint.addAttribute(dataAttribute);
-		assertFalse(constraint.equals(secondConstraint));
+		assertFalse(defaultConstraint.equals(secondConstraint));
+	}
+
+	@Test
+	public void testNOTEqualsDifferentAttributeValue() {
+		addAttributeToDefaultConstraint("someName", "someValue");
+
+		Constraint secondConstraint = new Constraint("someNameInData");
+		DataAttribute dataAttribute = new DataAttributeSpy("someName", "someOtherValue");
+
+		secondConstraint.addAttribute(dataAttribute);
+		assertFalse(defaultConstraint.equals(secondConstraint));
+	}
+
+	@Test
+	public void testNOTEqualsOneSameOneDifferentAttributeName() {
+		addAttributeToDefaultConstraint("someName", "someValue");
+		addAttributeToDefaultConstraint("someOtherName", "someOtherValue");
+
+		Constraint secondConstraint = new Constraint("someNameInData");
+		addAttributeToConstraint(secondConstraint, "someName", "someValue");
+		addAttributeToConstraint(secondConstraint, "someName", "someOtherValue");
+
+		assertFalse(defaultConstraint.equals(secondConstraint));
+	}
+
+	@Test
+	public void testNOTEqualsOneSameOneDifferentAttributeValue() {
+		addAttributeToDefaultConstraint("someName", "someValue");
+		addAttributeToDefaultConstraint("someOtherName", "someOtherValue");
+
+		Constraint secondConstraint = new Constraint("someNameInData");
+		addAttributeToConstraint(secondConstraint, "someName", "someValue");
+		addAttributeToConstraint(secondConstraint, "someOtherName", "someNotSameValue");
+
+		assertFalse(defaultConstraint.equals(secondConstraint));
 	}
 
 	@Test
 	public void testEqualsNoAttributes() {
 		Constraint secondConstraint = new Constraint("someNameInData");
-		assertTrue(constraint.equals(secondConstraint));
+		assertTrue(defaultConstraint.equals(secondConstraint));
 	}
 
 	@Test
 	public void testEqualsOneAttribute() {
-		addAttributeToDefaultConstraint();
+		addAttributeToDefaultConstraint("someName", "someValue");
 
 		Constraint secondConstraint = new Constraint("someNameInData");
 		DataAttribute dataAttribute2 = new DataAttributeSpy("someName", "someValue");
 		secondConstraint.addAttribute(dataAttribute2);
-		assertTrue(constraint.equals(secondConstraint));
+		assertTrue(defaultConstraint.equals(secondConstraint));
+	}
+
+	@Test
+	public void testEqualsTwoAttributes() {
+		addAttributeToDefaultConstraint("someName", "someValue");
+		addAttributeToDefaultConstraint("someOtherName", "someOtherValue");
+
+		Constraint secondConstraint = new Constraint("someNameInData");
+		addAttributeToConstraint(secondConstraint, "someOtherName", "someOtherValue");
+		addAttributeToConstraint(secondConstraint, "someName", "someValue");
+
+		assertTrue(defaultConstraint.equals(secondConstraint));
+	}
+
+	private void addAttributeToConstraint(Constraint constraint, String nameInData, String value) {
+		DataAttribute dataAttribute = new DataAttributeSpy(nameInData, value);
+		constraint.addAttribute(dataAttribute);
 	}
 
 }

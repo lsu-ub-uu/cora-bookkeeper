@@ -18,15 +18,15 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import se.uu.ub.cora.data.DataAttribute;
 
 public class Constraint {
 
 	private String nameInData;
-	private List<DataAttribute> dataAttributes = new ArrayList<>();
+	private Set<DataAttribute> dataAttributes = new HashSet<>();
 
 	public Constraint(String nameInData) {
 		this.nameInData = nameInData;
@@ -40,7 +40,7 @@ public class Constraint {
 		dataAttributes.add(dataAttribute);
 	}
 
-	public List<DataAttribute> getDataAttributes() {
+	public Set<DataAttribute> getDataAttributes() {
 		return dataAttributes;
 	}
 
@@ -50,11 +50,18 @@ public class Constraint {
 			return false;
 		}
 		Constraint constraint = (Constraint) object;
-		if (differentNameInData(constraint)) {
+		return compareConstraints(constraint);
+	}
+
+	private boolean compareConstraints(Constraint constraint) {
+		if (differentNameInData(constraint) || differentNumberOfAttributes(constraint)) {
 			return false;
 		}
-		if (differentNumberOfAttributes(constraint)) {
-			return false;
+
+		for (DataAttribute dataAttribute : constraint.getDataAttributes()) {
+			if (!attributesContainsDataAttribute(dataAttribute)) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -65,6 +72,26 @@ public class Constraint {
 
 	private boolean differentNumberOfAttributes(Constraint constraint) {
 		return constraint.getDataAttributes().size() != dataAttributes.size();
+	}
+
+	private boolean attributesContainsDataAttribute(DataAttribute dataAttributeToCompare) {
+		for (DataAttribute dataAttribute : dataAttributes) {
+			if (sameAttributeNameInData(dataAttribute, dataAttributeToCompare)
+					&& sameAttributeValue(dataAttribute, dataAttributeToCompare)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean sameAttributeNameInData(DataAttribute dataAttribute,
+			DataAttribute dataAttributeToCompare) {
+		return dataAttribute.getNameInData().equals(dataAttributeToCompare.getNameInData());
+	}
+
+	private boolean sameAttributeValue(DataAttribute dataAttribute,
+			DataAttribute dataAttributeToCompare) {
+		return dataAttribute.getValue().equals(dataAttributeToCompare.getValue());
 	}
 
 }
