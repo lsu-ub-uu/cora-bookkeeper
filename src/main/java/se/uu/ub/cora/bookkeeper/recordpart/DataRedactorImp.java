@@ -29,9 +29,10 @@ public class DataRedactorImp implements DataRedactor {
 
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
-			Set<String> constraints, Set<String> permissions) {
-		for (String constraint : constraints) {
-			possiblyRemoveChildIfNoPermission(dataGroup, constraint, permissions);
+			Set<Constraint> constraints, Set<String> permissions) {
+		for (Constraint constraint : constraints) {
+			String nameInData = constraint.getNameInData();
+			possiblyRemoveChildIfNoPermission(dataGroup, nameInData, permissions);
 		}
 		return dataGroup;
 	}

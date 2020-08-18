@@ -87,8 +87,8 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveNoConstraintsNoPermissions() throws Exception {
 		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-						emptyStringConstraints, emptyPermissions);
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, emptyConstraints,
+						emptyPermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
 		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
@@ -98,8 +98,8 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveNoConstraintsButPermissions() throws Exception {
 		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-						emptyStringConstraints, titlePermissions);
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, emptyConstraints,
+						titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
 		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
@@ -109,8 +109,8 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveConstraintsAndPermissions() throws Exception {
 		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-						titleStringConstraints, titlePermissions);
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, titleConstraints,
+						titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
 		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
@@ -122,7 +122,7 @@ public class DataRedactorTest {
 		dataGroupSpy.childExists = false;
 
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleStringConstraints, emptyPermissions);
+				titleConstraints, emptyPermissions);
 
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
@@ -131,7 +131,7 @@ public class DataRedactorTest {
 	@Test
 	public void testRemoveConstraintsNoPermissions() throws Exception {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleStringConstraints, emptyPermissions);
+				titleConstraints, emptyPermissions);
 
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
@@ -139,15 +139,15 @@ public class DataRedactorTest {
 
 	@Test
 	public void testRemoveMultipleConstraintsNoPermissions() throws Exception {
-		titleStringConstraints.add("otherConstraint");
+		titleConstraints.add(new Constraint("otherConstraint"));
 
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleStringConstraints, emptyPermissions);
+				titleConstraints, emptyPermissions);
 
 		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
 		List<String> childNamesInDataToRemoveAll = dataGroupSpy.childNamesInDataToRemoveAll;
-		assertEquals(childNamesInDataToRemoveAll.get(0), "title");
-		assertEquals(childNamesInDataToRemoveAll.get(1), "otherConstraint");
+		assertTrue(childNamesInDataToRemoveAll.contains("title"));
+		assertTrue(childNamesInDataToRemoveAll.contains("otherConstraint"));
 	}
 
 	@Test

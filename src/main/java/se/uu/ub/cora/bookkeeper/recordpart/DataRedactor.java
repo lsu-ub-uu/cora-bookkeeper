@@ -45,7 +45,7 @@ public interface DataRedactor {
 	 * @return DataGroup which might have had children removed
 	 */
 	DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
-			Set<String> recordPartConstraints, Set<String> recordPartPermissions);
+			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions);
 
 	/**
 	 * replaceChildrenForConstraintsWithoutPermissions is used to replace children with the original
