@@ -41,10 +41,8 @@ public class DataRedactorTest {
 
 	private DataGroupForRecordPartFilterSpy dataGroupSpy;
 	private DataRedactor recordPartFilter;
-	private Set<String> emptyStringConstraints;
 	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
-	private Set<String> titleStringConstraints;
 	private Set<Constraint> titleConstraints;
 	private Set<String> titlePermissions;
 	private DataGroupForRecordPartFilterSpy originalDataGroup;
@@ -54,27 +52,18 @@ public class DataRedactorTest {
 	public void setUp() {
 		dataGroupSpy = new DataGroupForRecordPartFilterSpy("someDataGroup");
 		recordPartFilter = new DataRedactorImp();
-		emptyStringConstraints = Collections.emptySet();
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
-		titleStringConstraints = createStringReadConstraintForTitle();
 		titleConstraints = createReadConstraintForTitle();
 		titlePermissions = createReadPermissionForTitle();
 		originalDataGroup = new DataGroupForRecordPartFilterSpy("originalDataGroup");
 		updatedDataGroup = new DataGroupForRecordPartFilterSpy("changedDataGroup");
 	}
 
-	private Set<String> createStringReadConstraintForTitle() {
-		Set<String> recordPartConstraints = new HashSet<>();
-		recordPartConstraints.add("title");
-		return recordPartConstraints;
-	}
-
 	private Set<Constraint> createReadConstraintForTitle() {
 		Set<Constraint> recordPartConstraints = new HashSet<>();
 		Constraint constraint = new Constraint("title");
 		recordPartConstraints.add(constraint);
-		// recordPartConstraints.add("title");
 		return recordPartConstraints;
 	}
 
@@ -225,7 +214,6 @@ public class DataRedactorTest {
 				originalDataGroup.getAllChildrenWithNameInData("title"));
 		assertSame(addedChildrenIterator.next(),
 				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
-
 	}
 
 	@Test
