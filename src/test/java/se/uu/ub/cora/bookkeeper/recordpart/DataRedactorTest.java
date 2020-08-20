@@ -26,7 +26,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -205,15 +204,32 @@ public class DataRedactorTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertEquals(updatedDataGroup.childNamesInDataToRemoveAll.get(0), "title");
-		assertEquals(updatedDataGroup.childNamesInDataToRemoveAll.get(1), "otherConstraint");
+		System.out.println("size " + updatedDataGroup.childNamesInDataToRemoveAll.size());
 
-		Iterator<Collection<DataElement>> addedChildrenIterator = updatedDataGroup.addedChildrenCollections
-				.iterator();
-		assertSame(addedChildrenIterator.next(),
-				originalDataGroup.getAllChildrenWithNameInData("title"));
-		assertSame(addedChildrenIterator.next(),
+		assertTrue(updatedDataGroup.childNamesInDataToRemoveAll.contains("title"));
+		assertTrue(updatedDataGroup.childNamesInDataToRemoveAll.contains("otherConstraint"));
+
+		List<Collection<DataElement>> addedChildrenCollections = updatedDataGroup.addedChildrenCollections;
+		Collection<DataElement> titleCollection = getCollectionContainingChildrenWithNameInData(
+				"title", addedChildrenCollections);
+		assertSame(titleCollection, originalDataGroup.getAllChildrenWithNameInData("title"));
+
+		Collection<DataElement> otherConstraintCollection = getCollectionContainingChildrenWithNameInData(
+				"otherConstraint", addedChildrenCollections);
+		assertSame(otherConstraintCollection,
 				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
+	}
+
+	private Collection<DataElement> getCollectionContainingChildrenWithNameInData(String nameInData,
+			List<Collection<DataElement>> addedChildrenCollections) {
+		for (Collection<DataElement> collection : addedChildrenCollections) {
+			for (DataElement dataElement : collection) {
+				if (nameInData.equals(dataElement.getNameInData())) {
+					return collection;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Test
