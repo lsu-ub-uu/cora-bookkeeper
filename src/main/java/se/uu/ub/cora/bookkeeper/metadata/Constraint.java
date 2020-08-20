@@ -44,54 +44,62 @@ public class Constraint {
 		return dataAttributes;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (!(object instanceof Constraint)) {
-			return false;
-		}
-		Constraint constraint = (Constraint) object;
-		return compareConstraints(constraint);
-	}
-
-	private boolean compareConstraints(Constraint constraint) {
-		if (differentNameInData(constraint) || differentNumberOfAttributes(constraint)) {
-			return false;
-		}
-
-		for (DataAttribute dataAttribute : constraint.getDataAttributes()) {
-			if (!attributesContainsDataAttribute(dataAttribute)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean differentNameInData(Constraint constraint) {
-		return !constraint.getNameInData().equals(nameInData);
-	}
-
-	private boolean differentNumberOfAttributes(Constraint constraint) {
-		return constraint.getDataAttributes().size() != dataAttributes.size();
-	}
-
-	private boolean attributesContainsDataAttribute(DataAttribute dataAttributeToCompare) {
-		for (DataAttribute dataAttribute : dataAttributes) {
-			if (sameAttributeNameInData(dataAttribute, dataAttributeToCompare)
-					&& sameAttributeValue(dataAttribute, dataAttributeToCompare)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean sameAttributeNameInData(DataAttribute dataAttribute,
-			DataAttribute dataAttributeToCompare) {
-		return dataAttribute.getNameInData().equals(dataAttributeToCompare.getNameInData());
-	}
-
-	private boolean sameAttributeValue(DataAttribute dataAttribute,
-			DataAttribute dataAttributeToCompare) {
-		return dataAttribute.getValue().equals(dataAttributeToCompare.getValue());
-	}
+	// @Override
+	// public boolean equals(Object object) {
+	// if (object == this) {
+	// return true;
+	// }
+	// if (!(object instanceof Constraint)) {
+	// return false;
+	// }
+	// Constraint constraint = (Constraint) object;
+	// return compareConstraints(constraint);
+	// }
+	//
+	// private boolean compareConstraints(Constraint constraint) {
+	// if (differentNameInData(constraint) || differentNumberOfAttributes(constraint)) {
+	// return false;
+	// }
+	//
+	// for (DataAttribute dataAttribute : constraint.getDataAttributes()) {
+	// if (!attributesContainsDataAttribute(dataAttribute)) {
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
+	//
+	// private boolean differentNameInData(Constraint constraint) {
+	// return !constraint.getNameInData().equals(nameInData);
+	// }
+	//
+	// private boolean differentNumberOfAttributes(Constraint constraint) {
+	// return constraint.getDataAttributes().size() != dataAttributes.size();
+	// }
+	//
+	// private boolean attributesContainsDataAttribute(DataAttribute dataAttributeToCompare) {
+	// for (DataAttribute dataAttribute : dataAttributes) {
+	// if (sameAttributeNameInData(dataAttribute, dataAttributeToCompare)
+	// && sameAttributeValue(dataAttribute, dataAttributeToCompare)) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+	//
+	// private boolean sameAttributeNameInData(DataAttribute dataAttribute,
+	// DataAttribute dataAttributeToCompare) {
+	// return dataAttribute.getNameInData().equals(dataAttributeToCompare.getNameInData());
+	// }
+	//
+	// private boolean sameAttributeValue(DataAttribute dataAttribute,
+	// DataAttribute dataAttributeToCompare) {
+	// return dataAttribute.getValue().equals(dataAttributeToCompare.getValue());
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// return Objects.hash(nameInData, dataAttributes);
+	// }
 
 }

@@ -235,7 +235,6 @@ public class DataRedactorTest {
 	@Test
 	public void testReplaceNoChildToRemove() throws Exception {
 		updatedDataGroup.childExists = false;
-
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
