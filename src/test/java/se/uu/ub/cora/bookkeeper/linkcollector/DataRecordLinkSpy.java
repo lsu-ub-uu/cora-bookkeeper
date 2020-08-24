@@ -211,4 +211,11 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

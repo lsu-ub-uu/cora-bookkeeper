@@ -46,6 +46,7 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 	List<DataElement> titleCollection = new ArrayList<>();
 	List<Collection<DataElement>> addedChildrenCollections = new ArrayList<>();
 	List<DataElement> otherConstraintCollection = new ArrayList<>();
+	public boolean getAllChildrenWithNameInDataAndAttributesWasCalled = false;
 
 	public DataGroupForRecordPartFilterSpy(String nameInData) {
 		titleCollection.add(new DataAtomicSpy("title", "some title"));
@@ -195,6 +196,19 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 			usedAttributesForRemove.put(attribute.getNameInData(), attribute.getValue());
 		}
 		return false;
+	}
+
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... childAttributes) {
+		getAllChildrenWithNameInDataAndAttributesWasCalled = true;
+		if ("title".equals(nameInData)) {
+			return titleCollection;
+		}
+		if ("otherConstraint".equals(nameInData)) {
+			return otherConstraintCollection;
+		}
+		return null;
 	}
 
 }

@@ -80,7 +80,6 @@ public class DataRedactorTest {
 						emptyPermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
 		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
 	}
 
@@ -91,7 +90,6 @@ public class DataRedactorTest {
 						titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
 		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
 	}
 
@@ -102,7 +100,6 @@ public class DataRedactorTest {
 						titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
 		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
 	}
 
@@ -180,7 +177,7 @@ public class DataRedactorTest {
 						updatedDataGroup, emptyConstraints, emptyPermissions);
 
 		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(updatedDataGroup.containsChildWithNameInDataWasCalled);
+		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
 		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 	}
 
@@ -191,7 +188,7 @@ public class DataRedactorTest {
 						updatedDataGroup, emptyConstraints, titlePermissions);
 
 		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(updatedDataGroup.containsChildWithNameInDataWasCalled);
+		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
 		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 	}
 
@@ -202,7 +199,7 @@ public class DataRedactorTest {
 						updatedDataGroup, titleConstraints, titlePermissions);
 
 		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(updatedDataGroup.containsChildWithNameInDataWasCalled);
+		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
 		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 	}
 
@@ -214,12 +211,14 @@ public class DataRedactorTest {
 				updatedDataGroup, titleConstraints, titlePermissions);
 
 		assertTrue(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
 		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
 				.contains("otherConstraint"));
 		assertFalse(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
 
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
-				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
+				originalDataGroup.getAllChildrenWithNameInDataAndAttributes("otherConstraint"));
 	}
 
 	@Test
@@ -230,6 +229,8 @@ public class DataRedactorTest {
 		assertEquals(updatedDataGroup.childNameInDataWithAttributesToRemove, "title");
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
 				originalDataGroup.getAllChildrenWithNameInData("title"));
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
 	}
 
 	@Test
@@ -237,6 +238,8 @@ public class DataRedactorTest {
 		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, constraints, emptyPermissions);
+
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
 
 		assertEquals(updatedDataGroup.childNameInDataWithAttributesToRemove, "title");
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
@@ -254,6 +257,8 @@ public class DataRedactorTest {
 
 		System.out.println(
 				"size " + updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.size());
+
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
 
 		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
 		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
@@ -290,5 +295,7 @@ public class DataRedactorTest {
 
 		assertTrue(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
 	}
 }

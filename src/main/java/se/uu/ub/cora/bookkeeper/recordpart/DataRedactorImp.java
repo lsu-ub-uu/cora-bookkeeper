@@ -74,8 +74,9 @@ public class DataRedactorImp implements DataRedactor {
 	private void replaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
 			Constraint constraint) {
 		removeMatchingChildren(updatedDataGroup, constraint);
-		List<DataElement> allChildren = originalDataGroup
-				.getAllChildrenWithNameInData(constraint.getNameInData());
+		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
+		List<DataElement> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
+				constraint.getNameInData(), attributeArray);
 		updatedDataGroup.addChildren(allChildren);
 	}
 

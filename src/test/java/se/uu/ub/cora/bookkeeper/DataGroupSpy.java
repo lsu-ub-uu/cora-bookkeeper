@@ -253,4 +253,11 @@ public class DataGroupSpy implements DataGroup {
 		return false;
 	}
 
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
