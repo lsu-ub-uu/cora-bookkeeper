@@ -21,6 +21,8 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.data.DataAtomic;
@@ -31,15 +33,20 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupForRecordPartFilterSpy implements DataGroup {
 
 	public boolean removeAllChildrenWasCalled = false;
+	public boolean removeAllChildrenWithAttributeWasCalled = false;
 	public boolean containsChildWithNameInDataWasCalled = false;
 	public String childNameInDataToRemove;
+	public String childNameInDataWithAttributesToRemove;
 	public List<String> childNamesInDataToRemoveAll = new ArrayList<>();
+	public List<String> childNamesInDataWithAttributesToRemoveAll = new ArrayList<>();
 	public List<String> nameInDatasContainsChildWithNameInData = new ArrayList<>();
+	public Map<String, String> usedAttributesForRemove = new TreeMap<>();
 	public boolean childExists = true;
 	public boolean addChildWasCalled = false;
 	List<DataElement> titleCollection = new ArrayList<>();
 	List<Collection<DataElement>> addedChildrenCollections = new ArrayList<>();
 	List<DataElement> otherConstraintCollection = new ArrayList<>();
+	public boolean getAllChildrenWithNameInDataAndAttributesWasCalled = false;
 
 	public DataGroupForRecordPartFilterSpy(String nameInData) {
 		titleCollection.add(new DataAtomicSpy("title", "some title"));
@@ -177,6 +184,31 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 	@Override
 	public boolean hasChildren() {
 		return childExists;
+	}
+
+	@Override
+	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		childNameInDataWithAttributesToRemove = childNameInData;
+		removeAllChildrenWithAttributeWasCalled = true;
+		childNamesInDataWithAttributesToRemoveAll.add(childNameInData);
+		for (DataAttribute attribute : childAttributes) {
+			usedAttributesForRemove.put(attribute.getNameInData(), attribute.getValue());
+		}
+		return false;
+	}
+
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... childAttributes) {
+		getAllChildrenWithNameInDataAndAttributesWasCalled = true;
+		if ("title".equals(nameInData)) {
+			return titleCollection;
+		}
+		if ("otherConstraint".equals(nameInData)) {
+			return otherConstraintCollection;
+		}
+		return null;
 	}
 
 }

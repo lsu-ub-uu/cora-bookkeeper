@@ -26,13 +26,14 @@ import static org.testng.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
+import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -40,9 +41,9 @@ public class DataRedactorTest {
 
 	private DataGroupForRecordPartFilterSpy dataGroupSpy;
 	private DataRedactor recordPartFilter;
-	private Set<String> emptyConstraints;
+	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
-	private Set<String> titleConstraints;
+	private Set<Constraint> titleConstraints;
 	private Set<String> titlePermissions;
 	private DataGroupForRecordPartFilterSpy originalDataGroup;
 	private DataGroupForRecordPartFilterSpy updatedDataGroup;
@@ -59,9 +60,10 @@ public class DataRedactorTest {
 		updatedDataGroup = new DataGroupForRecordPartFilterSpy("changedDataGroup");
 	}
 
-	private Set<String> createReadConstraintForTitle() {
-		Set<String> recordPartConstraints = new HashSet<>();
-		recordPartConstraints.add("title");
+	private Set<Constraint> createReadConstraintForTitle() {
+		Set<Constraint> recordPartConstraints = new HashSet<>();
+		Constraint constraint = new Constraint("title");
+		recordPartConstraints.add(constraint);
 		return recordPartConstraints;
 	}
 
@@ -78,8 +80,7 @@ public class DataRedactorTest {
 						emptyPermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
-		assertFalse(dataGroupSpy.removeAllChildrenWasCalled);
+		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
 	}
 
 	@Test
@@ -89,8 +90,7 @@ public class DataRedactorTest {
 						titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
-		assertFalse(dataGroupSpy.removeAllChildrenWasCalled);
+		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
 	}
 
 	@Test
@@ -100,8 +100,7 @@ public class DataRedactorTest {
 						titlePermissions);
 
 		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
-		assertFalse(dataGroupSpy.removeAllChildrenWasCalled);
+		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
 	}
 
 	@Test
@@ -111,8 +110,8 @@ public class DataRedactorTest {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
-		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
+		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+		assertEquals(dataGroupSpy.childNameInDataWithAttributesToRemove, "title");
 	}
 
 	@Test
@@ -120,21 +119,55 @@ public class DataRedactorTest {
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
-		assertEquals(dataGroupSpy.childNameInDataToRemove, "title");
+		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+		assertEquals(dataGroupSpy.childNameInDataWithAttributesToRemove, "title");
 	}
 
 	@Test
 	public void testRemoveMultipleConstraintsNoPermissions() throws Exception {
-		titleConstraints.add("otherConstraint");
+		titleConstraints.add(new Constraint("otherConstraint"));
 
 		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.removeAllChildrenWasCalled);
-		List<String> childNamesInDataToRemoveAll = dataGroupSpy.childNamesInDataToRemoveAll;
-		assertEquals(childNamesInDataToRemoveAll.get(0), "title");
-		assertEquals(childNamesInDataToRemoveAll.get(1), "otherConstraint");
+		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+		List<String> childNamesInDataToRemoveAll = dataGroupSpy.childNamesInDataWithAttributesToRemoveAll;
+		assertTrue(childNamesInDataToRemoveAll.contains("title"));
+		assertTrue(childNamesInDataToRemoveAll.contains("otherConstraint"));
+
+		assertTrue(dataGroupSpy.usedAttributesForRemove.isEmpty());
+	}
+
+	@Test
+	public void testRemoveConstraintsWithAttributesAndPermissions() throws Exception {
+		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
+
+		DataGroup filteredDataGroup = recordPartFilter
+				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, constraints,
+						titlePermissions);
+
+		assertSame(filteredDataGroup, dataGroupSpy);
+		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
+		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+	}
+
+	private Set<Constraint> createSetWithOneConstraintOneAttribute() {
+		Set<Constraint> recordPartConstraints = new HashSet<>();
+		Constraint constraint = new Constraint("title");
+		constraint.addAttribute(new DataAttributeSpy("someId", "someValue"));
+		recordPartConstraints.add(constraint);
+		return recordPartConstraints;
+	}
+
+	@Test
+	public void testRemoveConstraintsWithAttributesNoPermissions() throws Exception {
+		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
+		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, constraints,
+				emptyPermissions);
+
+		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+		assertTrue(dataGroupSpy.usedAttributesForRemove.containsKey("someId"));
+		assertEquals(dataGroupSpy.childNameInDataWithAttributesToRemove, "title");
 	}
 
 	@Test
@@ -144,8 +177,8 @@ public class DataRedactorTest {
 						updatedDataGroup, emptyConstraints, emptyPermissions);
 
 		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(updatedDataGroup.containsChildWithNameInDataWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWasCalled);
+		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 	}
 
 	@Test
@@ -155,8 +188,8 @@ public class DataRedactorTest {
 						updatedDataGroup, emptyConstraints, titlePermissions);
 
 		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(updatedDataGroup.containsChildWithNameInDataWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWasCalled);
+		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 	}
 
 	@Test
@@ -166,23 +199,26 @@ public class DataRedactorTest {
 						updatedDataGroup, titleConstraints, titlePermissions);
 
 		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(updatedDataGroup.containsChildWithNameInDataWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWasCalled);
+		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
 	}
 
 	@Test
 	public void testReplaceMultipleConstraintsMatchingMultiplePermissions() throws Exception {
-		titleConstraints.add("otherConstraint");
+		titleConstraints.add(new Constraint("otherConstraint"));
 
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, titlePermissions);
 
-		assertTrue(updatedDataGroup.removeAllChildrenWasCalled);
-		assertTrue(updatedDataGroup.childNamesInDataToRemoveAll.contains("otherConstraint"));
-		assertFalse(updatedDataGroup.childNamesInDataToRemoveAll.contains("title"));
+		assertTrue(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
+		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
+				.contains("otherConstraint"));
+		assertFalse(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
 
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
-				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
+				originalDataGroup.getAllChildrenWithNameInDataAndAttributes("otherConstraint"));
 	}
 
 	@Test
@@ -190,39 +226,76 @@ public class DataRedactorTest {
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertEquals(updatedDataGroup.childNameInDataToRemove, "title");
+		assertEquals(updatedDataGroup.childNameInDataWithAttributesToRemove, "title");
 		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
 				originalDataGroup.getAllChildrenWithNameInData("title"));
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
 
 	}
 
 	@Test
+	public void testReplaceConstraintsWithAttributeEmptyPermissions() throws Exception {
+		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
+		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
+				updatedDataGroup, constraints, emptyPermissions);
+
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
+		assertEquals(updatedDataGroup.childNameInDataWithAttributesToRemove, "title");
+		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
+				originalDataGroup.getAllChildrenWithNameInData("title"));
+
+		assertTrue(updatedDataGroup.usedAttributesForRemove.containsKey("someId"));
+	}
+
+	@Test
 	public void testReplaceMultipleConstraintsNoPermissions() throws Exception {
-		titleConstraints.add("otherConstraint");
+		titleConstraints.add(new Constraint("otherConstraint"));
 
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertEquals(updatedDataGroup.childNamesInDataToRemoveAll.get(0), "title");
-		assertEquals(updatedDataGroup.childNamesInDataToRemoveAll.get(1), "otherConstraint");
+		System.out.println(
+				"size " + updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.size());
 
-		Iterator<Collection<DataElement>> addedChildrenIterator = updatedDataGroup.addedChildrenCollections
-				.iterator();
-		assertSame(addedChildrenIterator.next(),
-				originalDataGroup.getAllChildrenWithNameInData("title"));
-		assertSame(addedChildrenIterator.next(),
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
+		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
+		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
+				.contains("otherConstraint"));
+
+		List<Collection<DataElement>> addedChildrenCollections = updatedDataGroup.addedChildrenCollections;
+		Collection<DataElement> titleCollection = getCollectionContainingChildrenWithNameInData(
+				"title", addedChildrenCollections);
+		assertSame(titleCollection, originalDataGroup.getAllChildrenWithNameInData("title"));
+
+		Collection<DataElement> otherConstraintCollection = getCollectionContainingChildrenWithNameInData(
+				"otherConstraint", addedChildrenCollections);
+		assertSame(otherConstraintCollection,
 				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
+	}
 
+	private Collection<DataElement> getCollectionContainingChildrenWithNameInData(String nameInData,
+			List<Collection<DataElement>> addedChildrenCollections) {
+		for (Collection<DataElement> collection : addedChildrenCollections) {
+			for (DataElement dataElement : collection) {
+				if (nameInData.equals(dataElement.getNameInData())) {
+					return collection;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Test
 	public void testReplaceNoChildToRemove() throws Exception {
 		updatedDataGroup.childExists = false;
-
 		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertTrue(updatedDataGroup.removeAllChildrenWasCalled);
-		assertTrue(updatedDataGroup.childNamesInDataToRemoveAll.contains("title"));
+		assertTrue(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
+		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
+		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+
 	}
 }

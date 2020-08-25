@@ -18,9 +18,12 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.metadata.Constraint;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -28,18 +31,23 @@ public class DataRedactorImp implements DataRedactor {
 
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
-			Set<String> constraints, Set<String> permissions) {
-		for (String constraint : constraints) {
+			Set<Constraint> constraints, Set<String> permissions) {
+		for (Constraint constraint : constraints) {
 			possiblyRemoveChildIfNoPermission(dataGroup, constraint, permissions);
 		}
 		return dataGroup;
 	}
 
-	private void possiblyRemoveChildIfNoPermission(DataGroup dataGroup, String constraint,
+	private void possiblyRemoveChildIfNoPermission(DataGroup dataGroup, Constraint constraint,
 			Set<String> permissions) {
-		if (noPermissionExist(permissions, constraint)) {
-			dataGroup.removeAllChildrenWithNameInData(constraint);
+		if (noPermissionExist(permissions, constraint.getNameInData())) {
+			removeMatchingChildren(dataGroup, constraint);
 		}
+	}
+
+	private DataAttribute[] getAttributesAsArray(Constraint constraint) {
+		List<DataAttribute> attributes = new ArrayList<>(constraint.getDataAttributes());
+		return attributes.stream().toArray(DataAttribute[]::new);
 	}
 
 	private boolean noPermissionExist(Set<String> permissions, String constraint) {
@@ -48,8 +56,8 @@ public class DataRedactorImp implements DataRedactor {
 
 	@Override
 	public DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<String> constraints, Set<String> permissions) {
-		for (String constraint : constraints) {
+			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions) {
+		for (Constraint constraint : constraints) {
 			possiblyReplaceChildIfNoPermission(originalDataGroup, updatedDataGroup, permissions,
 					constraint);
 		}
@@ -57,16 +65,24 @@ public class DataRedactorImp implements DataRedactor {
 	}
 
 	private void possiblyReplaceChildIfNoPermission(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<String> permissions, String constraint) {
-		if (noPermissionExist(permissions, constraint)) {
+			DataGroup updatedDataGroup, Set<String> permissions, Constraint constraint) {
+		if (noPermissionExist(permissions, constraint.getNameInData())) {
 			replaceChild(originalDataGroup, updatedDataGroup, constraint);
 		}
 	}
 
 	private void replaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
-			String constraint) {
-		updatedDataGroup.removeAllChildrenWithNameInData(constraint);
-		List<DataElement> allChildren = originalDataGroup.getAllChildrenWithNameInData(constraint);
+			Constraint constraint) {
+		removeMatchingChildren(updatedDataGroup, constraint);
+		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
+		List<DataElement> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
+				constraint.getNameInData(), attributeArray);
 		updatedDataGroup.addChildren(allChildren);
+	}
+
+	private void removeMatchingChildren(DataGroup updatedDataGroup, Constraint constraint) {
+		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
+		updatedDataGroup.removeAllChildrenWithNameInDataAndAttributes(constraint.getNameInData(),
+				attributeArray);
 	}
 }

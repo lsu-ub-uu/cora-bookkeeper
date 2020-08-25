@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -44,7 +45,7 @@ public interface DataRedactor {
 	 * @return DataGroup which might have had children removed
 	 */
 	DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
-			Set<String> recordPartConstraints, Set<String> recordPartPermissions);
+			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions);
 
 	/**
 	 * replaceChildrenForConstraintsWithoutPermissions is used to replace children with the original
@@ -64,7 +65,7 @@ public interface DataRedactor {
 	 * @return DataGroup which might have had children replaced
 	 */
 	DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
-			DataGroup changedDataGroup, Set<String> recordPartConstraints,
+			DataGroup changedDataGroup, Set<Constraint> recordPartConstraints,
 			Set<String> recordPartPermissions);
 
 }
