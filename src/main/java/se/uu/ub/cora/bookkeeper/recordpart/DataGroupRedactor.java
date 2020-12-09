@@ -28,15 +28,13 @@ import se.uu.ub.cora.data.DataGroup;
  * DataRedactor defines methods needed to hide or remove confidential parts of a DataGroup before
  * storing or returning it.
  */
-public interface DataRedactor {
+public interface DataGroupRedactor {
 	/**
 	 * removeChildrenForConstraintsWithoutPermissions is used to remove children from the entered
 	 * DataGroup, based on the set of entered contraints that is not matched by the entered
 	 * permissions. The set of constraints consists of the nameInData for the children that has
 	 * constraints, so children are removed based on their nameInData. If an empty set of
 	 * constraints is entered should no children be removed.
-	 * 
-	 * @param metadataId
 	 * 
 	 * @param dataGroup
 	 *            DataGroup to remove children from
@@ -46,7 +44,7 @@ public interface DataRedactor {
 	 *            Set of permissions for the dataGroup.
 	 * @return DataGroup which might have had children removed
 	 */
-	DataGroup removeChildrenForConstraintsWithoutPermissions(String metadataId, DataGroup dataGroup,
+	DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
 			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions);
 
 	/**
@@ -55,8 +53,6 @@ public interface DataRedactor {
 	 * match the constraints. The set of constraints consists of the nameInData for the children
 	 * that has constraints, so children are replaced based on their nameInData. If an empty set of
 	 * constraints is entered should no children be removed.
-	 * 
-	 * @param metadataId
 	 * 
 	 * @param originalDataGroup
 	 *            Is the current version of the datagroup, replaced data is copied from this group.
@@ -68,8 +64,8 @@ public interface DataRedactor {
 	 *            Set of permissions for the dataGroupType.
 	 * @return DataGroup which might have had children replaced
 	 */
-	DataGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
-			DataGroup originalDataGroup, DataGroup changedDataGroup,
-			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions);
+	DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
+			DataGroup changedDataGroup, Set<Constraint> recordPartConstraints,
+			Set<String> recordPartPermissions);
 
 }

@@ -18,71 +18,46 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataRedactorImp implements DataRedactor {
 
-	@Override
-	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
-			Set<Constraint> constraints, Set<String> permissions) {
-		for (Constraint constraint : constraints) {
-			possiblyRemoveChildIfNoPermission(dataGroup, constraint, permissions);
-		}
-		return dataGroup;
+	private DataGroupRedactor dataGroupRedactor;
+	private MetadataHolder metadataHolder;
+
+	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor) {
+		this.metadataHolder = metadataHolder;
+		this.dataGroupRedactor = dataGroupRedactor;
 	}
 
-	private void possiblyRemoveChildIfNoPermission(DataGroup dataGroup, Constraint constraint,
+	@Override
+	public DataGroup removeChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataGroup dataGroup, Set<Constraint> constraints, Set<String> permissions) {
+		if (constraints.isEmpty()) {
+			return dataGroup;
+		}
+		DataGroup temp = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(dataGroup,
+				constraints, permissions);
+		// läs topGroup //organisationGroup
+		// läs upp barnen, loopa
+		// är barnet en grupp och inte repeatble
+		// hämta barnet i datat
+		return temp;
+	}
+
+	@Override
+	public DataGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataGroup originalDataGroup, DataGroup updatedDataGroup, Set<Constraint> constraints,
 			Set<String> permissions) {
-		if (noPermissionExist(permissions, constraint.getNameInData())) {
-			removeMatchingChildren(dataGroup, constraint);
+		if (constraints.isEmpty()) {
+			return originalDataGroup;
 		}
+		return dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
+				updatedDataGroup, constraints, permissions);
 	}
 
-	private DataAttribute[] getAttributesAsArray(Constraint constraint) {
-		List<DataAttribute> attributes = new ArrayList<>(constraint.getDataAttributes());
-		return attributes.stream().toArray(DataAttribute[]::new);
-	}
-
-	private boolean noPermissionExist(Set<String> permissions, String constraint) {
-		return !permissions.contains(constraint);
-	}
-
-	@Override
-	public DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions) {
-		for (Constraint constraint : constraints) {
-			possiblyReplaceChildIfNoPermission(originalDataGroup, updatedDataGroup, permissions,
-					constraint);
-		}
-		return updatedDataGroup;
-	}
-
-	private void possiblyReplaceChildIfNoPermission(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<String> permissions, Constraint constraint) {
-		if (noPermissionExist(permissions, constraint.getNameInData())) {
-			replaceChild(originalDataGroup, updatedDataGroup, constraint);
-		}
-	}
-
-	private void replaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
-			Constraint constraint) {
-		removeMatchingChildren(updatedDataGroup, constraint);
-		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		List<DataElement> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
-				constraint.getNameInData(), attributeArray);
-		updatedDataGroup.addChildren(allChildren);
-	}
-
-	private void removeMatchingChildren(DataGroup updatedDataGroup, Constraint constraint) {
-		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		updatedDataGroup.removeAllChildrenWithNameInDataAndAttributes(constraint.getNameInData(),
-				attributeArray);
-	}
 }

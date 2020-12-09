@@ -23,13 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * MetadataChildReference is used to hold information about a child in metadata
- * groups.
+ * MetadataChildReference is used to hold information about a child in metadata groups.
  * 
- * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
- *
- * @since 0.1
- *
  */
 public final class MetadataChildReference {
 
