@@ -43,34 +43,50 @@ public class DataRedactorImp implements DataRedactor {
 		if (constraints.isEmpty()) {
 			return dataGroup;
 		}
-		DataGroup temp = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(dataGroup,
-				constraints, permissions);
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+		DataGroup redactedGroup = possiblyRemoveChildren(dataGroup, constraints, permissions,
+				metadataGroup);
+
+		return redactedGroup;
+	}
+
+	private DataGroup possiblyRemoveChildren(DataGroup dataGroup, Set<Constraint> constraints,
+			Set<String> permissions, MetadataGroup metadataGroup) {
 		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
+		DataGroup redactedGroup = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(
+				dataGroup, constraints, permissions);
 
-		// List<DataElement> dataChildren = temp.getChildren();
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
-			if ("metadataGroup".equals(metadataChildReference.getLinkedRecordType())
-					&& 1 == metadataChildReference.getRepeatMax()) {
-				String childMetadataId = metadataChildReference.getLinkedRecordId();
-				MetadataGroup childGroup = (MetadataGroup) metadataHolder
-						.getMetadataElement(childMetadataId);
-				DataGroup firstGroupWithNameInData = temp
-						.getFirstGroupWithNameInData(childGroup.getNameInData());
-				removeChildrenForConstraintsWithoutPermissions(childMetadataId,
-						firstGroupWithNameInData, constraints, permissions);
-				// dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(firstGroupWithNameInData,
-				// constraints, permissions);
-			}
-
+			possiblyRemoveChild(constraints, permissions, redactedGroup, metadataChildReference);
 		}
+		return redactedGroup;
+	}
 
-		// läs topGroup //organisationGroup
-		// läs upp barnen, loopa
-		// är barnet en grupp och inte repeatble
-		// hämta barnet i datat
-		return temp;
+	private void possiblyRemoveChild(Set<Constraint> constraints, Set<String> permissions,
+			DataGroup redactedGroup, MetadataChildReference metadataChildReference) {
+		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
+			String childMetadataId = metadataChildReference.getLinkedRecordId();
+
+			MetadataGroup childMetadataGroup = (MetadataGroup) metadataHolder
+					.getMetadataElement(childMetadataId);
+			String metadataNameInData = childMetadataGroup.getNameInData();
+
+			if (redactedGroup.containsChildWithNameInData(metadataNameInData)) {
+				DataGroup childDataGroup = redactedGroup
+						.getFirstGroupWithNameInData(metadataNameInData);
+				possiblyRemoveChildren(childDataGroup, constraints, permissions,
+						childMetadataGroup);
+			}
+		}
+	}
+
+	private boolean repeatMaxIsOne(MetadataChildReference metadataChildReference) {
+		return 1 == metadataChildReference.getRepeatMax();
+	}
+
+	private boolean isMetadataGroup(MetadataChildReference metadataChildReference) {
+		return "metadataGroup".equals(metadataChildReference.getLinkedRecordType());
 	}
 
 	@Override

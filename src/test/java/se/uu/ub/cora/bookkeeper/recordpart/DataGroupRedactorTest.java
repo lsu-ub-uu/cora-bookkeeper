@@ -39,24 +39,24 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRedactorTest {
 	private DataGroupRedactor dataGroupRedactor;
-	private DataGroupForDataRedactorSpy dataGroupSpy;
+	private DataGroupForDataGroupRedactorSpy dataGroupSpy;
 	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
 	private Set<Constraint> titleConstraints;
 	private Set<String> titlePermissions;
-	private DataGroupForDataRedactorSpy originalDataGroup;
-	private DataGroupForDataRedactorSpy updatedDataGroup;
+	private DataGroupForDataGroupRedactorSpy originalDataGroup;
+	private DataGroupForDataGroupRedactorSpy updatedDataGroup;
 
 	@BeforeMethod
 	public void setUp() {
 		dataGroupRedactor = new DataGroupRedactorImp();
-		dataGroupSpy = new DataGroupForDataRedactorSpy("someDataGroup");
+		dataGroupSpy = new DataGroupForDataGroupRedactorSpy("someDataGroup");
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
 		titleConstraints = createReadConstraintForTitle();
 		titlePermissions = createReadPermissionForTitle();
-		originalDataGroup = new DataGroupForDataRedactorSpy("originalDataGroup");
-		updatedDataGroup = new DataGroupForDataRedactorSpy("changedDataGroup");
+		originalDataGroup = new DataGroupForDataGroupRedactorSpy("originalDataGroup");
+		updatedDataGroup = new DataGroupForDataGroupRedactorSpy("changedDataGroup");
 	}
 
 	private Set<Constraint> createReadConstraintForTitle() {

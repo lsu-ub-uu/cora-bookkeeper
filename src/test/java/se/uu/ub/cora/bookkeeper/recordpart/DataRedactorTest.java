@@ -27,6 +27,7 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
@@ -34,13 +35,14 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class DataRedactorTest {
 	private DataRedactor dataRedactor;
-	private DataGroupForDataRedactorSpy dataGroupSpy;
+
+	private DataGroupForDataRedactorSpy topDataGroupSpy;
 	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
 	private Set<Constraint> titleConstraints;
 	private Set<String> titlePermissions;
-	private DataGroupForDataRedactorSpy originalDataGroup;
-	private DataGroupForDataRedactorSpy updatedDataGroup;
+	private DataGroupSpy originalDataGroup;
+	private DataGroupSpy updatedDataGroup;
 	private DataGroupRedactorSpy dataGroupRedactorSpy;
 	private MetadataHolderSpy metadataHolder;
 
@@ -49,13 +51,13 @@ public class DataRedactorTest {
 		metadataHolder = new MetadataHolderSpy();
 		dataGroupRedactorSpy = new DataGroupRedactorSpy();
 		dataRedactor = new DataRedactorImp(metadataHolder, dataGroupRedactorSpy);
-		dataGroupSpy = new DataGroupForDataRedactorSpy("someDataGroup");
+		topDataGroupSpy = new DataGroupForDataRedactorSpy("someDataGroup");
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
 		titleConstraints = createReadConstraintForTitle();
 		titlePermissions = createReadPermissionForTitle();
-		originalDataGroup = new DataGroupForDataRedactorSpy("originalDataGroup");
-		updatedDataGroup = new DataGroupForDataRedactorSpy("changedDataGroup");
+		originalDataGroup = new DataGroupSpy("originalDataGroup");
+		updatedDataGroup = new DataGroupSpy("changedDataGroup");
 	}
 
 	private Set<Constraint> createReadConstraintForTitle() {
@@ -75,19 +77,74 @@ public class DataRedactorTest {
 	public void testRemoveWhenNoConstraints() throws Exception {
 		String metadataId = "someMetadataId";
 		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
-				metadataId, dataGroupSpy, emptyConstraints, emptyPermissions);
+				metadataId, topDataGroupSpy, emptyConstraints, emptyPermissions);
 		dataGroupRedactorSpy.MCR
 				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
-		assertSame(filteredDataGroup, dataGroupSpy);
+		assertSame(filteredDataGroup, topDataGroupSpy);
 	}
 
 	@Test
 	public void testRemoveSomeConstraint() throws Exception {
 		String metadataId = "someMetadataId";
 
-		MetadataGroupSpy topGroup = new MetadataGroupSpy(metadataId, "someNameInData");
-		metadataHolder.elementsToReturn.put(metadataId, topGroup);
+		createMetadataForMetadataHolder(metadataId);
 
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, titleConstraints, emptyPermissions);
+		dataGroupRedactorSpy.MCR.assertReturn("removeChildrenForConstraintsWithoutPermissions", 0,
+				filteredDataGroup);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+
+		// run1 (topDataGroup)
+		dataGroupRedactorSpy.MCR.assertParameters("removeChildrenForConstraintsWithoutPermissions",
+				0, topDataGroupSpy, titleConstraints, emptyPermissions);
+		DataGroupForDataRedactorSpy firstRedactedG = (DataGroupForDataRedactorSpy) dataGroupRedactorSpy.MCR
+				.getReturnValue("removeChildrenForConstraintsWithoutPermissions", 0);
+		// into loop (topDataGroup)
+		metadataHolder.MCR.assertParameters("getMetadataElement", 1, "childDataGroup");
+		DataGroupForDataRedactorSpy firstChildGroup = (DataGroupForDataRedactorSpy) firstRedactedG.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+
+		// run2 (childDataGroup)
+		dataGroupRedactorSpy.MCR.assertParameters("removeChildrenForConstraintsWithoutPermissions",
+				1, firstChildGroup, titleConstraints, emptyPermissions);
+		DataGroupForDataRedactorSpy secondRedactedG = (DataGroupForDataRedactorSpy) dataGroupRedactorSpy.MCR
+				.getReturnValue("removeChildrenForConstraintsWithoutPermissions", 1);
+		// into loop
+
+		// continue loop (topDataGroup)
+		DataGroupForDataRedactorSpy secondChildGroup = (DataGroupForDataRedactorSpy) firstRedactedG.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 1);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 2, "childDataGroup2");
+
+		// run3 (childDataGroup2)
+		dataGroupRedactorSpy.MCR.assertParameters("removeChildrenForConstraintsWithoutPermissions",
+				2, secondChildGroup, titleConstraints, emptyPermissions);
+		DataGroupForDataRedactorSpy thirdRedactedG = (DataGroupForDataRedactorSpy) dataGroupRedactorSpy.MCR
+				.getReturnValue("removeChildrenForConstraintsWithoutPermissions", 2);
+		// into loop (dataGroup2 child1)
+		metadataHolder.MCR.assertParameters("getMetadataElement", 3, "dataDivider");
+		DataGroupForDataRedactorSpy dataDividerGroup = (DataGroupForDataRedactorSpy) thirdRedactedG.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+
+		// run4 (DataDivderGroup)
+		dataGroupRedactorSpy.MCR.assertParameters("removeChildrenForConstraintsWithoutPermissions",
+				3, dataDividerGroup, titleConstraints, emptyPermissions);
+		// // into loop
+
+		// continue loop (dataGroup2 child2)
+		metadataHolder.MCR.assertParameters("getMetadataElement", 4, "type");
+		thirdRedactedG.MCR.assertMethodWasCalled("containsChildWithNameInData");
+		thirdRedactedG.MCR.assertNumberOfCallsToMethod("getFirstGroupWithNameInData", 1);
+		// end checks
+		metadataHolder.MCR.assertNumberOfCallsToMethod("getMetadataElement", 5);
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 4);
+
+	}
+
+	private void createMetadataForMetadataHolder(String metadataId) {
+		MetadataGroupSpy topGroup = new MetadataGroupSpy(metadataId, "someNameInData");
 		topGroup.createChildReference("metadataGroup", "childDataGroup", 0, 1,
 				ConstraintType.WRITE);
 
@@ -96,16 +153,22 @@ public class DataRedactorTest {
 		topGroup.createChildReference("metadataTextVariable", "childTextVar", 0, 1);
 		topGroup.createChildReference("metadataNumberVariable", "childNumVar", 0, 1,
 				ConstraintType.WRITE);
+		metadataHolder.elementsToReturn.put(metadataId, topGroup);
 
-		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
-				metadataId, dataGroupSpy, titleConstraints, emptyPermissions);
+		MetadataGroupSpy metadataChild = new MetadataGroupSpy("childDataGroup",
+				"childDataGroupNameInData");
+		metadataHolder.elementsToReturn.put("childDataGroup", metadataChild);
 
-		dataGroupRedactorSpy.MCR.assertReturn("removeChildrenForConstraintsWithoutPermissions", 0,
-				filteredDataGroup);
-		dataGroupRedactorSpy.MCR.assertParameters("removeChildrenForConstraintsWithoutPermissions",
-				0, dataGroupSpy, titleConstraints, emptyPermissions);
+		MetadataGroupSpy metadataChild2 = new MetadataGroupSpy("childDataGroup2",
+				"childDataGroup2NameInData");
+		metadataChild2.createChildReference("metadataGroup", "dataDivider", 0, 1);
+		metadataChild2.createChildReference("metadataGroup", "type", 0, 1);
+		metadataHolder.elementsToReturn.put("childDataGroup2", metadataChild2);
 
-		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+		MetadataGroupSpy dataDivider = new MetadataGroupSpy("dataDivider", "dataDivider");
+		metadataHolder.elementsToReturn.put("dataDivider", dataDivider);
+		MetadataGroupSpy type = new MetadataGroupSpy("type", "type");
+		metadataHolder.elementsToReturn.put("type", type);
 
 	}
 

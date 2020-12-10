@@ -27,7 +27,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 
 public class MetadataGroupSpy extends MetadataGroup {
 
-	List<MetadataChildReference> childReferences = new ArrayList<>();
+	List<MetadataChildReference> childReferencesToReturn = new ArrayList<>();
 
 	public MetadataGroupSpy(String id, String nameInData) {
 		super(id, nameInData, "", "");
@@ -42,7 +42,7 @@ public class MetadataGroupSpy extends MetadataGroup {
 		MetadataChildReference childReference = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
-		childReferences.add(childReference);
+		childReferencesToReturn.add(childReference);
 	}
 
 	public void createChildReference(String linkedRecordType, String linkedRecordId, int repeatMin,
@@ -51,7 +51,12 @@ public class MetadataGroupSpy extends MetadataGroup {
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
 		childReference.setRecordPartConstraint(constraint);
-		childReferences.add(childReference);
+		childReferencesToReturn.add(childReference);
+	}
+
+	@Override
+	public List<MetadataChildReference> getChildReferences() {
+		return childReferencesToReturn;
 	}
 
 }

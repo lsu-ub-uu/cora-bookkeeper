@@ -18,20 +18,39 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
+import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataGroupForDataRedactorSpy implements DataGroup {
+public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 
-	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public boolean removeAllChildrenWasCalled = false;
+	public boolean removeAllChildrenWithAttributeWasCalled = false;
+	public boolean containsChildWithNameInDataWasCalled = false;
+	public String childNameInDataToRemove;
+	public String childNameInDataWithAttributesToRemove;
+	public List<String> childNamesInDataToRemoveAll = new ArrayList<>();
+	public List<String> childNamesInDataWithAttributesToRemoveAll = new ArrayList<>();
+	public List<String> nameInDatasContainsChildWithNameInData = new ArrayList<>();
+	public Map<String, String> usedAttributesForRemove = new TreeMap<>();
+	public boolean childExists = true;
+	public boolean addChildWasCalled = false;
+	List<DataElement> titleCollection = new ArrayList<>();
+	List<Collection<DataElement>> addedChildrenCollections = new ArrayList<>();
+	List<DataElement> otherConstraintCollection = new ArrayList<>();
+	public boolean getAllChildrenWithNameInDataAndAttributesWasCalled = false;
 
-	public DataGroupForDataRedactorSpy(String nameInData) {
+	public DataGroupForDataGroupRedactorSpy(String nameInData) {
+		titleCollection.add(new DataAtomicSpy("title", "some title"));
+		otherConstraintCollection.add(new DataAtomicSpy("otherConstraint", "other"));
 	}
 
 	@Override
@@ -71,18 +90,15 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
-		MCR.addCall("nameInData", nameInData);
-		boolean returned = true;
-		if (nameInData.equals("type")) {
-			returned = false;
-		}
-		MCR.addReturned(returned);
-		return returned;
+		containsChildWithNameInDataWasCalled = true;
+		nameInDatasContainsChildWithNameInData.add(nameInData);
+		return childExists;
 	}
 
 	@Override
 	public void addChild(DataElement dataElement) {
 		// TODO Auto-generated method stub
+		addChildWasCalled = true;
 
 	}
 
@@ -112,10 +128,8 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		MCR.addCall("childNameInData", childNameInData);
-		DataGroupForDataRedactorSpy returned = new DataGroupForDataRedactorSpy(childNameInData);
-		MCR.addReturned(returned);
-		return returned;
+
+		return null;
 	}
 
 	@Override
@@ -138,6 +152,9 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public boolean removeAllChildrenWithNameInData(String childNameInData) {
+		childNameInDataToRemove = childNameInData;
+		removeAllChildrenWasCalled = true;
+		childNamesInDataToRemoveAll.add(childNameInData);
 		return true;
 
 	}
@@ -150,28 +167,47 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public void addChildren(Collection<DataElement> dataElements) {
+		addedChildrenCollections.add(dataElements);
 	}
 
 	@Override
 	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
+		if ("title".equals(nameInData)) {
+			return titleCollection;
+		}
+		if ("otherConstraint".equals(nameInData)) {
+			return otherConstraintCollection;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren() {
-		return false;
+		return childExists;
 	}
 
 	@Override
 	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
+		childNameInDataWithAttributesToRemove = childNameInData;
+		removeAllChildrenWithAttributeWasCalled = true;
+		childNamesInDataWithAttributesToRemoveAll.add(childNameInData);
+		for (DataAttribute attribute : childAttributes) {
+			usedAttributesForRemove.put(attribute.getNameInData(), attribute.getValue());
+		}
 		return false;
 	}
 
 	@Override
 	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
 			DataAttribute... childAttributes) {
-		// TODO Auto-generated method stub
+		getAllChildrenWithNameInDataAndAttributesWasCalled = true;
+		if ("title".equals(nameInData)) {
+			return titleCollection;
+		}
+		if ("otherConstraint".equals(nameInData)) {
+			return otherConstraintCollection;
+		}
 		return null;
 	}
 
