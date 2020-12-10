@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
+import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -41,23 +42,8 @@ public final class DataGroupToMetadataChildReferenceConverter {
 
 	public MetadataChildReference toMetadata() {
 		createMetadataChildReferenceWithBasicInfo();
-		if (dataGroup.containsChildWithNameInData("repeatMinKey")) {
-			childReference
-					.setRepeatMinKey(dataGroup.getFirstAtomicValueWithNameInData("repeatMinKey"));
-		}
-		if (dataGroup.containsChildWithNameInData("secret")) {
-			childReference.setSecret(getFirstAtomicValueWithNameInDataAsBoolean("secret"));
-		}
-		if (dataGroup.containsChildWithNameInData("secretKey")) {
-			childReference.setSecretKey(dataGroup.getFirstAtomicValueWithNameInData("secretKey"));
-		}
-		if (dataGroup.containsChildWithNameInData("readOnly")) {
-			childReference.setReadOnly(getFirstAtomicValueWithNameInDataAsBoolean("readOnly"));
-		}
-		if (dataGroup.containsChildWithNameInData("readOnlyKey")) {
-			childReference
-					.setReadOnlyKey(dataGroup.getFirstAtomicValueWithNameInData("readOnlyKey"));
-		}
+		possiblyConvertCollectTerms();
+		possiblyAddRecordPartConstraint();
 		return childReference;
 	}
 
@@ -72,7 +58,6 @@ public final class DataGroupToMetadataChildReferenceConverter {
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
 
-		possiblyConvertCollectTerms();
 	}
 
 	private int getRepeatMax() {
@@ -106,16 +91,14 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		childReference.addCollectIndexTerm(collectTerm);
 	}
 
-	private boolean getFirstAtomicValueWithNameInDataAsBoolean(String nameInData) {
-		String value = dataGroup.getFirstAtomicValueWithNameInData(nameInData);
-		ensureValidBooleanValue(value);
-		return "true".equals(value);
+	private void possiblyAddRecordPartConstraint() {
+		if (childWithNameInDataExists("recordPartConstraint")) {
+			String constraint = dataGroup.getFirstAtomicValueWithNameInData("recordPartConstraint");
+			childReference.setRecordPartConstraint(ConstraintType.fromString(constraint));
+		}
 	}
 
-	private void ensureValidBooleanValue(String value) {
-		if (!"true".equals(value) && !"false".equals(value)) {
-			throw DataConversionException
-					.withMessage("Can not convert value:" + value + " to a boolean value");
-		}
+	private boolean childWithNameInDataExists(String childNameInData) {
+		return dataGroup.containsChildWithNameInData(childNameInData);
 	}
 }

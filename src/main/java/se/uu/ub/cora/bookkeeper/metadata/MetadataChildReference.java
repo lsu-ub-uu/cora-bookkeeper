@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -35,17 +35,9 @@ public final class MetadataChildReference {
 	private final int repeatMin;
 	private final int repeatMax;
 
-	private boolean secret = false;
-
-	private boolean readOnly = false;
-
-	private String repeatMinKey = "";
-
-	private String secretKey = "";
-
-	private String readOnlyKey = "";
-
 	private List<CollectTerm> collectTerms = new ArrayList<>();
+
+	private ConstraintType recordPartConstraint;
 
 	public MetadataChildReference(String linkedRecordType, String linkedRecordId, int repeatMin,
 			int repeatMax) {
@@ -68,47 +60,6 @@ public final class MetadataChildReference {
 		return repeatMax;
 	}
 
-	public void setSecret(boolean secret) {
-		this.secret = secret;
-	}
-
-	public boolean isSecret() {
-		return secret;
-	}
-
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
-	}
-
-	public boolean isReadOnly() {
-		return readOnly;
-	}
-
-	public void setRepeatMinKey(String repeatMinKey) {
-		this.repeatMinKey = repeatMinKey;
-	}
-
-	public String getRepeatMinKey() {
-		return repeatMinKey;
-	}
-
-	public void setSecretKey(String secretKey) {
-		this.secretKey = secretKey;
-	}
-
-	public String getSecretKey() {
-		return secretKey;
-	}
-
-	public void setReadOnlyKey(String readOnlyKey) {
-		this.readOnlyKey = readOnlyKey;
-
-	}
-
-	public String getReadOnlyKey() {
-		return readOnlyKey;
-	}
-
 	public String getLinkedRecordType() {
 		return linkedRecordType;
 	}
@@ -124,5 +75,14 @@ public final class MetadataChildReference {
 	public void addCollectIndexTerm(CollectTerm collectTerm) {
 		collectTerms.add(collectTerm);
 
+	}
+
+	public void setRecordPartConstraint(ConstraintType recordPartConstraint) {
+		this.recordPartConstraint = recordPartConstraint;
+
+	}
+
+	public ConstraintType getRecordPartConstraint() {
+		return recordPartConstraint;
 	}
 }

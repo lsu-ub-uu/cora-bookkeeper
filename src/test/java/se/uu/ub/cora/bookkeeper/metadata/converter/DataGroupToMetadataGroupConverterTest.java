@@ -100,12 +100,7 @@ public class DataGroupToMetadataGroupConverterTest {
 		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
 		assertEquals(metadataChildReference.getRepeatMin(), 0);
-		assertEquals(metadataChildReference.getRepeatMinKey(), "SOME_KEY");
 		assertEquals(metadataChildReference.getRepeatMax(), 16);
-		assertEquals(metadataChildReference.isSecret(), true);
-		assertEquals(metadataChildReference.getSecretKey(), "SECRET_KEY");
-		assertEquals(metadataChildReference.isReadOnly(), true);
-		assertEquals(metadataChildReference.getReadOnlyKey(), "READONLY_KEY");
 	}
 
 	@Test
