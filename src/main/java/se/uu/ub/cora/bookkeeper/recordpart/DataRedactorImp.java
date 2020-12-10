@@ -18,9 +18,12 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -42,6 +45,27 @@ public class DataRedactorImp implements DataRedactor {
 		}
 		DataGroup temp = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(dataGroup,
 				constraints, permissions);
+
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
+
+		// List<DataElement> dataChildren = temp.getChildren();
+		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
+			if ("metadataGroup".equals(metadataChildReference.getLinkedRecordType())
+					&& 1 == metadataChildReference.getRepeatMax()) {
+				String childMetadataId = metadataChildReference.getLinkedRecordId();
+				MetadataGroup childGroup = (MetadataGroup) metadataHolder
+						.getMetadataElement(childMetadataId);
+				DataGroup firstGroupWithNameInData = temp
+						.getFirstGroupWithNameInData(childGroup.getNameInData());
+				removeChildrenForConstraintsWithoutPermissions(childMetadataId,
+						firstGroupWithNameInData, constraints, permissions);
+				// dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(firstGroupWithNameInData,
+				// constraints, permissions);
+			}
+
+		}
+
 		// läs topGroup //organisationGroup
 		// läs upp barnen, loopa
 		// är barnet en grupp och inte repeatble

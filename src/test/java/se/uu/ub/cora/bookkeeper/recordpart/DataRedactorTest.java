@@ -28,7 +28,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -42,10 +42,11 @@ public class DataRedactorTest {
 	private DataGroupForDataRedactorSpy originalDataGroup;
 	private DataGroupForDataRedactorSpy updatedDataGroup;
 	private DataGroupRedactorSpy dataGroupRedactorSpy;
+	private MetadataHolderSpy metadataHolder;
 
 	@BeforeMethod
 	public void setUp() {
-		MetadataHolder metadataHolder = new MetadataHolderSpy();
+		metadataHolder = new MetadataHolderSpy();
 		dataGroupRedactorSpy = new DataGroupRedactorSpy();
 		dataRedactor = new DataRedactorImp(metadataHolder, dataGroupRedactorSpy);
 		dataGroupSpy = new DataGroupForDataRedactorSpy("someDataGroup");
@@ -84,6 +85,18 @@ public class DataRedactorTest {
 	public void testRemoveSomeConstraint() throws Exception {
 		String metadataId = "someMetadataId";
 
+		MetadataGroupSpy topGroup = new MetadataGroupSpy(metadataId, "someNameInData");
+		metadataHolder.elementsToReturn.put(metadataId, topGroup);
+
+		topGroup.createChildReference("metadataGroup", "childDataGroup", 0, 1,
+				ConstraintType.WRITE);
+
+		topGroup.createChildReference("metadataGroup", "childDataGroup2", 0, 1);
+		topGroup.createChildReference("metadataGroup", "childDataGroup3", 0, 3);
+		topGroup.createChildReference("metadataTextVariable", "childTextVar", 0, 1);
+		topGroup.createChildReference("metadataNumberVariable", "childNumVar", 0, 1,
+				ConstraintType.WRITE);
+
 		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
 				metadataId, dataGroupSpy, titleConstraints, emptyPermissions);
 
@@ -91,6 +104,9 @@ public class DataRedactorTest {
 				filteredDataGroup);
 		dataGroupRedactorSpy.MCR.assertParameters("removeChildrenForConstraintsWithoutPermissions",
 				0, dataGroupSpy, titleConstraints, emptyPermissions);
+
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+
 	}
 
 	@Test

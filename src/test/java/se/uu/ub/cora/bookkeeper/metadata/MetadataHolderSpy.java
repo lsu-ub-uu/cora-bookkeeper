@@ -18,10 +18,15 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 
 public class MetadataHolderSpy extends MetadataHolder {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+
+	public Map<String, MetadataElement> elementsToReturn = new HashMap<>();
 
 	@Override
 	public void addMetadataElement(MetadataElement metadataElement) {
@@ -31,7 +36,9 @@ public class MetadataHolderSpy extends MetadataHolder {
 	@Override
 	public MetadataElement getMetadataElement(String elementId) {
 		MCR.addCall("elementId", elementId);
-		MCR.addReturned(null);
-		return null;
+		MetadataElement metadataElement = elementsToReturn.get(elementId);
+
+		MCR.addReturned(metadataElement);
+		return metadataElement;
 	}
 }
