@@ -31,6 +31,8 @@ public class DataRedactorImp implements DataRedactor {
 
 	private DataGroupRedactor dataGroupRedactor;
 	private MetadataHolder metadataHolder;
+	private Set<Constraint> constraints;
+	private Set<String> permissions;
 
 	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor) {
 		this.metadataHolder = metadataHolder;
@@ -43,44 +45,47 @@ public class DataRedactorImp implements DataRedactor {
 		if (constraints.isEmpty()) {
 			return dataGroup;
 		}
+		this.constraints = constraints;
+		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		return possiblyRemoveChildren(dataGroup, constraints, permissions, metadataGroup);
+		return possiblyRemoveChildren(dataGroup, metadataGroup);
 	}
 
-	private DataGroup possiblyRemoveChildren(DataGroup dataGroup, Set<Constraint> constraints,
-			Set<String> permissions, MetadataGroup metadataGroup) {
-		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
-
+	private DataGroup possiblyRemoveChildren(DataGroup dataGroup, MetadataGroup metadataGroup) {
 		DataGroup redactedGroup = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(
 				dataGroup, constraints, permissions);
 
+		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
-			possiblyRemoveChild(constraints, permissions, redactedGroup, metadataChildReference);
+			possiblyRemoveChild(redactedGroup, metadataChildReference);
 		}
 		return redactedGroup;
 	}
 
-	private void possiblyRemoveChild(Set<Constraint> constraints, Set<String> permissions,
-			DataGroup redactedGroup, MetadataChildReference metadataChildReference) {
+	private void possiblyRemoveChild(DataGroup redactedGroup,
+			MetadataChildReference metadataChildReference) {
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
-			removeChildDataIfExists(constraints, permissions, redactedGroup,
-					metadataChildReference);
+			removeChildDataIfExists(redactedGroup, metadataChildReference);
 		}
 	}
 
-	private void removeChildDataIfExists(Set<Constraint> constraints, Set<String> permissions,
-			DataGroup redactedGroup, MetadataChildReference metadataChildReference) {
+	private void removeChildDataIfExists(DataGroup redactedGroup,
+			MetadataChildReference metadataChildReference) {
+
 		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 				metadataChildReference);
 		String metadataNameInData = childMetadataGroup.getNameInData();
 
 		if (dataExistsForMetadata(redactedGroup, metadataNameInData)) {
-			DataGroup childDataGroup = redactedGroup
-					.getFirstGroupWithNameInData(metadataNameInData);
-			possiblyRemoveChildren(childDataGroup, constraints, permissions,
-					childMetadataGroup);
+			removeChildData(redactedGroup, childMetadataGroup, metadataNameInData);
 		}
+	}
+
+	private void removeChildData(DataGroup redactedGroup, MetadataGroup childMetadataGroup,
+			String metadataNameInData) {
+		DataGroup childDataGroup = redactedGroup.getFirstGroupWithNameInData(metadataNameInData);
+		possiblyRemoveChildren(childDataGroup, childMetadataGroup);
 	}
 
 	private boolean dataExistsForMetadata(DataGroup redactedGroup, String metadataNameInData) {
@@ -109,8 +114,27 @@ public class DataRedactorImp implements DataRedactor {
 		if (constraints.isEmpty()) {
 			return originalDataGroup;
 		}
+
+		this.constraints = constraints;
+		this.permissions = permissions;
+
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+
+		// metadataGroup.getChildReferences()
+		DataGroupWrapper wrappedUpdated = new DataGroupWrapper(updatedDataGroup);
+		// return
+		// dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
+		// updatedDataGroup, constraints, permissions);
 		return dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-				updatedDataGroup, constraints, permissions);
+				wrappedUpdated, constraints, permissions);
+		List<String> removedIds = wrappedUpdated.getListOfRemovedIds();
+
+		// loop children
+		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)
+				&& notInRemovedIdsList()) {
+			replaceChildDataIfExists(updatedDataGroup, metadataChildReference);
+		}
+
 	}
 
 }
