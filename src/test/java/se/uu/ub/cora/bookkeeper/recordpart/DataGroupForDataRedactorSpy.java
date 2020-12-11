@@ -73,7 +73,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 	public boolean containsChildWithNameInData(String nameInData) {
 		MCR.addCall("nameInData", nameInData);
 		boolean returned = true;
-		if (nameInData.equals("type")) {
+		if (nameInData.equals("typeNameInData")) {
 			returned = false;
 		}
 		MCR.addReturned(returned);

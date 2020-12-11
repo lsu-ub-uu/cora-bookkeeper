@@ -64,16 +64,22 @@ public class DataRedactorImp implements DataRedactor {
 	private void possiblyRemoveChild(Set<Constraint> constraints, Set<String> permissions,
 			DataGroup redactedGroup, MetadataChildReference metadataChildReference) {
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
-			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+			removeChildDataIfExists(constraints, permissions, redactedGroup,
 					metadataChildReference);
-			String metadataNameInData = childMetadataGroup.getNameInData();
+		}
+	}
 
-			if (dataExistsForMetadata(redactedGroup, metadataNameInData)) {
-				DataGroup childDataGroup = redactedGroup
-						.getFirstGroupWithNameInData(metadataNameInData);
-				possiblyRemoveChildren(childDataGroup, constraints, permissions,
-						childMetadataGroup);
-			}
+	private void removeChildDataIfExists(Set<Constraint> constraints, Set<String> permissions,
+			DataGroup redactedGroup, MetadataChildReference metadataChildReference) {
+		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+				metadataChildReference);
+		String metadataNameInData = childMetadataGroup.getNameInData();
+
+		if (dataExistsForMetadata(redactedGroup, metadataNameInData)) {
+			DataGroup childDataGroup = redactedGroup
+					.getFirstGroupWithNameInData(metadataNameInData);
+			possiblyRemoveChildren(childDataGroup, constraints, permissions,
+					childMetadataGroup);
 		}
 	}
 
