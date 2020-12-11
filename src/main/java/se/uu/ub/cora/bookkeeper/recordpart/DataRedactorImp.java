@@ -45,15 +45,13 @@ public class DataRedactorImp implements DataRedactor {
 		}
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		DataGroup redactedGroup = possiblyRemoveChildren(dataGroup, constraints, permissions,
-				metadataGroup);
-
-		return redactedGroup;
+		return possiblyRemoveChildren(dataGroup, constraints, permissions, metadataGroup);
 	}
 
 	private DataGroup possiblyRemoveChildren(DataGroup dataGroup, Set<Constraint> constraints,
 			Set<String> permissions, MetadataGroup metadataGroup) {
 		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
+
 		DataGroup redactedGroup = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(
 				dataGroup, constraints, permissions);
 
@@ -66,13 +64,11 @@ public class DataRedactorImp implements DataRedactor {
 	private void possiblyRemoveChild(Set<Constraint> constraints, Set<String> permissions,
 			DataGroup redactedGroup, MetadataChildReference metadataChildReference) {
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
-			String childMetadataId = metadataChildReference.getLinkedRecordId();
-
-			MetadataGroup childMetadataGroup = (MetadataGroup) metadataHolder
-					.getMetadataElement(childMetadataId);
+			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+					metadataChildReference);
 			String metadataNameInData = childMetadataGroup.getNameInData();
 
-			if (redactedGroup.containsChildWithNameInData(metadataNameInData)) {
+			if (dataExistsForMetadata(redactedGroup, metadataNameInData)) {
 				DataGroup childDataGroup = redactedGroup
 						.getFirstGroupWithNameInData(metadataNameInData);
 				possiblyRemoveChildren(childDataGroup, constraints, permissions,
@@ -81,12 +77,23 @@ public class DataRedactorImp implements DataRedactor {
 		}
 	}
 
+	private boolean dataExistsForMetadata(DataGroup redactedGroup, String metadataNameInData) {
+		return redactedGroup.containsChildWithNameInData(metadataNameInData);
+	}
+
 	private boolean repeatMaxIsOne(MetadataChildReference metadataChildReference) {
-		return 1 == metadataChildReference.getRepeatMax();
+		return metadataChildReference.getRepeatMax() == 1;
 	}
 
 	private boolean isMetadataGroup(MetadataChildReference metadataChildReference) {
 		return "metadataGroup".equals(metadataChildReference.getLinkedRecordType());
+	}
+
+	private MetadataGroup getMetadataChildFromMetadataHolder(
+			MetadataChildReference metadataChildReference) {
+		String childMetadataId = metadataChildReference.getLinkedRecordId();
+
+		return (MetadataGroup) metadataHolder.getMetadataElement(childMetadataId);
 	}
 
 	@Override
