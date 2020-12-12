@@ -127,13 +127,13 @@ public class DataRedactorImp implements DataRedactor {
 		// updatedDataGroup, constraints, permissions);
 		return dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
 				wrappedUpdated, constraints, permissions);
-		List<String> removedIds = wrappedUpdated.getListOfRemovedIds();
+		// List<String> removedIds = wrappedUpdated.getListOfRemovedIds();
 
 		// loop children
-		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)
-				&& notInRemovedIdsList()) {
-			replaceChildDataIfExists(updatedDataGroup, metadataChildReference);
-		}
+		// if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)
+		// && notInRemovedIdsList()) {
+		// replaceChildDataIfExists(updatedDataGroup, metadataChildReference);
+		// }
 
 	}
 
