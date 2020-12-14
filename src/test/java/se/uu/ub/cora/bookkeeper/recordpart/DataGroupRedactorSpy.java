@@ -20,7 +20,6 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.Set;
 
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
@@ -48,7 +47,7 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 		MCR.addCall("originalDataGroup", originalDataGroup, "changedDataGroup", changedDataGroup,
 				"recordPartConstraints", recordPartConstraints, "recordPartPermissions",
 				recordPartPermissions);
-		DataGroupSpy dataGroupSpy = new DataGroupSpy("spyNameInData");
+		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
 
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;

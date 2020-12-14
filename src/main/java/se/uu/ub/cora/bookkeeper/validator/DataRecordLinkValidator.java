@@ -59,7 +59,7 @@ class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateNameInData() {
-		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(recordLink, dataRecordLink);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}

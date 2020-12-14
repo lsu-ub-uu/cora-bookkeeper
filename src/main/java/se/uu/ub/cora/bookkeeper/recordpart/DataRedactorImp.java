@@ -4,7 +4,7 @@
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
+ *     it under the terms of the GNU General Publiåc License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
@@ -19,12 +19,18 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
+import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataRedactorImp implements DataRedactor {
@@ -33,10 +39,13 @@ public class DataRedactorImp implements DataRedactor {
 	private MetadataHolder metadataHolder;
 	private Set<Constraint> constraints;
 	private Set<String> permissions;
+	private MetadataMatchDataFactory matchFactory;
 
-	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor) {
+	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor,
+			MetadataMatchDataFactory matchFactory) {
 		this.metadataHolder = metadataHolder;
 		this.dataGroupRedactor = dataGroupRedactor;
+		this.matchFactory = matchFactory;
 	}
 
 	@Override
@@ -77,6 +86,7 @@ public class DataRedactorImp implements DataRedactor {
 				metadataChildReference);
 		String metadataNameInData = childMetadataGroup.getNameInData();
 
+		// TODO: attribut?? Om det finns 2 barn med samma nameInData?
 		if (dataExistsForMetadata(redactedGroup, metadataNameInData)) {
 			removeChildData(redactedGroup, childMetadataGroup, metadataNameInData);
 		}
@@ -119,22 +129,65 @@ public class DataRedactorImp implements DataRedactor {
 		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+		return possiblyReplaceChildren(originalDataGroup, updatedDataGroup, constraints,
+				permissions, metadataGroup);
 
-		// metadataGroup.getChildReferences()
+	}
+
+	private DataGroup possiblyReplaceChildren(DataGroup originalDataGroup,
+			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions,
+			MetadataGroup metadataGroup) {
 		DataGroupWrapper wrappedUpdated = new DataGroupWrapper(updatedDataGroup);
-		// return
-		// dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-		// updatedDataGroup, constraints, permissions);
-		return dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-				wrappedUpdated, constraints, permissions);
-		// List<String> removedIds = wrappedUpdated.getListOfRemovedIds();
+		DataGroup redactedDataGroup = dataGroupRedactor
+				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
+						constraints, permissions);
+		Map<String, List<DataAttribute>> removedNameInDatas = wrappedUpdated
+				.getRemovedNameInDatas();
+
+		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
+			if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
+				// List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
+				// TODO:add notInRemovedList in if
+				MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+						metadataChildReference);
+				// String childMetadataId = metadataChildReference.getLinkedRecordId();
+
+				DataElement matchingDataInOriginal = getMatchingData(originalDataGroup,
+						childMetadataGroup);
+				DataElement matchingDataInUpdated = getMatchingData(redactedDataGroup,
+						childMetadataGroup);
+				possiblyReplaceChildren((DataGroup) matchingDataInOriginal,
+						(DataGroup) matchingDataInUpdated, constraints, permissions,
+						childMetadataGroup);
+
+				//
+			}
+			//
+		}
 
 		// loop children
 		// if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)
 		// && notInRemovedIdsList()) {
 		// replaceChildDataIfExists(updatedDataGroup, metadataChildReference);
 		// }
+		return redactedDataGroup;
+	}
 
+	private DataElement getMatchingData(DataGroup dataGroup, MetadataGroup metadataGroup) {
+		String metadataNameInData = metadataGroup.getNameInData();
+		List<DataElement> allChildrenWithNameInData = dataGroup
+				.getAllChildrenWithNameInData(metadataNameInData);
+
+		for (DataElement childDataElement : allChildrenWithNameInData) {
+			MetadataMatchData matcher = matchFactory.factor();
+			ValidationAnswer answer = matcher.metadataSpecifiesData(metadataGroup,
+					childDataElement);
+			if (answer.dataIsValid()) {
+				return childDataElement;
+
+			}
+		}
+		return null;
 	}
 
 }

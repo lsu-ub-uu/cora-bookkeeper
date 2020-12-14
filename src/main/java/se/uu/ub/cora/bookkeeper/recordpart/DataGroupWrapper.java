@@ -31,7 +31,7 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapper implements DataGroup {
 	Map<String, List<DataAttribute>> removedNameInDatas = new HashMap<>();
-	private DataGroup dataGroup;
+	DataGroup dataGroup;
 
 	public DataGroupWrapper(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;

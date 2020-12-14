@@ -67,7 +67,7 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateNameInDataAndAttributes(DataElement dataGroup) {
-		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(metadataGroup, dataGroup);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
@@ -194,7 +194,7 @@ class DataGroupValidator implements DataElementValidator {
 		if (childElement == null) {
 			throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
 		}
-		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
 	}
 

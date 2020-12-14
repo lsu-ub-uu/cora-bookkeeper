@@ -16,13 +16,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.recordpart;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface MetadataMatchData {
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+public class MetadataMatchFactorySpy implements MetadataMatchDataFactory {
+
+	public List<MetadataMatchData> returnedMatchers = new ArrayList<>();
+
+	@Override
+	public MetadataMatchData factor() {
+		MetadataMatchDataSpy returnedMatcher = new MetadataMatchDataSpy();
+		returnedMatchers.add(returnedMatcher);
+		return returnedMatcher;
+	}
 
 }

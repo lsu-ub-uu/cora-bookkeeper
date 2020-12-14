@@ -16,13 +16,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.recordpart;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
+import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataElement;
 
-public interface MetadataMatchData {
+public class MetadataMatchDataSpy implements MetadataMatchData {
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+	public MetadataElement metadataElement;
+	public DataElement dataElement;
+
+	@Override
+	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
+			DataElement dataElement) {
+		this.metadataElement = metadataElement;
+		this.dataElement = dataElement;
+		return new ValidationAnswer();
+	}
 
 }

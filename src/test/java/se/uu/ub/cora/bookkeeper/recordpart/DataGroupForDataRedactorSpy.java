@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -154,7 +155,12 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
-		return null;
+		MCR.addCall("nameInData", nameInData);
+		List<DataElement> children = new ArrayList<>();
+		DataGroupForDataRedactorSpy childDataGroup = new DataGroupForDataRedactorSpy(nameInData);
+		children.add(childDataGroup);
+		MCR.addReturned(children);
+		return children;
 	}
 
 	@Override

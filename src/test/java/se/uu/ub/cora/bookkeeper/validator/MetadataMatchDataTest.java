@@ -53,7 +53,7 @@ public class MetadataMatchDataTest {
 		dataAtomicFactory = new DataAtomicFactorySpy();
 		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		metadataHolder = new MetadataHolder();
-		metadataMatch = MetadataMatchData.withMetadataHolder(metadataHolder);
+		metadataMatch = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 	}
 
 	@Test
