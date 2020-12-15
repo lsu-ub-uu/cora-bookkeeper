@@ -49,6 +49,7 @@ public class DataGroupWrapperTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testRemoveAllChildrenWithNameInDataAndAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
 		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
@@ -57,7 +58,17 @@ public class DataGroupWrapperTest {
 
 		// TODO: for some reason different dataAttribute objects??
 		// dataGroup.MCR.assertParameters("removeAllChildrenWithNameInDataAndAttributes", 0,
-		// "someNameInData", dataAttribute);
+		// "someNameInData", dataAttribute, dataAttribute2);
+
+		dataGroup.MCR.assertParameter("removeAllChildrenWithNameInDataAndAttributes", 0,
+				"childNameInData", "someNameInData");
+
+		List<Object> childAttributes = (List<Object>) dataGroup.MCR
+				.getParametersForMethodAndCallNumber("removeAllChildrenWithNameInDataAndAttributes",
+						0)
+				.get("childAttributes");
+		assertSame(childAttributes.get(0), dataAttribute);
+		assertSame(childAttributes.get(1), dataAttribute2);
 
 		assertSame(dataGroup.sentInAttributes.get(0), dataAttribute);
 		boolean returnedValueFromDataGroup = (boolean) dataGroup.MCR

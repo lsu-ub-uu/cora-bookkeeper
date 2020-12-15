@@ -181,10 +181,13 @@ public class DataGroupForWrapperSpy implements DataGroup {
 	@Override
 	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
+		MCR.addCall("childNameInData", childNameInData, "childAttributes",
+				Arrays.asList(childAttributes));
+
 		for (DataAttribute dataAttribute : childAttributes) {
 			sentInAttributes.add(dataAttribute);
 		}
-		MCR.addCall("childNameInData", childNameInData, "childAttributes", childAttributes);
+
 		boolean returned = true;
 		MCR.addReturned(returned);
 		return returned;
