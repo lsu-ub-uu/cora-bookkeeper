@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapper implements DataGroup {
-	Map<String, List<DataAttribute>> removedNameInDatas = new HashMap<>();
+	Map<String, List<List<DataAttribute>>> removedNameInDatas = new HashMap<>();
 	DataGroup dataGroup;
 
 	public DataGroupWrapper(DataGroup dataGroup) {
@@ -40,9 +41,16 @@ public class DataGroupWrapper implements DataGroup {
 	@Override
 	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
-		removedNameInDatas.put(childNameInData, Arrays.asList(childAttributes));
+		ensurePlaceForNameInDataExistsInMap(childNameInData);
+		removedNameInDatas.get(childNameInData).add(Arrays.asList(childAttributes));
 		return dataGroup.removeAllChildrenWithNameInDataAndAttributes(childNameInData,
 				childAttributes);
+	}
+
+	private void ensurePlaceForNameInDataExistsInMap(String childNameInData) {
+		if (!removedNameInDatas.containsKey(childNameInData)) {
+			removedNameInDatas.put(childNameInData, new ArrayList<>());
+		}
 	}
 
 	@Override
@@ -142,7 +150,7 @@ public class DataGroupWrapper implements DataGroup {
 		return dataGroup.getFirstDataAtomicWithNameInData(childNameInData);
 	}
 
-	public Map<String, List<DataAttribute>> getRemovedNameInDatas() {
+	public Map<String, List<List<DataAttribute>>> getRemovedNameInDatas() {
 		return removedNameInDatas;
 	}
 

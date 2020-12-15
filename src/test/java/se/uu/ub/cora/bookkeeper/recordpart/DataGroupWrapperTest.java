@@ -49,24 +49,17 @@ public class DataGroupWrapperTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testRemoveAllChildrenWithNameInDataAndAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
 		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
 		boolean returnedValue = wrapper.removeAllChildrenWithNameInDataAndAttributes(
 				"someNameInData", dataAttribute, dataAttribute2);
 
-		// TODO: for some reason different dataAttribute objects??
-		// dataGroup.MCR.assertParameters("removeAllChildrenWithNameInDataAndAttributes", 0,
-		// "someNameInData", dataAttribute, dataAttribute2);
-
 		dataGroup.MCR.assertParameter("removeAllChildrenWithNameInDataAndAttributes", 0,
 				"childNameInData", "someNameInData");
 
-		List<Object> childAttributes = (List<Object>) dataGroup.MCR
-				.getParametersForMethodAndCallNumber("removeAllChildrenWithNameInDataAndAttributes",
-						0)
-				.get("childAttributes");
+		List<?> childAttributes = (List<?>) dataGroup.MCR.getParametersForMethodAndCallNumber(
+				"removeAllChildrenWithNameInDataAndAttributes", 0).get("childAttributes");
 		assertSame(childAttributes.get(0), dataAttribute);
 		assertSame(childAttributes.get(1), dataAttribute2);
 
@@ -75,13 +68,34 @@ public class DataGroupWrapperTest {
 				.getReturnValue("removeAllChildrenWithNameInDataAndAttributes", 0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
 
-		Map<String, List<DataAttribute>> removedNameInDatas = wrapper.getRemovedNameInDatas();
-		List<DataAttribute> list = removedNameInDatas.get("someNameInData");
-		assertSame(list.get(0), dataAttribute);
-		assertSame(list.get(1), dataAttribute2);
+		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapper.getRemovedNameInDatas();
+		List<List<DataAttribute>> list = removedNameInDatas.get("someNameInData");
+		assertSame(list.get(0).get(0), dataAttribute);
+		assertSame(list.get(0).get(1), dataAttribute2);
 
 		wrapper.removeAllChildrenWithNameInDataAndAttributes("someOtherNameInData");
-		assertTrue(removedNameInDatas.get("someOtherNameInData").isEmpty());
+		assertTrue(removedNameInDatas.get("someOtherNameInData").get(0).isEmpty());
+
+	}
+
+	@Test
+	public void testRemoveAllChildrenSameNameDifferentAttributes() {
+		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
+		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
+		wrapper.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute,
+				dataAttribute2);
+
+		DataAttributeSpy dataAttribute3 = new DataAttributeSpy("someId3", "someType3");
+		wrapper.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute3);
+
+		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapper.getRemovedNameInDatas();
+		List<List<DataAttribute>> list = removedNameInDatas.get("someNameInData");
+		List<DataAttribute> attributesForFirstRemove = list.get(0);
+		assertSame(attributesForFirstRemove.get(0), dataAttribute);
+		assertSame(attributesForFirstRemove.get(1), dataAttribute2);
+
+		List<DataAttribute> attributesForSecondRemove = list.get(1);
+		assertSame(attributesForSecondRemove.get(0), dataAttribute3);
 
 	}
 

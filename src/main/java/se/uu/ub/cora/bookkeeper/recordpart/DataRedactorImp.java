@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,28 +132,28 @@ public class DataRedactorImp implements DataRedactor {
 		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		return possiblyReplaceChildren(originalDataGroup, updatedDataGroup, constraints,
-				permissions, metadataGroup);
+		possiblyReplaceChildren(originalDataGroup, updatedDataGroup, constraints, permissions,
+				metadataGroup);
+		return updatedDataGroup;
 
 	}
 
-	private DataGroup possiblyReplaceChildren(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions,
-			MetadataGroup metadataGroup) {
+	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroup updatedDataGroup,
+			Set<Constraint> constraints, Set<String> permissions, MetadataGroup metadataGroup) {
 
 		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
 
-		Map<String, List<DataAttribute>> replacedNameInDatas = wrappedUpdated
+		Map<String, List<List<DataAttribute>>> replacedNameInDatas = wrappedUpdated
 				.getRemovedNameInDatas();
 
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
 			if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
 				MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 						metadataChildReference);
-				// List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
+				List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
 				// String childMetadataId = metadataChildReference.getLinkedRecordId();
 
 				DataElement matchingDataInOriginal = getMatchingData(originalDataGroup,
@@ -161,7 +162,8 @@ public class DataRedactorImp implements DataRedactor {
 						childMetadataGroup);
 				String metadataNameInData = matchingDataInUpdated.getNameInData();
 
-				if (!replacedNameInDatas.containsKey(metadataNameInData)) {
+				if (childCanBeReplaced(replacedNameInDatas, matchingDataInUpdated,
+						metadataNameInData)) {
 					possiblyReplaceChildren((DataGroup) matchingDataInOriginal,
 							(DataGroup) matchingDataInUpdated, constraints, permissions,
 							childMetadataGroup);
@@ -170,7 +172,27 @@ public class DataRedactorImp implements DataRedactor {
 			}
 			//
 		}
-		return redactedDataGroup;
+		// return redactedDataGroup;
+	}
+
+	private boolean childCanBeReplaced(Map<String, List<List<DataAttribute>>> replacedNameInDatas,
+			DataElement matchingDataInUpdated, String metadataNameInData) {
+		return noneReplacedNameInDataFound(replacedNameInDatas, matchingDataInUpdated,
+				metadataNameInData);
+	}
+
+	private boolean noneReplacedNameInDataFound(
+			Map<String, List<List<DataAttribute>>> replacedNameInDatas,
+			DataElement matchingDataInUpdated, String metadataNameInData) {
+
+		if (!replacedNameInDatas.containsKey(metadataNameInData))
+			return true;
+
+		List<List<DataAttribute>> replacedNameInDataAttributes = replacedNameInDatas
+				.get(metadataNameInData);
+		Collection<DataAttribute> attributesInChild = matchingDataInUpdated.getAttributes();
+
+		return (!attributesMatch(replacedNameInDataAttributes, attributesInChild));
 	}
 
 	private DataElement getMatchingData(DataGroup dataGroup, MetadataGroup metadataGroup) {
@@ -190,4 +212,40 @@ public class DataRedactorImp implements DataRedactor {
 		return null;
 	}
 
+	private boolean attributesMatch(List<List<DataAttribute>> replacedNameInDataAttributes,
+			Collection<DataAttribute> attributesInChildToCompare) {
+
+		// nameGroup nameInData - organisationName
+		// type=default, type2=normal, type3=extra
+		// type=alternative
+		// empty
+
+		// om inga barn i attributesInChild (null eller empty)
+		// hitta en tom lista i attributesForReplaced
+		// om inte finns - false
+		// om finns - true
+
+		if (childToCompareHasNoAttributes(attributesInChildToCompare)) {
+			for (List<DataAttribute> attributesList : replacedNameInDataAttributes) {
+				if (attributesList.isEmpty()) {
+					return true;
+				}
+			}
+		}
+
+		// else {
+		// // if one list is matching childAttributes
+		// // return true
+		// for (List<DataAttribute> list : replacedNameInDataAttributes) {
+		// // if(attributesMatch(list, attributesInChild)
+		// }
+		//
+		// }
+
+		return false;
+	}
+
+	private boolean childToCompareHasNoAttributes(Collection<DataAttribute> attributesInChild) {
+		return attributesInChild == null || attributesInChild.isEmpty();
+	}
 }

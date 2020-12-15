@@ -19,22 +19,27 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 
 	public List<DataGroup> sentInDataGroups = new ArrayList<>();
 	public List<DataGroupWrapper> factoredWrappers = new ArrayList<>();
-	public List<String> nameInDatasToRemove = new ArrayList<>();
+	public Map<String, List<DataAttribute>> nameInDatasToRemove = new HashMap<>();
 
 	@Override
 	public DataGroupWrapper factor(DataGroup dataGroup) {
 		sentInDataGroups.add(dataGroup);
 		DataGroupWrapper wrapper = new DataGroupWrapper(dataGroup);
-		for (String nameInData : nameInDatasToRemove) {
-			wrapper.removeAllChildrenWithNameInDataAndAttributes(nameInData);
+		for (Entry<String, List<DataAttribute>> entry : nameInDatasToRemove.entrySet()) {
+			wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
+					entry.getValue().stream().toArray(DataAttribute[]::new));
 		}
 		factoredWrappers.add(wrapper);
 		return wrapper;
