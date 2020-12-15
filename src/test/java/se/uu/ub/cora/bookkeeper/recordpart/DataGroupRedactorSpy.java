@@ -18,15 +18,18 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRedactorSpy implements DataGroupRedactor {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public List<DataAttribute> attributesToReplacedDataGroup = null;
 
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
@@ -48,6 +51,8 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 				"recordPartConstraints", recordPartConstraints, "recordPartPermissions",
 				recordPartPermissions);
 		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
+		if (attributesToReplacedDataGroup != null)
+			dataGroupSpy.setAttributes(attributesToReplacedDataGroup);
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;
 	}

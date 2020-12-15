@@ -32,6 +32,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	private String nameInData;
+	private List<DataAttribute> attributesToReplacedDataGroup;
 
 	public DataGroupForDataRedactorSpy(String nameInData) {
 		this.nameInData = nameInData;
@@ -68,7 +69,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public Collection<DataAttribute> getAttributes() {
-		return null;
+		return attributesToReplacedDataGroup;
 	}
 
 	@Override
@@ -180,6 +181,11 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 			DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setAttributes(List<DataAttribute> attributesToReplacedDataGroup) {
+		this.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
+
 	}
 
 }

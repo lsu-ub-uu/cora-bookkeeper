@@ -473,48 +473,60 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndNoMatchAttributes() {
-		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
-		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+		DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
 		// Här vill jag kunna sätta nya attributter till metadataGroup som inte matchar. Vet inte
 		// riktig hur, gör jag det
-		// List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
-		// replacedMetadataAttributes.add(new DataAttributeSpy("someAttributeId",
-		// "someAttributeValue"));
+		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
+		replacedMetadataAttributes
+				.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
+		dataGroupRedactorSpyWithAttributes.attributesToReplacedDataGroup = replacedMetadataAttributes;
+		DataRedactorImp dataRedactorForReplacedAttributes = new DataRedactorImp(metadataHolder,
+				dataGroupRedactorSpyWithAttributes, matchFactory, wrapperFactory);
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
 		List<DataAttribute> attributes = new ArrayList<>();
 		attributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
 		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
 		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
 
-		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
-				updatedDataGroup, titleConstraints, emptyPermissions);
+		dataRedactorForReplacedAttributes.replaceChildrenForConstraintsWithoutPermissions(
+				metadataId, originalDataGroup, updatedDataGroup, titleConstraints,
+				emptyPermissions);
 
 		assertEquals(matchFactory.returnedMatchers.size(), 2);
 
-		groupRedactorMCR
+		dataGroupRedactorSpyWithAttributes.MCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
 	}
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndMatchAttributes() {
-		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
-		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+		DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
 		// Här vill jag kunna sätta nya attributter till metadataGroup som matchar. Vet inte riktig
 		// hur, gör jag det
-		// List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
-		// replacedMetadataAttributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
+		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
+		replacedMetadataAttributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
+		dataGroupRedactorSpyWithAttributes.attributesToReplacedDataGroup = replacedMetadataAttributes;
+		DataRedactorImp dataRedactorForReplacedAttributes = new DataRedactorImp(metadataHolder,
+				dataGroupRedactorSpyWithAttributes, matchFactory, wrapperFactory);
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
 		List<DataAttribute> attributes = new ArrayList<>();
 		attributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
 		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
 		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
 
-		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
-				updatedDataGroup, titleConstraints, emptyPermissions);
+		dataRedactorForReplacedAttributes.replaceChildrenForConstraintsWithoutPermissions(
+				metadataId, originalDataGroup, updatedDataGroup, titleConstraints,
+				emptyPermissions);
 
 		assertEquals(matchFactory.returnedMatchers.size(), 2);
 
-		groupRedactorMCR
+		dataGroupRedactorSpyWithAttributes.MCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 	}
 
