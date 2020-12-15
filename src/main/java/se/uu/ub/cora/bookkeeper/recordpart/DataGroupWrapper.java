@@ -145,4 +145,8 @@ public class DataGroupWrapper implements DataGroup {
 	public Map<String, List<DataAttribute>> getRemovedNameInDatas() {
 		return removedNameInDatas;
 	}
+
+	DataGroup getDataGroup() {
+		return dataGroup;
+	}
 }

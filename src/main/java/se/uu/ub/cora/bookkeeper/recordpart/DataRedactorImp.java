@@ -40,12 +40,14 @@ public class DataRedactorImp implements DataRedactor {
 	private Set<Constraint> constraints;
 	private Set<String> permissions;
 	private MetadataMatchDataFactory matchFactory;
+	private DataGroupWrapperFactory wrapperFactory;
 
 	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor,
-			MetadataMatchDataFactory matchFactory) {
+			MetadataMatchDataFactory matchFactory, DataGroupWrapperFactory wrapperFactory) {
 		this.metadataHolder = metadataHolder;
 		this.dataGroupRedactor = dataGroupRedactor;
 		this.matchFactory = matchFactory;
+		this.wrapperFactory = wrapperFactory;
 	}
 
 	@Override
@@ -137,39 +139,37 @@ public class DataRedactorImp implements DataRedactor {
 	private DataGroup possiblyReplaceChildren(DataGroup originalDataGroup,
 			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions,
 			MetadataGroup metadataGroup) {
-		DataGroupWrapper wrappedUpdated = new DataGroupWrapper(updatedDataGroup);
+
+		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
-		Map<String, List<DataAttribute>> removedNameInDatas = wrappedUpdated
+
+		Map<String, List<DataAttribute>> replacedNameInDatas = wrappedUpdated
 				.getRemovedNameInDatas();
 
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
 			if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
-				// List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
-				// TODO:add notInRemovedList in if
 				MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 						metadataChildReference);
+				// List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
 				// String childMetadataId = metadataChildReference.getLinkedRecordId();
 
 				DataElement matchingDataInOriginal = getMatchingData(originalDataGroup,
 						childMetadataGroup);
 				DataElement matchingDataInUpdated = getMatchingData(redactedDataGroup,
 						childMetadataGroup);
-				possiblyReplaceChildren((DataGroup) matchingDataInOriginal,
-						(DataGroup) matchingDataInUpdated, constraints, permissions,
-						childMetadataGroup);
+				String metadataNameInData = matchingDataInUpdated.getNameInData();
 
+				if (!replacedNameInDatas.containsKey(metadataNameInData)) {
+					possiblyReplaceChildren((DataGroup) matchingDataInOriginal,
+							(DataGroup) matchingDataInUpdated, constraints, permissions,
+							childMetadataGroup);
+				}
 				//
 			}
 			//
 		}
-
-		// loop children
-		// if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)
-		// && notInRemovedIdsList()) {
-		// replaceChildDataIfExists(updatedDataGroup, metadataChildReference);
-		// }
 		return redactedDataGroup;
 	}
 

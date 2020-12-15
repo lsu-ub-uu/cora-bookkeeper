@@ -31,8 +31,10 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	private String nameInData;
 
 	public DataGroupForDataRedactorSpy(String nameInData) {
+		this.nameInData = nameInData;
 	}
 
 	@Override
@@ -43,8 +45,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public String getNameInData() {
-		// TODO Auto-generated method stub
-		return null;
+		return nameInData;
 	}
 
 	@Override

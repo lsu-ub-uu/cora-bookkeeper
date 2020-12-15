@@ -48,7 +48,6 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 				"recordPartConstraints", recordPartConstraints, "recordPartPermissions",
 				recordPartPermissions);
 		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
-
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;
 	}
