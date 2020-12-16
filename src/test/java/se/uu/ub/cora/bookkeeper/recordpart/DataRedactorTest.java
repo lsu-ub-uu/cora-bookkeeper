@@ -435,11 +435,11 @@ public class DataRedactorTest {
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
-		// We fill replacedNamesInData with one list, it should not match therefore it can be
-		// replaced
 		List<DataAttribute> attributes = new ArrayList<>();
 		attributes.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
+		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
+		listOfAttributes.add(attributes);
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
@@ -455,12 +455,14 @@ public class DataRedactorTest {
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
-		// We fill replacedNamesInData with two list, one of them is empty, which should match with
-		// the empty child.
 		List<DataAttribute> attributes = new ArrayList<>();
 		attributes.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
+		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
+		listOfAttributes.add(attributes);
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
+		List<DataAttribute> emptyAttributes = new ArrayList<>();
+		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
@@ -473,9 +475,6 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndNoMatchAttributes() {
-		// DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
-		// Här vill jag kunna sätta nya attribut till metadataGroup som inte matchar. Vet inte
-		// riktig hur, gör jag det
 
 		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
 		replacedMetadataAttributes
@@ -486,9 +485,13 @@ public class DataRedactorTest {
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
 		List<DataAttribute> attributes = new ArrayList<>();
-		attributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
+		attributes.add(new DataAttributeSpy("NOTsomeAttributeId", "NOTsomeAttributeValue"));
+		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
+		listOfAttributes.add(attributes);
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
+		List<DataAttribute> emptyAttributes = new ArrayList<>();
+		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
@@ -501,31 +504,53 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndMatchAttributes() {
-		DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
-		// Här vill jag kunna sätta nya attribut till metadataGroup som matchar. Vet inte riktig
-		// hur, gör jag det
 
 		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
-		replacedMetadataAttributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
-		dataGroupRedactorSpyWithAttributes.attributesToReplacedDataGroup = replacedMetadataAttributes;
-		DataRedactorImp dataRedactorForReplacedAttributes = new DataRedactorImp(metadataHolder,
-				dataGroupRedactorSpyWithAttributes, matchFactory, wrapperFactory);
+		replacedMetadataAttributes.add(new DataAttributeSpy("attributeId", "attributeValue"));
+		dataGroupRedactorSpy.attributesToReplacedDataGroup = replacedMetadataAttributes;
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
-		List<DataAttribute> attributes = new ArrayList<>();
-		attributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
+		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
 
-		dataRedactorForReplacedAttributes.replaceChildrenForConstraintsWithoutPermissions(
-				metadataId, originalDataGroup, updatedDataGroup, titleConstraints,
-				emptyPermissions);
+		List<DataAttribute> attributesList1 = new ArrayList<>();
+		attributesList1.add(new DataAttributeSpy("attributeId", "anotherAttributeValue"));
+		listOfAttributes.add(attributesList1);
+
+		List<DataAttribute> attributesList2 = new ArrayList<>();
+		attributesList2.add(new DataAttributeSpy("attributeId", "attributeValue"));
+		listOfAttributes.add(attributesList2);
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
+		List<DataAttribute> emptyAttributes = new ArrayList<>();
+		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
 
 		assertEquals(matchFactory.returnedMatchers.size(), 2);
 
-		dataGroupRedactorSpyWithAttributes.MCR
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
+	}
+
+	@Test
+	public void testReplaceOneChildGroupMatchingDataForRedactedDataGroup() {
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		matchFactory.isValid = false;
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+
+		assertEquals(matchFactory.returnedMatchers.size(), 2);
+
+		dataGroupRedactorSpy.MCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 	}
 

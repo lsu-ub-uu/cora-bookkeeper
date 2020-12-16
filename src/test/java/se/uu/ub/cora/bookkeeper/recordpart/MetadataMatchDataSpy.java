@@ -27,13 +27,18 @@ public class MetadataMatchDataSpy implements MetadataMatchData {
 
 	public MetadataElement metadataElement;
 	public DataElement dataElement;
+	public boolean isValid = true;
 
 	@Override
 	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
 			DataElement dataElement) {
 		this.metadataElement = metadataElement;
 		this.dataElement = dataElement;
-		return new ValidationAnswer();
+		ValidationAnswer validationAnswer = new ValidationAnswer();
+		if (!isValid) {
+			validationAnswer.addErrorMessage("some message");
+		}
+		return validationAnswer;
 	}
 
 }

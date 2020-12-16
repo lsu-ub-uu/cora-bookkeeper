@@ -31,15 +31,17 @@ public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 
 	public List<DataGroup> sentInDataGroups = new ArrayList<>();
 	public List<DataGroupWrapper> factoredWrappers = new ArrayList<>();
-	public Map<String, List<DataAttribute>> nameInDatasToRemove = new HashMap<>();
+	public Map<String, List<List<DataAttribute>>> nameInDatasToRemove = new HashMap<>();
 
 	@Override
 	public DataGroupWrapper factor(DataGroup dataGroup) {
 		sentInDataGroups.add(dataGroup);
 		DataGroupWrapper wrapper = new DataGroupWrapper(dataGroup);
-		for (Entry<String, List<DataAttribute>> entry : nameInDatasToRemove.entrySet()) {
-			wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
-					entry.getValue().stream().toArray(DataAttribute[]::new));
+		for (Entry<String, List<List<DataAttribute>>> entry : nameInDatasToRemove.entrySet()) {
+			for (List<DataAttribute> list : entry.getValue()) {
+				wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
+						list.stream().toArray(DataAttribute[]::new));
+			}
 		}
 		factoredWrappers.add(wrapper);
 		return wrapper;

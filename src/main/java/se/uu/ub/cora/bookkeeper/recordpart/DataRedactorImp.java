@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
@@ -146,32 +147,30 @@ public class DataRedactorImp implements DataRedactor {
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
 
-		Map<String, List<List<DataAttribute>>> replacedNameInDatas = wrappedUpdated
+		Map<String, List<List<DataAttribute>>> replacedChildren = wrappedUpdated
 				.getRemovedNameInDatas();
 
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
 			if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
 				MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 						metadataChildReference);
-				List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
-				// String childMetadataId = metadataChildReference.getLinkedRecordId();
+				// List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
 
 				// TODO:hur hantera om någon är null?
 				DataElement matchingDataInOriginal = getMatchingData(originalDataGroup,
 						childMetadataGroup);
 				DataElement matchingDataInUpdated = getMatchingData(redactedDataGroup,
 						childMetadataGroup);
-				String metadataNameInData = matchingDataInUpdated.getNameInData();
-
-				if (childCanBeReplaced(replacedNameInDatas, matchingDataInUpdated,
-						metadataNameInData)) {
-					possiblyReplaceChildren((DataGroup) matchingDataInOriginal,
-							(DataGroup) matchingDataInUpdated, constraints, permissions,
-							childMetadataGroup);
+				if (matchingDataInUpdated != null) {
+					String metadataNameInData = matchingDataInUpdated.getNameInData();
+					if (childCanBeReplaced(replacedChildren, matchingDataInUpdated,
+							metadataNameInData)) {
+						possiblyReplaceChildren((DataGroup) matchingDataInOriginal,
+								(DataGroup) matchingDataInUpdated, constraints, permissions,
+								childMetadataGroup);
+					}
 				}
-				//
 			}
-			//
 		}
 		// return redactedDataGroup;
 	}
@@ -186,9 +185,9 @@ public class DataRedactorImp implements DataRedactor {
 			Map<String, List<List<DataAttribute>>> replacedNameInDatas,
 			DataElement matchingDataInUpdated, String metadataNameInData) {
 
-		if (!replacedNameInDatas.containsKey(metadataNameInData))
+		if (!replacedNameInDatas.containsKey(metadataNameInData)) {
 			return true;
-
+		}
 		List<List<DataAttribute>> replacedNameInDataAttributes = replacedNameInDatas
 				.get(metadataNameInData);
 		Collection<DataAttribute> attributesInChild = matchingDataInUpdated.getAttributes();
@@ -233,13 +232,12 @@ public class DataRedactorImp implements DataRedactor {
 					return true;
 				}
 			}
-		}
 
-		else {
+		} else {
 			// if one list is matching childAttributes
 			// return true
-			for (List<DataAttribute> list : replacedNameInDataAttributes) {
-				if (attributesInListMatch(attributesInChildToCompare, list)) {
+			for (List<DataAttribute> replacedAttributes : replacedNameInDataAttributes) {
+				if (attributesInListMatch(attributesInChildToCompare, replacedAttributes)) {
 					return true;
 				}
 			}
@@ -250,12 +248,33 @@ public class DataRedactorImp implements DataRedactor {
 	}
 
 	private boolean attributesInListMatch(Collection<DataAttribute> attributesInChildToCompare,
-			List<DataAttribute> list) {
-		// TODO: det här funkar inte, om list är empty så blir den true
-		return attributesInChildToCompare.containsAll(list);
+			List<DataAttribute> replacedAttributes) {
+		if (attributesInChildToCompare.size() != replacedAttributes.size()) {
+			return false;
+		}
+		for (DataAttribute childAttribute : attributesInChildToCompare) {
+
+			boolean attributeMatchFound = replacedAttributes.stream()
+					.anyMatch(filterByNameAndValue(childAttribute));
+			if (!attributeMatchFound) {
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+	private Predicate<DataAttribute> filterByNameAndValue(DataAttribute childAttribute) {
+		return replacedAttribute -> dataAttributeIsSame(replacedAttribute, childAttribute);
+	}
+
+	private boolean dataAttributeIsSame(DataAttribute replacedAttribute,
+			DataAttribute childAttribute) {
+		return childAttribute.getNameInData().equals(replacedAttribute.getNameInData())
+				&& childAttribute.getValue().equals(replacedAttribute.getValue());
 	}
 
 	private boolean childToCompareHasNoAttributes(Collection<DataAttribute> attributesInChild) {
-		return attributesInChild == null || attributesInChild.isEmpty();
+		return attributesInChild.isEmpty();
 	}
 }

@@ -27,10 +27,12 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 public class MetadataMatchFactorySpy implements MetadataMatchDataFactory {
 
 	public List<MetadataMatchData> returnedMatchers = new ArrayList<>();
+	public boolean isValid = true;
 
 	@Override
 	public MetadataMatchData factor() {
 		MetadataMatchDataSpy returnedMatcher = new MetadataMatchDataSpy();
+		returnedMatcher.isValid = isValid;
 		returnedMatchers.add(returnedMatcher);
 		return returnedMatcher;
 	}
