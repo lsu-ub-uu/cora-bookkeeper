@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataElement;
@@ -29,15 +30,19 @@ public class MetadataMatchDataSpy implements MetadataMatchData {
 	public DataElement dataElement;
 	public boolean isValid = true;
 
+	MethodCallRecorder MCR = new MethodCallRecorder();
+
 	@Override
 	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
 			DataElement dataElement) {
+		MCR.addCall("metadataElement", metadataElement, "dataElement", dataElement);
 		this.metadataElement = metadataElement;
 		this.dataElement = dataElement;
 		ValidationAnswer validationAnswer = new ValidationAnswer();
 		if (!isValid) {
 			validationAnswer.addErrorMessage("some message");
 		}
+		MCR.addReturned(validationAnswer);
 		return validationAnswer;
 	}
 

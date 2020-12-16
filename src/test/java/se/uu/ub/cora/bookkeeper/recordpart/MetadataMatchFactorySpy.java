@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 
@@ -28,12 +29,23 @@ public class MetadataMatchFactorySpy implements MetadataMatchDataFactory {
 
 	public List<MetadataMatchData> returnedMatchers = new ArrayList<>();
 	public boolean isValid = true;
+	public List<Boolean> isValidList = null;
+	private int noOfCalls = 0;
+
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public MetadataMatchData factor() {
+		MCR.addCall();
 		MetadataMatchDataSpy returnedMatcher = new MetadataMatchDataSpy();
-		returnedMatcher.isValid = isValid;
+		if (null == isValidList) {
+			returnedMatcher.isValid = isValid;
+		} else {
+			returnedMatcher.isValid = isValidList.get(noOfCalls);
+		}
 		returnedMatchers.add(returnedMatcher);
+		noOfCalls++;
+		MCR.addReturned(returnedMatcher);
 		return returnedMatcher;
 	}
 
