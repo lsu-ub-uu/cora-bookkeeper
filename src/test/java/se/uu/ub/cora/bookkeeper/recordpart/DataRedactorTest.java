@@ -473,15 +473,14 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndNoMatchAttributes() {
-		DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
-		// Här vill jag kunna sätta nya attributter till metadataGroup som inte matchar. Vet inte
+		// DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
+		// Här vill jag kunna sätta nya attribut till metadataGroup som inte matchar. Vet inte
 		// riktig hur, gör jag det
+
 		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
 		replacedMetadataAttributes
 				.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
-		dataGroupRedactorSpyWithAttributes.attributesToReplacedDataGroup = replacedMetadataAttributes;
-		DataRedactorImp dataRedactorForReplacedAttributes = new DataRedactorImp(metadataHolder,
-				dataGroupRedactorSpyWithAttributes, matchFactory, wrapperFactory);
+		dataGroupRedactorSpy.attributesToReplacedDataGroup = replacedMetadataAttributes;
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
@@ -491,21 +490,21 @@ public class DataRedactorTest {
 		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", attributes);
 		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
 
-		dataRedactorForReplacedAttributes.replaceChildrenForConstraintsWithoutPermissions(
-				metadataId, originalDataGroup, updatedDataGroup, titleConstraints,
-				emptyPermissions);
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
 
 		assertEquals(matchFactory.returnedMatchers.size(), 2);
 
-		dataGroupRedactorSpyWithAttributes.MCR
+		dataGroupRedactorSpy.MCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
 	}
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndMatchAttributes() {
 		DataGroupRedactorSpy dataGroupRedactorSpyWithAttributes = new DataGroupRedactorSpy();
-		// Här vill jag kunna sätta nya attributter till metadataGroup som matchar. Vet inte riktig
+		// Här vill jag kunna sätta nya attribut till metadataGroup som matchar. Vet inte riktig
 		// hur, gör jag det
+
 		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
 		replacedMetadataAttributes.add(new DataAttributeSpy("AttributeId", "AttributeValue"));
 		dataGroupRedactorSpyWithAttributes.attributesToReplacedDataGroup = replacedMetadataAttributes;

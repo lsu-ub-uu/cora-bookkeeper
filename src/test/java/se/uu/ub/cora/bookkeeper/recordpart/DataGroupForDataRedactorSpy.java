@@ -32,7 +32,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	private String nameInData;
-	private List<DataAttribute> attributesToReplacedDataGroup;
+	public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
 
 	public DataGroupForDataRedactorSpy(String nameInData) {
 		this.nameInData = nameInData;
@@ -160,6 +160,9 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 		MCR.addCall("nameInData", nameInData);
 		List<DataElement> children = new ArrayList<>();
 		DataGroupForDataRedactorSpy childDataGroup = new DataGroupForDataRedactorSpy(nameInData);
+		if (!attributesToReplacedDataGroup.isEmpty()) {
+			childDataGroup.setAttributes(attributesToReplacedDataGroup);
+		}
 		children.add(childDataGroup);
 		MCR.addReturned(children);
 		return children;

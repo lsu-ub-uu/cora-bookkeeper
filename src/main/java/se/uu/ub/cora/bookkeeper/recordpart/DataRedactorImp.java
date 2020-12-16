@@ -140,8 +140,8 @@ public class DataRedactorImp implements DataRedactor {
 
 	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroup updatedDataGroup,
 			Set<Constraint> constraints, Set<String> permissions, MetadataGroup metadataGroup) {
-
 		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
+
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
@@ -156,6 +156,7 @@ public class DataRedactorImp implements DataRedactor {
 				List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
 				// String childMetadataId = metadataChildReference.getLinkedRecordId();
 
+				// TODO:hur hantera om någon är null?
 				DataElement matchingDataInOriginal = getMatchingData(originalDataGroup,
 						childMetadataGroup);
 				DataElement matchingDataInUpdated = getMatchingData(redactedDataGroup,
@@ -197,6 +198,7 @@ public class DataRedactorImp implements DataRedactor {
 
 	private DataElement getMatchingData(DataGroup dataGroup, MetadataGroup metadataGroup) {
 		String metadataNameInData = metadataGroup.getNameInData();
+
 		List<DataElement> allChildrenWithNameInData = dataGroup
 				.getAllChildrenWithNameInData(metadataNameInData);
 
@@ -233,16 +235,24 @@ public class DataRedactorImp implements DataRedactor {
 			}
 		}
 
-		// else {
-		// // if one list is matching childAttributes
-		// // return true
-		// for (List<DataAttribute> list : replacedNameInDataAttributes) {
-		// // if(attributesMatch(list, attributesInChild)
-		// }
-		//
-		// }
+		else {
+			// if one list is matching childAttributes
+			// return true
+			for (List<DataAttribute> list : replacedNameInDataAttributes) {
+				if (attributesInListMatch(attributesInChildToCompare, list)) {
+					return true;
+				}
+			}
+
+		}
 
 		return false;
+	}
+
+	private boolean attributesInListMatch(Collection<DataAttribute> attributesInChildToCompare,
+			List<DataAttribute> list) {
+		// TODO: det här funkar inte, om list är empty så blir den true
+		return attributesInChildToCompare.containsAll(list);
 	}
 
 	private boolean childToCompareHasNoAttributes(Collection<DataAttribute> attributesInChild) {
