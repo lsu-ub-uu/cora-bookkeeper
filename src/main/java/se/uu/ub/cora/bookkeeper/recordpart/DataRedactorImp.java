@@ -28,7 +28,6 @@ import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
@@ -39,16 +38,13 @@ public class DataRedactorImp implements DataRedactor {
 	private MetadataHolder metadataHolder;
 	private Set<Constraint> constraints;
 	private Set<String> permissions;
-	private MetadataMatchDataFactory matchFactory;
 	private DataGroupWrapperFactory wrapperFactory;
 	private MatcherFactory matcherFactory;
 
 	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor,
-			MetadataMatchDataFactory matchFactory, DataGroupWrapperFactory wrapperFactory,
-			MatcherFactory matcherFactory) {
+			DataGroupWrapperFactory wrapperFactory, MatcherFactory matcherFactory) {
 		this.metadataHolder = metadataHolder;
 		this.dataGroupRedactor = dataGroupRedactor;
-		this.matchFactory = matchFactory;
 		this.wrapperFactory = wrapperFactory;
 		this.matcherFactory = matcherFactory;
 	}
@@ -89,33 +85,12 @@ public class DataRedactorImp implements DataRedactor {
 
 		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 				metadataChildReference);
-		String metadataNameInData = childMetadataGroup.getNameInData();
-		// // *********
-		// List<String> attributeReferences = childMetadataGroup.getAttributeReferences();
-		// for (String attributeNameInData : attributeReferences) {
-		// MetadataElement attributeElement = metadataHolder
-		// .getMetadataElement(attributeNameInData);
-		//
-		// }
 
-		// TODO: attribut?? Om det finns 2 barn med samma nameInData?
 		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
 		if (groupMatcher.groupHasMatchingDataChild()) {
 			DataGroup childDataGroup = groupMatcher.getMatchingDataChild();
-			// if (dataExistsForMetadata(redactedDataGroup, metadataNameInData)) {
-			removeChildData(childDataGroup, childMetadataGroup, metadataNameInData);
+			possiblyRemoveChildren(childDataGroup, childMetadataGroup);
 		}
-	}
-
-	private void removeChildData(DataGroup childDataGroup, MetadataGroup childMetadataGroup,
-			String metadataNameInData) {
-		// DataElement childDataGroup = getMatchingData(redactedGroup, childMetadataGroup);
-		// DataGroup childDataGroup = redactedGroup.getFirstGroupWithNameInData(metadataNameInData);
-		possiblyRemoveChildren(childDataGroup, childMetadataGroup);
-	}
-
-	private boolean dataExistsForMetadata(DataGroup redactedGroup, String metadataNameInData) {
-		return redactedGroup.containsChildWithNameInData(metadataNameInData);
 	}
 
 	private boolean repeatMaxIsOne(MetadataChildReference metadataChildReference) {
@@ -240,27 +215,9 @@ public class DataRedactorImp implements DataRedactor {
 		List<List<DataAttribute>> alreadyReplacedChildAttributes = replacedNameInDatas
 				.get(metadataNameInData);
 		Collection<DataAttribute> updatedChildAttributes = updatedChild.getAttributes();
-		boolean attributesExistsOnReplacedChildAttributes = attributesExistsOnReplacedChildAttributes(
-				updatedChildAttributes, alreadyReplacedChildAttributes);
-		return attributesExistsOnReplacedChildAttributes;
+		return attributesExistsOnReplacedChildAttributes(updatedChildAttributes,
+				alreadyReplacedChildAttributes);
 	}
-
-	// private DataElement getMatchingData(DataGroup dataGroup, MetadataGroup metadataGroup) {
-	// String metadataNameInData = metadataGroup.getNameInData();
-	//
-	// List<DataElement> allChildrenWithNameInData = dataGroup
-	// .getAllChildrenWithNameInData(metadataNameInData);
-	//
-	// for (DataElement childDataElement : allChildrenWithNameInData) {
-	// MetadataMatchData matcher = matchFactory.factor();
-	// ValidationAnswer answer = matcher.metadataSpecifiesData(metadataGroup,
-	// childDataElement);
-	// if (answer.dataIsValid()) {
-	// return childDataElement;
-	// }
-	// }
-	// return null;
-	// }
 
 	private boolean attributesExistsOnReplacedChildAttributes(
 			Collection<DataAttribute> updatedChildAttributes,

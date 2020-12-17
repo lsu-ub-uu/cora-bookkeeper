@@ -29,7 +29,7 @@ public class MatcherSpy implements Matcher {
 	public boolean hasMatchingChildWasCalled = false;
 	public boolean getMatchingChildWasCalled = false;
 	public boolean hasMatchingChild = true;
-	private DataGroupForDataRedactorSpy returnedDataGroup;
+	public DataGroupForDataRedactorSpy returnedDataGroup;
 	public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
 
 	@Override
