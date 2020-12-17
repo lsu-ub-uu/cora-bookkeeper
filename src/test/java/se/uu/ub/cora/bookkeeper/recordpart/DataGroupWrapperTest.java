@@ -19,8 +19,11 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
+
+
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,19 +43,22 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupWrapperTest {
 
 	private DataGroupForWrapperSpy dataGroup;
-	private DataGroupWrapper wrapper;
+	private DataGroup wrapperAsDG;
+	private DataGroupWrapper wrapperAsDGW;
 
 	@BeforeMethod
 	public void setUp() {
 		dataGroup = new DataGroupForWrapperSpy();
-		wrapper = new DataGroupWrapper(dataGroup);
+		DataGroupWrapperImp wrapper = new DataGroupWrapperImp(dataGroup);
+		wrapperAsDG = wrapper;
+		wrapperAsDGW = wrapper;
 	}
 
 	@Test
 	public void testRemoveAllChildrenWithNameInDataAndAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
 		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
-		boolean returnedValue = wrapper.removeAllChildrenWithNameInDataAndAttributes(
+		boolean returnedValue = wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes(
 				"someNameInData", dataAttribute, dataAttribute2);
 
 		dataGroup.MCR.assertParameter("removeAllChildrenWithNameInDataAndAttributes", 0,
@@ -68,12 +74,13 @@ public class DataGroupWrapperTest {
 				.getReturnValue("removeAllChildrenWithNameInDataAndAttributes", 0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
 
-		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapper.getRemovedNameInDatas();
+		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapperAsDGW
+				.getRemovedNameInDatas();
 		List<List<DataAttribute>> list = removedNameInDatas.get("someNameInData");
 		assertSame(list.get(0).get(0), dataAttribute);
 		assertSame(list.get(0).get(1), dataAttribute2);
 
-		wrapper.removeAllChildrenWithNameInDataAndAttributes("someOtherNameInData");
+		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes("someOtherNameInData");
 		assertTrue(removedNameInDatas.get("someOtherNameInData").get(0).isEmpty());
 
 	}
@@ -82,13 +89,14 @@ public class DataGroupWrapperTest {
 	public void testRemoveAllChildrenSameNameDifferentAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
 		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
-		wrapper.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute,
+		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute,
 				dataAttribute2);
 
 		DataAttributeSpy dataAttribute3 = new DataAttributeSpy("someId3", "someType3");
-		wrapper.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute3);
+		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute3);
 
-		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapper.getRemovedNameInDatas();
+		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapperAsDGW
+				.getRemovedNameInDatas();
 		List<List<DataAttribute>> list = removedNameInDatas.get("someNameInData");
 		List<DataAttribute> attributesForFirstRemove = list.get(0);
 		assertSame(attributesForFirstRemove.get(0), dataAttribute);
@@ -101,20 +109,20 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testSetRepeatId() {
-		wrapper.setRepeatId("someRepeatId");
+		wrapperAsDG.setRepeatId("someRepeatId");
 		dataGroup.MCR.assertParameters("setRepeatId", 0, "someRepeatId");
 	}
 
 	@Test
 	public void testGetRepeatId() {
-		String returnedValue = wrapper.getRepeatId();
+		String returnedValue = wrapperAsDG.getRepeatId();
 		String returnedValueFromDataGroup = (String) dataGroup.MCR.getReturnValue("getRepeatId", 0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
 	}
 
 	@Test
 	public void testGetNameInData() {
-		String returnedValue = wrapper.getNameInData();
+		String returnedValue = wrapperAsDG.getNameInData();
 		String returnedValueFromDataGroup = (String) dataGroup.MCR.getReturnValue("getNameInData",
 				0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
@@ -122,7 +130,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testHasChildren() {
-		boolean returnedValue = wrapper.hasChildren();
+		boolean returnedValue = wrapperAsDG.hasChildren();
 		boolean returnedValueFromDataGroup = (boolean) dataGroup.MCR.getReturnValue("hasChildren",
 				0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
@@ -130,7 +138,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testContainsChildWithNameInData() {
-		boolean returnedValue = wrapper.containsChildWithNameInData("someNameInData");
+		boolean returnedValue = wrapperAsDG.containsChildWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "someNameInData");
 
 		boolean returnedValueFromDataGroup = (boolean) dataGroup.MCR
@@ -141,7 +149,7 @@ public class DataGroupWrapperTest {
 	@Test
 	public void testAddChild() {
 		DataAtomicSpy dataAtomicChild = new DataAtomicSpy("atomicNameInData", "atomicValue");
-		wrapper.addChild(dataAtomicChild);
+		wrapperAsDG.addChild(dataAtomicChild);
 		dataGroup.MCR.assertParameters("addChild", 0, dataAtomicChild);
 	}
 
@@ -151,13 +159,13 @@ public class DataGroupWrapperTest {
 		DataAtomicSpy dataAtomicChild2 = new DataAtomicSpy("atomicNameInData2", "atomicValue2");
 		List<DataElement> children = Arrays.asList(dataAtomicChild, dataAtomicChild2);
 
-		wrapper.addChildren(children);
+		wrapperAsDG.addChildren(children);
 		dataGroup.MCR.assertParameters("addChildren", 0, children);
 	}
 
 	@Test
 	public void testGetChildren() {
-		List<DataElement> returnedValue = wrapper.getChildren();
+		List<DataElement> returnedValue = wrapperAsDG.getChildren();
 		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR.getReturnValue("getChildren",
 				0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
@@ -165,7 +173,8 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void getAllChildrenWithNameInData() {
-		List<DataElement> returnedValue = wrapper.getAllChildrenWithNameInData("someNameInData");
+		List<DataElement> returnedValue = wrapperAsDG
+				.getAllChildrenWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getAllChildrenWithNameInData", 0, "someNameInData");
 
 		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR
@@ -176,7 +185,7 @@ public class DataGroupWrapperTest {
 	@Test
 	public void getAllChildrenWithNameInDataAndAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
-		List<DataElement> returnedValue = wrapper
+		List<DataElement> returnedValue = wrapperAsDG
 				.getAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute);
 
 		// TODO: for some reason different dataAttribute objects??
@@ -191,7 +200,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetFirstChildWithNameInData() {
-		DataElement returnedValue = wrapper.getFirstChildWithNameInData("someNameInData");
+		DataElement returnedValue = wrapperAsDG.getFirstChildWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getFirstChildWithNameInData", 0, "someNameInData");
 
 		DataElement returnedValueFromDataGroup = (DataElement) dataGroup.MCR
@@ -201,7 +210,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetFirstAtomicValueWithNameInData() {
-		String returnedValue = wrapper.getFirstAtomicValueWithNameInData("someNameInData");
+		String returnedValue = wrapperAsDG.getFirstAtomicValueWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "someNameInData");
 		String returnedValueFromDataGroup = (String) dataGroup.MCR
 				.getReturnValue("getFirstAtomicValueWithNameInData", 0);
@@ -210,7 +219,8 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetAllDataAtomicsWithNameInData() {
-		List<DataAtomic> returnedValue = wrapper.getAllDataAtomicsWithNameInData("someNameInData");
+		List<DataAtomic> returnedValue = wrapperAsDG
+				.getAllDataAtomicsWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getAllDataAtomicsWithNameInData", 0, "someNameInData");
 		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR
 				.getReturnValue("getAllDataAtomicsWithNameInData", 0);
@@ -219,7 +229,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetFirstGroupWithNameInData() {
-		DataGroup returnedValue = wrapper.getFirstGroupWithNameInData("someNameInData");
+		DataGroup returnedValue = wrapperAsDG.getFirstGroupWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "someNameInData");
 		DataGroup returnedValueFromDataGroup = (DataGroup) dataGroup.MCR
 				.getReturnValue("getFirstGroupWithNameInData", 0);
@@ -228,7 +238,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetAllGroupsWithNameInData() {
-		List<DataGroup> returnedValue = wrapper.getAllGroupsWithNameInData("someNameInData");
+		List<DataGroup> returnedValue = wrapperAsDG.getAllGroupsWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getAllGroupsWithNameInData", 0, "someNameInData");
 		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR
 				.getReturnValue("getAllGroupsWithNameInData", 0);
@@ -238,7 +248,7 @@ public class DataGroupWrapperTest {
 	@Test
 	public void getAllGroupWithNameInDataAndAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
-		Collection<DataGroup> returnedValue = wrapper
+		Collection<DataGroup> returnedValue = wrapperAsDG
 				.getAllGroupsWithNameInDataAndAttributes("someNameInData", dataAttribute);
 
 		// TODO: for some reason different dataAttribute objects??
@@ -253,7 +263,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testRemoveFirstChildWithNameInData() {
-		boolean returnedValue = wrapper.removeFirstChildWithNameInData("someNameInData");
+		boolean returnedValue = wrapperAsDG.removeFirstChildWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("removeFirstChildWithNameInData", 0, "someNameInData");
 
 		boolean returnedValueFromDataGroup = (boolean) dataGroup.MCR
@@ -263,7 +273,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testRemoveAllChildrenWithNameInData() {
-		boolean returnedValue = wrapper.removeAllChildrenWithNameInData("someNameInData");
+		boolean returnedValue = wrapperAsDG.removeAllChildrenWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("removeAllChildrenWithNameInData", 0, "someNameInData");
 
 		boolean returnedValueFromDataGroup = (boolean) dataGroup.MCR
@@ -273,11 +283,47 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetFirstDataAtomicWithNameInData() {
-		DataAtomic returnedValue = wrapper.getFirstDataAtomicWithNameInData("someNameInData");
+		DataAtomic returnedValue = wrapperAsDG.getFirstDataAtomicWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getFirstDataAtomicWithNameInData", 0, "someNameInData");
 		DataAtomic returnedValueFromDataGroup = (DataAtomic) dataGroup.MCR
 				.getReturnValue("getFirstDataAtomicWithNameInData", 0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
 	}
+
+	@Test
+	public void callHasRemovedBeenCalledForDefaultResponse() throws Exception {
+		DataElement child = null;
+		boolean removed = wrapperAsDGW.hasRemovedBeenCalledFor(child);
+		assertFalse(removed);
+	}
+	// -- only name in data
+	// test not removed
+	// other nameInData removed
+	// right child removed
+
+	// -- one attribute
+	// not removed
+	// other nameInData removed
+	// other attribute same name in data remove
+	// right child removed
+
+	// more attributes(two)
+	// nochild removed
+	// other nameInData removed
+	// other attribute same name in data remove
+	// one attribute not same
+	// right child removed
+
+	@Test
+	public void callHasRemovedBeenCalledForHasNotBeenRemoved() throws Exception {
+		DataElement child = null;
+
+		
+
+		boolean removed = wrapperAsDGW.hasRemovedBeenCalledFor(child);
+		assertFalse(removed);
+	}
+
+
 
 }

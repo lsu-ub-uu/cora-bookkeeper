@@ -23,8 +23,8 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupWrapperFactoryImp implements DataGroupWrapperFactory {
 
 	@Override
-	public DataGroupWrapper factor(DataGroup dataGroup) {
-		return new DataGroupWrapper(dataGroup);
+	public DataGroupWrapperImp factor(DataGroup dataGroup) {
+		return new DataGroupWrapperImp(dataGroup);
 	}
 
 }

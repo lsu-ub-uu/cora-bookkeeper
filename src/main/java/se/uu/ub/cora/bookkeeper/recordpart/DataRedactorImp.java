@@ -43,13 +43,16 @@ public class DataRedactorImp implements DataRedactor {
 	private Set<String> permissions;
 	private MetadataMatchDataFactory matchFactory;
 	private DataGroupWrapperFactory wrapperFactory;
+	private MatcherFactory matcherFactory;
 
 	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor,
-			MetadataMatchDataFactory matchFactory, DataGroupWrapperFactory wrapperFactory) {
+			MetadataMatchDataFactory matchFactory, DataGroupWrapperFactory wrapperFactory,
+			MatcherFactory matcherFactory) {
 		this.metadataHolder = metadataHolder;
 		this.dataGroupRedactor = dataGroupRedactor;
 		this.matchFactory = matchFactory;
 		this.wrapperFactory = wrapperFactory;
+		this.matcherFactory = matcherFactory;
 	}
 
 	@Override
@@ -147,7 +150,7 @@ public class DataRedactorImp implements DataRedactor {
 
 	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
 			MetadataGroup metadataGroup) {
-		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
+		DataGroupWrapperImp wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
@@ -175,9 +178,10 @@ public class DataRedactorImp implements DataRedactor {
 			DataGroup redactedDataGroup, Map<String, List<List<DataAttribute>>> replacedChildren,
 			MetadataGroup childMetadataGroup) {
 
-		DataElement updatedChild = getMatchingData(redactedDataGroup, childMetadataGroup);
+		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
+		if (groupMatcher.groupHasMatchingDataChild()) {
+			DataElement updatedChild = groupMatcher.getMatchingDataChild();
 
-		if (updatedChild != null) {
 			possiblyReplaceOrRemoveChild(originalDataGroup, redactedDataGroup, replacedChildren,
 					childMetadataGroup, updatedChild);
 		}
@@ -187,12 +191,12 @@ public class DataRedactorImp implements DataRedactor {
 			DataGroup redactedDataGroup, Map<String, List<List<DataAttribute>>> replacedChildren,
 			MetadataGroup childMetadataGroup, DataElement updatedChild) {
 
-		DataElement originalChild = getMatchingData(originalDataGroup, childMetadataGroup);
-
-		if (originalChild == null) {
+		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
+		if (!groupMatcher.groupHasMatchingDataChild()) {
 			dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(redactedDataGroup,
 					constraints, permissions);
 		} else {
+			DataElement originalChild = groupMatcher.getMatchingDataChild();
 			possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(replacedChildren,
 					childMetadataGroup, updatedChild, originalChild);
 		}
@@ -213,13 +217,16 @@ public class DataRedactorImp implements DataRedactor {
 	private boolean childStillNeedsToBeCheckedForReplace(
 			Map<String, List<List<DataAttribute>>> replacedNameInDatas, DataElement updatedChild,
 			String metadataNameInData) {
-
+		// TODO: wanted method
+		// dataGroupWrapper.isChildReplaced(updatedChild);
 		return !childIsReplaced(replacedNameInDatas, updatedChild, metadataNameInData);
 	}
 
 	private boolean childIsReplaced(Map<String, List<List<DataAttribute>>> replacedNameInDatas,
 			DataElement updatedChild, String metadataNameInData) {
 
+		// updatedChild.getNameInData();
+		// updatedChild.getAttributes()
 		if (replacedNameInDatas.containsKey(metadataNameInData)) {
 			return checkAttributesMatch(replacedNameInDatas, updatedChild, metadataNameInData);
 		}

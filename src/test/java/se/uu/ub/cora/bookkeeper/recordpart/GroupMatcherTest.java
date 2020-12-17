@@ -35,7 +35,7 @@ import se.uu.ub.cora.data.DataGroup;
 public class GroupMatcherTest {
 
 	private MetadataMatchDataSpy dataMatcher;
-	private GroupMatcherImp matcher;
+	private GroupMatcher matcher;
 	private DataGroupForDataRedactorSpy dataGroupSpy;
 	private MetadataGroupSpy metadataGroupSpy;
 
@@ -44,7 +44,7 @@ public class GroupMatcherTest {
 		dataMatcher = new MetadataMatchDataSpy();
 		dataGroupSpy = new DataGroupForDataRedactorSpy("organisation");
 		metadataGroupSpy = new MetadataGroupSpy("recordInfoGroup", "recordInfo");
-		matcher = new GroupMatcherImp(dataMatcher, dataGroupSpy, metadataGroupSpy);
+		matcher = new GroupMatcher(dataMatcher, dataGroupSpy, metadataGroupSpy);
 	}
 
 	@Test

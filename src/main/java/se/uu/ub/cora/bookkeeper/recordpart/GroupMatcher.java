@@ -26,24 +26,21 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataGroup;
 
-public class GroupMatcherImp implements Matcher {
+public class GroupMatcher implements Matcher {
 
 	private MetadataMatchData dataMatcher;
 	private DataGroup dataGroup;
 	private MetadataGroup metadataGroup;
 	private DataGroup foundChild = null;
 
-	public GroupMatcherImp(MetadataMatchData dataMatcher, DataGroup dataGroup,
+	public GroupMatcher(MetadataMatchData dataMatcher, DataGroup dataGroup,
 			MetadataGroup metadataGroup) {
 		this.dataMatcher = dataMatcher;
 		this.dataGroup = dataGroup;
 		this.metadataGroup = metadataGroup;
 	}
 
-	public MetadataMatchData getMetadataMatchData() {
-		return dataMatcher;
-	}
-
+	@Override
 	public boolean groupHasMatchingDataChild() {
 		if (noChildWasFound()) {
 			tryToFindMatchingChild();
@@ -51,6 +48,7 @@ public class GroupMatcherImp implements Matcher {
 		return childWasFound();
 	}
 
+	@Override
 	public DataGroup getMatchingDataChild() {
 		if (childWasFound()) {
 			return foundChild;
@@ -82,5 +80,9 @@ public class GroupMatcherImp implements Matcher {
 				foundChild = child;
 			}
 		}
+	}
+
+	public MetadataMatchData getMetadataMatchData() {
+		return dataMatcher;
 	}
 }

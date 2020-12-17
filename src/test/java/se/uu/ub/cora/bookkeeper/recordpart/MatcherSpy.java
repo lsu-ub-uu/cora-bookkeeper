@@ -18,20 +18,23 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import static org.testng.Assert.assertSame;
-
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataGroupWrapperFactoryTest {
+public class MatcherSpy implements Matcher {
 
-	@Test
-	public void testFactor() {
-		DataGroupWrapperFactoryImp factory = new DataGroupWrapperFactoryImp();
-		DataGroup dataGroup = new DataGroupSpy("someNameInData");
-		DataGroupWrapperImp wrapper = factory.factor(dataGroup);
-		assertSame(wrapper.getDataGroup(), dataGroup);
+	public boolean hasMatchingChildWasCalled = false;
+	public boolean getMatchingChildWasCalled = false;
+
+	@Override
+	public DataGroup getMatchingDataChild() {
+		getMatchingChildWasCalled = true;
+		return null;
 	}
+
+	@Override
+	public boolean groupHasMatchingDataChild() {
+		hasMatchingChildWasCalled = true;
+		return true;
+	}
+
 }

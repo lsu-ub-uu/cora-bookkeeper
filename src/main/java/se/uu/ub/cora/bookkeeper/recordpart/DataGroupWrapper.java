@@ -18,143 +18,21 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.DataGroup;
 
-public class DataGroupWrapper implements DataGroup {
-	Map<String, List<List<DataAttribute>>> removedNameInDatas = new HashMap<>();
-	DataGroup dataGroup;
+public interface DataGroupWrapper {
 
-	public DataGroupWrapper(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
-	}
+	@Deprecated
+	Map<String, List<List<DataAttribute>>> getRemovedNameInDatas();
 
-	@Override
-	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
-			DataAttribute... childAttributes) {
-		ensurePlaceForNameInDataExistsInMap(childNameInData);
-		removedNameInDatas.get(childNameInData).add(Arrays.asList(childAttributes));
-		return dataGroup.removeAllChildrenWithNameInDataAndAttributes(childNameInData,
-				childAttributes);
-	}
+	/**
+	 * answers true if a call to remove a child has been made for a child with the same nameInData
+	 * and attributes as the specified child, else false.
+	 */
+	boolean hasRemovedBeenCalledFor(DataElement child);
 
-	private void ensurePlaceForNameInDataExistsInMap(String childNameInData) {
-		if (!removedNameInDatas.containsKey(childNameInData)) {
-			removedNameInDatas.put(childNameInData, new ArrayList<>());
-		}
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		dataGroup.setRepeatId(repeatId);
-	}
-
-	@Override
-	public String getRepeatId() {
-		return dataGroup.getRepeatId();
-	}
-
-	@Override
-	public String getNameInData() {
-		return dataGroup.getNameInData();
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return dataGroup.hasChildren();
-	}
-
-	@Override
-	public boolean containsChildWithNameInData(String nameInData) {
-		return dataGroup.containsChildWithNameInData(nameInData);
-	}
-
-	@Override
-	public void addChild(DataElement dataElement) {
-		dataGroup.addChild(dataElement);
-	}
-
-	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
-		dataGroup.addChildren(dataElements);
-	}
-
-	@Override
-	public List<DataElement> getChildren() {
-		return dataGroup.getChildren();
-	}
-
-	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
-		return dataGroup.getAllChildrenWithNameInData(nameInData);
-	}
-
-	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
-			DataAttribute... childAttributes) {
-		return dataGroup.getAllChildrenWithNameInDataAndAttributes(nameInData, childAttributes);
-	}
-
-	@Override
-	public DataElement getFirstChildWithNameInData(String nameInData) {
-		return dataGroup.getFirstChildWithNameInData(nameInData);
-	}
-
-	@Override
-	public String getFirstAtomicValueWithNameInData(String nameInData) {
-		return dataGroup.getFirstAtomicValueWithNameInData(nameInData);
-	}
-
-	@Override
-	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
-		return dataGroup.getAllDataAtomicsWithNameInData(childNameInData);
-	}
-
-	@Override
-	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		return dataGroup.getFirstGroupWithNameInData(childNameInData);
-	}
-
-	@Override
-	public List<DataGroup> getAllGroupsWithNameInData(String nameInData) {
-		return dataGroup.getAllGroupsWithNameInData(nameInData);
-	}
-
-	@Override
-	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
-			DataAttribute... childAttributes) {
-		return dataGroup.getAllGroupsWithNameInDataAndAttributes(childNameInData, childAttributes);
-	}
-
-	@Override
-	public boolean removeFirstChildWithNameInData(String childNameInData) {
-		return dataGroup.removeFirstChildWithNameInData(childNameInData);
-	}
-
-	@Override
-	public boolean removeAllChildrenWithNameInData(String childNameInData) {
-		return dataGroup.removeAllChildrenWithNameInData(childNameInData);
-	}
-
-	@Override
-	public DataAtomic getFirstDataAtomicWithNameInData(String childNameInData) {
-		return dataGroup.getFirstDataAtomicWithNameInData(childNameInData);
-	}
-
-	public Map<String, List<List<DataAttribute>>> getRemovedNameInDatas() {
-		return removedNameInDatas;
-	}
-
-	DataGroup getDataGroup() {
-		return dataGroup;
-	}
 }
