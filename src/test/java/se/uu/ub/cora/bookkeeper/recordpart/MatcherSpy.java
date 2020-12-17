@@ -18,21 +18,34 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
-public interface DataGroupWrapper {
+public class MatcherSpy implements Matcher {
 
-	@Deprecated
-	Map<String, List<List<DataAttribute>>> getRemovedNameInDatas();
+	public boolean hasMatchingChildWasCalled = false;
+	public boolean getMatchingChildWasCalled = false;
+	public boolean hasMatchingChild = true;
+	private DataGroupForDataRedactorSpy returnedDataGroup;
+	public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
 
-	/**
-	 * answers true if a call to remove a child has been made for a child with the same nameInData
-	 * and attributes as the specified child, else false.
-	 */
-	boolean hasRemovedBeenCalled(DataElement child);
+	@Override
+	public DataGroup getMatchingDataChild() {
+		getMatchingChildWasCalled = true;
+		returnedDataGroup = new DataGroupForDataRedactorSpy("spyNameInData");
+		if (!attributesToReplacedDataGroup.isEmpty()) {
+			returnedDataGroup.setAttributes(attributesToReplacedDataGroup);
+		}
+		return returnedDataGroup;
+	}
+
+	@Override
+	public boolean groupHasMatchingDataChild() {
+		hasMatchingChildWasCalled = true;
+		return hasMatchingChild;
+	}
 
 }

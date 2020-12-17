@@ -18,6 +18,12 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import se.uu.ub.cora.data.DataGroup;
+
 public interface Matcher {
+
+	DataGroup getMatchingDataChild();
+
+	boolean groupHasMatchingDataChild();
 
 }

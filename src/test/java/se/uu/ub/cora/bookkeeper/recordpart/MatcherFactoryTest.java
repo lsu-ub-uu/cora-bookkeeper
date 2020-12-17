@@ -18,20 +18,24 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 
-public class DataGroupWrapperFactoryTest {
+public class MatcherFactoryTest {
 
 	@Test
 	public void testFactor() {
-		DataGroupWrapperFactoryImp factory = new DataGroupWrapperFactoryImp();
-		DataGroup dataGroup = new DataGroupSpy("someNameInData");
-		DataGroupWrapperImp wrapper = factory.factor(dataGroup);
-		assertSame(wrapper.getDataGroup(), dataGroup);
+		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("organisation");
+		MetadataGroupSpy metadataGroupSpy = new MetadataGroupSpy("recordInfoGroup", "recordInfo");
+		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
+		MatcherFactory factory = new MatcherFactoryImp(dataMatcher);
+
+		GroupMatcher groupMatcher = (GroupMatcher) factory.factor(dataGroupSpy,
+				metadataGroupSpy);
+		assertEquals(groupMatcher.getMetadataMatchData(), dataMatcher);
 	}
+
 }
