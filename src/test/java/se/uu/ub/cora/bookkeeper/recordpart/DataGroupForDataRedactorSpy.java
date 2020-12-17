@@ -123,8 +123,12 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return null;
+		MCR.addCall("nameInData", nameInData);
+		List<DataGroup> children = new ArrayList<>();
+		DataGroupForDataRedactorSpy childDataGroup = new DataGroupForDataRedactorSpy(nameInData);
+		children.add(childDataGroup);
+		MCR.addReturned(children);
+		return children;
 	}
 
 	@Override
