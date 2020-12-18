@@ -157,9 +157,10 @@ public class DataRedactorImp implements DataRedactor {
 		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
 		if (groupMatcher.groupHasMatchingDataChild()) {
 			DataElement updatedChild = groupMatcher.getMatchingDataChild();
+			DataGroupWrapper wrappedChild = wrapperFactory.factor((DataGroup) updatedChild);
 
 			possiblyReplaceOrRemoveChild(originalDataGroup, redactedDataGroup, replacedChildren,
-					childMetadataGroup, updatedChild, wrappedUpdated);
+					childMetadataGroup, updatedChild, wrappedChild);
 		}
 	}
 

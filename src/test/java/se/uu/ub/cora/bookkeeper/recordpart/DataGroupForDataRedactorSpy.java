@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataAtomic;
@@ -28,7 +29,7 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataGroupForDataRedactorSpy implements DataGroup {
+public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	private String nameInData;
@@ -193,6 +194,18 @@ public class DataGroupForDataRedactorSpy implements DataGroup {
 	public void setAttributes(List<DataAttribute> attributesToReplacedDataGroup) {
 		this.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
 
+	}
+
+	@Override
+	public Map<String, List<List<DataAttribute>>> getRemovedNameInDatas() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasRemovedBeenCalled(DataElement child) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
