@@ -120,8 +120,8 @@ public class DataRedactorImp implements DataRedactor {
 		return updatedDataGroup;
 	}
 
-	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroupWrapper wrappedUpdated,
-			MetadataGroup metadataGroup) {
+	private void possiblyReplaceChildren(DataGroup originalDataGroup,
+			DataGroupWrapper wrappedUpdated, MetadataGroup metadataGroup) {
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
@@ -181,6 +181,11 @@ public class DataRedactorImp implements DataRedactor {
 	private boolean childStillNeedsToBeCheckedForReplace(DataElement updatedChild,
 			DataGroupWrapper wrappedUpdated) {
 		return !wrappedUpdated.hasRemovedBeenCalled(updatedChild);
+	}
+
+	public MetadataHolder getMetadataHolder() {
+		//
+		return metadataHolder;
 	}
 
 }
