@@ -35,4 +35,8 @@ public class MatcherFactoryImp implements MatcherFactory {
 		return new GroupMatcher(dataMatcher, dataGroup, metadataGroup);
 	}
 
+	public MetadataMatchData getMetadataMatchData() {
+		return dataMatcher;
+	}
+
 }
