@@ -328,8 +328,8 @@ public class DataRedactorTest {
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		DataGroupWrapperImp wrapper = wrapperFactory.factoredWrappers.get(0);
-		assertSame(wrapper.getDataGroup(), updatedDataGroup);
+		DataGroupWrapperSpy wrapper = wrapperFactory.factoredWrappers.get(0);
+		assertSame(wrapper.dataGroup, updatedDataGroup);
 
 		dataGroupRedactorSpy.MCR.assertParameters("replaceChildrenForConstraintsWithoutPermissions",
 				0, originalDataGroup, wrapper, titleConstraints, emptyPermissions);
@@ -432,22 +432,28 @@ public class DataRedactorTest {
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndMatchOnEmptyAttributes() {
+		matcherFactory.hasMatchingChild = true;
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
-		List<DataAttribute> attributes = new ArrayList<>();
-		attributes.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
-		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
-		listOfAttributes.add(attributes);
+		// List<DataAttribute> attributes = new ArrayList<>();
+		// attributes.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
+		// List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
+		// listOfAttributes.add(attributes);
 
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
-		List<DataAttribute> emptyAttributes = new ArrayList<>();
-		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
+		// wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
+		// List<DataAttribute> emptyAttributes = new ArrayList<>();
+		// wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 2);
+
+		DataGroupWrapperSpy dataGroupWrapperSpy = wrapperFactory.factoredWrappers.get(0);
+		DataGroupForDataRedactorSpy dataGroupFromMatcher = matcherFactory.returnedMatchers
+				.get(0).returnedDataGroup;
+		assertSame(dataGroupWrapperSpy.child, dataGroupFromMatcher);
 
 		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
@@ -483,34 +489,21 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildGroupMatchOnNameInDataAndMatchAttributes() {
-
-		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
-		replacedMetadataAttributes.add(new DataAttributeSpy("attributeId", "attributeValue"));
-		matcherFactory.attributesToMatchedDataGroup = replacedMetadataAttributes;
+	public void testReplaceOneChildGroupWhenAlreadyBeenReplaced() {
+		wrapperFactory.removeHasBeenCalled = true;
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
-		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
-
-		List<DataAttribute> attributesList1 = new ArrayList<>();
-		attributesList1.add(new DataAttributeSpy("attributeId", "anotherAttributeValue"));
-		listOfAttributes.add(attributesList1);
-
-		List<DataAttribute> attributesList2 = new ArrayList<>();
-		attributesList2.add(new DataAttributeSpy("attributeId", "attributeValue"));
-		listOfAttributes.add(attributesList2);
-
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
-		List<DataAttribute> emptyAttributes = new ArrayList<>();
-		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
-
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
+		DataGroupWrapperSpy dataGroupWrapperSpy = wrapperFactory.factoredWrappers.get(0);
+
+		DataGroupForDataRedactorSpy dataGroupFromMatcher = matcherFactory.returnedMatchers
+				.get(0).returnedDataGroup;
+		assertSame(dataGroupWrapperSpy.child, dataGroupFromMatcher);
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 2);
-
 		dataGroupRedactorSpy.MCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 	}

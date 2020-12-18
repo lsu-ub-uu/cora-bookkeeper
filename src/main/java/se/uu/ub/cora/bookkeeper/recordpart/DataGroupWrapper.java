@@ -23,8 +23,9 @@ import java.util.Map;
 
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
-public interface DataGroupWrapper {
+public interface DataGroupWrapper extends DataGroup {
 
 	@Deprecated
 	Map<String, List<List<DataAttribute>>> getRemovedNameInDatas();

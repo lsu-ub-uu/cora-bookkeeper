@@ -120,13 +120,13 @@ public class DataRedactorImp implements DataRedactor {
 		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		possiblyReplaceChild(originalDataGroup, updatedDataGroup, metadataGroup);
+		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
+		possiblyReplaceChild(originalDataGroup, wrappedUpdated, metadataGroup);
 		return updatedDataGroup;
 	}
 
-	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
+	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroupWrapper wrappedUpdated,
 			MetadataGroup metadataGroup) {
-		DataGroupWrapperImp wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
@@ -135,37 +135,38 @@ public class DataRedactorImp implements DataRedactor {
 
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
 			possiblyReplaceChild(originalDataGroup, redactedDataGroup, replacedChildren,
-					metadataChildReference);
+					metadataChildReference, wrappedUpdated);
 		}
 	}
 
 	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroup redactedDataGroup,
 			Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataChildReference metadataChildReference) {
+			MetadataChildReference metadataChildReference, DataGroupWrapper wrappedUpdated) {
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
 			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 					metadataChildReference);
 			possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup, redactedDataGroup,
-					replacedChildren, childMetadataGroup);
+					replacedChildren, childMetadataGroup, wrappedUpdated);
 		}
 	}
 
 	private void possiblyReplaceOrRemoveChildrenIfChildGroupHasData(DataGroup originalDataGroup,
 			DataGroup redactedDataGroup, Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataGroup childMetadataGroup) {
+			MetadataGroup childMetadataGroup, DataGroupWrapper wrappedUpdated) {
 
 		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
 		if (groupMatcher.groupHasMatchingDataChild()) {
 			DataElement updatedChild = groupMatcher.getMatchingDataChild();
 
 			possiblyReplaceOrRemoveChild(originalDataGroup, redactedDataGroup, replacedChildren,
-					childMetadataGroup, updatedChild);
+					childMetadataGroup, updatedChild, wrappedUpdated);
 		}
 	}
 
 	private void possiblyReplaceOrRemoveChild(DataGroup originalDataGroup,
 			DataGroup redactedDataGroup, Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataGroup childMetadataGroup, DataElement updatedChild) {
+			MetadataGroup childMetadataGroup, DataElement updatedChild,
+			DataGroupWrapper wrappedUpdated) {
 
 		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
 		if (!groupMatcher.groupHasMatchingDataChild()) {
@@ -174,28 +175,28 @@ public class DataRedactorImp implements DataRedactor {
 		} else {
 			DataElement originalChild = groupMatcher.getMatchingDataChild();
 			possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(replacedChildren,
-					childMetadataGroup, updatedChild, originalChild);
+					childMetadataGroup, updatedChild, originalChild, wrappedUpdated);
 		}
 	}
 
 	private void possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(
 			Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataGroup childMetadataGroup, DataElement updatedChild, DataElement originalChild) {
+			MetadataGroup childMetadataGroup, DataElement updatedChild, DataElement originalChild,
+			DataGroupWrapper wrappedUpdated) {
 
 		String metadataNameInData = childMetadataGroup.getNameInData();
-		if (childStillNeedsToBeCheckedForReplace(replacedChildren, updatedChild,
-				metadataNameInData)) {
-			possiblyReplaceChild((DataGroup) originalChild, (DataGroup) updatedChild,
-					childMetadataGroup);
+		if (childStillNeedsToBeCheckedForReplace(replacedChildren, updatedChild, metadataNameInData,
+				wrappedUpdated)) {
+			possiblyReplaceChild((DataGroup) originalChild, wrappedUpdated, childMetadataGroup);
 		}
 	}
 
 	private boolean childStillNeedsToBeCheckedForReplace(
 			Map<String, List<List<DataAttribute>>> replacedNameInDatas, DataElement updatedChild,
-			String metadataNameInData) {
+			String metadataNameInData, DataGroupWrapper wrappedUpdated) {
 		// TODO: wanted method
-		// dataGroupWrapper.isChildReplaced(updatedChild);
-		return !childIsReplaced(replacedNameInDatas, updatedChild, metadataNameInData);
+		return !wrappedUpdated.hasRemovedBeenCalled(updatedChild);
+		// return !childIsReplaced(replacedNameInDatas, updatedChild, metadataNameInData);
 	}
 
 	private boolean childIsReplaced(Map<String, List<List<DataAttribute>>> replacedNameInDatas,

@@ -27,8 +27,8 @@ public interface DataGroupWrapperFactory {
 	 * 
 	 * @param dataGroup
 	 *            A {@link DataGroup} that is to be wrapped
-	 * @return A {@link DataGroupWrapperImp} wrapping the DataGroup
+	 * @return A {@link DataGroupWrapper} wrapping the DataGroup
 	 */
-	DataGroupWrapperImp factor(DataGroup dataGroup);
+	DataGroupWrapper factor(DataGroup dataGroup);
 
 }

@@ -30,13 +30,15 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 
 	public List<DataGroup> sentInDataGroups = new ArrayList<>();
-	public List<DataGroupWrapperImp> factoredWrappers = new ArrayList<>();
+	public List<DataGroupWrapperSpy> factoredWrappers = new ArrayList<>();
 	public Map<String, List<List<DataAttribute>>> nameInDatasToRemove = new HashMap<>();
+	public boolean removeHasBeenCalled = false;
 
 	@Override
-	public DataGroupWrapperImp factor(DataGroup dataGroup) {
+	public DataGroupWrapper factor(DataGroup dataGroup) {
 		sentInDataGroups.add(dataGroup);
-		DataGroupWrapperImp wrapper = new DataGroupWrapperImp(dataGroup);
+		DataGroupWrapperSpy wrapper = new DataGroupWrapperSpy(dataGroup);
+		wrapper.removeHasBeenCalled = removeHasBeenCalled;
 		for (Entry<String, List<List<DataAttribute>>> entry : nameInDatasToRemove.entrySet()) {
 			for (List<DataAttribute> list : entry.getValue()) {
 				wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
