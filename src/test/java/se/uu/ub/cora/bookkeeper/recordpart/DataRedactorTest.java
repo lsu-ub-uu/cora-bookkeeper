@@ -397,9 +397,6 @@ public class DataRedactorTest {
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
 
-		wrapperFactory.nameInDatasToRemove.put("someOtherChildGroupNameInData",
-				Collections.emptyList());
-
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
@@ -418,7 +415,6 @@ public class DataRedactorTest {
 		attributes.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
 		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
 		listOfAttributes.add(attributes);
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
@@ -428,26 +424,6 @@ public class DataRedactorTest {
 		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
 	}
-
-	// @Test
-	// public void testReplaceOneChildGroupMatchOnNameInDataAndMatchOnEmptyAttributes() {
-	// wrapperFactory.removeHasBeenCalled = true;
-	// MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
-	// createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
-	//
-	// dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
-	// updatedDataGroup, titleConstraints, emptyPermissions);
-	//
-	// assertEquals(matcherFactory.returnedMatchers.size(), 2);
-	//
-	// DataGroupWrapperSpy dataGroupWrapperSpy = wrapperFactory.factoredWrappers.get(0);
-	// DataGroupForDataRedactorSpy dataGroupFromMatcher = matcherFactory.returnedMatchers
-	// .get(0).returnedDataGroup;
-	// assertSame(dataGroupWrapperSpy.child, dataGroupFromMatcher);
-	//
-	// groupRedactorMCR
-	// .assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
-	// }
 
 	@Test
 	public void testReplaceOneChildGroupMatchOnNameInDataAndNoMatchAttributes() {
@@ -464,10 +440,6 @@ public class DataRedactorTest {
 		attributes.add(new DataAttributeSpy("NOTsomeAttributeId", "NOTsomeAttributeValue"));
 		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
 		listOfAttributes.add(attributes);
-
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
-		List<DataAttribute> emptyAttributes = new ArrayList<>();
-		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
@@ -512,8 +484,6 @@ public class DataRedactorTest {
 		hasMatchingChildList.add(true);
 		matcherFactory.hasMatchingChildList = hasMatchingChildList;
 
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
-
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
@@ -533,8 +503,6 @@ public class DataRedactorTest {
 		hasMatchingChildList.add(true);
 		hasMatchingChildList.add(false);
 		matcherFactory.hasMatchingChildList = hasMatchingChildList;
-
-		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);

@@ -18,17 +18,10 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.List;
-import java.util.Map;
-
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
 public interface DataGroupWrapper extends DataGroup {
-
-	@Deprecated
-	Map<String, List<List<DataAttribute>>> getRemovedNameInDatas();
 
 	/**
 	 * answers true if a call to remove a child has been made for a child with the same nameInData

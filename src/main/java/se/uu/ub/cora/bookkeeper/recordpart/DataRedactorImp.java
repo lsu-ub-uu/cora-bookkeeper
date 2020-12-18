@@ -78,7 +78,6 @@ public class DataRedactorImp implements DataRedactor {
 
 	private void removeChildDataIfExists(DataGroup redactedDataGroup,
 			MetadataChildReference metadataChildReference) {
-
 		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 				metadataChildReference);
 
@@ -117,11 +116,11 @@ public class DataRedactorImp implements DataRedactor {
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
 		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
-		possiblyReplaceChild(originalDataGroup, wrappedUpdated, metadataGroup);
+		possiblyReplaceChildren(originalDataGroup, wrappedUpdated, metadataGroup);
 		return updatedDataGroup;
 	}
 
-	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroupWrapper wrappedUpdated,
+	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroupWrapper wrappedUpdated,
 			MetadataGroup metadataGroup) {
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
@@ -156,12 +155,12 @@ public class DataRedactorImp implements DataRedactor {
 	}
 
 	private void possiblyReplaceOrRemoveChild(DataGroup originalDataGroup,
-			DataGroup redactedDataGroup, MetadataGroup childMetadataGroup, DataElement updatedChild,
+			DataGroup updatedDataGroup, MetadataGroup childMetadataGroup, DataElement updatedChild,
 			DataGroupWrapper wrappedUpdated) {
 
 		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
 		if (!groupMatcher.groupHasMatchingDataChild()) {
-			dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(redactedDataGroup,
+			dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(updatedDataGroup,
 					constraints, permissions);
 		} else {
 			DataElement originalChild = groupMatcher.getMatchingDataChild();
@@ -175,7 +174,7 @@ public class DataRedactorImp implements DataRedactor {
 			DataGroupWrapper wrappedUpdated) {
 
 		if (childStillNeedsToBeCheckedForReplace(updatedChild, wrappedUpdated)) {
-			possiblyReplaceChild((DataGroup) originalChild, wrappedUpdated, childMetadataGroup);
+			possiblyReplaceChildren((DataGroup) originalChild, wrappedUpdated, childMetadataGroup);
 		}
 	}
 

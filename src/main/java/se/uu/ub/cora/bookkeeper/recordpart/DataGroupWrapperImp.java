@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,22 +139,21 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public boolean removeFirstChildWithNameInData(String childNameInData) {
+		ensurePlaceForNameInDataExistsInMap(childNameInData);
+		removedElements.get(childNameInData).add(Collections.emptyList());
 		return dataGroup.removeFirstChildWithNameInData(childNameInData);
 	}
 
 	@Override
 	public boolean removeAllChildrenWithNameInData(String childNameInData) {
+		ensurePlaceForNameInDataExistsInMap(childNameInData);
+		removedElements.get(childNameInData).add(Collections.emptyList());
 		return dataGroup.removeAllChildrenWithNameInData(childNameInData);
 	}
 
 	@Override
 	public DataAtomic getFirstDataAtomicWithNameInData(String childNameInData) {
 		return dataGroup.getFirstDataAtomicWithNameInData(childNameInData);
-	}
-
-	@Override
-	public Map<String, List<List<DataAttribute>>> getRemovedNameInDatas() {
-		return removedElements;
 	}
 
 	DataGroup getDataGroup() {

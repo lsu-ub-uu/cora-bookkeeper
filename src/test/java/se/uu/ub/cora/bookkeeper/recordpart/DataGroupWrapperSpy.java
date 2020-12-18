@@ -20,7 +20,6 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
@@ -156,12 +155,6 @@ public class DataGroupWrapperSpy implements DataGroupWrapper {
 
 	@Override
 	public String getNameInData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<String, List<List<DataAttribute>>> getRemovedNameInDatas() {
 		// TODO Auto-generated method stub
 		return null;
 	}

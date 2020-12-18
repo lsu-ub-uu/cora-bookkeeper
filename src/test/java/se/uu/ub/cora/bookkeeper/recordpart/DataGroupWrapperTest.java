@@ -26,7 +26,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,7 +34,6 @@ import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -54,14 +52,17 @@ public class DataGroupWrapperTest {
 	}
 
 	@Test
-	public void testRemoveAllChildrenWithNameInDataAndAttributes() {
+	public void testRemoveAllChildrenWithNameInDataWithoutAttributes() {
+
+		String expectedNameInData = "someNameInData";
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
 		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
+
 		boolean returnedValue = wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes(
-				"someNameInData", dataAttribute, dataAttribute2);
+				expectedNameInData, dataAttribute, dataAttribute2);
 
 		dataGroup.MCR.assertParameter("removeAllChildrenWithNameInDataAndAttributes", 0,
-				"childNameInData", "someNameInData");
+				"childNameInData", expectedNameInData);
 
 		List<?> childAttributes = (List<?>) dataGroup.MCR.getParametersForMethodAndCallNumber(
 				"removeAllChildrenWithNameInDataAndAttributes", 0).get("childAttributes");
@@ -73,37 +74,53 @@ public class DataGroupWrapperTest {
 				.getReturnValue("removeAllChildrenWithNameInDataAndAttributes", 0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
 
-		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapperAsDGW
-				.getRemovedNameInDatas();
-		List<List<DataAttribute>> list = removedNameInDatas.get("someNameInData");
-		assertSame(list.get(0).get(0), dataAttribute);
-		assertSame(list.get(0).get(1), dataAttribute2);
+		DataGroupSpy expectedChild = new DataGroupSpy(expectedNameInData);
+		expectedChild.addAttributeByIdWithValue("someId", "someType");
+		expectedChild.addAttributeByIdWithValue("someId2", "someType2");
 
-		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes("someOtherNameInData");
-		assertTrue(removedNameInDatas.get("someOtherNameInData").get(0).isEmpty());
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(expectedChild));
+	}
 
+	@Test
+	public void testRemoveAllChildrenWithNameInDataWithAttributes() {
+
+		String expectedNameInData = "someOtherNameInData";
+		DataGroupSpy expectedChild = new DataGroupSpy(expectedNameInData);
+
+		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes(expectedNameInData);
+
+		dataGroup.MCR.assertParameter("removeAllChildrenWithNameInDataAndAttributes", 0,
+				"childNameInData", expectedNameInData);
+
+		List<?> childAttributes = (List<?>) dataGroup.MCR.getParametersForMethodAndCallNumber(
+				"removeAllChildrenWithNameInDataAndAttributes", 0).get("childAttributes");
+		assertEquals(childAttributes.size(), 0);
+
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(expectedChild));
 	}
 
 	@Test
 	public void testRemoveAllChildrenSameNameDifferentAttributes() {
+		String nameInData = "someNameInData";
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
 		DataAttributeSpy dataAttribute2 = new DataAttributeSpy("someId2", "someType2");
-		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute,
+		DataAttributeSpy dataAttribute3 = new DataAttributeSpy("someId3", "someType3");
+
+		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes(nameInData, dataAttribute,
 				dataAttribute2);
 
-		DataAttributeSpy dataAttribute3 = new DataAttributeSpy("someId3", "someType3");
-		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute3);
+		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes(nameInData, dataAttribute3);
 
-		Map<String, List<List<DataAttribute>>> removedNameInDatas = wrapperAsDGW
-				.getRemovedNameInDatas();
-		List<List<DataAttribute>> list = removedNameInDatas.get("someNameInData");
-		List<DataAttribute> attributesForFirstRemove = list.get(0);
-		assertSame(attributesForFirstRemove.get(0), dataAttribute);
-		assertSame(attributesForFirstRemove.get(1), dataAttribute2);
+		DataGroupSpy expectedChild1 = new DataGroupSpy(nameInData);
+		expectedChild1.addAttributeByIdWithValue("someId", "someType");
+		expectedChild1.addAttributeByIdWithValue("someId2", "someType2");
 
-		List<DataAttribute> attributesForSecondRemove = list.get(1);
-		assertSame(attributesForSecondRemove.get(0), dataAttribute3);
+		wrapperAsDGW.hasRemovedBeenCalled(expectedChild1);
 
+		DataGroupSpy expectedChild2 = new DataGroupSpy(nameInData);
+		expectedChild1.addAttributeByIdWithValue("someId3", "someType3");
+
+		wrapperAsDGW.hasRemovedBeenCalled(expectedChild2);
 	}
 
 	@Test
@@ -487,6 +504,24 @@ public class DataGroupWrapperTest {
 				dataAttribute1);
 		wrapperAsDG.removeAllChildrenWithNameInDataAndAttributes(childNameInData, dataAttribute0,
 				dataAttribute1);
+
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testHasRemovedBeenCalledForRemoveFirstChild() throws Exception {
+		DataGroupSpy child = new DataGroupSpy("someNameInData");
+
+		wrapperAsDG.removeFirstChildWithNameInData("someNameInData");
+
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testHasRemovedBeenCalledForRemoveAllChildrenWithNameInData() throws Exception {
+		DataGroupSpy child = new DataGroupSpy("someNameInData");
+
+		wrapperAsDG.removeAllChildrenWithNameInData("someNameInData");
 
 		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
 	}
