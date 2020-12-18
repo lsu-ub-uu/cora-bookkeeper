@@ -359,10 +359,7 @@ public class DataRedactorTest {
 						"replaceChildrenForConstraintsWithoutPermissions", replaceCallIndex);
 		assertEquals(parametersForMethodAndCallNumber.get("originalDataGroup"), originalChild);
 
-		// DataGroupWrapperSpy wrapper = (DataGroupWrapperSpy) parametersForMethodAndCallNumber
-		// .get("changedDataGroup");
-		DataGroupWrapperSpy wrapper = (DataGroupWrapperSpy) groupRedactorMCR.getReturnValue(
-				"replaceChildrenForConstraintsWithoutPermissions", replaceCallIndex);
+		DataGroupWrapperSpy wrapper = wrapperFactory.factoredWrappers.get(replaceCallIndex);
 
 		assertEquals(wrapper.dataGroup, replacedChild);
 		assertEquals(parametersForMethodAndCallNumber.get("recordPartConstraints"),
@@ -490,11 +487,14 @@ public class DataRedactorTest {
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
-		DataGroupWrapperSpy dataGroupWrapperSpy = wrapperFactory.factoredWrappers.get(0);
+		DataGroupWrapperSpy dataGroupWrapper = wrapperFactory.factoredWrappers.get(0);
+
+		assertSame(dataGroupWrapper.dataGroup, updatedDataGroup);
 
 		DataGroupForDataRedactorSpy dataGroupFromMatcher = matcherFactory.returnedMatchers
 				.get(0).returnedDataGroup;
-		assertSame(dataGroupWrapperSpy.child, dataGroupFromMatcher);
+		DataGroupWrapperSpy dataGroupWrapperForChild = wrapperFactory.factoredWrappers.get(1);
+		assertSame(dataGroupWrapperForChild.dataGroup, dataGroupFromMatcher);
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 2);
 		dataGroupRedactorSpy.MCR

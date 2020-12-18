@@ -18,17 +18,13 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -130,43 +126,37 @@ public class DataRedactorImp implements DataRedactor {
 		DataGroup redactedDataGroup = dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
-		Map<String, List<List<DataAttribute>>> replacedChildren = wrappedUpdated
-				.getRemovedNameInDatas();
 
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
-			possiblyReplaceChild(originalDataGroup, redactedDataGroup, replacedChildren,
-					metadataChildReference, wrappedUpdated);
+			possiblyReplaceChild(originalDataGroup, redactedDataGroup, metadataChildReference);
 		}
 	}
 
 	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroup redactedDataGroup,
-			Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataChildReference metadataChildReference, DataGroupWrapper wrappedUpdated) {
+			MetadataChildReference metadataChildReference) {
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
 			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 					metadataChildReference);
 			possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup, redactedDataGroup,
-					replacedChildren, childMetadataGroup, wrappedUpdated);
+					childMetadataGroup);
 		}
 	}
 
 	private void possiblyReplaceOrRemoveChildrenIfChildGroupHasData(DataGroup originalDataGroup,
-			DataGroup redactedDataGroup, Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataGroup childMetadataGroup, DataGroupWrapper wrappedUpdated) {
+			DataGroup redactedDataGroup, MetadataGroup childMetadataGroup) {
 
 		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
 		if (groupMatcher.groupHasMatchingDataChild()) {
 			DataElement updatedChild = groupMatcher.getMatchingDataChild();
 			DataGroupWrapper wrappedChild = wrapperFactory.factor((DataGroup) updatedChild);
 
-			possiblyReplaceOrRemoveChild(originalDataGroup, redactedDataGroup, replacedChildren,
-					childMetadataGroup, updatedChild, wrappedChild);
+			possiblyReplaceOrRemoveChild(originalDataGroup, redactedDataGroup, childMetadataGroup,
+					updatedChild, wrappedChild);
 		}
 	}
 
 	private void possiblyReplaceOrRemoveChild(DataGroup originalDataGroup,
-			DataGroup redactedDataGroup, Map<String, List<List<DataAttribute>>> replacedChildren,
-			MetadataGroup childMetadataGroup, DataElement updatedChild,
+			DataGroup redactedDataGroup, MetadataGroup childMetadataGroup, DataElement updatedChild,
 			DataGroupWrapper wrappedUpdated) {
 
 		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
@@ -175,100 +165,23 @@ public class DataRedactorImp implements DataRedactor {
 					constraints, permissions);
 		} else {
 			DataElement originalChild = groupMatcher.getMatchingDataChild();
-			possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(replacedChildren,
-					childMetadataGroup, updatedChild, originalChild, wrappedUpdated);
+			possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(childMetadataGroup, updatedChild,
+					originalChild, wrappedUpdated);
 		}
 	}
 
 	private void possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(
-			Map<String, List<List<DataAttribute>>> replacedChildren,
 			MetadataGroup childMetadataGroup, DataElement updatedChild, DataElement originalChild,
 			DataGroupWrapper wrappedUpdated) {
 
-		String metadataNameInData = childMetadataGroup.getNameInData();
-		if (childStillNeedsToBeCheckedForReplace(replacedChildren, updatedChild, metadataNameInData,
-				wrappedUpdated)) {
+		if (childStillNeedsToBeCheckedForReplace(updatedChild, wrappedUpdated)) {
 			possiblyReplaceChild((DataGroup) originalChild, wrappedUpdated, childMetadataGroup);
 		}
 	}
 
-	private boolean childStillNeedsToBeCheckedForReplace(
-			Map<String, List<List<DataAttribute>>> replacedNameInDatas, DataElement updatedChild,
-			String metadataNameInData, DataGroupWrapper wrappedUpdated) {
-		// TODO: wanted method
+	private boolean childStillNeedsToBeCheckedForReplace(DataElement updatedChild,
+			DataGroupWrapper wrappedUpdated) {
 		return !wrappedUpdated.hasRemovedBeenCalled(updatedChild);
-		// return !childIsReplaced(replacedNameInDatas, updatedChild, metadataNameInData);
-	}
-
-	private boolean childIsReplaced(Map<String, List<List<DataAttribute>>> replacedNameInDatas,
-			DataElement updatedChild, String metadataNameInData) {
-
-		// updatedChild.getNameInData();
-		// updatedChild.getAttributes()
-		if (replacedNameInDatas.containsKey(metadataNameInData)) {
-			return checkAttributesMatch(replacedNameInDatas, updatedChild, metadataNameInData);
-		}
-		return false;
-
-	}
-
-	private boolean checkAttributesMatch(Map<String, List<List<DataAttribute>>> replacedNameInDatas,
-			DataElement updatedChild, String metadataNameInData) {
-		List<List<DataAttribute>> alreadyReplacedChildAttributes = replacedNameInDatas
-				.get(metadataNameInData);
-		Collection<DataAttribute> updatedChildAttributes = updatedChild.getAttributes();
-		return attributesExistsOnReplacedChildAttributes(updatedChildAttributes,
-				alreadyReplacedChildAttributes);
-	}
-
-	private boolean attributesExistsOnReplacedChildAttributes(
-			Collection<DataAttribute> updatedChildAttributes,
-			List<List<DataAttribute>> alreadyReplacedChildAttributes) {
-		for (List<DataAttribute> replacedAttributes : alreadyReplacedChildAttributes) {
-			if (attributesInListMatch(updatedChildAttributes, replacedAttributes)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean attributesInListMatch(Collection<DataAttribute> attributesInChildToCompare,
-			List<DataAttribute> replacedAttributes) {
-		if (haveDifferentSizes(attributesInChildToCompare, replacedAttributes)) {
-			return false;
-		}
-		return findAnyMatchOnAttributes(attributesInChildToCompare, replacedAttributes);
-
-	}
-
-	private boolean haveDifferentSizes(Collection<DataAttribute> attributesInChildToCompare,
-			List<DataAttribute> replacedAttributes) {
-		return attributesInChildToCompare.size() != replacedAttributes.size();
-	}
-
-	private boolean findAnyMatchOnAttributes(Collection<DataAttribute> attributesInChildToCompare,
-			List<DataAttribute> replacedAttributes) {
-		for (DataAttribute childAttribute : attributesInChildToCompare) {
-			if (matchNotFound(replacedAttributes, childAttribute)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean matchNotFound(List<DataAttribute> replacedAttributes,
-			DataAttribute childAttribute) {
-		return replacedAttributes.stream().noneMatch(filterByNameAndValue(childAttribute));
-	}
-
-	private Predicate<DataAttribute> filterByNameAndValue(DataAttribute childAttribute) {
-		return replacedAttribute -> dataAttributeIsSame(replacedAttribute, childAttribute);
-	}
-
-	private boolean dataAttributeIsSame(DataAttribute replacedAttribute,
-			DataAttribute childAttribute) {
-		return childAttribute.getNameInData().equals(replacedAttribute.getNameInData())
-				&& childAttribute.getValue().equals(replacedAttribute.getValue());
 	}
 
 }
