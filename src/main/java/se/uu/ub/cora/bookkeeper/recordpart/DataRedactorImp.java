@@ -146,21 +146,20 @@ public class DataRedactorImp implements DataRedactor {
 
 		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
 		if (groupMatcher.groupHasMatchingDataChild()) {
-			DataElement updatedChild = groupMatcher.getMatchingDataChild();
-			DataGroupWrapper wrappedChild = wrapperFactory.factor((DataGroup) updatedChild);
+			DataGroup updatedChild = groupMatcher.getMatchingDataChild();
+			DataGroupWrapper wrappedChild = wrapperFactory.factor(updatedChild);
 
-			possiblyReplaceOrRemoveChild(originalDataGroup, redactedDataGroup, childMetadataGroup,
-					updatedChild, wrappedChild);
+			possiblyReplaceOrRemoveChild(originalDataGroup, childMetadataGroup, updatedChild,
+					wrappedChild);
 		}
 	}
 
 	private void possiblyReplaceOrRemoveChild(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, MetadataGroup childMetadataGroup, DataElement updatedChild,
-			DataGroupWrapper wrappedUpdated) {
+			MetadataGroup childMetadataGroup, DataGroup updatedChild, DataGroupWrapper wrappedUpdated) {
 
 		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
 		if (!groupMatcher.groupHasMatchingDataChild()) {
-			dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(updatedDataGroup,
+			dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(updatedChild,
 					constraints, permissions);
 		} else {
 			DataElement originalChild = groupMatcher.getMatchingDataChild();
