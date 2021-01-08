@@ -16,13 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.recordpart;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import static org.testng.Assert.assertSame;
 
-public interface MetadataMatchData {
+import org.testng.annotations.Test;
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.data.DataGroup;
 
+public class DataGroupWrapperFactoryTest {
+
+	@Test
+	public void testFactor() {
+		DataGroupWrapperFactoryImp factory = new DataGroupWrapperFactoryImp();
+		DataGroup dataGroup = new DataGroupSpy("someNameInData");
+		DataGroupWrapperImp wrapper = factory.factor(dataGroup);
+		assertSame(wrapper.getDataGroup(), dataGroup);
+	}
 }

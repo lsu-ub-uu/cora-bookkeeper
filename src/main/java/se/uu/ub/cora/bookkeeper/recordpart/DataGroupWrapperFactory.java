@@ -16,13 +16,19 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.recordpart;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
-public interface MetadataMatchData {
+public interface DataGroupWrapperFactory {
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+	/**
+	 * factor factors a DataGroupWrapper, wrapping the DataGroup sent in.
+	 * 
+	 * @param dataGroup
+	 *            A {@link DataGroup} that is to be wrapped
+	 * @return A {@link DataGroupWrapper} wrapping the DataGroup
+	 */
+	DataGroupWrapper factor(DataGroup dataGroup);
 
 }

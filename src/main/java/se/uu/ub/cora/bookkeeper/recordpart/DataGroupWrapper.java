@@ -16,13 +16,17 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.recordpart;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
-public interface MetadataMatchData {
+public interface DataGroupWrapper extends DataGroup {
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+	/**
+	 * answers true if a call to remove a child has been made for a child with the same nameInData
+	 * and attributes as the specified child, else false.
+	 */
+	boolean hasRemovedBeenCalled(DataElement child);
 
 }

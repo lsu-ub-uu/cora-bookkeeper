@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -34,12 +35,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		DataGroup dataGroup = createChildRefOtherMetadata();
 
 		dataGroup.addChild(new DataAtomicSpy("repeatMin", "0"));
-		dataGroup.addChild(new DataAtomicSpy("repeatMinKey", "SOME_KEY"));
 		dataGroup.addChild(new DataAtomicSpy("repeatMax", "16"));
-		dataGroup.addChild(new DataAtomicSpy("secret", "true"));
-		dataGroup.addChild(new DataAtomicSpy("secretKey", "SECRET_KEY"));
-		dataGroup.addChild(new DataAtomicSpy("readOnly", "true"));
-		dataGroup.addChild(new DataAtomicSpy("readOnlyKey", "READONLY_KEY"));
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
@@ -48,12 +44,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
 		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMin(), 0);
-		assertEquals(metadataChildReference.getRepeatMinKey(), "SOME_KEY");
 		assertEquals(metadataChildReference.getRepeatMax(), 16);
-		assertEquals(metadataChildReference.isSecret(), true);
-		assertEquals(metadataChildReference.getSecretKey(), "SECRET_KEY");
-		assertEquals(metadataChildReference.isReadOnly(), true);
-		assertEquals(metadataChildReference.getReadOnlyKey(), "READONLY_KEY");
 	}
 
 	private DataGroup createChildRefOtherMetadata() {
@@ -68,27 +59,6 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	}
 
 	@Test
-	public void testToMetadataFalse() {
-		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(new DataAtomicSpy("secret", "false"));
-		dataGroup.addChild(new DataAtomicSpy("readOnly", "false"));
-
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
-				.fromDataGroup(dataGroup);
-		MetadataChildReference metadataChildReference = converter.toMetadata();
-
-		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
-		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
-		assertEquals(metadataChildReference.getRepeatMin(), 0);
-		assertEquals(metadataChildReference.getRepeatMinKey(), "");
-		assertEquals(metadataChildReference.getRepeatMax(), 16);
-		assertEquals(metadataChildReference.isSecret(), false);
-		assertEquals(metadataChildReference.getSecretKey(), "");
-		assertEquals(metadataChildReference.isReadOnly(), false);
-		assertEquals(metadataChildReference.getReadOnlyKey(), "");
-	}
-
-	@Test
 	public void testToMetadataNoNonMandatoryInfo() {
 		DataGroup dataGroup = createDataGroup();
 
@@ -99,34 +69,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		assertEquals(metadataChildReference.getLinkedRecordType(), "metadataGroup");
 		assertEquals(metadataChildReference.getLinkedRecordId(), "otherMetadata");
 		assertEquals(metadataChildReference.getRepeatMin(), 0);
-		assertEquals(metadataChildReference.getRepeatMinKey(), "");
 		assertEquals(metadataChildReference.getRepeatMax(), 16);
-		assertEquals(metadataChildReference.isSecret(), false);
-		assertEquals(metadataChildReference.getSecretKey(), "");
-		assertEquals(metadataChildReference.isReadOnly(), false);
-		assertEquals(metadataChildReference.getReadOnlyKey(), "");
-	}
-
-	@Test(expectedExceptions = DataConversionException.class)
-	public void testToMetadataNotBooleanValue() {
-		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(new DataAtomicSpy("secret", "NOT_BOOLEAN_VALUE"));
-		dataGroup.addChild(new DataAtomicSpy("readOnly", "NOT_BOOLEAN_VALUE"));
-
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
-				.fromDataGroup(dataGroup);
-		converter.toMetadata();
-	}
-
-	@Test(expectedExceptions = DataConversionException.class)
-	public void testToMetadataNotBooleanValueReadOnly() {
-		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(new DataAtomicSpy("readOnly", "NOT_BOOLEAN_VALUE"));
-
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
-				.fromDataGroup(dataGroup);
-		converter.toMetadata();
-
 	}
 
 	@Test
@@ -264,5 +207,29 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 			int numOfCollectTermsToReturn) {
 		((DataGroupSpy) dataGroup).numOfGetAllGroupsWithNameInDataToReturn
 				.put("childRefCollectTerm", numOfCollectTermsToReturn);
+	}
+
+	@Test
+	public void testToMetadataRecordPartConstraintReadWrite() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.addChild(new DataAtomicSpy("recordPartConstraint", "readWrite"));
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getRecordPartConstraint(), ConstraintType.READ_WRITE);
+	}
+
+	@Test
+	public void testToMetadataRecordPartConstraintWrite() {
+		DataGroup dataGroup = createDataGroup();
+		dataGroup.addChild(new DataAtomicSpy("recordPartConstraint", "write"));
+
+		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+				.fromDataGroup(dataGroup);
+		MetadataChildReference metadataChildReference = converter.toMetadata();
+
+		assertEquals(metadataChildReference.getRecordPartConstraint(), ConstraintType.WRITE);
 	}
 }

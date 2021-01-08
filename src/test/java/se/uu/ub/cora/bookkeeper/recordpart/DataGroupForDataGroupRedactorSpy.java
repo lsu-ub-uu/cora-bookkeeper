@@ -30,7 +30,7 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataGroupForRecordPartFilterSpy implements DataGroup {
+public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 
 	public boolean removeAllChildrenWasCalled = false;
 	public boolean removeAllChildrenWithAttributeWasCalled = false;
@@ -48,7 +48,7 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 	List<DataElement> otherConstraintCollection = new ArrayList<>();
 	public boolean getAllChildrenWithNameInDataAndAttributesWasCalled = false;
 
-	public DataGroupForRecordPartFilterSpy(String nameInData) {
+	public DataGroupForDataGroupRedactorSpy(String nameInData) {
 		titleCollection.add(new DataAtomicSpy("title", "some title"));
 		otherConstraintCollection.add(new DataAtomicSpy("otherConstraint", "other"));
 	}
@@ -128,7 +128,7 @@ public class DataGroupForRecordPartFilterSpy implements DataGroup {
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 

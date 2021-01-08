@@ -18,39 +18,27 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import java.util.HashSet;
-import java.util.Set;
+import static org.testng.Assert.assertEquals;
 
-import se.uu.ub.cora.data.DataAttribute;
+import org.testng.annotations.Test;
 
-public class Constraint {
-
-	private String nameInData;
-	private Set<DataAttribute> dataAttributes = new HashSet<>();
-	private ConstraintType constraintType;
-
-	public Constraint(String nameInData) {
-		this.nameInData = nameInData;
+public class ConstraintTypeTest {
+	@Test
+	public void testInit() throws Exception {
+		assertEquals(ConstraintType.WRITE.nameInData, "write");
+		assertEquals(ConstraintType.READ_WRITE.nameInData, "readWrite");
 	}
 
-	public String getNameInData() {
-		return nameInData;
+	@Test
+	public void testValueOf() throws Exception {
+		assertEquals(ConstraintType.WRITE, ConstraintType.fromString("write"));
+		assertEquals(ConstraintType.READ_WRITE, ConstraintType.fromString("readWrite"));
+		assertEquals(null, ConstraintType.fromString("notAKnownNameInData"));
 	}
 
-	public void addAttribute(DataAttribute dataAttribute) {
-		dataAttributes.add(dataAttribute);
+	@Test
+	public void testNameInData() throws Exception {
+		assertEquals("write", ConstraintType.WRITE.nameInData);
+		assertEquals("readWrite", ConstraintType.READ_WRITE.nameInData);
 	}
-
-	public Set<DataAttribute> getDataAttributes() {
-		return dataAttributes;
-	}
-
-	public void setType(ConstraintType constraintType) {
-		this.constraintType = constraintType;
-	}
-
-	public ConstraintType getType() {
-		return constraintType;
-	}
-
 }

@@ -32,6 +32,7 @@ public class ConstraintTest {
 
 	private Constraint defaultConstraint;
 	String nameInData = "someNameInData";
+	ConstraintType type = ConstraintType.WRITE;
 
 	@BeforeMethod
 	public void setUp() {
@@ -41,6 +42,12 @@ public class ConstraintTest {
 	@Test
 	public void testNameInData() {
 		assertEquals(defaultConstraint.getNameInData(), nameInData);
+	}
+
+	@Test
+	public void testSetType() throws Exception {
+		defaultConstraint.setType(ConstraintType.WRITE);
+		assertEquals(defaultConstraint.getType(), ConstraintType.WRITE);
 	}
 
 	@Test

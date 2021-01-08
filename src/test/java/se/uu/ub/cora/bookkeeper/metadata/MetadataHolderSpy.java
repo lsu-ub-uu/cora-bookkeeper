@@ -16,13 +16,29 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.metadata;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface MetadataMatchData {
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+public class MetadataHolderSpy extends MetadataHolder {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
+	public Map<String, MetadataElement> elementsToReturn = new HashMap<>();
+
+	@Override
+	public void addMetadataElement(MetadataElement metadataElement) {
+
+	}
+
+	@Override
+	public MetadataElement getMetadataElement(String elementId) {
+		MCR.addCall("elementId", elementId);
+		MetadataElement metadataElement = elementsToReturn.get(elementId);
+
+		MCR.addReturned(metadataElement);
+		return metadataElement;
+	}
 }

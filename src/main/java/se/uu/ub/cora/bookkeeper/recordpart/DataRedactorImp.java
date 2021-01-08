@@ -4,7 +4,7 @@
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
+ *     it under the terms of the GNU General Publiåc License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
@@ -18,71 +18,184 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataRedactorImp implements DataRedactor {
 
-	@Override
-	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
-			Set<Constraint> constraints, Set<String> permissions) {
-		for (Constraint constraint : constraints) {
-			possiblyRemoveChildIfNoPermission(dataGroup, constraint, permissions);
-		}
-		return dataGroup;
+	private DataGroupRedactor dataGroupRedactor;
+	private MetadataHolder metadataHolder;
+	private Set<Constraint> constraints;
+	private Set<String> permissions;
+	private DataGroupWrapperFactory wrapperFactory;
+	private MatcherFactory matcherFactory;
+
+	public DataRedactorImp(MetadataHolder metadataHolder, DataGroupRedactor dataGroupRedactor,
+			DataGroupWrapperFactory wrapperFactory, MatcherFactory matcherFactory) {
+		this.metadataHolder = metadataHolder;
+		this.dataGroupRedactor = dataGroupRedactor;
+		this.wrapperFactory = wrapperFactory;
+		this.matcherFactory = matcherFactory;
 	}
 
-	private void possiblyRemoveChildIfNoPermission(DataGroup dataGroup, Constraint constraint,
+	@Override
+	public DataGroup removeChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataGroup dataGroup, Set<Constraint> constraints, Set<String> permissions) {
+		if (constraints.isEmpty()) {
+			return dataGroup;
+		}
+		this.constraints = constraints;
+		this.permissions = permissions;
+
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+		return possiblyRemoveChildren(dataGroup, metadataGroup);
+	}
+
+	private DataGroup possiblyRemoveChildren(DataGroup dataGroup, MetadataGroup metadataGroup) {
+		DataGroup redactedGroup = dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(
+				dataGroup, constraints, permissions);
+
+		List<MetadataChildReference> metadataChildReferences = metadataGroup.getChildReferences();
+		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
+			possiblyRemoveChild(redactedGroup, metadataChildReference);
+		}
+		return redactedGroup;
+	}
+
+	private void possiblyRemoveChild(DataGroup redactedGroup,
+			MetadataChildReference metadataChildReference) {
+		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
+			removeChildDataIfExists(redactedGroup, metadataChildReference);
+		}
+	}
+
+	private void removeChildDataIfExists(DataGroup redactedDataGroup,
+			MetadataChildReference metadataChildReference) {
+		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+				metadataChildReference);
+
+		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
+		if (groupMatcher.groupHasMatchingDataChild()) {
+			DataGroup childDataGroup = groupMatcher.getMatchingDataChild();
+			possiblyRemoveChildren(childDataGroup, childMetadataGroup);
+		}
+	}
+
+	private boolean repeatMaxIsOne(MetadataChildReference metadataChildReference) {
+		return metadataChildReference.getRepeatMax() == 1;
+	}
+
+	private boolean isMetadataGroup(MetadataChildReference metadataChildReference) {
+		return "metadataGroup".equals(metadataChildReference.getLinkedRecordType());
+	}
+
+	private MetadataGroup getMetadataChildFromMetadataHolder(
+			MetadataChildReference metadataChildReference) {
+		String childMetadataId = metadataChildReference.getLinkedRecordId();
+
+		return (MetadataGroup) metadataHolder.getMetadataElement(childMetadataId);
+	}
+
+	@Override
+	public DataGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataGroup originalDataGroup, DataGroup updatedDataGroup, Set<Constraint> constraints,
 			Set<String> permissions) {
-		if (noPermissionExist(permissions, constraint.getNameInData())) {
-			removeMatchingChildren(dataGroup, constraint);
+		if (constraints.isEmpty()) {
+			return originalDataGroup;
 		}
-	}
 
-	private DataAttribute[] getAttributesAsArray(Constraint constraint) {
-		List<DataAttribute> attributes = new ArrayList<>(constraint.getDataAttributes());
-		return attributes.stream().toArray(DataAttribute[]::new);
-	}
+		this.constraints = constraints;
+		this.permissions = permissions;
 
-	private boolean noPermissionExist(Set<String> permissions, String constraint) {
-		return !permissions.contains(constraint);
-	}
-
-	@Override
-	public DataGroup replaceChildrenForConstraintsWithoutPermissions(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<Constraint> constraints, Set<String> permissions) {
-		for (Constraint constraint : constraints) {
-			possiblyReplaceChildIfNoPermission(originalDataGroup, updatedDataGroup, permissions,
-					constraint);
-		}
+		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
+		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
+		possiblyReplaceChildren(originalDataGroup, wrappedUpdated, metadataGroup);
 		return updatedDataGroup;
 	}
 
-	private void possiblyReplaceChildIfNoPermission(DataGroup originalDataGroup,
-			DataGroup updatedDataGroup, Set<String> permissions, Constraint constraint) {
-		if (noPermissionExist(permissions, constraint.getNameInData())) {
-			replaceChild(originalDataGroup, updatedDataGroup, constraint);
+	private void possiblyReplaceChildren(DataGroup originalDataGroup,
+			DataGroupWrapper wrappedUpdated, MetadataGroup metadataGroup) {
+		DataGroup redactedDataGroup = dataGroupRedactor
+				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
+						constraints, permissions);
+
+		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
+			possiblyReplaceChild(originalDataGroup, redactedDataGroup, metadataChildReference);
 		}
 	}
 
-	private void replaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
-			Constraint constraint) {
-		removeMatchingChildren(updatedDataGroup, constraint);
-		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		List<DataElement> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
-				constraint.getNameInData(), attributeArray);
-		updatedDataGroup.addChildren(allChildren);
+	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroup redactedDataGroup,
+			MetadataChildReference metadataChildReference) {
+		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
+			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+					metadataChildReference);
+			possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup, redactedDataGroup,
+					childMetadataGroup);
+		}
 	}
 
-	private void removeMatchingChildren(DataGroup updatedDataGroup, Constraint constraint) {
-		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		updatedDataGroup.removeAllChildrenWithNameInDataAndAttributes(constraint.getNameInData(),
-				attributeArray);
+	private void possiblyReplaceOrRemoveChildrenIfChildGroupHasData(DataGroup originalDataGroup,
+			DataGroup redactedDataGroup, MetadataGroup childMetadataGroup) {
+
+		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
+		if (groupMatcher.groupHasMatchingDataChild()) {
+			DataGroup updatedChild = groupMatcher.getMatchingDataChild();
+			DataGroupWrapper wrappedChild = wrapperFactory.factor(updatedChild);
+
+			possiblyReplaceOrRemoveChild(originalDataGroup, childMetadataGroup, updatedChild,
+					wrappedChild);
+		}
 	}
+
+	private void possiblyReplaceOrRemoveChild(DataGroup originalDataGroup,
+			MetadataGroup childMetadataGroup, DataGroup updatedChild, DataGroupWrapper wrappedUpdated) {
+
+		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
+		if (!groupMatcher.groupHasMatchingDataChild()) {
+			dataGroupRedactor.removeChildrenForConstraintsWithoutPermissions(updatedChild,
+					constraints, permissions);
+		} else {
+			DataElement originalChild = groupMatcher.getMatchingDataChild();
+			possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(childMetadataGroup, updatedChild,
+					originalChild, wrappedUpdated);
+		}
+	}
+
+	private void possiblyReplaceIfchildStillNeedsToBeCheckedForReplace(
+			MetadataGroup childMetadataGroup, DataElement updatedChild, DataElement originalChild,
+			DataGroupWrapper wrappedUpdated) {
+
+		if (childStillNeedsToBeCheckedForReplace(updatedChild, wrappedUpdated)) {
+			possiblyReplaceChildren((DataGroup) originalChild, wrappedUpdated, childMetadataGroup);
+		}
+	}
+
+	private boolean childStillNeedsToBeCheckedForReplace(DataElement updatedChild,
+			DataGroupWrapper wrappedUpdated) {
+		return !wrappedUpdated.hasRemovedBeenCalled(updatedChild);
+	}
+
+	public MetadataHolder getMetadataHolder() {
+		return metadataHolder;
+	}
+
+	public DataGroupRedactor getDataGroupRedactor() {
+		return dataGroupRedactor;
+	}
+
+	public DataGroupWrapperFactory getDataGroupWrapperFactory() {
+		return wrapperFactory;
+	}
+
+	public MatcherFactory getMatcherFactory() {
+		return matcherFactory;
+	}
+
 }

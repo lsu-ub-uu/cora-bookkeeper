@@ -4,7 +4,7 @@
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
+ *     it under the terms of the GNU General Publiåc License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
@@ -18,11 +18,23 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 
-public interface MetadataMatchData {
+public class MetadataMatchFactoryImp implements MetadataMatchDataFactory {
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+	public static MetadataMatchFactoryImp usingMetadataHolder(MetadataHolder metadataHolder) {
+		return new MetadataMatchFactoryImp(metadataHolder);
+	}
+
+	private MetadataHolder metadataHolder;
+
+	private MetadataMatchFactoryImp(MetadataHolder metadataHolder) {
+		this.metadataHolder = metadataHolder;
+	}
+
+	@Override
+	public MetadataMatchData factor() {
+		return MetadataMatchDataImp.withMetadataHolder(metadataHolder);
+	}
 
 }

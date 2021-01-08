@@ -4,7 +4,7 @@
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
+ *     it under the terms of the GNU General Publiåc License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
@@ -18,11 +18,20 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import static org.testng.Assert.assertSame;
 
-public interface MetadataMatchData {
+import org.testng.annotations.Test;
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 
+public class MetadataMatchDataFactoryTest {
+
+	@Test
+	public void testFactor() {
+		MetadataHolder metadataHolder = new MetadataHolderSpy();
+		MetadataMatchDataFactory factory = MetadataMatchFactoryImp.usingMetadataHolder(metadataHolder);
+		MetadataMatchDataImp matcher = (MetadataMatchDataImp) factory.factor();
+		assertSame(matcher.getMetadataHolder(), metadataHolder);
+	}
 }

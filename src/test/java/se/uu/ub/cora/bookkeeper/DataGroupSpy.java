@@ -73,7 +73,6 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public void addChild(DataElement dataElement) {
 		if (dataElement instanceof DataAtomicSpy) {
-			// det här går ju inte, njaeeaae
 			DataAtomicSpy atomicSpyChild = (DataAtomicSpy) dataElement;
 			atomicValues.put(atomicSpyChild.nameInData, atomicSpyChild.value);
 

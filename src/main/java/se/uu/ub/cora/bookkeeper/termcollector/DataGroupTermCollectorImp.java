@@ -32,6 +32,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
@@ -175,7 +176,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
 			DataElement dataElement) {
-		MetadataMatchData metadataMatchData = MetadataMatchData.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 		ValidationAnswer validationAnswer = metadataMatchData
 				.metadataSpecifiesData(childMetadataElement, dataElement);
 		return validationAnswer.dataIsValid();

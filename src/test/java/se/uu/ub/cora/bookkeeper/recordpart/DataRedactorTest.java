@@ -23,10 +23,11 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
@@ -34,30 +35,45 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataRedactorTest {
+	private DataRedactorImp dataRedactor;
 
-	private DataGroupForRecordPartFilterSpy dataGroupSpy;
-	private DataRedactor recordPartFilter;
+	private DataGroupForDataRedactorSpy topDataGroupSpy;
 	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
 	private Set<Constraint> titleConstraints;
-	private Set<String> titlePermissions;
-	private DataGroupForRecordPartFilterSpy originalDataGroup;
-	private DataGroupForRecordPartFilterSpy updatedDataGroup;
+	private DataGroupForDataRedactorSpy originalDataGroup;
+	private DataGroupForDataRedactorSpy updatedDataGroup;
+	private DataGroupRedactorSpy dataGroupRedactorSpy;
+	private MethodCallRecorder groupRedactorMCR;
+	private MetadataHolderSpy metadataHolder;
+
+	private String metadataId = "someMetadataId";
+	private DataGroupWrapperFactorySpy wrapperFactory;
+	private MatcherFactorySpy matcherFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		dataGroupSpy = new DataGroupForRecordPartFilterSpy("someDataGroup");
-		recordPartFilter = new DataRedactorImp();
+		metadataHolder = new MetadataHolderSpy();
+		dataGroupRedactorSpy = new DataGroupRedactorSpy();
+		groupRedactorMCR = dataGroupRedactorSpy.MCR;
+		wrapperFactory = new DataGroupWrapperFactorySpy();
+		matcherFactory = new MatcherFactorySpy();
+		dataRedactor = new DataRedactorImp(metadataHolder, dataGroupRedactorSpy, wrapperFactory,
+				matcherFactory);
+		topDataGroupSpy = new DataGroupForDataRedactorSpy("someDataGroup");
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
 		titleConstraints = createReadConstraintForTitle();
-		titlePermissions = createReadPermissionForTitle();
-		originalDataGroup = new DataGroupForRecordPartFilterSpy("originalDataGroup");
-		updatedDataGroup = new DataGroupForRecordPartFilterSpy("changedDataGroup");
+		originalDataGroup = new DataGroupForDataRedactorSpy("originalDataGroup");
+		updatedDataGroup = new DataGroupForDataRedactorSpy("changedDataGroup");
 	}
 
 	private Set<Constraint> createReadConstraintForTitle() {
@@ -67,235 +83,457 @@ public class DataRedactorTest {
 		return recordPartConstraints;
 	}
 
-	private Set<String> createReadPermissionForTitle() {
-		Set<String> recordPartPermissions = new HashSet<>();
-		recordPartPermissions.add("title");
-		return recordPartPermissions;
+	@Test
+	public void testInit() {
+		assertSame(dataRedactor.getMetadataHolder(), metadataHolder);
+		assertSame(dataRedactor.getDataGroupRedactor(), dataGroupRedactorSpy);
+		assertSame(dataRedactor.getDataGroupWrapperFactory(), wrapperFactory);
+		assertSame(dataRedactor.getMatcherFactory(), matcherFactory);
 	}
 
 	@Test
-	public void testRemoveNoConstraintsNoPermissions() throws Exception {
-		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, emptyConstraints,
-						emptyPermissions);
-
-		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+	public void testRemoveWhenNoConstraints() throws Exception {
+		String metadataId = "someMetadataId";
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, emptyConstraints, emptyPermissions);
+		dataGroupRedactorSpy.MCR
+				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
+		assertSame(filteredDataGroup, topDataGroupSpy);
 	}
 
 	@Test
-	public void testRemoveNoConstraintsButPermissions() throws Exception {
-		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, emptyConstraints,
-						titlePermissions);
+	public void testLoopTwoGroupChildren() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childDataGroup", 0, 1);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "recordInfo", 0, 1);
 
-		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, titleConstraints, emptyPermissions);
+
+		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
+		assertGroupRedactorCalledForTopLevelDataGroup();
+		assertGroupRedactorCalledForFirstChildGroup();
+		assertGroupRedactorCalledForSecondChildGroup();
+		assertMetadataHasBeenRequestedForAllProcessedGroups();
+	}
+
+	private void assertReturnedDataIsFromGroupRedactor(DataGroup filteredDataGroup) {
+		groupRedactorMCR.assertReturn("removeChildrenForConstraintsWithoutPermissions", 0,
+				filteredDataGroup);
+	}
+
+	private MetadataGroupSpy createAndAddTopGroup(String metadataId) {
+		MetadataGroupSpy topGroup = new MetadataGroupSpy(metadataId, "someNameInData");
+		metadataHolder.elementsToReturn.put(metadataId, topGroup);
+		return topGroup;
+	}
+
+	private void assertGroupRedactorCalledForTopLevelDataGroup() {
+		groupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 0,
+				topDataGroupSpy, titleConstraints, emptyPermissions);
+	}
+
+	private void assertGroupRedactorCalledForFirstChildGroup() {
+		DataGroupForDataRedactorSpy firstChildGroup = getGroupReturnedFromMatcherWithCallNumber(0,
+				0);
+		groupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 1,
+				firstChildGroup, titleConstraints, emptyPermissions);
+	}
+
+	private void assertGroupRedactorCalledForSecondChildGroup() {
+		DataGroupForDataRedactorSpy secondChildGroup = getGroupReturnedFromMatcherWithCallNumber(0,
+				1);
+		groupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 2,
+				secondChildGroup, titleConstraints, emptyPermissions);
+	}
+
+	private void assertMetadataHasBeenRequestedForAllProcessedGroups() {
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 1, "childDataGroup");
+		metadataHolder.MCR.assertParameters("getMetadataElement", 2, "recordInfo");
+	}
+
+	private MetadataGroupSpy createAndAddChildDataGroup(MetadataGroupSpy topGroup,
+			String linkedRecordType, String linkedRecordId, int repeatMin, int repeatMax) {
+		topGroup.createChildReference(linkedRecordType, linkedRecordId, repeatMin, repeatMax,
+				ConstraintType.WRITE);
+		MetadataGroupSpy metadataChild = new MetadataGroupSpy(linkedRecordId,
+				linkedRecordId + "NameInData");
+
+		metadataHolder.elementsToReturn.put(linkedRecordId, metadataChild);
+		return metadataChild;
+	}
+
+	private DataGroupForDataRedactorSpy getGroupReturnedFromMatcherWithCallNumber(int removeNumber,
+			int firstGroupNumber) {
+		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(firstGroupNumber);
+		DataGroupForDataRedactorSpy firstChildGroup = matcherSpy.returnedDataGroup;
+		return firstChildGroup;
 	}
 
 	@Test
-	public void testRemoveConstraintsAndPermissions() throws Exception {
-		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, titleConstraints,
-						titlePermissions);
+	public void testOneGroupChildNoMatchingData() {
+		matcherFactory.hasMatchingChild = false;
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "type", 0, 1);
 
-		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, titleConstraints, emptyPermissions);
+
+		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
+		assertGroupRedactorCalledForTopLevelDataGroup();
+		assertOnlyOneCallToGroupRedactor();
+
+		assertMetadataHasBeenRequestedForTwoGroups();
+	}
+
+	private void assertOnlyOneCallToGroupRedactor() {
+		groupRedactorMCR
+				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
+	}
+
+	private void assertMetadataHasBeenRequestedForTwoGroups() {
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 1, "type");
 	}
 
 	@Test
-	public void testRemoveNoChildToRemove() throws Exception {
-		dataGroupSpy.childExists = false;
+	public void testOneChildNotGroup() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataTextVariable", "id", 0, 1);
 
-		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, titleConstraints, emptyPermissions);
+
+		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
+		assertGroupRedactorCalledForTopLevelDataGroup();
+		assertOnlyOneCallToGroupRedactor();
+
+		assertOnlyMetadataForTopGroupHasBeenRequested();
+	}
+
+	private void assertOnlyMetadataForTopGroupHasBeenRequested() {
+		metadataHolder.MCR.assertNumberOfCallsToMethod("getMetadataElement", 1);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+	}
+
+	@Test
+	public void testOneChildGroupRepeatable() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "recordInfo", 0, 3);
+
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, titleConstraints, emptyPermissions);
+
+		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
+		assertGroupRedactorCalledForTopLevelDataGroup();
+		assertOnlyOneCallToGroupRedactor();
+
+		assertOnlyMetadataForTopGroupHasBeenRequested();
+	}
+
+	@Test
+	public void testOneGroupChildWithGrandChild() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		MetadataGroupSpy recordInfo = createAndAddChildDataGroup(topGroup, "metadataGroup",
+				"recordInfo", 0, 1);
+		createAndAddChildDataGroup(recordInfo, "metadataGroup", "dataDivider", 0, 1);
+
+		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
+				metadataId, topDataGroupSpy, titleConstraints, emptyPermissions);
+
+		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
+		assertGroupRedactorCalledForTopLevelDataGroup();
+		assertGroupRedactorCalledForFirstChildGroup();
+		assertGroupRedactorCalledForFirstGrandChildGroup();
+
+		assertMetadataHasBeenRequestedForAllProcessedGroupsForGrandChildTest();
+	}
+
+	private void assertGroupRedactorCalledForFirstGrandChildGroup() {
+		DataGroupForDataRedactorSpy grandChildGroup = getGroupReturnedFromMatcherWithCallNumber(1,
+				1);
+
+		groupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 2,
+				grandChildGroup, titleConstraints, emptyPermissions);
+	}
+
+	private void assertMetadataHasBeenRequestedForAllProcessedGroupsForGrandChildTest() {
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, metadataId);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 1, "recordInfo");
+		metadataHolder.MCR.assertParameters("getMetadataElement", 2, "dataDivider");
+	}
+
+	@Test
+	public void testRemoveChildrenWithNoMatch() {
+		matcherFactory.hasMatchingChild = false;
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		dataRedactor.removeChildrenForConstraintsWithoutPermissions(metadataId, updatedDataGroup,
 				titleConstraints, emptyPermissions);
 
-		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
-		assertEquals(dataGroupSpy.childNameInDataWithAttributesToRemove, "title");
+		assertEquals(matcherFactory.returnedMatchers.size(), 1);
+
+		DataGroupForDataRedactorSpy returnedRedactedGroup = (DataGroupForDataRedactorSpy) groupRedactorMCR
+				.getReturnValue("removeChildrenForConstraintsWithoutPermissions", 0);
+
+		MetadataGroup returnedMetadataChild = (MetadataGroup) metadataHolder.MCR
+				.getReturnValue("getMetadataElement", 1);
+
+		assertEquals(matcherFactory.dataGroups.get(0), returnedRedactedGroup);
+		assertEquals(matcherFactory.metadataGroups.get(0), returnedMetadataChild);
+		MatcherSpy returnedMatcherForUpdated = matcherFactory.returnedMatchers.get(0);
+		assertTrue(returnedMatcherForUpdated.hasMatchingChildWasCalled);
+		assertFalse(returnedMatcherForUpdated.getMatchingChildWasCalled);
+
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
 	}
 
 	@Test
-	public void testRemoveConstraintsNoPermissions() throws Exception {
-		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleConstraints, emptyPermissions);
-
-		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
-		assertEquals(dataGroupSpy.childNameInDataWithAttributesToRemove, "title");
-	}
-
-	@Test
-	public void testRemoveMultipleConstraintsNoPermissions() throws Exception {
-		titleConstraints.add(new Constraint("otherConstraint"));
-
-		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy,
-				titleConstraints, emptyPermissions);
-
-		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
-		List<String> childNamesInDataToRemoveAll = dataGroupSpy.childNamesInDataWithAttributesToRemoveAll;
-		assertTrue(childNamesInDataToRemoveAll.contains("title"));
-		assertTrue(childNamesInDataToRemoveAll.contains("otherConstraint"));
-
-		assertTrue(dataGroupSpy.usedAttributesForRemove.isEmpty());
-	}
-
-	@Test
-	public void testRemoveConstraintsWithAttributesAndPermissions() throws Exception {
-		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
-
-		DataGroup filteredDataGroup = recordPartFilter
-				.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, constraints,
-						titlePermissions);
-
-		assertSame(filteredDataGroup, dataGroupSpy);
-		assertFalse(dataGroupSpy.containsChildWithNameInDataWasCalled);
-		assertFalse(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
-	}
-
-	private Set<Constraint> createSetWithOneConstraintOneAttribute() {
-		Set<Constraint> recordPartConstraints = new HashSet<>();
-		Constraint constraint = new Constraint("title");
-		constraint.addAttribute(new DataAttributeSpy("someId", "someValue"));
-		recordPartConstraints.add(constraint);
-		return recordPartConstraints;
-	}
-
-	@Test
-	public void testRemoveConstraintsWithAttributesNoPermissions() throws Exception {
-		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
-		recordPartFilter.removeChildrenForConstraintsWithoutPermissions(dataGroupSpy, constraints,
+	public void testReplaceWhenNoConstraints() throws Exception {
+		DataGroup replacedDataGroup = dataRedactor.replaceChildrenForConstraintsWithoutPermissions(
+				metadataId, originalDataGroup, updatedDataGroup, emptyConstraints,
 				emptyPermissions);
+		assertSame(replacedDataGroup, originalDataGroup);
+		dataGroupRedactorSpy.MCR
+				.assertMethodNotCalled("replaceChildrenForConstraintsWithoutPermissions");
+	}
 
-		assertTrue(dataGroupSpy.removeAllChildrenWithAttributeWasCalled);
-		assertTrue(dataGroupSpy.usedAttributesForRemove.containsKey("someId"));
-		assertEquals(dataGroupSpy.childNameInDataWithAttributesToRemove, "title");
+	private void assertMatcherWasCalledWithCorrectDataForOriginal(int index) {
+		MatcherSpy returnedMatcherForOriginal = matcherFactory.returnedMatchers.get(index);
+		assertEquals(matcherFactory.dataGroups.get(index), originalDataGroup);
+		MetadataGroup returnedMetadataChild = (MetadataGroup) metadataHolder.MCR
+				.getReturnValue("getMetadataElement", index);
+		assertEquals(matcherFactory.metadataGroups.get(index), returnedMetadataChild);
+
+		assertTrue(returnedMatcherForOriginal.hasMatchingChildWasCalled);
+		assertTrue(returnedMatcherForOriginal.getMatchingChildWasCalled);
+	}
+
+	private void assertMatcherWasCalledWithCorrectDataForUpdated(int index) {
+		DataGroupForDataRedactorSpy returnedRedactedGroup = (DataGroupForDataRedactorSpy) groupRedactorMCR
+				.getReturnValue("replaceChildrenForConstraintsWithoutPermissions", index);
+
+		MetadataGroup returnedMetadataChild = (MetadataGroup) metadataHolder.MCR
+				.getReturnValue("getMetadataElement", 1);
+
+		assertEquals(matcherFactory.dataGroups.get(index), returnedRedactedGroup);
+		assertEquals(matcherFactory.metadataGroups.get(index), returnedMetadataChild);
+		MatcherSpy returnedMatcherForUpdated = matcherFactory.returnedMatchers.get(index);
+		assertTrue(returnedMatcherForUpdated.hasMatchingChildWasCalled);
+		assertTrue(returnedMatcherForUpdated.getMatchingChildWasCalled);
 	}
 
 	@Test
-	public void testReplaceNoContrainsNoPermissions() throws Exception {
-		DataGroup replacedDataGroup = recordPartFilter
-				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-						updatedDataGroup, emptyConstraints, emptyPermissions);
+	public void testReplaceTwoGroupChildrenNoneRemovedFromTop() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childDataGroup", 0, 1);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "recordInfo", 0, 1);
 
-		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
-	}
-
-	@Test
-	public void testReplaceNoConstraintsButPermissions() throws Exception {
-		DataGroup replacedDataGroup = recordPartFilter
-				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-						updatedDataGroup, emptyConstraints, titlePermissions);
-
-		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
-	}
-
-	@Test
-	public void testReplaceConstraintsWithMatchingPermissions() throws Exception {
-		DataGroup replacedDataGroup = recordPartFilter
-				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-						updatedDataGroup, titleConstraints, titlePermissions);
-
-		assertSame(replacedDataGroup, updatedDataGroup);
-		assertFalse(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
-		assertFalse(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
-	}
-
-	@Test
-	public void testReplaceMultipleConstraintsMatchingMultiplePermissions() throws Exception {
-		titleConstraints.add(new Constraint("otherConstraint"));
-
-		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-				updatedDataGroup, titleConstraints, titlePermissions);
-
-		assertTrue(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
-		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
-
-		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
-				.contains("otherConstraint"));
-		assertFalse(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
-
-		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
-				originalDataGroup.getAllChildrenWithNameInDataAndAttributes("otherConstraint"));
-	}
-
-	@Test
-	public void testReplaceConstraintsEmptyPermissions() throws Exception {
-		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertEquals(updatedDataGroup.childNameInDataWithAttributesToRemove, "title");
-		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
-				originalDataGroup.getAllChildrenWithNameInData("title"));
-		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+		DataGroupWrapperSpy wrapper = wrapperFactory.factoredWrappers.get(0);
+		assertSame(wrapper.dataGroup, updatedDataGroup);
 
+		dataGroupRedactorSpy.MCR.assertParameters("replaceChildrenForConstraintsWithoutPermissions",
+				0, originalDataGroup, wrapper, titleConstraints, emptyPermissions);
+
+		DataGroupForDataRedactorSpy groupReturnedFromRedactor = (DataGroupForDataRedactorSpy) dataGroupRedactorSpy.MCR
+				.getReturnValue("replaceChildrenForConstraintsWithoutPermissions", 0);
+
+		assertCallToRedactorReplaceWasCalledForChildData(groupReturnedFromRedactor, 0, 1);
+		assertCallToRedactorReplaceWasCalledForChildData(groupReturnedFromRedactor, 2, 2);
+
+		assertMetadataHasBeenRequestedForAllProcessedGroups();
+		assertMatcherWasCalledWithCorrectDataForUpdated(0);
+		assertMatcherWasCalledWithCorrectDataForOriginal(1);
+	}
+
+	private void assertCallToRedactorReplaceWasCalledForChildData(
+			DataGroupForDataRedactorSpy filteredDataGroup, int matcherIndex, int replaceCallIndex) {
+
+		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(matcherIndex);
+		DataGroupForDataRedactorSpy replacedChild = matcherSpy.returnedDataGroup;
+
+		MatcherSpy matcherSpy2 = matcherFactory.returnedMatchers.get(matcherIndex + 1);
+		DataGroupForDataRedactorSpy originalChild = matcherSpy2.returnedDataGroup;
+
+		Map<String, Object> parametersForMethodAndCallNumber = groupRedactorMCR
+				.getParametersForMethodAndCallNumber(
+						"replaceChildrenForConstraintsWithoutPermissions", replaceCallIndex);
+		assertEquals(parametersForMethodAndCallNumber.get("originalDataGroup"), originalChild);
+
+		DataGroupWrapperSpy wrapper = wrapperFactory.factoredWrappers.get(replaceCallIndex);
+
+		assertEquals(wrapper.dataGroup, replacedChild);
+		assertEquals(parametersForMethodAndCallNumber.get("recordPartConstraints"),
+				titleConstraints);
+		assertEquals(parametersForMethodAndCallNumber.get("recordPartPermissions"),
+				emptyPermissions);
 	}
 
 	@Test
-	public void testReplaceConstraintsWithAttributeEmptyPermissions() throws Exception {
-		Set<Constraint> constraints = createSetWithOneConstraintOneAttribute();
-		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
-				updatedDataGroup, constraints, emptyPermissions);
+	public void testReplaceOneChildNotGroup() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 4);
 
-		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
-
-		assertEquals(updatedDataGroup.childNameInDataWithAttributesToRemove, "title");
-		assertSame(updatedDataGroup.addedChildrenCollections.iterator().next(),
-				originalDataGroup.getAllChildrenWithNameInData("title"));
-
-		assertTrue(updatedDataGroup.usedAttributesForRemove.containsKey("someId"));
-	}
-
-	@Test
-	public void testReplaceMultipleConstraintsNoPermissions() throws Exception {
-		titleConstraints.add(new Constraint("otherConstraint"));
-
-		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		System.out.println(
-				"size " + updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.size());
+		assertEquals(matcherFactory.returnedMatchers.size(), 0);
 
-		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
-
-		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
-		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
-				.contains("otherConstraint"));
-
-		List<Collection<DataElement>> addedChildrenCollections = updatedDataGroup.addedChildrenCollections;
-		Collection<DataElement> titleCollection = getCollectionContainingChildrenWithNameInData(
-				"title", addedChildrenCollections);
-		assertSame(titleCollection, originalDataGroup.getAllChildrenWithNameInData("title"));
-
-		Collection<DataElement> otherConstraintCollection = getCollectionContainingChildrenWithNameInData(
-				"otherConstraint", addedChildrenCollections);
-		assertSame(otherConstraintCollection,
-				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
-	}
-
-	private Collection<DataElement> getCollectionContainingChildrenWithNameInData(String nameInData,
-			List<Collection<DataElement>> addedChildrenCollections) {
-		for (Collection<DataElement> collection : addedChildrenCollections) {
-			for (DataElement dataElement : collection) {
-				if (nameInData.equals(dataElement.getNameInData())) {
-					return collection;
-				}
-			}
-		}
-		return null;
 	}
 
 	@Test
-	public void testReplaceNoChildToRemove() throws Exception {
-		updatedDataGroup.childExists = false;
-		recordPartFilter.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup,
+	public void testReplaceOneChildGroupRepetable() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataTextVariable", "childText", 0, 1);
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				updatedDataGroup, titleConstraints, emptyPermissions);
 
-		assertTrue(updatedDataGroup.removeAllChildrenWithAttributeWasCalled);
-		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll.contains("title"));
-		assertTrue(originalDataGroup.getAllChildrenWithNameInDataAndAttributesWasCalled);
+		assertEquals(matcherFactory.returnedMatchers.size(), 0);
 
 	}
+
+	@Test
+	public void testReplaceOneChildGroupNoMatchOnNameInData() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+
+		assertEquals(matcherFactory.returnedMatchers.size(), 2);
+
+		groupRedactorMCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
+	}
+
+	@Test
+	public void testReplaceOneChildGroupMatchOnNameInDataAndNoMatchOnEmptyAttributes() {
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		List<DataAttribute> attributes = new ArrayList<>();
+		attributes.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
+		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
+		listOfAttributes.add(attributes);
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+
+		assertEquals(matcherFactory.returnedMatchers.size(), 2);
+
+		groupRedactorMCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
+	}
+
+	@Test
+	public void testReplaceOneChildGroupMatchOnNameInDataAndNoMatchAttributes() {
+
+		List<DataAttribute> replacedMetadataAttributes = new ArrayList<>();
+		replacedMetadataAttributes
+				.add(new DataAttributeSpy("someAttributeId", "someAttributeValue"));
+		matcherFactory.attributesToMatchedDataGroup = replacedMetadataAttributes;
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		List<DataAttribute> attributes = new ArrayList<>();
+		attributes.add(new DataAttributeSpy("NOTsomeAttributeId", "NOTsomeAttributeValue"));
+		List<List<DataAttribute>> listOfAttributes = new ArrayList<>();
+		listOfAttributes.add(attributes);
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", listOfAttributes);
+		List<DataAttribute> emptyAttributes = new ArrayList<>();
+		wrapperFactory.nameInDatasToRemove.get("childGroupNameInData").add(emptyAttributes);
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+
+		assertEquals(matcherFactory.returnedMatchers.size(), 2);
+
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
+	}
+
+	@Test
+	public void testReplaceOneChildGroupWhenAlreadyBeenReplaced() {
+		wrapperFactory.removeHasBeenCalled = true;
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+		DataGroupWrapperSpy dataGroupWrapper = wrapperFactory.factoredWrappers.get(0);
+
+		assertSame(dataGroupWrapper.dataGroup, updatedDataGroup);
+
+		DataGroupForDataRedactorSpy dataGroupFromMatcher = matcherFactory.returnedMatchers
+				.get(0).returnedDataGroup;
+		DataGroupWrapperSpy dataGroupWrapperForChild = wrapperFactory.factoredWrappers.get(1);
+		assertSame(dataGroupWrapperForChild.dataGroup, dataGroupFromMatcher);
+
+		assertEquals(matcherFactory.returnedMatchers.size(), 2);
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
+	}
+
+	@Test
+	public void testReplacedNotRecursivlyCalledForChildGroupWithoutData() {
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		List<Boolean> hasMatchingChildList = new ArrayList<>();
+		hasMatchingChildList.add(false);
+		hasMatchingChildList.add(true);
+		matcherFactory.hasMatchingChildList = hasMatchingChildList;
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+
+		assertEquals(matcherFactory.returnedMatchers.size(), 1);
+
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
+	}
+
+	@Test
+	public void testReplaceCallRedirectedToRemoveForChildGroupWithNoDataInOriginal() {
+
+		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
+		createAndAddChildDataGroup(topGroup, "metadataGroup", "childGroup", 0, 1);
+
+		List<Boolean> hasMatchingChildList = new ArrayList<>();
+		hasMatchingChildList.add(true);
+		hasMatchingChildList.add(false);
+		matcherFactory.hasMatchingChildList = hasMatchingChildList;
+
+		wrapperFactory.nameInDatasToRemove.put("childGroupNameInData", Collections.emptyList());
+
+		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
+				updatedDataGroup, titleConstraints, emptyPermissions);
+
+		assertEquals(matcherFactory.returnedMatchers.size(), 2);
+		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(0);
+		DataGroupForDataRedactorSpy returnedDataGroup = matcherSpy.returnedDataGroup;
+
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
+		dataGroupRedactorSpy.MCR
+				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
+		groupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 0,
+				returnedDataGroup, titleConstraints, emptyPermissions);
+	}
+
 }
