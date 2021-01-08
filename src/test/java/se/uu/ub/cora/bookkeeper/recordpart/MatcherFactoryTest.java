@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 
 import org.testng.annotations.Test;
 
@@ -33,9 +34,15 @@ public class MatcherFactoryTest {
 		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
 		MatcherFactory factory = new MatcherFactoryImp(dataMatcher);
 
-		GroupMatcher groupMatcher = (GroupMatcher) factory.factor(dataGroupSpy,
-				metadataGroupSpy);
+		GroupMatcher groupMatcher = (GroupMatcher) factory.factor(dataGroupSpy, metadataGroupSpy);
 		assertEquals(groupMatcher.getMetadataMatchData(), dataMatcher);
+	}
+
+	@Test
+	public void testGetMetadataMatchData() {
+		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
+		MatcherFactoryImp factory = new MatcherFactoryImp(dataMatcher);
+		assertSame(factory.getMetadataMatchData(), dataMatcher);
 	}
 
 }

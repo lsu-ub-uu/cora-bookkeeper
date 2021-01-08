@@ -43,7 +43,7 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataRedactorTest {
-	private DataRedactor dataRedactor;
+	private DataRedactorImp dataRedactor;
 
 	private DataGroupForDataRedactorSpy topDataGroupSpy;
 	private Set<Constraint> emptyConstraints;
@@ -81,6 +81,14 @@ public class DataRedactorTest {
 		Constraint constraint = new Constraint("title");
 		recordPartConstraints.add(constraint);
 		return recordPartConstraints;
+	}
+
+	@Test
+	public void testInit() {
+		assertSame(dataRedactor.getMetadataHolder(), metadataHolder);
+		assertSame(dataRedactor.getDataGroupRedactor(), dataGroupRedactorSpy);
+		assertSame(dataRedactor.getDataGroupWrapperFactory(), wrapperFactory);
+		assertSame(dataRedactor.getMatcherFactory(), matcherFactory);
 	}
 
 	@Test
