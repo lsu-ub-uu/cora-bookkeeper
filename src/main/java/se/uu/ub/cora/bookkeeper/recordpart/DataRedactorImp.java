@@ -122,31 +122,38 @@ public class DataRedactorImp implements DataRedactor {
 
 	private void possiblyReplaceChildren(DataGroup originalDataGroup,
 			DataGroupWrapper wrappedUpdated, MetadataGroup metadataGroup) {
-		DataGroup redactedDataGroup = dataGroupRedactor
+		DataGroupWrapper wRedactedDataGroup = (DataGroupWrapper) dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
-
+		// TODO: wRedactedDataGroup now contains original data for children we do not have write
+		// permission for
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
-			possiblyReplaceChild(originalDataGroup, redactedDataGroup, metadataChildReference);
+			// TODO: possibly check if child is removed(replaced) in wRedactedDataGroup before going
+			// further
+			possiblyReplaceChild(originalDataGroup, wRedactedDataGroup, metadataChildReference);
 		}
 	}
 
-	private void possiblyReplaceChild(DataGroup originalDataGroup, DataGroup redactedDataGroup,
-			MetadataChildReference metadataChildReference) {
+	private void possiblyReplaceChild(DataGroup originalDataGroup,
+			DataGroupWrapper wRedactedDataGroup, MetadataChildReference metadataChildReference) {
+		// TODO: if not done before check if child is removed(replaced) in wRedactedDataGroup before
+		// going further
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
+			// TODO: check could be here if expensive...
 			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 					metadataChildReference);
-			possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup, redactedDataGroup,
-					childMetadataGroup);
+			possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup,
+					wRedactedDataGroup, childMetadataGroup);
 		}
 	}
 
 	private void possiblyReplaceOrRemoveChildrenIfChildGroupHasData(DataGroup originalDataGroup,
-			DataGroup redactedDataGroup, MetadataGroup childMetadataGroup) {
+			DataGroupWrapper wRedactedDataGroup, MetadataGroup childMetadataGroup) {
 
-		Matcher groupMatcher = matcherFactory.factor(redactedDataGroup, childMetadataGroup);
+		Matcher groupMatcher = matcherFactory.factor(wRedactedDataGroup, childMetadataGroup);
 		if (groupMatcher.groupHasMatchingDataChild()) {
 			DataGroup updatedChild = groupMatcher.getMatchingDataChild();
+			// TODO: wrappedChild here is for level two and lower, top level child forgot about :(
 			DataGroupWrapper wrappedChild = wrapperFactory.factor(updatedChild);
 
 			possiblyReplaceOrRemoveChild(originalDataGroup, childMetadataGroup, updatedChild,
@@ -155,7 +162,8 @@ public class DataRedactorImp implements DataRedactor {
 	}
 
 	private void possiblyReplaceOrRemoveChild(DataGroup originalDataGroup,
-			MetadataGroup childMetadataGroup, DataGroup updatedChild, DataGroupWrapper wrappedUpdated) {
+			MetadataGroup childMetadataGroup, DataGroup updatedChild,
+			DataGroupWrapper wrappedUpdated) {
 
 		Matcher groupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
 		if (!groupMatcher.groupHasMatchingDataChild()) {
