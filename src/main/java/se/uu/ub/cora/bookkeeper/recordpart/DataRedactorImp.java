@@ -140,10 +140,25 @@ public class DataRedactorImp implements DataRedactor {
 		// going further
 		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
 			// TODO: check could be here if expensive...
+
+			// dataForMetadataChildIsReplacedOrHasNoData
+
+			// boolean dataForMetadataChildMustBeChecked = false;
+			// MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+			// metadataChildReference);
+			// Matcher groupMatcher = matcherFactory.factor(wRedactedDataGroup, childMetadataGroup);
+			// if (groupMatcher.groupHasMatchingDataChild()) {
+			// DataGroup updatedChild = groupMatcher.getMatchingDataChild();
+			// dataForMetadataChildMustBeChecked = !wRedactedDataGroup
+			// .hasRemovedBeenCalled(updatedChild);
+			// }
+
+			// if (dataForMetadataChildMustBeChecked) {
 			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 					metadataChildReference);
 			possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup,
 					wRedactedDataGroup, childMetadataGroup);
+			// }
 		}
 	}
 
