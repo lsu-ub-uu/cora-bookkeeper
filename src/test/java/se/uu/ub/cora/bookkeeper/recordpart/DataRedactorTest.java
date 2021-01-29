@@ -94,8 +94,7 @@ public class DataRedactorTest {
 		String metadataId = "someMetadataId";
 		DataGroup filteredDataGroup = dataRedactor.removeChildrenForConstraintsWithoutPermissions(
 				metadataId, topDataGroupSpy, emptyConstraints, emptyPermissions);
-		dataGroupRedactorSpy.MCR
-				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
+		groupRedactorMCR.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
 		assertSame(filteredDataGroup, topDataGroupSpy);
 	}
 
@@ -286,7 +285,7 @@ public class DataRedactorTest {
 		assertTrue(returnedMatcherForUpdated.hasMatchingChildWasCalled);
 		assertFalse(returnedMatcherForUpdated.getMatchingChildWasCalled);
 
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
 	}
 
@@ -296,8 +295,7 @@ public class DataRedactorTest {
 				metadataId, originalDataGroup, updatedDataGroup, emptyConstraints,
 				emptyPermissions);
 		assertSame(replacedDataGroup, originalDataGroup);
-		dataGroupRedactorSpy.MCR
-				.assertMethodNotCalled("replaceChildrenForConstraintsWithoutPermissions");
+		groupRedactorMCR.assertMethodNotCalled("replaceChildrenForConstraintsWithoutPermissions");
 	}
 
 	private void assertMatcherWasCalledWithCorrectDataForOriginal(int index) {
@@ -337,10 +335,10 @@ public class DataRedactorTest {
 		DataGroupWrapperSpy wrapper = wrapperFactory.factoredWrappers.get(0);
 		assertSame(wrapper.dataGroup, updatedDataGroup);
 
-		dataGroupRedactorSpy.MCR.assertParameters("replaceChildrenForConstraintsWithoutPermissions",
-				0, originalDataGroup, wrapper, titleConstraints, emptyPermissions);
+		groupRedactorMCR.assertParameters("replaceChildrenForConstraintsWithoutPermissions", 0,
+				originalDataGroup, wrapper, titleConstraints, emptyPermissions);
 
-		DataGroupForDataRedactorSpy groupReturnedFromRedactor = (DataGroupForDataRedactorSpy) dataGroupRedactorSpy.MCR
+		DataGroupForDataRedactorSpy groupReturnedFromRedactor = (DataGroupForDataRedactorSpy) groupRedactorMCR
 				.getReturnValue("replaceChildrenForConstraintsWithoutPermissions", 0);
 
 		assertCallToRedactorReplaceWasCalledForChildData(groupReturnedFromRedactor, 0, 1);
@@ -457,7 +455,7 @@ public class DataRedactorTest {
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 2);
 
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
 	}
 
@@ -480,7 +478,7 @@ public class DataRedactorTest {
 		assertSame(dataGroupWrapperForChild.dataGroup, dataGroupFromMatcher);
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 2);
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 	}
 
@@ -502,7 +500,7 @@ public class DataRedactorTest {
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 1);
 
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 	}
 
@@ -532,12 +530,11 @@ public class DataRedactorTest {
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 1);
 
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
-		// dataGroupRedactorSpy.MCR
+		// groupRedactorMCR
 		// .assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
-		dataGroupRedactorSpy.MCR
-				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
+		groupRedactorMCR.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
 
 		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
 		// assertGroupRedactorCalledForTopLevelDataGroup();
@@ -567,9 +564,9 @@ public class DataRedactorTest {
 		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(0);
 		DataGroupForDataRedactorSpy returnedDataGroup = matcherSpy.returnedDataGroup;
 
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
-		dataGroupRedactorSpy.MCR
+		groupRedactorMCR
 				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
 		groupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 0,
 				returnedDataGroup, titleConstraints, emptyPermissions);

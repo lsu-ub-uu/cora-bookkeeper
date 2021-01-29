@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class MatcherFactorySpy implements MatcherFactory {
@@ -33,7 +32,7 @@ public class MatcherFactorySpy implements MatcherFactory {
 	public boolean hasMatchingChild = true;
 	public List<Boolean> hasMatchingChildList = new ArrayList<>();
 	private int noOfCalls = 0;
-	public List<DataAttribute> attributesToMatchedDataGroup = new ArrayList<>();
+	// public List<DataAttribute> attributesToMatchedDataGroup = new ArrayList<>();
 
 	@Override
 	public Matcher factor(DataGroup dataGroup, MetadataGroup metadataGroup) {
@@ -45,7 +44,7 @@ public class MatcherFactorySpy implements MatcherFactory {
 		} else {
 			returnedMatcher.hasMatchingChild = hasMatchingChildList.get(noOfCalls);
 		}
-		returnedMatcher.attributesToReplacedDataGroup = attributesToMatchedDataGroup;
+		// returnedMatcher.attributesToReplacedDataGroup = attributesToMatchedDataGroup;
 		noOfCalls++;
 		returnedMatchers.add(returnedMatcher);
 		return returnedMatcher;

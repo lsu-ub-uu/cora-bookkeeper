@@ -19,32 +19,28 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 
-	public List<DataGroup> sentInDataGroups = new ArrayList<>();
+	// public List<DataGroup> sentInDataGroups = new ArrayList<>();
 	public List<DataGroupWrapperSpy> factoredWrappers = new ArrayList<>();
-	public Map<String, List<List<DataAttribute>>> nameInDatasToRemove = new HashMap<>();
+	// public Map<String, List<List<DataAttribute>>> nameInDatasToRemove = new HashMap<>();
 	public boolean removeHasBeenCalled = false;
 
 	@Override
 	public DataGroupWrapper factor(DataGroup dataGroup) {
-		sentInDataGroups.add(dataGroup);
+		// sentInDataGroups.add(dataGroup);
 		DataGroupWrapperSpy wrapper = new DataGroupWrapperSpy(dataGroup);
 		wrapper.removeHasBeenCalled = removeHasBeenCalled;
-		for (Entry<String, List<List<DataAttribute>>> entry : nameInDatasToRemove.entrySet()) {
-			for (List<DataAttribute> list : entry.getValue()) {
-				wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
-						list.stream().toArray(DataAttribute[]::new));
-			}
-		}
+		// for (Entry<String, List<List<DataAttribute>>> entry : nameInDatasToRemove.entrySet()) {
+		// for (List<DataAttribute> list : entry.getValue()) {
+		// wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
+		// list.stream().toArray(DataAttribute[]::new));
+		// }
+		// }
 		factoredWrappers.add(wrapper);
 		return wrapper;
 	}

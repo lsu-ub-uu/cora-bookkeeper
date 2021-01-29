@@ -18,10 +18,6 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class MatcherSpy implements Matcher {
@@ -30,15 +26,15 @@ public class MatcherSpy implements Matcher {
 	public boolean getMatchingChildWasCalled = false;
 	public boolean hasMatchingChild = true;
 	public DataGroupForDataRedactorSpy returnedDataGroup;
-	public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
+	// public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
 
 	@Override
 	public DataGroup getMatchingDataChild() {
 		getMatchingChildWasCalled = true;
 		returnedDataGroup = new DataGroupForDataRedactorSpy("spyNameInData");
-		if (!attributesToReplacedDataGroup.isEmpty()) {
-			returnedDataGroup.setAttributes(attributesToReplacedDataGroup);
-		}
+		// if (!attributesToReplacedDataGroup.isEmpty()) {
+		// returnedDataGroup.setAttributes(attributesToReplacedDataGroup);
+		// }
 		return returnedDataGroup;
 	}
 
