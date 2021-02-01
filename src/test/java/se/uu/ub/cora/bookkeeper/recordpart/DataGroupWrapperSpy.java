@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.Collection;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
@@ -31,6 +32,7 @@ public class DataGroupWrapperSpy implements DataGroupWrapper {
 	public DataGroup dataGroup;
 	public boolean removeHasBeenCalled = false;
 	public DataElement child;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	public DataGroupWrapperSpy(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
@@ -161,7 +163,9 @@ public class DataGroupWrapperSpy implements DataGroupWrapper {
 
 	@Override
 	public boolean hasRemovedBeenCalled(DataElement child) {
+		MCR.addCall("child", child);
 		this.child = child;
+		MCR.addReturned(removeHasBeenCalled);
 		return removeHasBeenCalled;
 	}
 

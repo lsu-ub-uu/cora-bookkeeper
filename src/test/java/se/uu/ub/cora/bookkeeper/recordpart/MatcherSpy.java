@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
 
 public class MatcherSpy implements Matcher {
@@ -27,20 +28,25 @@ public class MatcherSpy implements Matcher {
 	public boolean hasMatchingChild = true;
 	public DataGroupForDataRedactorSpy returnedDataGroup;
 	// public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataGroup getMatchingDataChild() {
+		MCR.addCall();
 		getMatchingChildWasCalled = true;
 		returnedDataGroup = new DataGroupForDataRedactorSpy("spyNameInData");
 		// if (!attributesToReplacedDataGroup.isEmpty()) {
 		// returnedDataGroup.setAttributes(attributesToReplacedDataGroup);
 		// }
+		MCR.addReturned(returnedDataGroup);
 		return returnedDataGroup;
 	}
 
 	@Override
 	public boolean groupHasMatchingDataChild() {
+		MCR.addCall();
 		hasMatchingChildWasCalled = true;
+		MCR.addReturned(hasMatchingChild);
 		return hasMatchingChild;
 	}
 

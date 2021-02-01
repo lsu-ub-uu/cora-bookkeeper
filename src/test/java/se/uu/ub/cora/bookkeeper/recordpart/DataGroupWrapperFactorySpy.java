@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
@@ -29,9 +30,11 @@ public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 	public List<DataGroupWrapperSpy> factoredWrappers = new ArrayList<>();
 	// public Map<String, List<List<DataAttribute>>> nameInDatasToRemove = new HashMap<>();
 	public boolean removeHasBeenCalled = false;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataGroupWrapper factor(DataGroup dataGroup) {
+		MCR.addCall("dataGroup", dataGroup);
 		// sentInDataGroups.add(dataGroup);
 		DataGroupWrapperSpy wrapper = new DataGroupWrapperSpy(dataGroup);
 		wrapper.removeHasBeenCalled = removeHasBeenCalled;
@@ -42,6 +45,7 @@ public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 		// }
 		// }
 		factoredWrappers.add(wrapper);
+		MCR.addReturned(wrapper);
 		return wrapper;
 	}
 
