@@ -115,13 +115,13 @@ public class DataRedactorImp implements DataRedactor {
 		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
-		possiblyReplaceChildren(originalDataGroup, wrappedUpdated, metadataGroup);
+		possiblyReplaceChildren(originalDataGroup, updatedDataGroup, metadataGroup);
 		return updatedDataGroup;
 	}
 
-	private void possiblyReplaceChildren(DataGroup originalDataGroup,
-			DataGroupWrapper wrappedUpdated, MetadataGroup metadataGroup) {
+	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroup updatedDataGroup,
+			MetadataGroup metadataGroup) {
+		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
 		DataGroupWrapper wRedactedDataGroup = (DataGroupWrapper) dataGroupRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
 						constraints, permissions);
@@ -144,23 +144,23 @@ public class DataRedactorImp implements DataRedactor {
 
 			// dataForMetadataChildIsReplacedOrHasNoData
 
-			boolean dataForMetadataChildMustBeChecked = false;
+			boolean dataForMetadataChildIsNotReplacedPossiblyRedactChildren = false;
 			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 					metadataChildReference);
 			Matcher updatedGroupMatcher = matcherFactory.factor(wRedactedDataGroup,
 					childMetadataGroup);
 			if (updatedGroupMatcher.groupHasMatchingDataChild()) {
 				DataGroup updatedChild = updatedGroupMatcher.getMatchingDataChild();
-				dataForMetadataChildMustBeChecked = !wRedactedDataGroup
+				dataForMetadataChildIsNotReplacedPossiblyRedactChildren = !wRedactedDataGroup
 						.hasRemovedBeenCalled(updatedChild);
+				if (dataForMetadataChildIsNotReplacedPossiblyRedactChildren) {
+					// MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+					// metadataChildReference);
+					possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup,
+							wRedactedDataGroup, childMetadataGroup);
+				}
 			}
 
-			if (dataForMetadataChildMustBeChecked) {
-				// MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
-				// metadataChildReference);
-				possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup,
-						wRedactedDataGroup, childMetadataGroup);
-			}
 		}
 	}
 
@@ -169,13 +169,18 @@ public class DataRedactorImp implements DataRedactor {
 
 		// Matcher groupMatcher = matcherFactory.factor(wRedactedDataGroup, childMetadataGroup);
 		Matcher originalGroupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
-		// if (originalGroupMatcher.groupHasMatchingDataChild()) {
+		if (originalGroupMatcher.groupHasMatchingDataChild()) {
+			// // TODO: wrappedChild here is for level two and lower, top level child forgot about
+			// DataGroup updatedChild = originalGroupMatcher.getMatchingDataChild();
+			// :(
+			// DataGroupWrapper wrappedChild = wrapperFactory.factor(updatedChild);
+			//
+			// possiblyReplaceOrRemoveChild(originalDataGroup, childMetadataGroup, updatedChild,
+			// wrappedChild);
+		}
+		// else {
 		// DataGroup updatedChild = originalGroupMatcher.getMatchingDataChild();
-		// // TODO: wrappedChild here is for level two and lower, top level child forgot about :(
-		// DataGroupWrapper wrappedChild = wrapperFactory.factor(updatedChild);
-		//
-		// possiblyReplaceOrRemoveChild(originalDataGroup, childMetadataGroup, updatedChild,
-		// wrappedChild);
+		// possiblyRemoveChildren(updatedChild, childMetadataGroup);
 		// }
 	}
 

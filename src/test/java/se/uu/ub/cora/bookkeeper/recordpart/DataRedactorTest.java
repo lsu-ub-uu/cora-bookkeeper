@@ -444,9 +444,12 @@ public class DataRedactorTest {
 	public void testReplaceOneChildGroupDataNotReplacedAfterTopReplaceWithDataInOriginal()
 			throws Exception {
 		// data finns, ej utbytt, finns i originaldata, gå vidare nedåt, med replace
-		matcherFactory.hasMatchingChildList.add(true);
-		matcherFactory.hasMatchingChildList.add(true);
+		// first child, updated data, remove is called (replace done)
 		dataGroupRedactorSpy.removeHasBeenCalledList.add(false);
+		// first child, updated data, has data for metadataChild1
+		matcherFactory.hasMatchingChildList.add(true);
+		// first child, original data, has data for metadataChild1
+		matcherFactory.hasMatchingChildList.add(true);
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildToDataGroup(topGroup, "metadataGroup", "type", 0, 1);
@@ -474,6 +477,10 @@ public class DataRedactorTest {
 		// .getReturnValue("replaceChildrenForConstraintsWithoutPermissions", 0);
 		// factor matcher on returned metadatachild, and wrapped topData
 		matcherFactoryMCR.assertParameters("factor", 1, originalDataGroup, returnedMetadataChild1);
+		MatcherSpy originalMatcher = (MatcherSpy) matcherFactoryMCR.getReturnValue("factor", 1);
+		originalMatcher.MCR.assertMethodWasCalled("groupHasMatchingDataChild");
+		// TODO: here...
+		// originalMatcher.MCR.assertMethodWasCalled("getMatchingDataChild");
 		// matcherFactoryMCR.assertParameter("factor", 1, "dataGroup", originalDataGroup);
 		// matcherFactoryMCR.assertParameter("factor", 1, "metadataGroup", returnedMetadataChild1);
 
