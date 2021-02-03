@@ -479,8 +479,8 @@ public class DataRedactorTest {
 		matcherFactoryMCR.assertParameters("factor", 1, originalDataGroup, returnedMetadataChild1);
 		MatcherSpy originalMatcher = (MatcherSpy) matcherFactoryMCR.getReturnValue("factor", 1);
 		originalMatcher.MCR.assertMethodWasCalled("groupHasMatchingDataChild");
+		originalMatcher.MCR.assertMethodWasCalled("getMatchingDataChild");
 		// TODO: here...
-		// originalMatcher.MCR.assertMethodWasCalled("getMatchingDataChild");
 		// matcherFactoryMCR.assertParameter("factor", 1, "dataGroup", originalDataGroup);
 		// matcherFactoryMCR.assertParameter("factor", 1, "metadataGroup", returnedMetadataChild1);
 

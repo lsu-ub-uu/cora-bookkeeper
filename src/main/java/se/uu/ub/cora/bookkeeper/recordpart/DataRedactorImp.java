@@ -71,7 +71,7 @@ public class DataRedactorImp implements DataRedactor {
 
 	private void possiblyRemoveChild(DataGroup redactedGroup,
 			MetadataChildReference metadataChildReference) {
-		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
+		if (childReferenceRepresentsGroupWithRepeatMaxOne(metadataChildReference)) {
 			removeChildDataIfExists(redactedGroup, metadataChildReference);
 		}
 	}
@@ -121,65 +121,58 @@ public class DataRedactorImp implements DataRedactor {
 
 	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroup updatedDataGroup,
 			MetadataGroup metadataGroup) {
-		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
-		DataGroupWrapper wRedactedDataGroup = (DataGroupWrapper) dataGroupRedactor
-				.replaceChildrenForConstraintsWithoutPermissions(originalDataGroup, wrappedUpdated,
-						constraints, permissions);
-		// TODO: wRedactedDataGroup now contains original data for children we do not have write
-		// permission for
+		DataGroupWrapper wReplacedDataGroup = wrappAndReplaceDataGroup(originalDataGroup,
+				updatedDataGroup);
 		for (MetadataChildReference metadataChildReference : metadataGroup.getChildReferences()) {
-			// TODO: possibly check if child is removed(replaced) in wRedactedDataGroup before
-			// going further
-			possiblyReplaceChild(originalDataGroup, wRedactedDataGroup, metadataChildReference);
+			possiblyReplaceChild(originalDataGroup, wReplacedDataGroup, metadataChildReference);
 		}
 
+	}
+
+	private DataGroupWrapper wrappAndReplaceDataGroup(DataGroup originalDataGroup,
+			DataGroup updatedDataGroup) {
+		DataGroupWrapper wrappedUpdated = wrapperFactory.factor(updatedDataGroup);
+		return (DataGroupWrapper) dataGroupRedactor.replaceChildrenForConstraintsWithoutPermissions(
+				originalDataGroup, wrappedUpdated, constraints, permissions);
 	}
 
 	private void possiblyReplaceChild(DataGroup originalDataGroup,
-			DataGroupWrapper wRedactedDataGroup, MetadataChildReference metadataChildReference) {
-		// TODO: if not done before check if child is removed(replaced) in wRedactedDataGroup before
-		// going further
-		if (isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference)) {
-			// TODO: check could be here if expensive...
-
-			// dataForMetadataChildIsReplacedOrHasNoData
-
-			boolean dataForMetadataChildIsNotReplacedPossiblyRedactChildren = false;
-			MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+			DataGroupWrapper wUpdatedDataGroup, MetadataChildReference metadataChildReference) {
+		if (childReferenceRepresentsGroupWithRepeatMaxOne(metadataChildReference)) {
+			possiblyReplaceGroupChildWithRepeatMaxOne(originalDataGroup, wUpdatedDataGroup,
 					metadataChildReference);
-			Matcher updatedGroupMatcher = matcherFactory.factor(wRedactedDataGroup,
-					childMetadataGroup);
-			if (updatedGroupMatcher.groupHasMatchingDataChild()) {
-				DataGroup updatedChild = updatedGroupMatcher.getMatchingDataChild();
-				dataForMetadataChildIsNotReplacedPossiblyRedactChildren = !wRedactedDataGroup
-						.hasRemovedBeenCalled(updatedChild);
-				if (dataForMetadataChildIsNotReplacedPossiblyRedactChildren) {
-					// MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
-					// metadataChildReference);
-					possiblyReplaceOrRemoveChildrenIfChildGroupHasData(originalDataGroup,
-							wRedactedDataGroup, childMetadataGroup);
-				}
-			}
-
 		}
 	}
 
-	private void possiblyReplaceOrRemoveChildrenIfChildGroupHasData(DataGroup originalDataGroup,
-			DataGroupWrapper wRedactedDataGroup, MetadataGroup childMetadataGroup) {
+	private boolean childReferenceRepresentsGroupWithRepeatMaxOne(
+			MetadataChildReference metadataChildReference) {
+		return isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference);
+	}
 
-		// Matcher groupMatcher = matcherFactory.factor(wRedactedDataGroup, childMetadataGroup);
+	private void possiblyReplaceGroupChildWithRepeatMaxOne(DataGroup originalDataGroup,
+			DataGroupWrapper wUpdatedDataGroup, MetadataChildReference metadataChildReference) {
+		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
+				metadataChildReference);
+		boolean childHasDataAndItIsUnchanged = false;
+		Matcher updatedGroupMatcher = matcherFactory.factor(wUpdatedDataGroup, childMetadataGroup);
+		if (updatedGroupMatcher.groupHasMatchingDataChild()) {
+			DataGroup updatedChild = updatedGroupMatcher.getMatchingDataChild();
+			childHasDataAndItIsUnchanged = !wUpdatedDataGroup.hasRemovedBeenCalled(updatedChild);
+			if (childHasDataAndItIsUnchanged) {
+				possiblyReplaceOrRemoveChildForChildGroupWithData(originalDataGroup, updatedChild,
+						childMetadataGroup);
+			}
+		}
+	}
+
+	private void possiblyReplaceOrRemoveChildForChildGroupWithData(DataGroup originalDataGroup,
+			DataGroup updatedChild, MetadataGroup childMetadataGroup) {
 		Matcher originalGroupMatcher = matcherFactory.factor(originalDataGroup, childMetadataGroup);
 		if (originalGroupMatcher.groupHasMatchingDataChild()) {
-			// // TODO: wrappedChild here is for level two and lower, top level child forgot about
-			// DataGroup updatedChild = originalGroupMatcher.getMatchingDataChild();
-			// :(
-			// DataGroupWrapper wrappedChild = wrapperFactory.factor(updatedChild);
-			//
-			// possiblyReplaceOrRemoveChild(originalDataGroup, childMetadataGroup, updatedChild,
-			// wrappedChild);
+			DataGroup originalChild = originalGroupMatcher.getMatchingDataChild();
+			// possiblyReplaceChildren(originalChild, updatedChild, childMetadataGroup);
 		}
 		// else {
-		// DataGroup updatedChild = originalGroupMatcher.getMatchingDataChild();
 		// possiblyRemoveChildren(updatedChild, childMetadataGroup);
 		// }
 	}
