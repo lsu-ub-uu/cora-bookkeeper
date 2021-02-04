@@ -71,11 +71,11 @@ public class DataRedactorImp implements DataRedactor {
 	private void possiblyRemoveChild(DataGroup redactedGroup,
 			MetadataChildReference metadataChildReference) {
 		if (childReferenceRepresentsGroupWithRepeatMaxOne(metadataChildReference)) {
-			removeChildDataIfExists(redactedGroup, metadataChildReference);
+			possiblyRemoveChildDataIfExists(redactedGroup, metadataChildReference);
 		}
 	}
 
-	private void removeChildDataIfExists(DataGroup redactedDataGroup,
+	private void possiblyRemoveChildDataIfExists(DataGroup redactedDataGroup,
 			MetadataChildReference metadataChildReference) {
 		MetadataGroup childMetadataGroup = getMetadataChildFromMetadataHolder(
 				metadataChildReference);
