@@ -24,13 +24,16 @@ import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRedactorSpy implements DataGroupRedactor {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
-	public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
+	// public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
+
+	public List<Boolean> removeHasBeenCalledList = new ArrayList<>();
+
+	private int noOfCalls = 0;
 
 	@Override
 	public DataGroup removeChildrenForConstraintsWithoutPermissions(DataGroup dataGroup,
@@ -39,9 +42,19 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 				"recordPartPermissions", recordPartPermissions);
 		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
 
+		setRemoveHasBeenCalled(dataGroupSpy);
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;
 
+	}
+
+	private void setRemoveHasBeenCalled(DataGroupForDataRedactorSpy dataGroupSpy) {
+		if (removeHasBeenCalledList.isEmpty()) {
+			dataGroupSpy.removeHasBeenCalled = false;
+		} else {
+			dataGroupSpy.removeHasBeenCalled = removeHasBeenCalledList.get(noOfCalls);
+		}
+		noOfCalls++;
 	}
 
 	@Override
@@ -51,10 +64,14 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 		MCR.addCall("originalDataGroup", originalDataGroup, "changedDataGroup", changedDataGroup,
 				"recordPartConstraints", recordPartConstraints, "recordPartPermissions",
 				recordPartPermissions);
+
 		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
-		if (!attributesToReplacedDataGroup.isEmpty()) {
-			dataGroupSpy.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
-		}
+
+		setRemoveHasBeenCalled(dataGroupSpy);
+
+		// if (!attributesToReplacedDataGroup.isEmpty()) {
+		// dataGroupSpy.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
+		// }
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;
 	}

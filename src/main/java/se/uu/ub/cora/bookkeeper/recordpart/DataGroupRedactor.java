@@ -52,7 +52,8 @@ public interface DataGroupRedactor {
 	 * value of the children. The children will be replaced ONLY when the the permission does not
 	 * match the constraints. The set of constraints consists of the nameInData for the children
 	 * that has constraints, so children are replaced based on their nameInData. If an empty set of
-	 * constraints is entered should no children be removed.
+	 * constraints is entered should no children be replaced. If a child that should be replaced,
+	 * does not exist in the original data, will the child be removed instead of replaced.
 	 * 
 	 * @param originalDataGroup
 	 *            Is the current version of the datagroup, replaced data is copied from this group.

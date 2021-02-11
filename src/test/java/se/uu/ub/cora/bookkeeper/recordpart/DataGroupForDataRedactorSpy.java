@@ -32,7 +32,8 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	private String nameInData;
-	public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
+	// public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
+	public boolean removeHasBeenCalled = false;
 
 	public DataGroupForDataRedactorSpy(String nameInData) {
 		this.nameInData = nameInData;
@@ -69,7 +70,8 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 
 	@Override
 	public Collection<DataAttribute> getAttributes() {
-		return attributesToReplacedDataGroup;
+		// return attributesToReplacedDataGroup;
+		return null;
 	}
 
 	@Override
@@ -164,9 +166,9 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 		MCR.addCall("nameInData", nameInData);
 		List<DataElement> children = new ArrayList<>();
 		DataGroupForDataRedactorSpy childDataGroup = new DataGroupForDataRedactorSpy(nameInData);
-		if (!attributesToReplacedDataGroup.isEmpty()) {
-			childDataGroup.setAttributes(attributesToReplacedDataGroup);
-		}
+		// if (!attributesToReplacedDataGroup.isEmpty()) {
+		// childDataGroup.setAttributes(attributesToReplacedDataGroup);
+		// }
 		children.add(childDataGroup);
 		MCR.addReturned(children);
 		return children;
@@ -191,14 +193,15 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 	}
 
 	public void setAttributes(List<DataAttribute> attributesToReplacedDataGroup) {
-		this.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
+		// this.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
 
 	}
 
 	@Override
 	public boolean hasRemovedBeenCalled(DataElement child) {
-		// TODO Auto-generated method stub
-		return false;
+		MCR.addCall("child", child);
+		MCR.addReturned(removeHasBeenCalled);
+		return removeHasBeenCalled;
 	}
 
 }

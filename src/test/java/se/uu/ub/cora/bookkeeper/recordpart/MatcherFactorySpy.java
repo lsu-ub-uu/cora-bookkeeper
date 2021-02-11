@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
 
 public class MatcherFactorySpy implements MatcherFactory {
@@ -33,22 +33,31 @@ public class MatcherFactorySpy implements MatcherFactory {
 	public boolean hasMatchingChild = true;
 	public List<Boolean> hasMatchingChildList = new ArrayList<>();
 	private int noOfCalls = 0;
-	public List<DataAttribute> attributesToMatchedDataGroup = new ArrayList<>();
+	// public List<DataAttribute> attributesToMatchedDataGroup = new ArrayList<>();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public Matcher factor(DataGroup dataGroup, MetadataGroup metadataGroup) {
+		MCR.addCall("dataGroup", dataGroup, "metadataGroup", metadataGroup);
+
 		dataGroups.add(dataGroup);
 		metadataGroups.add(metadataGroup);
 		MatcherSpy returnedMatcher = new MatcherSpy();
+		setHasMatchingChild(returnedMatcher);
+		returnedMatchers.add(returnedMatcher);
+
+		MCR.addReturned(returnedMatcher);
+		return returnedMatcher;
+	}
+
+	private void setHasMatchingChild(MatcherSpy returnedMatcher) {
 		if (hasMatchingChildList.isEmpty()) {
 			returnedMatcher.hasMatchingChild = hasMatchingChild;
 		} else {
 			returnedMatcher.hasMatchingChild = hasMatchingChildList.get(noOfCalls);
 		}
-		returnedMatcher.attributesToReplacedDataGroup = attributesToMatchedDataGroup;
+		// returnedMatcher.attributesToReplacedDataGroup = attributesToMatchedDataGroup;
 		noOfCalls++;
-		returnedMatchers.add(returnedMatcher);
-		return returnedMatcher;
 	}
 
 }
