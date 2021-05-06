@@ -70,13 +70,13 @@ public class DataValidatorImp implements DataValidator {
 		return extractAndValidate(recordType, filterDataGroup, linkNameInData);
 	}
 
-	private ValidationAnswer extractAndValidate(String recordType, DataGroup filterDataGroup,
+	private ValidationAnswer extractAndValidate(String recordType, DataGroup dataGroupToValidate,
 			String linkNameInData) {
-		String filterId = extractFilterIdOrThrowErrorIfMissing(recordType, linkNameInData);
+		String metadataId = extractFilterIdOrThrowErrorIfMissing(recordType, linkNameInData);
 		try {
-			return tryToValidateData(filterId, filterDataGroup);
+			return tryToValidateData(metadataId, dataGroupToValidate);
 		} catch (Exception exception) {
-			return createValidationAnswerForError(filterId, exception);
+			return createValidationAnswerForError(metadataId, exception);
 		}
 	}
 
@@ -106,9 +106,9 @@ public class DataValidatorImp implements DataValidator {
 
 	@Override
 	public ValidationAnswer validateIndexSettings(String recordType,
-			DataGroup indexSettingsDataGroup) {
+			DataGroup indexSettings) {
 		String linkNameInData = "indexSettings";
-		return extractAndValidate(recordType, indexSettingsDataGroup, linkNameInData);
+		return extractAndValidate(recordType, indexSettings, linkNameInData);
 	}
 
 	public MetadataStorage getMetadataStorage() {

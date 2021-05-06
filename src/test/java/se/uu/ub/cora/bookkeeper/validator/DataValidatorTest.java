@@ -63,10 +63,6 @@ public class DataValidatorTest {
 
 	private void addRecordTypesToHolder() {
 		DataGroupCheckCallsSpy someRecordTypeWithFilter = new DataGroupCheckCallsSpy();
-		// DataGroupSpy linkToFilter = new DataGroupSpy(FILTER);
-		// linkToFilter.addChild(new DataAtomicSpy("linkedRecordId", "someFilter"));
-		// DataGroupSpy linkToIndexSettings = new DataGroupSpy(INDEX_SETTINGS);
-		// linkToIndexSettings.addChild(new DataAtomicSpy("linkedRecordId", "someIndexSetting"));
 		recordTypeHolder.put(SOME_RECORD_TYPE_WITH_LINKS, someRecordTypeWithFilter);
 
 		DataGroupCheckCallsSpy someRecordTypeWithoutFilter = new DataGroupCheckCallsSpy();
@@ -156,6 +152,13 @@ public class DataValidatorTest {
 
 	private void assertValidationOfRecordTypeWithLinks(String nameInData,
 			ValidationAnswer validationAnswer, DataGroupCheckCallsSpy filterDataGroup) {
+
+		String extractedLinkID = assertExtractionOfLinkFromRecordTypeInRecordTypeHolder(nameInData);
+
+		asssertValidationAnswerIsFromValidator(validationAnswer, filterDataGroup, extractedLinkID);
+	}
+
+	private String assertExtractionOfLinkFromRecordTypeInRecordTypeHolder(String nameInData) {
 		DataGroupCheckCallsSpy recordTypeGroupSpy = (DataGroupCheckCallsSpy) recordTypeHolder
 				.get(SOME_RECORD_TYPE_WITH_LINKS);
 		recordTypeGroupSpy.MCR.assertParameters("getFirstGroupWithNameInData", 0, nameInData);
@@ -167,7 +170,11 @@ public class DataValidatorTest {
 
 		String extractedLinkID = (String) firstGroupWithNameInDataSpy.MCR
 				.getReturnValue("getFirstAtomicValueWithNameInData", 0);
+		return extractedLinkID;
+	}
 
+	private void asssertValidationAnswerIsFromValidator(ValidationAnswer validationAnswer,
+			DataGroupCheckCallsSpy filterDataGroup, String extractedLinkID) {
 		validatorFactory.MCR.assertParameters("factor", 0, extractedLinkID);
 
 		DataElementValidatorSpy validatorSpy = (DataElementValidatorSpy) validatorFactory.MCR

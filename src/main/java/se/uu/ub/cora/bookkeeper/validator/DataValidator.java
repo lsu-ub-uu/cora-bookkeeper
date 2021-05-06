@@ -68,11 +68,11 @@ public interface DataValidator {
 	 * 
 	 * @param recordType
 	 *            A String with the id of the recordType, to validate list filter against
-	 * @param indexSettingsDataGroup
+	 * @param indexSettings
 	 *            A DataGroup with index settings information
 	 * 
 	 * @return A ValidationAnswer with the result of the validation
 	 */
-	ValidationAnswer validateIndexSettings(String string, DataGroup indexSettingsDataGroup);
+	ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings);
 
 }
