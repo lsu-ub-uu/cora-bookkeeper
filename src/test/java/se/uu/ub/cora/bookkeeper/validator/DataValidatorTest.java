@@ -43,6 +43,10 @@ import se.uu.ub.cora.data.DataGroup;
  * 
  */
 public class DataValidatorTest {
+	private static final String FILTER = "filter";
+	private static final String INDEX_SETTINGS = "indexSettings";
+	private static final String SOME_RECORD_TYPE_WITHOUT_LINKS = "someRecordTypeWithoutLinks";
+	private static final String SOME_RECORD_TYPE_WITH_LINKS = "someRecordTypeWithLinks";
 	private DataValidatorImp dataValidator;
 	private MetadataStorageForDataValidatorSpy metadataStorage;
 	private DataGroup dataGroupToValidate;
@@ -60,12 +64,14 @@ public class DataValidatorTest {
 
 	private void addRecordTypesToHolder() {
 		DataGroupCheckCallsSpy someRecordTypeWithFilter = new DataGroupCheckCallsSpy();
-		DataGroupSpy filter = new DataGroupSpy("filter");
-		filter.addChild(new DataAtomicSpy("linkedRecordId", "someFilter"));
-		recordTypeHolder.put("someRecordTypeWithFilter", someRecordTypeWithFilter);
+		DataGroupSpy linkToFilter = new DataGroupSpy(FILTER);
+		linkToFilter.addChild(new DataAtomicSpy("linkedRecordId", "someFilter"));
+		DataGroupSpy linkToIndexSettings = new DataGroupSpy(INDEX_SETTINGS);
+		linkToIndexSettings.addChild(new DataAtomicSpy("linkedRecordId", "someIndexSetting"));
+		recordTypeHolder.put(SOME_RECORD_TYPE_WITH_LINKS, someRecordTypeWithFilter);
 
 		DataGroupCheckCallsSpy someRecordTypeWithoutFilter = new DataGroupCheckCallsSpy();
-		recordTypeHolder.put("someRecordTypeWithoutFilter", someRecordTypeWithoutFilter);
+		recordTypeHolder.put(SOME_RECORD_TYPE_WITHOUT_LINKS, someRecordTypeWithoutFilter);
 	}
 
 	@Test
@@ -144,10 +150,12 @@ public class DataValidatorTest {
 	@Test
 	public void testValidateListFilter() {
 		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
+
 		ValidationAnswer validationAnswer = dataValidator
-				.validateListFilter("someRecordTypeWithFilter", filterDataGroup);
+				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, filterDataGroup);
+
 		DataGroupCheckCallsSpy recordTypeDataGroup = (DataGroupCheckCallsSpy) recordTypeHolder
-				.get("someRecordTypeWithFilter");
+				.get(SOME_RECORD_TYPE_WITH_LINKS);
 
 		assertFirstRequestedChildGroupIsFilter(recordTypeDataGroup);
 		assertValueFromFilterLInkedIdIsSentToValidator(recordTypeDataGroup);
@@ -159,7 +167,7 @@ public class DataValidatorTest {
 
 	private void assertFirstRequestedChildGroupIsFilter(
 			DataGroupCheckCallsSpy recordTypeDataGroup) {
-		assertEquals(recordTypeDataGroup.requestedFirstGroupWithNameInData.get(0), "filter");
+		assertEquals(recordTypeDataGroup.requestedFirstGroupWithNameInData.get(0), FILTER);
 	}
 
 	private void assertValueFromFilterLInkedIdIsSentToValidator(
@@ -174,7 +182,7 @@ public class DataValidatorTest {
 	public void testValidateListFilterInvalidOneMessage() {
 		validatorFactory.numOfInvalidMessages = 1;
 		ValidationAnswer validationAnswer = dataValidator
-				.validateListFilter("someRecordTypeWithFilter", new DataGroupCheckCallsSpy());
+				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupCheckCallsSpy());
 
 		assertFalse(validationAnswer.dataIsValid());
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
@@ -187,7 +195,7 @@ public class DataValidatorTest {
 	public void testValidateListFilterNoValidatorFactored() {
 		validatorFactory.throwError = true;
 		ValidationAnswer validationAnswer = dataValidator
-				.validateListFilter("someRecordTypeWithFilter", new DataGroupCheckCallsSpy());
+				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupCheckCallsSpy());
 		assertTrue(validatorFactory.factorWasCalled);
 
 		List<String> errorMessagesAsList = getErrorMessagesAsList(validationAnswer);
@@ -198,14 +206,14 @@ public class DataValidatorTest {
 	}
 
 	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""
-			+ "No filter exists for recordType: someRecordTypeWithoutFilter")
+			+ "No " + FILTER + " exists for recordType: " + SOME_RECORD_TYPE_WITHOUT_LINKS)
 	public void testValidateNoListFilterThrowsException() {
 		DataGroupCheckCallsSpy dataGroupWithoutFilterSpy = (DataGroupCheckCallsSpy) recordTypeHolder
-				.get("someRecordTypeWithoutFilter");
-		dataGroupWithoutFilterSpy.nameInDatasToNotContain.add("filter");
+				.get(SOME_RECORD_TYPE_WITHOUT_LINKS);
+		dataGroupWithoutFilterSpy.nameInDatasToNotContain.add(FILTER);
 
 		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
-		dataValidator.validateListFilter("someRecordTypeWithoutFilter", filterDataGroup);
+		dataValidator.validateListFilter(SOME_RECORD_TYPE_WITHOUT_LINKS, filterDataGroup);
 
 	}
 
@@ -213,5 +221,25 @@ public class DataValidatorTest {
 	public void testgetRecordTypeHolder() throws Exception {
 		assertNotNull(dataValidator.getRecordTypeHolder());
 	}
+
+	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""
+			+ "No " + INDEX_SETTINGS + " exists for recordType: " + SOME_RECORD_TYPE_WITHOUT_LINKS)
+	public void testValidateNoIndexSettingThrowsException() {
+		DataGroupCheckCallsSpy dataGroupWithoutLinksSpy = (DataGroupCheckCallsSpy) recordTypeHolder
+				.get(SOME_RECORD_TYPE_WITHOUT_LINKS);
+		dataGroupWithoutLinksSpy.nameInDatasToNotContain.add(INDEX_SETTINGS);
+		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
+
+		dataValidator.validateIndexSettings(SOME_RECORD_TYPE_WITHOUT_LINKS, filterDataGroup);
+	}
+
+	// @Test
+	// public void testValidateIndexFilter() throws Exception {
+	// ValidationAnswer validationAnswer = ((DataValidator) dataValidator)
+	// .validateIndexFilter("someRecordType", dataGroupToValidate);
+	//
+	// assertTrue(validationAnswer.dataIsValid());
+	//
+	// }
 
 }

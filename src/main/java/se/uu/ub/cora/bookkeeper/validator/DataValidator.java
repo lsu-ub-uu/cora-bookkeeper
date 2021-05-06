@@ -57,4 +57,22 @@ public interface DataValidator {
 	 */
 	ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup);
 
+	/**
+	 * ValidateIndexSettings validates the given DataGroup against the metadataGroup specified as
+	 * indexSettings by the given recordType. The result of the validation is returned in a
+	 * ValidationAnswer. If the validation finds any errors SHOULD as many as possible be returned
+	 * as part of the answer.
+	 * <p>
+	 * If the specified recordType does not have a indexSettings specified a
+	 * {@link DataValidationException} MUST be thrown to indicate this.
+	 * 
+	 * @param recordType
+	 *            A String with the id of the recordType, to validate list filter against
+	 * @param indexSettingsDataGroup
+	 *            A DataGroup with index settings information
+	 * 
+	 * @return A ValidationAnswer with the result of the validation
+	 */
+	ValidationAnswer validateIndexSettings(String string, DataGroup indexSettingsDataGroup);
+
 }
