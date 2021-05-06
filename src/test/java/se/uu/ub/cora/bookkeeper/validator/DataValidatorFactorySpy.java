@@ -1,5 +1,7 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
+
 public class DataValidatorFactorySpy implements DataValidatorFactory {
 
 	public DataElementValidatorSpy elementValidator;
@@ -8,8 +10,12 @@ public class DataValidatorFactorySpy implements DataValidatorFactory {
 	public int numOfInvalidMessages = 0;
 	public boolean throwError = false;
 
+	MethodCallRecorder MCR = new MethodCallRecorder();
+
 	@Override
 	public DataElementValidator factor(String elementId) {
+		MCR.addCall("elementId", elementId);
+
 		factorWasCalled = true;
 		metadataIdSentToFactory = elementId;
 		if (throwError) {
@@ -18,6 +24,7 @@ public class DataValidatorFactorySpy implements DataValidatorFactory {
 		elementValidator = new DataElementValidatorSpy();
 		elementValidator.numOfInvalidMessages = numOfInvalidMessages;
 
+		MCR.addReturned(elementValidator);
 		return elementValidator;
 	}
 

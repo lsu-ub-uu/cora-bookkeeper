@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
@@ -31,9 +32,11 @@ public class DataGroupCheckCallsSpy implements DataGroup {
 
 	public List<String> requestedFirstGroupWithNameInData = new ArrayList<>();
 	public List<String> requestedFirstAtomicValue = new ArrayList<>();
-	public DataGroupCheckCallsSpy returnedDataGroup;
+	// public DataGroupCheckCallsSpy returnedDataGroup;
 	public List<String> returnedAtomicValues = new ArrayList<>();
 	public List<String> nameInDatasToNotContain = new ArrayList<>();
+
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public void setRepeatId(String repeatId) {
@@ -61,10 +64,13 @@ public class DataGroupCheckCallsSpy implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
+		boolean response = true;
 		if (nameInDatasToNotContain.contains(nameInData)) {
-			return false;
+			response = false;
 		}
-		return true;
+		MCR.addReturned(response);
+		return response;
 	}
 
 	@Override
@@ -99,9 +105,13 @@ public class DataGroupCheckCallsSpy implements DataGroup {
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
+
 		requestedFirstAtomicValue.add(nameInData);
 		String returnedAtomicValue = "someValueFor" + nameInData;
 		returnedAtomicValues.add(returnedAtomicValue);
+
+		MCR.addReturned(returnedAtomicValue);
 		return returnedAtomicValue;
 	}
 
@@ -113,8 +123,12 @@ public class DataGroupCheckCallsSpy implements DataGroup {
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
+		MCR.addCall("childNameInData", childNameInData);
+
 		requestedFirstGroupWithNameInData.add(childNameInData);
-		returnedDataGroup = new DataGroupCheckCallsSpy();
+		DataGroupCheckCallsSpy returnedDataGroup = new DataGroupCheckCallsSpy();
+
+		MCR.addReturned(returnedDataGroup);
 		return returnedDataGroup;
 	}
 

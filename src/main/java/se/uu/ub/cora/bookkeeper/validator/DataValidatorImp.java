@@ -54,7 +54,8 @@ public class DataValidatorImp implements DataValidator {
 		return elementValidator.validateData(dataGroup);
 	}
 
-	private ValidationAnswer createValidationAnswerForError(String metadataId, Exception exception) {
+	private ValidationAnswer createValidationAnswerForError(String metadataId,
+			Exception exception) {
 		ValidationAnswer validationAnswer = new ValidationAnswer();
 		validationAnswer.addErrorMessageAndAppendErrorMessageFromExceptionToMessage(
 				"DataElementValidator not created for the requested metadataId: " + metadataId
@@ -65,7 +66,13 @@ public class DataValidatorImp implements DataValidator {
 
 	@Override
 	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
-		String filterId = extractFilterIdOrThrowErrorIfMissing(recordType);
+		String linkNameInData = "filter";
+		return extractAndValidate(recordType, filterDataGroup, linkNameInData);
+	}
+
+	private ValidationAnswer extractAndValidate(String recordType, DataGroup filterDataGroup,
+			String linkNameInData) {
+		String filterId = extractFilterIdOrThrowErrorIfMissing(recordType, linkNameInData);
 		try {
 			return tryToValidateData(filterId, filterDataGroup);
 		} catch (Exception exception) {
@@ -73,9 +80,8 @@ public class DataValidatorImp implements DataValidator {
 		}
 	}
 
-	private String extractFilterIdOrThrowErrorIfMissing(String recordType) {
-		String nameInData = "filter";
-		return extractLinkedDataGroupIdOrThrowErrorIfMissing(recordType, nameInData);
+	private String extractFilterIdOrThrowErrorIfMissing(String recordType, String linkNameInData) {
+		return extractLinkedDataGroupIdOrThrowErrorIfMissing(recordType, linkNameInData);
 	}
 
 	private String extractLinkedDataGroupIdOrThrowErrorIfMissing(String recordType,
@@ -101,10 +107,8 @@ public class DataValidatorImp implements DataValidator {
 	@Override
 	public ValidationAnswer validateIndexSettings(String recordType,
 			DataGroup indexSettingsDataGroup) {
-		DataGroup recordTypeGroup = recordTypeHolder.get(recordType);
-		throwErrorIfRecordTypeHasNoDefinedLinkedDataGroup(recordType, recordTypeGroup,
-				"indexSettings");
-		return null;
+		String linkNameInData = "indexSettings";
+		return extractAndValidate(recordType, indexSettingsDataGroup, linkNameInData);
 	}
 
 	public MetadataStorage getMetadataStorage() {
