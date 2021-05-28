@@ -23,26 +23,21 @@ import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToMetadataConverterFactoryImp
 		implements DataGroupToMetadataConverterFactory {
-	private DataGroup dataGroup;
 
-	private DataGroupToMetadataConverterFactoryImp(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
-	}
-
-	public static DataGroupToMetadataConverterFactoryImp fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToMetadataConverterFactoryImp(dataGroup);
+	public static DataGroupToMetadataConverterFactoryImp forDataGroups() {
+		return new DataGroupToMetadataConverterFactoryImp();
 	}
 
 	@Override
-	public DataGroupToMetadataConverter factor() {
+	public DataGroupToMetadataConverter factorForDataGroupContainingMetadata(DataGroup dataGroup) {
 		if ("metadata".equals(dataGroup.getNameInData())) {
-			return createConverterBasedOnMetadataType();
+			return createConverterBasedOnMetadataType(dataGroup);
 		}
 		throw DataConversionException.withMessage(
 				"No converter found for DataGroup with nameInData:" + dataGroup.getNameInData());
 	}
 
-	private DataGroupToMetadataConverter createConverterBasedOnMetadataType() {
+	private DataGroupToMetadataConverter createConverterBasedOnMetadataType(DataGroup dataGroup) {
 		String type = dataGroup.getAttribute("type").getValue();
 		if ("group".equals(type)) {
 			return DataGroupToMetadataGroupConverter.fromDataGroup(dataGroup);
