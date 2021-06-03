@@ -2,7 +2,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 
-public class DataValidatorFactorySpy implements DataValidatorFactory {
+public class DataElementValidatorFactorySpy implements DataElementValidatorFactory {
 
 	public DataElementValidatorSpy elementValidator;
 	public boolean factorWasCalled = false;

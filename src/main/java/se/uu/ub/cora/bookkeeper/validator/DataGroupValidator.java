@@ -35,13 +35,13 @@ import se.uu.ub.cora.data.DataGroup;
 
 class DataGroupValidator implements DataElementValidator {
 
-	private DataValidatorFactory dataValidatorFactory;
+	private DataElementValidatorFactory dataValidatorFactory;
 	private final MetadataGroup metadataGroup;
 	private MetadataHolder metadataHolder;
 	protected DataGroup dataGroup;
 	protected ValidationAnswer validationAnswer;
 
-	DataGroupValidator(DataValidatorFactory dataValidatorFactory, MetadataHolder metadataHolder,
+	DataGroupValidator(DataElementValidatorFactory dataValidatorFactory, MetadataHolder metadataHolder,
 			MetadataGroup metadataGroup) {
 		this.dataValidatorFactory = dataValidatorFactory;
 		this.metadataHolder = metadataHolder;

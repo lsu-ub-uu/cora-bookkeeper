@@ -14,19 +14,19 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>1.3.0</version>
+		<version>1.3.1</version>
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
-	<version>4.13-SNAPSHOT</version>
+	<version>5.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>3.8.0</coradata.version>
-		<storage.version>3.8.0</storage.version>
-		<json.version>2.2.0</json.version>
+		<coradata.version>4.0.0</coradata.version>
+		<storage.version>4.0.0</storage.version>
+		<json.version>2.3.0</json.version>
 	</properties>
 
 	<scm>

@@ -49,13 +49,13 @@ public class DataValidatorTest {
 	private DataValidatorImp dataValidator;
 	private MetadataStorageForDataValidatorSpy metadataStorage;
 	private DataGroup dataGroupToValidate;
-	private DataValidatorFactorySpy validatorFactory;
+	private DataElementValidatorFactorySpy validatorFactory;
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 
 	@BeforeMethod
 	public void setUp() {
 		metadataStorage = new MetadataStorageForDataValidatorSpy();
-		validatorFactory = new DataValidatorFactorySpy();
+		validatorFactory = new DataElementValidatorFactorySpy();
 		addRecordTypesToHolder();
 		dataValidator = new DataValidatorImp(metadataStorage, validatorFactory, recordTypeHolder);
 		dataGroupToValidate = new DataGroupSpy("someGroup");
@@ -136,7 +136,7 @@ public class DataValidatorTest {
 
 	@Test
 	public void testGetDataValidatorFactory() {
-		assertSame(dataValidator.getDataValidatorFactory(), validatorFactory);
+		assertSame(dataValidator.getDataElementValidatorFactory(), validatorFactory);
 	}
 
 	@Test

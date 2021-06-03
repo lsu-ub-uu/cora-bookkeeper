@@ -27,13 +27,13 @@ import se.uu.ub.cora.storage.MetadataStorage;
 /**
  * ValidateData is a class to validate if a set of data is valid according to its metadataFormat
  */
-public class DataValidatorImp implements DataValidator {
+class DataValidatorImp implements DataValidator {
 
 	private MetadataStorage metadataStorage;
-	private DataValidatorFactory dataValidatorFactory;
+	private DataElementValidatorFactory dataValidatorFactory;
 	private Map<String, DataGroup> recordTypeHolder;
 
-	public DataValidatorImp(MetadataStorage metadataStorage, DataValidatorFactory validatorFactory,
+	DataValidatorImp(MetadataStorage metadataStorage, DataElementValidatorFactory validatorFactory,
 			Map<String, DataGroup> recordTypeHolder) {
 		this.metadataStorage = metadataStorage;
 		this.dataValidatorFactory = validatorFactory;
@@ -105,23 +105,22 @@ public class DataValidatorImp implements DataValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateIndexSettings(String recordType,
-			DataGroup indexSettings) {
+	public ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings) {
 		String linkNameInData = "indexSettings";
 		return extractAndValidate(recordType, indexSettings, linkNameInData);
 	}
 
-	public MetadataStorage getMetadataStorage() {
+	MetadataStorage getMetadataStorage() {
 		// needed for test
 		return metadataStorage;
 	}
 
-	public DataValidatorFactory getDataValidatorFactory() {
+	DataElementValidatorFactory getDataElementValidatorFactory() {
 		// needed for test
 		return dataValidatorFactory;
 	}
 
-	public Map<String, DataGroup> getRecordTypeHolder() {
+	Map<String, DataGroup> getRecordTypeHolder() {
 		// needed for test
 		return recordTypeHolder;
 	}

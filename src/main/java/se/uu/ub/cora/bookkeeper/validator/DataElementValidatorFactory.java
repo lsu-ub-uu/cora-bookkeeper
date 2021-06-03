@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.uu.ub.cora.bookkeeper.validator;
 
-import java.util.Map;
+interface DataElementValidatorFactory {
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.storage.MetadataStorage;
-
-public class DataValidatorFactoryImp implements DataValidatorFactory {
-
-	@Override
-	public DataValidator factor(MetadataStorage metadataStorage,
-			Map<String, DataGroup> recordTypeHolder, MetadataHolder metadataHolder) {
-		DataElementValidatorFactory dataElementValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
-		return new DataValidatorImp(metadataStorage, dataElementValidatorFactory, recordTypeHolder);
-	}
+	DataElementValidator factor(String elementId);
 
 }
