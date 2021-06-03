@@ -19,8 +19,10 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import se.uu.ub.cora.data.DataGroup;
+
 public interface DataGroupToMetadataConverterFactory {
 
-	DataGroupToMetadataConverter factor();
+	DataGroupToMetadataConverter factorForDataGroupContainingMetadata(DataGroup dataGroup);
 
 }

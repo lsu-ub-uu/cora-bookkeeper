@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
+import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataElement;
 
 public class DataElementValidatorSpy implements DataElementValidator {
@@ -26,8 +27,12 @@ public class DataElementValidatorSpy implements DataElementValidator {
 	public int numOfInvalidMessages = 0;
 	public ValidationAnswer validationAnswer;
 
+	MethodCallRecorder MCR = new MethodCallRecorder();
+
 	@Override
 	public ValidationAnswer validateData(DataElement dataElement) {
+		MCR.addCall("dataElement", dataElement);
+
 		this.dataElement = dataElement;
 
 		validationAnswer = new ValidationAnswer();
@@ -35,6 +40,8 @@ public class DataElementValidatorSpy implements DataElementValidator {
 			validationAnswer.addErrorMessage("an errorMessageFromSpy " + i);
 
 		}
+
+		MCR.addReturned(validationAnswer);
 		return validationAnswer;
 	}
 

@@ -27,13 +27,13 @@ import se.uu.ub.cora.storage.MetadataStorage;
 /**
  * ValidateData is a class to validate if a set of data is valid according to its metadataFormat
  */
-public class DataValidatorImp implements DataValidator {
+class DataValidatorImp implements DataValidator {
 
 	private MetadataStorage metadataStorage;
-	private DataValidatorFactory dataValidatorFactory;
+	private DataElementValidatorFactory dataValidatorFactory;
 	private Map<String, DataGroup> recordTypeHolder;
 
-	public DataValidatorImp(MetadataStorage metadataStorage, DataValidatorFactory validatorFactory,
+	DataValidatorImp(MetadataStorage metadataStorage, DataElementValidatorFactory validatorFactory,
 			Map<String, DataGroup> recordTypeHolder) {
 		this.metadataStorage = metadataStorage;
 		this.dataValidatorFactory = validatorFactory;
@@ -45,7 +45,7 @@ public class DataValidatorImp implements DataValidator {
 		try {
 			return tryToValidateData(metadataId, dataGroup);
 		} catch (Exception exception) {
-			return createValidationAnswer(metadataId, exception);
+			return createValidationAnswerForError(metadataId, exception);
 		}
 	}
 
@@ -54,7 +54,8 @@ public class DataValidatorImp implements DataValidator {
 		return elementValidator.validateData(dataGroup);
 	}
 
-	private ValidationAnswer createValidationAnswer(String metadataId, Exception exception) {
+	private ValidationAnswer createValidationAnswerForError(String metadataId,
+			Exception exception) {
 		ValidationAnswer validationAnswer = new ValidationAnswer();
 		validationAnswer.addErrorMessageAndAppendErrorMessageFromExceptionToMessage(
 				"DataElementValidator not created for the requested metadataId: " + metadataId
@@ -65,44 +66,61 @@ public class DataValidatorImp implements DataValidator {
 
 	@Override
 	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
-		String filterId = extractFilterIdOrThrowErrorIfMissing(recordType);
+		String linkNameInData = "filter";
+		return extractAndValidate(recordType, filterDataGroup, linkNameInData);
+	}
+
+	private ValidationAnswer extractAndValidate(String recordType, DataGroup dataGroupToValidate,
+			String linkNameInData) {
+		String metadataId = extractFilterIdOrThrowErrorIfMissing(recordType, linkNameInData);
 		try {
-			return tryToValidateData(filterId, filterDataGroup);
+			return tryToValidateData(metadataId, dataGroupToValidate);
 		} catch (Exception exception) {
-			return createValidationAnswer(filterId, exception);
+			return createValidationAnswerForError(metadataId, exception);
 		}
 	}
 
-	private String extractFilterIdOrThrowErrorIfMissing(String recordType) {
-		DataGroup recordTypeGroup = recordTypeHolder.get(recordType);
-		throwErrorIfRecordTypeHasNoDefinedFilter(recordType, recordTypeGroup);
-		return extractFilterId(recordTypeGroup);
+	private String extractFilterIdOrThrowErrorIfMissing(String recordType, String linkNameInData) {
+		return extractLinkedDataGroupIdOrThrowErrorIfMissing(recordType, linkNameInData);
 	}
 
-	private String extractFilterId(DataGroup recordTypeGroup) {
-		DataGroup filterGroup = recordTypeGroup.getFirstGroupWithNameInData("filter");
+	private String extractLinkedDataGroupIdOrThrowErrorIfMissing(String recordType,
+			String nameInData) {
+		DataGroup recordTypeGroup = recordTypeHolder.get(recordType);
+		throwErrorIfRecordTypeHasNoDefinedLinkedDataGroup(recordType, recordTypeGroup, nameInData);
+		return extractLinkedId(recordTypeGroup, nameInData);
+	}
+
+	private String extractLinkedId(DataGroup recordTypeGroup, String nameInData) {
+		DataGroup filterGroup = recordTypeGroup.getFirstGroupWithNameInData(nameInData);
 		return filterGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
-	private void throwErrorIfRecordTypeHasNoDefinedFilter(String recordType,
-			DataGroup recordTypeDataGroup) {
-		if (!recordTypeDataGroup.containsChildWithNameInData("filter")) {
+	private void throwErrorIfRecordTypeHasNoDefinedLinkedDataGroup(String recordType,
+			DataGroup recordTypeDataGroup, String nameInData) {
+		if (!recordTypeDataGroup.containsChildWithNameInData(nameInData)) {
 			throw DataValidationException
-					.withMessage("No filter exists for recordType: " + recordType);
+					.withMessage("No " + nameInData + " exists for recordType: " + recordType);
 		}
 	}
 
-	public MetadataStorage getMetadataStorage() {
+	@Override
+	public ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings) {
+		String linkNameInData = "indexSettings";
+		return extractAndValidate(recordType, indexSettings, linkNameInData);
+	}
+
+	MetadataStorage getMetadataStorage() {
 		// needed for test
 		return metadataStorage;
 	}
 
-	public DataValidatorFactory getDataValidatorFactory() {
+	DataElementValidatorFactory getDataElementValidatorFactory() {
 		// needed for test
 		return dataValidatorFactory;
 	}
 
-	public Map<String, DataGroup> getRecordTypeHolder() {
+	Map<String, DataGroup> getRecordTypeHolder() {
 		// needed for test
 		return recordTypeHolder;
 	}

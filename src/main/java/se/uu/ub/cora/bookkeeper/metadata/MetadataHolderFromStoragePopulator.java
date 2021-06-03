@@ -28,6 +28,9 @@ import se.uu.ub.cora.storage.MetadataStorage;
 
 public final class MetadataHolderFromStoragePopulator {
 
+	DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
+			.forDataGroups();
+
 	public MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage(
 			MetadataStorage metadataStorage) {
 		MetadataHolder mh = new MetadataHolder();
@@ -46,9 +49,8 @@ public final class MetadataHolderFromStoragePopulator {
 
 	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(
 			DataGroup metadataElement, MetadataHolder mh) {
-		DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(metadataElement);
-		DataGroupToMetadataConverter converter = factory.factor();
+		DataGroupToMetadataConverter converter = factory
+				.factorForDataGroupContainingMetadata(metadataElement);
 		mh.addMetadataElement(converter.toMetadata());
 	}
 }

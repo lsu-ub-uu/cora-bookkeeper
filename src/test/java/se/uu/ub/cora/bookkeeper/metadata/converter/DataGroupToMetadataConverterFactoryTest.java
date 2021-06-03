@@ -33,8 +33,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadataNOT");
 		dataGroup.addAttributeByIdWithValue("type", "group");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		converterFactory.factor();
+				.forDataGroups();
+		converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 	}
 
 	@Test(expectedExceptions = DataConversionException.class)
@@ -42,8 +42,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "groupNOT");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		converterFactory.factor();
+				.forDataGroups();
+		converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 	}
 
 	@Test
@@ -51,8 +51,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "group");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToMetadataGroupConverter);
 	}
 
@@ -61,8 +61,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionItem");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToCollectionItemConverter);
 	}
 
@@ -71,8 +71,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionVariable");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToCollectionVariableConverter);
 	}
 
@@ -81,8 +81,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToItemCollectionConverter);
 	}
 
@@ -91,8 +91,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "textVariable");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToTextVariableConverter);
 	}
 
@@ -101,8 +101,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "numberVariable");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToNumberVariableConverter);
 	}
 
@@ -111,8 +111,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "recordLink");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToRecordLinkConverter);
 	}
 
@@ -121,8 +121,8 @@ public class DataGroupToMetadataConverterFactoryTest {
 		DataGroup dataGroup = new DataGroupSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "resourceLink");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
-				.fromDataGroup(dataGroup);
-		DataGroupToMetadataConverter converter = converterFactory.factor();
+				.forDataGroups();
+		DataGroupToMetadataConverter converter = converterFactory.factorForDataGroupContainingMetadata(dataGroup);
 		assertTrue(converter instanceof DataGroupToResourceLinkConverter);
 	}
 
