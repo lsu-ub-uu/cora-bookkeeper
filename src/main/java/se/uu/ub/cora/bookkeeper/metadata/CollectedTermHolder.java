@@ -41,7 +41,7 @@ public final class CollectedTermHolder {
 
 	public void addCollectedTerm(CollectedTerm collectedTerm) {
 		if (hasNotCollectedTermsWithType(collectedTerm.type)) {
-			collectedTerms.put(collectedTerm.type, new ArrayList<CollectedTerm>());
+			collectedTerms.put(collectedTerm.type, new ArrayList<>());
 		}
 		collectedTerms.get(collectedTerm.type).add(collectedTerm);
 	}
