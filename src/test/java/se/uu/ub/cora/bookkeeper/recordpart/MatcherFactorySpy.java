@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MatcherFactorySpy implements MatcherFactory {
 
@@ -33,7 +33,7 @@ public class MatcherFactorySpy implements MatcherFactory {
 	public boolean hasMatchingChild = true;
 	public List<Boolean> hasMatchingChildList = new ArrayList<>();
 	private int noOfCalls = 0;
-	// public List<DataAttribute> attributesToMatchedDataGroup = new ArrayList<>();
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override

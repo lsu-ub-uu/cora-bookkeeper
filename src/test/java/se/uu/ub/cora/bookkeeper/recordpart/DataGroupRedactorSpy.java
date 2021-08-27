@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataGroupRedactorSpy implements DataGroupRedactor {
 
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
-	// public List<DataAttribute> attributesToReplacedDataGroup = new ArrayList<>();
 
 	public List<Boolean> removeHasBeenCalledList = new ArrayList<>();
 
@@ -69,9 +69,6 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 
 		setRemoveHasBeenCalled(dataGroupSpy);
 
-		// if (!attributesToReplacedDataGroup.isEmpty()) {
-		// dataGroupSpy.attributesToReplacedDataGroup = attributesToReplacedDataGroup;
-		// }
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;
 	}

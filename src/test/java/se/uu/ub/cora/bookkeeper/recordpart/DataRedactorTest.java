@@ -35,8 +35,8 @@ import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataRedactorTest {
 	private DataRedactorImp dataRedactor;

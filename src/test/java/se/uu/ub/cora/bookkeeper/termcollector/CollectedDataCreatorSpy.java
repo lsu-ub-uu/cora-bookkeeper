@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class CollectedDataCreatorSpy implements CollectedDataCreator {
 
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	public Map<String, List<DataGroup>> collectedTerms = new HashMap<>();

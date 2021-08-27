@@ -1,6 +1,6 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataElementValidatorFactorySpy implements DataElementValidatorFactory {
 
@@ -12,6 +12,7 @@ public class DataElementValidatorFactorySpy implements DataElementValidatorFacto
 
 	MethodCallRecorder MCR = new MethodCallRecorder();
 
+	@SuppressWarnings("exports")
 	@Override
 	public DataElementValidator factor(String elementId) {
 		MCR.addCall("elementId", elementId);

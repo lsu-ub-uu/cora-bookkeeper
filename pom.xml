@@ -27,6 +27,7 @@
 		<coradata.version>5.1.0</coradata.version>
 		<storage.version>4.2.0</storage.version>
 		<json.version>2.5.0</json.version>
+		<testutils.version>1.1.0</testutils.version>
 	</properties>
 
 	<scm>
@@ -60,6 +61,12 @@
 			<artifactId>storage</artifactId>
 			<version>${storage.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>testutils</artifactId>
+			<version>${testutils.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	

@@ -18,8 +18,8 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataElementValidatorSpy implements DataElementValidator {
 

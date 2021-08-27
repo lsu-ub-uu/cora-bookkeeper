@@ -21,15 +21,14 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 
-	// public List<DataGroup> sentInDataGroups = new ArrayList<>();
 	public List<DataGroupWrapperSpy> factoredWrappers = new ArrayList<>();
-	// public Map<String, List<List<DataAttribute>>> nameInDatasToRemove = new HashMap<>();
 	public boolean removeHasBeenCalled = false;
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override

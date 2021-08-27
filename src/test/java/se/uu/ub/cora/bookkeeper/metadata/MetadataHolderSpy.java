@@ -21,9 +21,10 @@ package se.uu.ub.cora.bookkeeper.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MetadataHolderSpy extends MetadataHolder {
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	public Map<String, MetadataElement> elementsToReturn = new HashMap<>();

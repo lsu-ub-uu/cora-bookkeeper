@@ -19,10 +19,10 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MetadataMatchDataSpy implements MetadataMatchData {
 

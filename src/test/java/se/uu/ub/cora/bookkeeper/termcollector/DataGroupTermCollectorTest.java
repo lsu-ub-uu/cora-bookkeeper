@@ -306,9 +306,8 @@ public class DataGroupTermCollectorTest {
 		Map<String, Object> parametersForMethodAndCallNumber = collectedDataCreator.MCR
 				.getParametersForMethodAndCallNumber(
 						"createCollectedDataFromCollectedTermsAndRecordWithoutTypeAndId", 0);
-		Map<String, List<DataGroup>> collectedTerms = (Map<String, List<DataGroup>>) parametersForMethodAndCallNumber
+		return (Map<String, List<DataGroup>>) parametersForMethodAndCallNumber
 				.get("collectedTerms");
-		return collectedTerms;
 	}
 
 	@Test

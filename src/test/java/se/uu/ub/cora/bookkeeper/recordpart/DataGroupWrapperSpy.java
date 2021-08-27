@@ -21,17 +21,18 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.Collection;
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataGroupWrapperSpy implements DataGroupWrapper {
 
 	public DataGroup dataGroup;
 	public boolean removeHasBeenCalled = false;
 	public DataElement child;
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	public DataGroupWrapperSpy(DataGroup dataGroup) {

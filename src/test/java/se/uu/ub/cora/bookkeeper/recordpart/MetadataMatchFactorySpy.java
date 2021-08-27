@@ -21,9 +21,9 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.spy.MethodCallRecorder;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MetadataMatchFactorySpy implements MetadataMatchDataFactory {
 
