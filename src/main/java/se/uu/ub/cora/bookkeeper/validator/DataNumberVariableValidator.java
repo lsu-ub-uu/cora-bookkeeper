@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2019 Uppsala University Library
+ * Copyright 2018, 2019, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -17,6 +17,8 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 package se.uu.ub.cora.bookkeeper.validator;
+
+import java.text.MessageFormat;
 
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.data.DataAtomic;
@@ -52,15 +54,29 @@ class DataNumberVariableValidator implements DataElementValidator {
 
 	private void addErrorIfOutsideMinMax(ValidationAnswer validationAnswer) {
 		if (valueIsOutsideAllowedMinMax(dataValue)) {
-			validationAnswer.addErrorMessage("");
+			String message = "NumberVariable with nameInData: {0}"
+					+ " is NOT valid, value {1} is outside range of {2} - {3}";
+			validationAnswer.addErrorMessage(addValuesToErrorMessage(message));
 		}
+	}
+
+	private String addValuesToErrorMessage(String message) {
+		return MessageFormat.format(message, numberVariable.getNameInData(), dataValue,
+				numberVariable.getMin(), numberVariable.getMax());
 	}
 
 	private void addErrorIfMoreDecimalsThanAllowed(ValidationAnswer validationAnswer) {
 		int numOfDecimals = getNumberOfDecimals();
 		if (numOfDecimals > numberVariable.getNumOfDecmials()) {
-			validationAnswer.addErrorMessage("");
+			String message = "NumberVariable with nameInData: {0}"
+					+ " is NOT valid, value {1} has more decimals than the allowed {2}";
+			validationAnswer.addErrorMessage(addValuesToDecimalsError(message));
 		}
+	}
+
+	private String addValuesToDecimalsError(String message) {
+		return MessageFormat.format(message, numberVariable.getNameInData(), dataStringValue,
+				numberVariable.getNumOfDecmials());
 	}
 
 	private int getNumberOfDecimals() {

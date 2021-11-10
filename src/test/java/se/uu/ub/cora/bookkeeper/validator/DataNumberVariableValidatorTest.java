@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2019 Uppsala University Library
+ * Copyright 2018, 2019, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,7 +18,10 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+
+import java.util.Collection;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -47,7 +50,7 @@ public class DataNumberVariableValidatorTest {
 
 		NumberVariable numberVariable = NumberVariable
 				.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParams, limits,
-						warnLimits, 0);
+						warnLimits, 4);
 
 		numberDataValidator = new DataNumberVariableValidator(numberVariable);
 
@@ -56,13 +59,45 @@ public class DataNumberVariableValidatorTest {
 	@Test
 	public void testInvalidNumberBelowMinimum() {
 		DataAtomic number = new DataAtomicSpy("nameInData", "0");
-		assertTrue(numberDataValidator.validateData(number).dataIsInvalid());
+		ValidationAnswer validateAnswer = numberDataValidator.validateData(number);
+		assertTrue(validateAnswer.dataIsInvalid());
+
+		assertNumberOfErrorMessages(validateAnswer, 1);
+
+		assertFirstErrorMessageIs(validateAnswer,
+				"NumberVariable with nameInData: someNameInData is NOT valid,"
+						+ " value 0 is outside range of 1 - 10");
+	}
+
+	private void assertFirstErrorMessageIs(ValidationAnswer validateAnswer,
+			String expectedErrorMessage) {
+		Object errorMessages = getFirstErrorMessage(validateAnswer.getErrorMessages());
+		assertEquals(errorMessages, expectedErrorMessage);
+	}
+
+	private void assertNumberOfErrorMessages(ValidationAnswer validateAnswer,
+			int numberOfErrorMessages) {
+		Collection<String> errorMessages = validateAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), numberOfErrorMessages);
+	}
+
+	private Object getFirstErrorMessage(Collection<String> errorMessages) {
+		Object[] errorMessagesArray = errorMessages.toArray();
+		Object firstErrorMessage = errorMessagesArray[0];
+		return firstErrorMessage;
 	}
 
 	@Test
 	public void testInvalidNumberOverMaximum() {
 		DataAtomic number = new DataAtomicSpy("nameInData", "12");
-		assertTrue(numberDataValidator.validateData(number).dataIsInvalid());
+		ValidationAnswer validateAnswer = numberDataValidator.validateData(number);
+		assertTrue(validateAnswer.dataIsInvalid());
+		assertNumberOfErrorMessages(validateAnswer, 1);
+
+		assertFirstErrorMessageIs(validateAnswer,
+				"NumberVariable with nameInData: someNameInData is NOT valid,"
+						+ " value 12 is outside range of 1 - 10");
+
 	}
 
 	@Test
@@ -85,7 +120,15 @@ public class DataNumberVariableValidatorTest {
 
 	@Test
 	public void testValidNumberBetweenMinAndMaxButTooManyDecimals() {
-		DataAtomic number = new DataAtomicSpy("nameInData", "3.12");
-		assertTrue(numberDataValidator.validateData(number).dataIsInvalid());
+		DataAtomic number = new DataAtomicSpy("nameInData", "3.1245674456543");
+		ValidationAnswer validateAnswer = numberDataValidator.validateData(number);
+		assertTrue(validateAnswer.dataIsInvalid());
+
+		assertNumberOfErrorMessages(validateAnswer, 1);
+
+		assertFirstErrorMessageIs(validateAnswer,
+				"NumberVariable with nameInData: someNameInData is NOT valid,"
+						+ " value 3.1245674456543 has more decimals than the allowed 4");
+
 	}
 }
