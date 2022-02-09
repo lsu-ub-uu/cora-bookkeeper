@@ -41,8 +41,8 @@ class DataGroupValidator implements DataElementValidator {
 	protected DataGroup dataGroup;
 	protected ValidationAnswer validationAnswer;
 
-	DataGroupValidator(DataElementValidatorFactory dataValidatorFactory, MetadataHolder metadataHolder,
-			MetadataGroup metadataGroup) {
+	DataGroupValidator(DataElementValidatorFactory dataValidatorFactory,
+			MetadataHolder metadataHolder, MetadataGroup metadataGroup) {
 		this.dataValidatorFactory = dataValidatorFactory;
 		this.metadataHolder = metadataHolder;
 		this.metadataGroup = metadataGroup;
@@ -67,7 +67,8 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateNameInDataAndAttributes(DataElement dataGroup) {
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp
+				.withMetadataHolder(metadataHolder);
 		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(metadataGroup, dataGroup);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
@@ -167,6 +168,7 @@ class DataGroupValidator implements DataElementValidator {
 		sb.append("(with nameInData:");
 		sb.append(childElement.getNameInData());
 		sb.append(getAttributesTextForMetadata(childElement));
+		sb.append(")");
 		return sb.toString();
 	}
 
@@ -194,7 +196,8 @@ class DataGroupValidator implements DataElementValidator {
 		if (childElement == null) {
 			throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
 		}
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp
+				.withMetadataHolder(metadataHolder);
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
 	}
 
