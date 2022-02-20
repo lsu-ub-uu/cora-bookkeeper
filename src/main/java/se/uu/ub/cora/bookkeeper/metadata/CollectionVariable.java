@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,9 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * CollectionVariable is the metadataformat class that handles Regular
- * Expressions
+ * CollectionVariable is the metadataformat class that handles Regular Expressions
  * 
  * @author olov
  * @since 7.0.0
@@ -31,6 +33,7 @@ public class CollectionVariable extends MetadataElement {
 	private String refCollectionId;
 	private String refParentId;
 	private String finalValue;
+	private final List<String> attributeReferences = new ArrayList<>();
 
 	public CollectionVariable(String id, String nameInData, String textId, String defTextId,
 			String refCollectionId) {
@@ -57,5 +60,14 @@ public class CollectionVariable extends MetadataElement {
 
 	public String getFinalValue() {
 		return finalValue;
+	}
+
+	public void addAttributeReference(String attributeReferenceId) {
+		attributeReferences.add(attributeReferenceId);
+	}
+
+	@Override
+	public List<String> getAttributeReferences() {
+		return attributeReferences;
 	}
 }

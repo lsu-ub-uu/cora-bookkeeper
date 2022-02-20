@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -71,5 +72,16 @@ public class NumberVariableTest {
 	@Test
 	public void testNumOfDecimals() {
 		assertEquals(number.getNumOfDecmials(), numOfDecimals);
+	}
+
+	@Test
+	public void testGetAttributeReferencesNoAttributes() {
+		assertTrue(number.getAttributeReferences().isEmpty());
+	}
+
+	@Test
+	public void testAddAttributeReference() {
+		number.addAttributeReference("type");
+		assertEquals(number.getAttributeReferences().iterator().next(), "type");
 	}
 }

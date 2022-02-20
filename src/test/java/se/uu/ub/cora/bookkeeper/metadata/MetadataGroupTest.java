@@ -72,8 +72,8 @@ public class MetadataGroupTest {
 	@Test
 	public void testAddChildReference() {
 		MetadataChildReference metadataChildReference = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup", "aChildReference", 1,
-						MetadataChildReference.UNLIMITED);
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
+						"aChildReference", 1, MetadataChildReference.UNLIMITED);
 		metadataGroup.addChildReference(metadataChildReference);
 		assertEquals(metadataGroup.getChildReferences().iterator().next(), metadataChildReference,
 				"MetadataChildReference should be the same as the one added.");

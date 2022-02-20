@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -56,5 +57,16 @@ public class CollectionVariableTest {
 	public void testWithFinalValue() {
 		colVar.setFinalValue("finalValue");
 		assertEquals(colVar.getFinalValue(), "finalValue");
+	}
+
+	@Test
+	public void testGetAttributeReferencesNoAttributes() {
+		assertTrue(colVar.getAttributeReferences().isEmpty());
+	}
+
+	@Test
+	public void testAddAttributeReference() {
+		colVar.addAttributeReference("type");
+		assertEquals(colVar.getAttributeReferences().iterator().next(), "type");
 	}
 }
