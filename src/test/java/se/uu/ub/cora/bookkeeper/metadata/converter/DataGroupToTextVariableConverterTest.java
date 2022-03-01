@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -110,5 +110,36 @@ public class DataGroupToTextVariableConverterTest {
 
 		assertBasicTextVariableValuesAreCorrect(textVariable);
 		assertEquals(textVariable.getFinalValue(), "finalValue");
+	}
+
+	@Test
+	public void testToMetadataWithAttributeReferences() {
+		DataGroup dataGroup = createDataGroup();
+		createAndAddAttributeReferences(dataGroup);
+
+		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
+				.fromDataGroup(dataGroup);
+		TextVariable textVariable = converter.toMetadata();
+
+		assertBasicTextVariableValuesAreCorrect(textVariable);
+		assertEquals(textVariable.getAttributeReferences().size(), 2);
+		assertEquals(textVariable.getAttributeReferences().get(0),
+				"authorizedNameTypeCollectionVar");
+		assertEquals(textVariable.getAttributeReferences().get(1), "someOtherCollectionVar");
+	}
+
+	private void createAndAddAttributeReferences(DataGroup dataGroup) {
+		DataGroup attributeReferences = new DataGroupSpy("attributeReferences");
+		attributeReferences.addChild(createRef("authorizedNameTypeCollectionVar", "0"));
+		attributeReferences.addChild(createRef("someOtherCollectionVar", "1"));
+		dataGroup.addChild(attributeReferences);
+	}
+
+	private DataGroupSpy createRef(String linkedRecordId, String repeatId) {
+		DataGroupSpy ref = new DataGroupSpy("ref");
+		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		ref.setRepeatId(repeatId);
+		return ref;
 	}
 }
