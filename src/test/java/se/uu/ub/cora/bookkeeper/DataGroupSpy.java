@@ -30,6 +30,7 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 
 public class DataGroupSpy implements DataGroup {
 
@@ -67,7 +68,8 @@ public class DataGroupSpy implements DataGroup {
 		if (dataGroups.containsKey(childNameInData)) {
 			return dataGroups.get(childNameInData);
 		}
-		return new DataGroupSpy(childNameInData);
+		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
+		// return new DataGroupSpy(childNameInData);
 	}
 
 	@Override

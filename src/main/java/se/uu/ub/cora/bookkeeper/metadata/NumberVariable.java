@@ -18,6 +18,9 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NumberVariable extends MetadataElement {
 
 	private double min;
@@ -25,6 +28,7 @@ public class NumberVariable extends MetadataElement {
 	private double warningMin;
 	private double warningMax;
 	private int numOfDecimals;
+	private final List<String> attributeReferences = new ArrayList<>();
 
 	private NumberVariable(StandardMetadataParameters standardParams, LimitsContainer limits,
 			LimitsContainer warnLimits, int numOfDecimals) {
@@ -66,6 +70,15 @@ public class NumberVariable extends MetadataElement {
 
 	public int getNumOfDecmials() {
 		return numOfDecimals;
+	}
+
+	public void addAttributeReference(String attributeReferenceId) {
+		attributeReferences.add(attributeReferenceId);
+	}
+
+	@Override
+	public List<String> getAttributeReferences() {
+		return attributeReferences;
 	}
 
 }
