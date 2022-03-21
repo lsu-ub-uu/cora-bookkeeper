@@ -19,29 +19,35 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
 
 public class ItemCollectionTest {
 	@Test
 	public void testInit() {
 
-		ItemCollection itemCollection = new ItemCollection("id", "nameInData", "textId", "defTextId");
+		ItemCollection itemCollection = new ItemCollection("id", "nameInData", "textId",
+				"defTextId");
 		itemCollection.addItemReference("item1Ref");
-		Assert.assertEquals(itemCollection.getId(), "id",
+		assertEquals(itemCollection.getId(), "id",
 				"Id should have the value set in the constructor");
 
-		Assert.assertEquals(itemCollection.getNameInData(), "nameInData",
+		assertEquals(itemCollection.getNameInData(), "nameInData",
 				"NameInData should have the value set in the constructor");
 
-		Assert.assertEquals(itemCollection.getTextId(), "textId",
+		assertEquals(itemCollection.getTextId(), "textId",
 				"TextId should have the value set in the constructor");
 
-		Assert.assertEquals(itemCollection.getDefTextId(), "defTextId",
+		assertEquals(itemCollection.getDefTextId(), "defTextId",
 				"DefTextId should have the value set in the constructor");
 
-		Assert.assertNotNull(itemCollection.getCollectionItemReferences(),
+		assertNotNull(itemCollection.getCollectionItemReferences(),
 				"CollectionItemReferences should not be null");
+
+		assertTrue(itemCollection.getAttributeReferences().isEmpty());
 
 	}
 }
