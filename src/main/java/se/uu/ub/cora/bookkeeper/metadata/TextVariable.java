@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,9 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * TextVariable is the class that handles metadata for a RegularExpression
- * variable
+ * TextVariable is the class that handles metadata for a RegularExpression variable
  * 
  * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
  *
@@ -33,6 +35,7 @@ public final class TextVariable extends MetadataElement {
 	private final String regularExpression;
 	private String refParentId;
 	private String finalValue;
+	private final List<String> attributeReferences = new ArrayList<>();
 
 	public static TextVariable withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
 			String id, String nameInData, String textId, String defTextId,
@@ -64,6 +67,15 @@ public final class TextVariable extends MetadataElement {
 
 	public String getFinalValue() {
 		return finalValue;
+	}
+
+	public void addAttributeReference(String attributeReferenceId) {
+		attributeReferences.add(attributeReferenceId);
+	}
+
+	@Override
+	public List<String> getAttributeReferences() {
+		return attributeReferences;
 	}
 
 }

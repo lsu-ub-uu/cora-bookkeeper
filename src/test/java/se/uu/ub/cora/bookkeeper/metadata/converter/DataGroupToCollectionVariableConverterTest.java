@@ -30,6 +30,7 @@ import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToCollectionVariableConverterTest {
+
 	@Test
 	public void testToMetadata() {
 		DataGroup dataGroup = createDataGroup();
@@ -56,8 +57,6 @@ public class DataGroupToCollectionVariableConverterTest {
 				"otherTextId", "testSystem");
 		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "defTextId",
 				"otherDefTextId", "testSystem");
-		// dataGroup.addChild(new DataAtomicSpy("textId", "otherTextId"));
-		// dataGroup.addChild(new DataAtomicSpy("defTextId", "otherDefTextId"));
 
 		DataGroup refCollection = new DataGroupSpy("refCollection");
 		refCollection.addChild(new DataAtomicSpy("linkedRecordType", "metadataItemCollection"));
@@ -105,5 +104,33 @@ public class DataGroupToCollectionVariableConverterTest {
 
 		assertBasicCollectionVariableValuesAreCorrect(collectionVariable);
 		assertEquals(collectionVariable.getFinalValue(), "finalValue");
+	}
+
+	@Test
+	public void testToMetadataWithAttributeReferences() {
+		DataGroup dataGroup = createDataGroup();
+		createAndAddAttributeReferences(dataGroup);
+
+		DataGroupToCollectionVariableConverter converter = DataGroupToCollectionVariableConverter
+				.fromDataGroup(dataGroup);
+		CollectionVariable collectionVariable = converter.toMetadata();
+		assertEquals(collectionVariable.getAttributeReferences().size(), 2);
+		assertEquals(collectionVariable.getAttributeReferences().get(0), "numberTypeCollectionVar");
+		assertEquals(collectionVariable.getAttributeReferences().get(1), "someOtherCollectionVar");
+	}
+
+	private void createAndAddAttributeReferences(DataGroup dataGroup) {
+		DataGroup attributeReferences = new DataGroupSpy("attributeReferences");
+		attributeReferences.addChild(createRef("numberTypeCollectionVar", "0"));
+		attributeReferences.addChild(createRef("someOtherCollectionVar", "1"));
+		dataGroup.addChild(attributeReferences);
+	}
+
+	private DataGroupSpy createRef(String linkedRecordId, String repeatId) {
+		DataGroupSpy ref = new DataGroupSpy("ref");
+		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		ref.setRepeatId(repeatId);
+		return ref;
 	}
 }

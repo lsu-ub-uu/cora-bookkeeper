@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,6 +24,7 @@ import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToTextVariableConverter implements DataGroupToMetadataConverter {
 
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 
 	private DataGroupToTextVariableConverter(DataGroup dataGroup) {
@@ -49,6 +50,7 @@ public final class DataGroupToTextVariableConverter implements DataGroupToMetada
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id, nameInData,
 						textId, defTextId, regularExpression);
 		possiblyConvertRefParentId(textVariable);
+		convertAttributeReferences(textVariable);
 		convertFinalValue(textVariable);
 
 		return textVariable;
@@ -56,7 +58,7 @@ public final class DataGroupToTextVariableConverter implements DataGroupToMetada
 
 	private String extractTextIdByNameInData(String nameInData) {
 		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
-		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
+		return text.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 	private void possiblyConvertRefParentId(TextVariable textVariable) {
@@ -67,7 +69,7 @@ public final class DataGroupToTextVariableConverter implements DataGroupToMetada
 
 	private void convertRefParentId(TextVariable textVariable) {
 		DataGroup refParentGroup = dataGroup.getFirstGroupWithNameInData("refParentId");
-		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+		String refParentId = refParentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		textVariable.setRefParentId(refParentId);
 	}
 
@@ -75,6 +77,17 @@ public final class DataGroupToTextVariableConverter implements DataGroupToMetada
 		if (dataGroup.containsChildWithNameInData("finalValue")) {
 			String finalValue = dataGroup.getFirstAtomicValueWithNameInData("finalValue");
 			textVariable.setFinalValue(finalValue);
+		}
+	}
+
+	private void convertAttributeReferences(TextVariable textVariable) {
+		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
+			DataGroup attributeReferences = dataGroup
+					.getFirstGroupWithNameInData("attributeReferences");
+			for (DataGroup ref : attributeReferences.getAllGroupsWithNameInData("ref")) {
+				String refValue = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+				textVariable.addAttributeReference(refValue);
+			}
 		}
 	}
 }

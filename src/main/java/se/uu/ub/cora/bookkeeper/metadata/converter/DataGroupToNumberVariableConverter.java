@@ -43,8 +43,11 @@ public class DataGroupToNumberVariableConverter implements DataGroupToMetadataCo
 		LimitsContainer minMax = createMinAndMaxLimits();
 		LimitsContainer warnMinMax = createWarningMinAndMaxLimits();
 		int numOfDecimals = extractNumberOfDecimalsAsInt();
-		return NumberVariable.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParams,
-				minMax, warnMinMax, numOfDecimals);
+		NumberVariable numberVariable = NumberVariable
+				.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParams, minMax,
+						warnMinMax, numOfDecimals);
+		convertAttributeReferences(numberVariable);
+		return numberVariable;
 	}
 
 	private StandardMetadataParameters extractStandardParameters() {
@@ -91,4 +94,14 @@ public class DataGroupToNumberVariableConverter implements DataGroupToMetadataCo
 		return Integer.parseInt(numOfDecimalsString);
 	}
 
+	private void convertAttributeReferences(NumberVariable numberVariable) {
+		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
+			DataGroup attributeReferences = dataGroup
+					.getFirstGroupWithNameInData("attributeReferences");
+			for (DataGroup ref : attributeReferences.getAllGroupsWithNameInData("ref")) {
+				String refValue = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
+				numberVariable.addAttributeReference(refValue);
+			}
+		}
+	}
 }
