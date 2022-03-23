@@ -51,6 +51,7 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 				defTextId, refCollectionId);
 		possiblyConvertRefParentId(collectionVariable);
 		convertFinalValue(collectionVariable);
+		convertAttributeReferences(collectionVariable);
 		return collectionVariable;
 	}
 
@@ -75,6 +76,17 @@ public final class DataGroupToCollectionVariableConverter implements DataGroupTo
 		if (dataGroup.containsChildWithNameInData("finalValue")) {
 			String finalValue = dataGroup.getFirstAtomicValueWithNameInData("finalValue");
 			collectionVariable.setFinalValue(finalValue);
+		}
+	}
+
+	private void convertAttributeReferences(CollectionVariable collectionVariable) {
+		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
+			DataGroup attributeReferences = dataGroup
+					.getFirstGroupWithNameInData("attributeReferences");
+			for (DataGroup ref : attributeReferences.getAllGroupsWithNameInData("ref")) {
+				String refValue = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+				collectionVariable.addAttributeReference(refValue);
+			}
 		}
 	}
 
