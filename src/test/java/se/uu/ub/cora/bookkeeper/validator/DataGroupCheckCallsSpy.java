@@ -20,8 +20,10 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
@@ -175,6 +177,28 @@ public class DataGroupCheckCallsSpy implements DataGroup {
 			DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DataAttribute getAttribute(String nameInData) {
+		throw new DataMissingException("This class has not implemented getAttribute.");
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		return Collections.emptySet();
 	}
 
 }

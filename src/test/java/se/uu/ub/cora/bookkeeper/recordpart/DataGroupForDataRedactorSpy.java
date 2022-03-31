@@ -205,4 +205,10 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 		return removeHasBeenCalled;
 	}
 
+	@Override
+	public boolean hasAttributes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

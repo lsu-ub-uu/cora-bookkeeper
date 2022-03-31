@@ -232,4 +232,24 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 		return secondAttribute.getNameInData().equals(firstAttribute.getNameInData())
 				&& secondAttribute.getValue().equals(firstAttribute.getValue());
 	}
+
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		dataGroup.addAttributeByIdWithValue(nameInData, value);
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		return dataGroup.hasAttributes();
+	}
+
+	@Override
+	public DataAttribute getAttribute(String nameInData) {
+		return dataGroup.getAttribute(nameInData);
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		return dataGroup.getAttributes();
+	}
 }

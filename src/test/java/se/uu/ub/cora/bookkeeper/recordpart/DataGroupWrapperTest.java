@@ -34,6 +34,7 @@ import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -524,6 +525,38 @@ public class DataGroupWrapperTest {
 		wrapperAsDG.removeAllChildrenWithNameInData("someNameInData");
 
 		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testAddAttributeByIdWithValue() throws Exception {
+		wrapperAsDG.addAttributeByIdWithValue("someNameInData", "someValue");
+		dataGroup.MCR.assertParameters("addAttributeByIdWithValue", 0, "someNameInData",
+				"someValue");
+	}
+
+	@Test
+	public void testHasAttributes() throws Exception {
+		boolean hasAttributes = wrapperAsDG.hasAttributes();
+		dataGroup.MCR.assertParameters("hasAttributes", 0);
+
+		dataGroup.MCR.assertReturn("hasAttributes", 0, hasAttributes);
+	}
+
+	@Test
+	public void testGetAttribute() throws Exception {
+		DataAttribute attribute = wrapperAsDG.getAttribute("nameInData");
+		dataGroup.MCR.assertParameters("getAttribute", 0, "nameInData");
+
+		dataGroup.MCR.assertReturn("getAttribute", 0, attribute);
+	}
+
+	@Test
+	public void testGetAttributes() throws Exception {
+		Collection<DataAttribute> attributes = wrapperAsDG.getAttributes();
+		dataGroup.MCR.assertParameters("getAttributes", 0);
+
+		dataGroup.MCR.assertReturn("getAttributes", 0, attributes);
+
 	}
 
 }

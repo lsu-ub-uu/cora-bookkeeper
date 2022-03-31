@@ -21,9 +21,11 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
@@ -200,6 +202,36 @@ public class DataGroupForWrapperSpy implements DataGroup {
 		DataAtomic returned = new DataAtomicSpy("spyNameInData", "spyValue");
 		MCR.addReturned(returned);
 		return returned;
+	}
+
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		MCR.addCall("nameInData", nameInData, "value", value);
+
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		MCR.addCall();
+		boolean hasAttributes = false;
+		MCR.addReturned(hasAttributes);
+		return hasAttributes;
+	}
+
+	@Override
+	public DataAttribute getAttribute(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
+		DataAttributeSpy dataAttributeSpy = new DataAttributeSpy(nameInData, nameInData);
+		MCR.addReturned(dataAttributeSpy);
+		return dataAttributeSpy;
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		MCR.addCall();
+		List<DataAttribute> emptyList = Collections.emptyList();
+		MCR.addReturned(emptyList);
+		return emptyList;
 	}
 
 }
