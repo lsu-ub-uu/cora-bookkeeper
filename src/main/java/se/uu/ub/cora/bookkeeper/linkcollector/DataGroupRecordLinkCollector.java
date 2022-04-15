@@ -32,11 +32,9 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
-import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.data.DataRecordLinkProvider;
 
 public class DataGroupRecordLinkCollector {
 
@@ -103,28 +101,29 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void collectLinksFromDataGroupChildren(MetadataElement childMetadataElement) {
-		for (DataElement childDataElement : dataGroup.getChildren()) {
+		for (DataChild childDataElement : dataGroup.getChildren()) {
 			collectLinksFromDataGroupChild(childMetadataElement, childDataElement);
 		}
 	}
 
 	private void collectLinksFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement) {
+			DataChild childDataElement) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			createLinkOrParseChildGroup(childMetadataElement, childDataElement);
 		}
 	}
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
-			DataElement dataElement) {
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
+			DataChild dataElement) {
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp
+				.withMetadataHolder(metadataHolder);
 		ValidationAnswer validationAnswer = metadataMatchData
 				.metadataSpecifiesData(childMetadataElement, dataElement);
 		return validationAnswer.dataIsValid();
 	}
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,
-			DataElement childDataElement) {
+			DataChild childDataElement) {
 		DataGroup childPath = createChildPath(childDataElement);
 
 		if (isRecordLink(childMetadataElement)) {
@@ -135,7 +134,7 @@ public class DataGroupRecordLinkCollector {
 		}
 	}
 
-	private DataGroup createChildPath(DataElement childDataElement) {
+	private DataGroup createChildPath(DataChild childDataElement) {
 		DataGroup pathCopy = PathCopier.copyPath(elementPath);
 		return PathExtender.extendPathWithElementInformation(pathCopy, childDataElement);
 	}
@@ -149,21 +148,20 @@ public class DataGroupRecordLinkCollector {
 		linkList.add(recordToRecordLink);
 	}
 
-	private DataGroup createFromPart(DataElement dataElement, DataGroup fromPath) {
-		DataRecordLink from = DataRecordLinkProvider.getDataRecordLinkUsingNameInData("from");
+	private DataGroup createFromPart(DataChild dataElement, DataGroup fromPath) {
+		DataGroup from = DataGroupProvider.getDataGroupUsingNameInData("from");
 		addChildrenToFromPart(dataElement, fromPath, from);
 		return from;
 	}
 
-	private void addChildrenToFromPart(DataElement dataElement, DataGroup fromPath,
-			DataRecordLink from) {
+	private void addChildrenToFromPart(DataChild dataElement, DataGroup fromPath, DataGroup from) {
 		addRecordTypeToFromPart(from);
 		addRecordIdToFromPart(from);
 		addLinkedRepeatIdToFromPart(dataElement, from);
 		from.addChild(fromPath);
 	}
 
-	private void addRecordTypeToFromPart(DataRecordLink from) {
+	private void addRecordTypeToFromPart(DataGroup from) {
 		DataAtomic linkedRecordType = DataAtomicProvider
 				.getDataAtomicUsingNameInDataAndValue(LINKED_RECORD_TYPE, fromRecordType);
 		from.addChild(linkedRecordType);
@@ -175,7 +173,7 @@ public class DataGroupRecordLinkCollector {
 		from.addChild(linkedRecordId);
 	}
 
-	private void addLinkedRepeatIdToFromPart(DataElement dataElement, DataGroup from) {
+	private void addLinkedRepeatIdToFromPart(DataChild dataElement, DataGroup from) {
 		if (hasNonEmptyRepeatId(dataElement)) {
 			DataAtomic linkedRepeatId = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 					LINKED_REPEAT_ID, dataElement.getRepeatId());
@@ -183,26 +181,25 @@ public class DataGroupRecordLinkCollector {
 		}
 	}
 
-	private boolean hasNonEmptyRepeatId(DataElement dataElement) {
+	private boolean hasNonEmptyRepeatId(DataChild dataElement) {
 		return dataElement.getRepeatId() != null && !"".equals(dataElement.getRepeatId());
 	}
 
 	private DataGroup createToPart(DataGroup dataElement, RecordLink recordLink) {
-		DataRecordLink to = DataRecordLinkProvider.getDataRecordLinkUsingNameInData("to");
+		DataGroup to = DataGroupProvider.getDataGroupUsingNameInData("to");
 
 		addChildrenToToPart(recordLink, to, dataElement);
 		return to;
 	}
 
-	private void addChildrenToToPart(RecordLink recordLink, DataRecordLink to,
-			DataGroup dataGroup) {
+	private void addChildrenToToPart(RecordLink recordLink, DataGroup to, DataGroup dataGroup) {
 		addRecordTypeToToPart(to, dataGroup);
 		addRecordIdToToPart(to, dataGroup);
 		addLinkedPathToToPart(recordLink, to);
 		possiblyAddLinkedRepeatIdToToPart(to, dataGroup);
 	}
 
-	private void addRecordTypeToToPart(DataRecordLink to, DataGroup dataGroup) {
+	private void addRecordTypeToToPart(DataGroup to, DataGroup dataGroup) {
 		DataAtomic linkedRecordType = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 				LINKED_RECORD_TYPE,
 				dataGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE));

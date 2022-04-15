@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
@@ -81,33 +81,33 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	}
 
 	@Override
-	public void addChild(DataElement dataElement) {
+	public void addChild(DataChild dataElement) {
 		dataGroup.addChild(dataElement);
 	}
 
 	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
+	public void addChildren(Collection<DataChild> dataElements) {
 		dataGroup.addChildren(dataElements);
 	}
 
 	@Override
-	public List<DataElement> getChildren() {
+	public List<DataChild> getChildren() {
 		return dataGroup.getChildren();
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
+	public List<DataChild> getAllChildrenWithNameInData(String nameInData) {
 		return dataGroup.getAllChildrenWithNameInData(nameInData);
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String nameInData,
 			DataAttribute... childAttributes) {
 		return dataGroup.getAllChildrenWithNameInDataAndAttributes(nameInData, childAttributes);
 	}
 
 	@Override
-	public DataElement getFirstChildWithNameInData(String nameInData) {
+	public DataChild getFirstChildWithNameInData(String nameInData) {
 		return dataGroup.getFirstChildWithNameInData(nameInData);
 	}
 
@@ -119,6 +119,13 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	@Override
 	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
 		return dataGroup.getAllDataAtomicsWithNameInData(childNameInData);
+	}
+
+	@Override
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
+			String childNameInData, DataAttribute... childAttributes) {
+		return dataGroup.getAllDataAtomicsWithNameInDataAndAttributes(childNameInData,
+				childAttributes);
 	}
 
 	@Override
@@ -161,18 +168,18 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	}
 
 	@Override
-	public boolean hasRemovedBeenCalled(DataElement child) {
+	public boolean hasRemovedBeenCalled(DataChild child) {
 		if (removeHasNotBeenCalledForNameInData(child)) {
 			return false;
 		}
 		return removeHasBeenCalledForChildsAttributes(child);
 	}
 
-	private boolean removeHasNotBeenCalledForNameInData(DataElement child) {
+	private boolean removeHasNotBeenCalledForNameInData(DataChild child) {
 		return !removedElements.containsKey(child.getNameInData());
 	}
 
-	private boolean removeHasBeenCalledForChildsAttributes(DataElement child) {
+	private boolean removeHasBeenCalledForChildsAttributes(DataChild child) {
 		String nameInData = child.getNameInData();
 
 		List<List<DataAttribute>> allRemovedAttributes = removedElements.get(nameInData);
@@ -252,4 +259,5 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	public Collection<DataAttribute> getAttributes() {
 		return dataGroup.getAttributes();
 	}
+
 }

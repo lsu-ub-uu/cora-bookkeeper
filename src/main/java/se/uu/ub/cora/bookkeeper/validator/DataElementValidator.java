@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
 interface DataElementValidator {
 
-	ValidationAnswer validateData(DataElement dataElement);
+	ValidationAnswer validateData(DataChild dataElement);
 
 }

@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 
@@ -65,17 +65,17 @@ public final class PathCopier {
 		if (pathToCopy.containsChildWithNameInData(ATTRIBUTES)) {
 			DataGroup attributes = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTES);
 			pathCopy.addChild(attributes);
-			for (DataElement attributeToCopy : pathToCopy.getFirstGroupWithNameInData(ATTRIBUTES)
+			for (DataChild attributeToCopy : pathToCopy.getFirstGroupWithNameInData(ATTRIBUTES)
 					.getChildren()) {
 				copyAttribute(attributes, attributeToCopy);
 			}
 		}
 	}
 
-	private static void copyAttribute(DataGroup attributes, DataElement attributeToCopy) {
+	private static void copyAttribute(DataGroup attributes, DataChild attributeToCopy) {
 		DataGroup attribute = DataGroupProvider.getDataGroupUsingNameInData(ATTRIBUTE);
 		attributes.addChild(attribute);
-		for (DataElement attributePart : ((DataGroup) attributeToCopy).getChildren()) {
+		for (DataChild attributePart : ((DataGroup) attributeToCopy).getChildren()) {
 			attribute.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
 					attributePart.getNameInData(), ((DataAtomic) attributePart).getValue()));
 		}

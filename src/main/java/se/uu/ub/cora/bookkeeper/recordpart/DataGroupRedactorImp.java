@@ -24,7 +24,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRedactorImp implements DataGroupRedactor {
@@ -75,7 +75,7 @@ public class DataGroupRedactorImp implements DataGroupRedactor {
 			Constraint constraint) {
 		removeMatchingChildren(updatedDataGroup, constraint);
 		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		List<DataElement> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
+		List<DataChild> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
 				constraint.getNameInData(), attributeArray);
 		updatedDataGroup.addChildren(allChildren);
 	}

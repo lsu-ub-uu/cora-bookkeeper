@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRedactorTest {
@@ -256,21 +256,21 @@ public class DataGroupRedactorTest {
 		assertTrue(updatedDataGroup.childNamesInDataWithAttributesToRemoveAll
 				.contains("otherConstraint"));
 
-		List<Collection<DataElement>> addedChildrenCollections = updatedDataGroup.addedChildrenCollections;
-		Collection<DataElement> titleCollection = getCollectionContainingChildrenWithNameInData(
+		List<Collection<DataChild>> addedChildrenCollections = updatedDataGroup.addedChildrenCollections;
+		Collection<DataChild> titleCollection = getCollectionContainingChildrenWithNameInData(
 				"title", addedChildrenCollections);
 		assertSame(titleCollection, originalDataGroup.getAllChildrenWithNameInData("title"));
 
-		Collection<DataElement> otherConstraintCollection = getCollectionContainingChildrenWithNameInData(
+		Collection<DataChild> otherConstraintCollection = getCollectionContainingChildrenWithNameInData(
 				"otherConstraint", addedChildrenCollections);
 		assertSame(otherConstraintCollection,
 				originalDataGroup.getAllChildrenWithNameInData("otherConstraint"));
 	}
 
-	private Collection<DataElement> getCollectionContainingChildrenWithNameInData(String nameInData,
-			List<Collection<DataElement>> addedChildrenCollections) {
-		for (Collection<DataElement> collection : addedChildrenCollections) {
-			for (DataElement dataElement : collection) {
+	private Collection<DataChild> getCollectionContainingChildrenWithNameInData(String nameInData,
+			List<Collection<DataChild>> addedChildrenCollections) {
+		for (Collection<DataChild> collection : addedChildrenCollections) {
+			for (DataChild dataElement : collection) {
 				if (nameInData.equals(dataElement.getNameInData())) {
 					return collection;
 				}

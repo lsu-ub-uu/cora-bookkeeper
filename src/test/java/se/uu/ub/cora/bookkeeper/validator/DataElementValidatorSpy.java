@@ -18,19 +18,19 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataElementValidatorSpy implements DataElementValidator {
 
-	public DataElement dataElement;
+	public DataChild dataElement;
 	public int numOfInvalidMessages = 0;
 	public ValidationAnswer validationAnswer;
 
 	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public ValidationAnswer validateData(DataElement dataElement) {
+	public ValidationAnswer validateData(DataChild dataElement) {
 		MCR.addCall("dataElement", dataElement);
 
 		this.dataElement = dataElement;

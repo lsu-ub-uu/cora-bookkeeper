@@ -35,7 +35,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomicProvider;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 
@@ -60,12 +60,12 @@ public class MetadataMatchDataTest {
 	public void testMatchingNameInDataOnGroup() {
 		MetadataElement metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
 				"id", NAME_IN_DATA, "textId", "defTextId");
-		DataElement dataElement = new DataGroupSpy(NAME_IN_DATA);
+		DataChild dataElement = new DataGroupSpy(NAME_IN_DATA);
 
 		assertTrue(dataIsMatching(metadataElement, dataElement));
 	}
 
-	private boolean dataIsMatching(MetadataElement metadataElement, DataElement dataElement) {
+	private boolean dataIsMatching(MetadataElement metadataElement, DataChild dataElement) {
 		return metadataMatch.metadataSpecifiesData(metadataElement, dataElement).dataIsValid();
 	}
 
@@ -73,7 +73,7 @@ public class MetadataMatchDataTest {
 	public void testNoMatchNameInDataOnGroupWrongNameInData() {
 		MetadataElement metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
 				"id", NAME_IN_DATA, "textId", "defTextId");
-		DataElement dataElement = new DataGroupSpy("NOT_nameInData");
+		DataChild dataElement = new DataGroupSpy("NOT_nameInData");
 
 		assertFalse(dataIsMatching(metadataElement, dataElement));
 	}

@@ -36,7 +36,7 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
@@ -116,7 +116,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void recurseAndCollectTermFromChildsGroupChildren(DataGroup dataGroup,
 			MetadataElement childMetadataElement) {
 		String childMetadataGroupId = childMetadataElement.getId();
-		for (DataElement childDataElement : dataGroup.getChildren()) {
+		for (DataChild childDataElement : dataGroup.getChildren()) {
 			if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 				collectTermsFromDataUsingMetadata(childMetadataGroupId,
 						(DataGroup) childDataElement);
@@ -149,14 +149,14 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
 			List<CollectTerm> collectTermsForChildReference, DataGroup dataGroup) {
-		for (DataElement childDataElement : dataGroup.getChildren()) {
+		for (DataChild childDataElement : dataGroup.getChildren()) {
 			collectTermsFromDataGroupChild(childMetadataElement, childDataElement,
 					collectTermsForChildReference);
 		}
 	}
 
 	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataElement childDataElement, List<CollectTerm> collectTermsForChildReference) {
+			DataChild childDataElement, List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, childDataElement,
 					collectTermsForChildReference);
@@ -164,7 +164,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void collectTermsFromDataGroupChildMatchingMetadata(
-			MetadataElement childMetadataElement, DataElement childDataElement,
+			MetadataElement childMetadataElement, DataChild childDataElement,
 			List<CollectTerm> collectTermsForChildReference) {
 		if (childMetadataElement instanceof RecordLink) {
 			createCollectTermsForRecordLink((DataGroup) childDataElement,
@@ -175,7 +175,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
-			DataElement dataElement) {
+			DataChild dataElement) {
 		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 		ValidationAnswer validationAnswer = metadataMatchData
 				.metadataSpecifiesData(childMetadataElement, dataElement);
@@ -196,14 +196,14 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return recordType + "_" + recordId;
 	}
 
-	private void possiblyCreateCollectedTerms(DataElement childDataElement,
+	private void possiblyCreateCollectedTerms(DataChild childDataElement,
 			List<CollectTerm> collectTerms) {
 		if (childDataElement instanceof DataAtomic) {
 			createCollectTerms(childDataElement, collectTerms);
 		}
 	}
 
-	private void createCollectTerms(DataElement childDataElement, List<CollectTerm> collectTerms) {
+	private void createCollectTerms(DataChild childDataElement, List<CollectTerm> collectTerms) {
 		for (CollectTerm collectTerm : collectTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
 			createAndAddCollectedTermUsingIdAndValue(collectTerm.id, childDataElementValue);
