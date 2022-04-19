@@ -83,8 +83,7 @@ class DataResourceLinkValidator implements DataElementValidator {
 	private void validateTextVariableValueByMetadataIdAndNameInData(String metadataId,
 			String nameInData) {
 		DataTextVariableValidator dataValidator = createDataValidator(metadataId);
-		DataChild linkedRecordIdData = dataForResourceLink
-				.getFirstChildWithNameInData(nameInData);
+		DataChild linkedRecordIdData = dataForResourceLink.getFirstChildWithNameInData(nameInData);
 		validateTextVariableData(dataValidator, linkedRecordIdData);
 	}
 

@@ -18,7 +18,7 @@
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
-	<version>6.8-SNAPSHOT</version>
+	<version>7.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Bookkeeper</name>

@@ -34,12 +34,16 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataFactory;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecordLinkProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
+import se.uu.ub.cora.testspies.data.DataFactorySpy;
 
 public class DataRecordLinkCollectorTest {
+	private DataFactory dataFactory;
 	private DataRecordLinkCollector linkCollector;
 	private MetadataStorage metadataStorage;
 	private DataGroupFactorySpy dataGroupFactory;
@@ -48,6 +52,9 @@ public class DataRecordLinkCollectorTest {
 
 	@BeforeMethod
 	public void setUp() {
+		dataFactory = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactory);
+
 		metadataStorage = new MetadataStorageStub();
 		dataGroupFactory = new DataGroupFactorySpy();
 		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
@@ -103,23 +110,23 @@ public class DataRecordLinkCollectorTest {
 
 	private void assertCorrectFactoredGroupsAndAtomics() {
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		assertEquals(namesOfGroupsFactored.size(), 5);
+		assertEquals(namesOfGroupsFactored.size(), 3);
 
 		assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		assertEquals(namesOfGroupsFactored.get(2), "from");
-		assertEquals(namesOfGroupsFactored.get(3), "to");
-		assertEquals(namesOfGroupsFactored.get(4), "collectedDataLinks");
+		// assertEquals(namesOfGroupsFactored.get(2), "from");
+		// assertEquals(namesOfGroupsFactored.get(3), "to");
+		assertEquals(namesOfGroupsFactored.get(2), "collectedDataLinks");
 
-		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 5);
-		assertEquals(dataAtomicFactory.usedValues.size(), 5);
+		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 1);
+		assertEquals(dataAtomicFactory.usedValues.size(), 1);
 
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testLink");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "linkedRecordType",
-				"fromRecordType");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType", "bush");
-		assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "bush1");
+		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "linkedRecordType",
+		// "fromRecordType");
+		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
+		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType", "bush");
+		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "bush1");
 	}
 
 	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
