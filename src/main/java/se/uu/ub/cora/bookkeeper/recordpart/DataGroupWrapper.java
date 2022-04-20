@@ -18,7 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public interface DataGroupWrapper extends DataGroup {
@@ -27,6 +27,6 @@ public interface DataGroupWrapper extends DataGroup {
 	 * answers true if a call to remove a child has been made for a child with the same nameInData
 	 * and attributes as the specified child, else false.
 	 */
-	boolean hasRemovedBeenCalled(DataElement child);
+	boolean hasRemovedBeenCalled(DataChild child);
 
 }

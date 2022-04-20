@@ -24,7 +24,7 @@ import java.util.List;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
@@ -87,19 +87,19 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 	}
 
 	@Override
-	public void addChild(DataElement dataElement) {
+	public void addChild(DataChild dataElement) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<DataElement> getChildren() {
+	public List<DataChild> getChildren() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public DataElement getFirstChildWithNameInData(String nameInData) {
+	public DataChild getFirstChildWithNameInData(String nameInData) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -159,13 +159,13 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 	}
 
 	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
+	public void addChildren(Collection<DataChild> dataElements) {
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
+	public List<DataChild> getAllChildrenWithNameInData(String nameInData) {
 		MCR.addCall("nameInData", nameInData);
-		List<DataElement> children = new ArrayList<>();
+		List<DataChild> children = new ArrayList<>();
 		DataGroupForDataRedactorSpy childDataGroup = new DataGroupForDataRedactorSpy(nameInData);
 		// if (!attributesToReplacedDataGroup.isEmpty()) {
 		// childDataGroup.setAttributes(attributesToReplacedDataGroup);
@@ -187,7 +187,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String nameInData,
 			DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
@@ -199,7 +199,7 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 	}
 
 	@Override
-	public boolean hasRemovedBeenCalled(DataElement child) {
+	public boolean hasRemovedBeenCalled(DataChild child) {
 		MCR.addCall("child", child);
 		MCR.addReturned(removeHasBeenCalled);
 		return removeHasBeenCalled;
@@ -209,6 +209,13 @@ public class DataGroupForDataRedactorSpy implements DataGroup, DataGroupWrapper 
 	public boolean hasAttributes() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
+			String childNameInData, DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

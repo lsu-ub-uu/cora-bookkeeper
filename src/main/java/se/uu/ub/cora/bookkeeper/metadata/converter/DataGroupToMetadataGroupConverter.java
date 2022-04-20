@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataConverter {
@@ -85,7 +85,7 @@ public class DataGroupToMetadataGroupConverter implements DataGroupToMetadataCon
 
 	protected void convertChildReferences() {
 		DataGroup childReferences = dataGroup.getFirstGroupWithNameInData("childReferences");
-		for (DataElement childReferenceElement : childReferences.getChildren()) {
+		for (DataChild childReferenceElement : childReferences.getChildren()) {
 			convertChildReference((DataGroup) childReferenceElement);
 		}
 	}

@@ -22,7 +22,7 @@ import java.text.MessageFormat;
 
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
 class DataNumberVariableValidator implements DataElementValidator {
 
@@ -35,7 +35,7 @@ class DataNumberVariableValidator implements DataElementValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateData(DataElement dataElement) {
+	public ValidationAnswer validateData(DataChild dataElement) {
 		dataValue = getDataValueAsDouble((DataAtomic) dataElement);
 		ValidationAnswer validationAnswer = new ValidationAnswer();
 		addErrorIfDataIsNotValid(validationAnswer);

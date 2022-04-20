@@ -21,20 +21,20 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MetadataMatchDataSpy implements MetadataMatchData {
 
 	public MetadataElement metadataElement;
-	public DataElement dataElement;
+	public DataChild dataElement;
 	public boolean isValid = true;
 
 	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
-			DataElement dataElement) {
+			DataChild dataElement) {
 		MCR.addCall("metadataElement", metadataElement, "dataElement", dataElement);
 		this.metadataElement = metadataElement;
 		this.dataElement = dataElement;

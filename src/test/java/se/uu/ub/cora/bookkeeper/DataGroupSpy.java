@@ -28,14 +28,14 @@ import java.util.Set;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 
 public class DataGroupSpy implements DataGroup {
 
 	public String nameInData;
-	public List<DataElement> children = new ArrayList<>();
+	public List<DataChild> children = new ArrayList<>();
 	public Set<DataAttribute> attributes = new HashSet<>();
 	public List<DataGroup> groupsWithNameInData = new ArrayList<>();
 	public Map<String, String> atomicValues = new HashMap<>();
@@ -73,7 +73,7 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public void addChild(DataElement dataElement) {
+	public void addChild(DataChild dataElement) {
 		if (dataElement instanceof DataAtomicSpy) {
 			DataAtomicSpy atomicSpyChild = (DataAtomicSpy) dataElement;
 			atomicValues.put(atomicSpyChild.nameInData, atomicSpyChild.value);
@@ -93,7 +93,7 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public List<DataElement> getChildren() {
+	public List<DataChild> getChildren() {
 		return children;
 	}
 
@@ -127,7 +127,7 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public DataElement getFirstChildWithNameInData(String nameInData) {
+	public DataChild getFirstChildWithNameInData(String nameInData) {
 		if (dataGroups.containsKey(nameInData)) {
 			return dataGroups.get(nameInData);
 		} else if (atomicValues.containsKey(nameInData)) {
@@ -185,7 +185,7 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public boolean removeFirstChildWithNameInData(String childNameInData) {
-		DataElement foundElement = tryToFindElementToRemove(childNameInData);
+		DataChild foundElement = tryToFindElementToRemove(childNameInData);
 		if (foundElement != null) {
 			getChildren().remove(foundElement);
 			if (foundElement instanceof DataAtomic) {
@@ -199,8 +199,8 @@ public class DataGroupSpy implements DataGroup {
 		return false;
 	}
 
-	private DataElement tryToFindElementToRemove(String childNameInData) {
-		for (DataElement dataElement : getChildren()) {
+	private DataChild tryToFindElementToRemove(String childNameInData) {
+		for (DataChild dataElement : getChildren()) {
 			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
 				return dataElement;
 			}
@@ -208,7 +208,7 @@ public class DataGroupSpy implements DataGroup {
 		return null;
 	}
 
-	private boolean dataElementsNameInDataIs(DataElement dataElement, String childNameInData) {
+	private boolean dataElementsNameInDataIs(DataChild dataElement, String childNameInData) {
 		return dataElement.getNameInData().equals(childNameInData);
 	}
 
@@ -231,13 +231,13 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
+	public void addChildren(Collection<DataChild> dataElements) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
+	public List<DataChild> getAllChildrenWithNameInData(String nameInData) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -255,8 +255,15 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String nameInData,
 			DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
+			String childNameInData, DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -20,7 +20,7 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public final class DataGroupToItemCollectionConverter implements DataGroupToMetadataConverter {
@@ -48,7 +48,7 @@ public final class DataGroupToItemCollectionConverter implements DataGroupToMeta
 
 		DataGroup collectionItemReferences = dataGroup
 				.getFirstGroupWithNameInData("collectionItemReferences");
-		for (DataElement dataElement : collectionItemReferences.getChildren()) {
+		for (DataChild dataElement : collectionItemReferences.getChildren()) {
 			DataGroup itemRefElement = (DataGroup) dataElement;
 			String itemRefId = itemRefElement.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 			itemCollection.addItemReference(itemRefId);

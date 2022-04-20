@@ -35,7 +35,7 @@ import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperTest {
@@ -174,7 +174,7 @@ public class DataGroupWrapperTest {
 	public void testAddChildren() {
 		DataAtomicSpy dataAtomicChild = new DataAtomicSpy("atomicNameInData", "atomicValue");
 		DataAtomicSpy dataAtomicChild2 = new DataAtomicSpy("atomicNameInData2", "atomicValue2");
-		List<DataElement> children = Arrays.asList(dataAtomicChild, dataAtomicChild2);
+		List<DataChild> children = Arrays.asList(dataAtomicChild, dataAtomicChild2);
 
 		wrapperAsDG.addChildren(children);
 		dataGroup.MCR.assertParameters("addChildren", 0, children);
@@ -182,7 +182,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetChildren() {
-		List<DataElement> returnedValue = wrapperAsDG.getChildren();
+		List<DataChild> returnedValue = wrapperAsDG.getChildren();
 		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR.getReturnValue("getChildren",
 				0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
@@ -190,8 +190,7 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void getAllChildrenWithNameInData() {
-		List<DataElement> returnedValue = wrapperAsDG
-				.getAllChildrenWithNameInData("someNameInData");
+		List<DataChild> returnedValue = wrapperAsDG.getAllChildrenWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getAllChildrenWithNameInData", 0, "someNameInData");
 
 		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR
@@ -202,7 +201,7 @@ public class DataGroupWrapperTest {
 	@Test
 	public void getAllChildrenWithNameInDataAndAttributes() {
 		DataAttributeSpy dataAttribute = new DataAttributeSpy("someId", "someType");
-		List<DataElement> returnedValue = wrapperAsDG
+		List<DataChild> returnedValue = wrapperAsDG
 				.getAllChildrenWithNameInDataAndAttributes("someNameInData", dataAttribute);
 
 		// TODO: for some reason different dataAttribute objects??
@@ -217,10 +216,10 @@ public class DataGroupWrapperTest {
 
 	@Test
 	public void testGetFirstChildWithNameInData() {
-		DataElement returnedValue = wrapperAsDG.getFirstChildWithNameInData("someNameInData");
+		DataChild returnedValue = wrapperAsDG.getFirstChildWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getFirstChildWithNameInData", 0, "someNameInData");
 
-		DataElement returnedValueFromDataGroup = (DataElement) dataGroup.MCR
+		DataChild returnedValueFromDataGroup = (DataChild) dataGroup.MCR
 				.getReturnValue("getFirstChildWithNameInData", 0);
 		assertEquals(returnedValue, returnedValueFromDataGroup);
 	}
@@ -239,9 +238,23 @@ public class DataGroupWrapperTest {
 		List<DataAtomic> returnedValue = wrapperAsDG
 				.getAllDataAtomicsWithNameInData("someNameInData");
 		dataGroup.MCR.assertParameters("getAllDataAtomicsWithNameInData", 0, "someNameInData");
-		List<?> returnedValueFromDataGroup = (List<?>) dataGroup.MCR
-				.getReturnValue("getAllDataAtomicsWithNameInData", 0);
-		assertEquals(returnedValue, returnedValueFromDataGroup);
+		dataGroup.MCR.assertReturn("getAllDataAtomicsWithNameInData", 0, returnedValue);
+	}
+
+	@Test
+	public void testGetAllDataAtomicsWithNameInDataAndAttributes() {
+		DataAttribute dataAttributeSpy = new DataAttributeSpy("id", "value");
+
+		Collection<DataAtomic> returnedValue = wrapperAsDG
+				.getAllDataAtomicsWithNameInDataAndAttributes("someNameInData", dataAttributeSpy);
+
+		dataGroup.MCR.assertReturn("getAllDataAtomicsWithNameInDataAndAttributes", 0,
+				returnedValue);
+
+		// TODO: for some reason different dataAttribute objects??
+		assertSame(dataGroup.sentInAttributes.get(0), dataAttributeSpy);
+		// dataGroup.MCR.assertParameters("getAllDataAtomicsWithNameInDataAndAttributes", 0,
+		// "someNameInData", dataAttributeSpy);
 	}
 
 	@Test

@@ -25,7 +25,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 class DataRecordLinkValidator implements DataElementValidator {
@@ -47,7 +47,7 @@ class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateData(DataElement dataElement) {
+	public ValidationAnswer validateData(DataChild dataElement) {
 		validationAnswer = new ValidationAnswer();
 		dataRecordLink = (DataGroup) dataElement;
 		validateNameInData();
@@ -59,7 +59,8 @@ class DataRecordLinkValidator implements DataElementValidator {
 	}
 
 	private void validateNameInData() {
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = MetadataMatchDataImp
+				.withMetadataHolder(metadataHolder);
 		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(recordLink, dataRecordLink);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
 	}
@@ -153,12 +154,12 @@ class DataRecordLinkValidator implements DataElementValidator {
 	private void validateTextVariableValueByMetadataIdAndNameInData(String metadataId,
 			String nameInData) {
 		DataTextVariableValidator dataValidator = createDataValidator(metadataId);
-		DataElement linkedRecordIdData = dataRecordLink.getFirstChildWithNameInData(nameInData);
+		DataChild linkedRecordIdData = dataRecordLink.getFirstChildWithNameInData(nameInData);
 		validateTextVariableData(dataValidator, linkedRecordIdData);
 	}
 
 	private void validateTextVariableData(DataTextVariableValidator dataValidator,
-			DataElement textVariableData) {
+			DataChild textVariableData) {
 		ValidationAnswer va = dataValidator.validateData(textVariableData);
 
 		if (va.dataIsInvalid()) {

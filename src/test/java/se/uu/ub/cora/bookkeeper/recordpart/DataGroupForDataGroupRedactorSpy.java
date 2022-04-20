@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupForDataGroupRedactorSpy implements DataGroup {
@@ -43,9 +43,9 @@ public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 	public Map<String, String> usedAttributesForRemove = new TreeMap<>();
 	public boolean childExists = true;
 	public boolean addChildWasCalled = false;
-	List<DataElement> titleCollection = new ArrayList<>();
-	List<Collection<DataElement>> addedChildrenCollections = new ArrayList<>();
-	List<DataElement> otherConstraintCollection = new ArrayList<>();
+	List<DataChild> titleCollection = new ArrayList<>();
+	List<Collection<DataChild>> addedChildrenCollections = new ArrayList<>();
+	List<DataChild> otherConstraintCollection = new ArrayList<>();
 	public boolean getAllChildrenWithNameInDataAndAttributesWasCalled = false;
 
 	public DataGroupForDataGroupRedactorSpy(String nameInData) {
@@ -96,20 +96,20 @@ public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 	}
 
 	@Override
-	public void addChild(DataElement dataElement) {
+	public void addChild(DataChild dataElement) {
 		// TODO Auto-generated method stub
 		addChildWasCalled = true;
 
 	}
 
 	@Override
-	public List<DataElement> getChildren() {
+	public List<DataChild> getChildren() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public DataElement getFirstChildWithNameInData(String nameInData) {
+	public DataChild getFirstChildWithNameInData(String nameInData) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -166,12 +166,12 @@ public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 	}
 
 	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
+	public void addChildren(Collection<DataChild> dataElements) {
 		addedChildrenCollections.add(dataElements);
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
+	public List<DataChild> getAllChildrenWithNameInData(String nameInData) {
 		if ("title".equals(nameInData)) {
 			return titleCollection;
 		}
@@ -199,7 +199,7 @@ public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String nameInData,
 			DataAttribute... childAttributes) {
 		getAllChildrenWithNameInDataAndAttributesWasCalled = true;
 		if ("title".equals(nameInData)) {
@@ -215,6 +215,13 @@ public class DataGroupForDataGroupRedactorSpy implements DataGroup {
 	public boolean hasAttributes() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
+			String childNameInData, DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

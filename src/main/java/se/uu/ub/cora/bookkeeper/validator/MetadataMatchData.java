@@ -19,10 +19,10 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
 public interface MetadataMatchData {
 
-	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataElement dataElement);
+	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataChild dataElement);
 
 }

@@ -24,7 +24,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
 class DataCollectionVariableValidator implements DataElementValidator {
 
@@ -39,7 +39,7 @@ class DataCollectionVariableValidator implements DataElementValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateData(DataElement dataElement) {
+	public ValidationAnswer validateData(DataChild dataElement) {
 		DataAtomic data = (DataAtomic) dataElement;
 		dataValue = data.getValue();
 		if (finalValueIsDefinedInMetadata()) {

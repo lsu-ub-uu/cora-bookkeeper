@@ -27,13 +27,13 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
 public final class MetadataMatchDataImp implements MetadataMatchData {
 
 	private MetadataHolder metadataHolder;
 	private MetadataElement metadataElement;
-	private DataElement dataElement;
+	private DataChild dataElement;
 	private ValidationAnswer validationAnswer;
 
 	public static MetadataMatchData withMetadataHolder(MetadataHolder metadataHolder) {
@@ -46,7 +46,7 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 
 	@Override
 	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
-			DataElement dataElement) {
+			DataChild dataElement) {
 		this.metadataElement = metadataElement;
 		this.dataElement = dataElement;
 		validationAnswer = new ValidationAnswer();

@@ -23,7 +23,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 class DataResourceLinkValidator implements DataElementValidator {
@@ -38,7 +38,7 @@ class DataResourceLinkValidator implements DataElementValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateData(DataElement dataElement) {
+	public ValidationAnswer validateData(DataChild dataElement) {
 		validationAnswer = new ValidationAnswer();
 		dataForResourceLink = (DataGroup) dataElement;
 		validateNameInData();
@@ -83,13 +83,12 @@ class DataResourceLinkValidator implements DataElementValidator {
 	private void validateTextVariableValueByMetadataIdAndNameInData(String metadataId,
 			String nameInData) {
 		DataTextVariableValidator dataValidator = createDataValidator(metadataId);
-		DataElement linkedRecordIdData = dataForResourceLink
-				.getFirstChildWithNameInData(nameInData);
+		DataChild linkedRecordIdData = dataForResourceLink.getFirstChildWithNameInData(nameInData);
 		validateTextVariableData(dataValidator, linkedRecordIdData);
 	}
 
 	private void validateTextVariableData(DataTextVariableValidator dataValidator,
-			DataElement textVariableData) {
+			DataChild textVariableData) {
 		ValidationAnswer va = dataValidator.validateData(textVariableData);
 
 		if (va.dataIsInvalid()) {

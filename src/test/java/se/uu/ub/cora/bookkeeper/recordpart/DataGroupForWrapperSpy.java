@@ -29,7 +29,7 @@ import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
@@ -76,47 +76,47 @@ public class DataGroupForWrapperSpy implements DataGroup {
 	}
 
 	@Override
-	public void addChild(DataElement dataElement) {
+	public void addChild(DataChild dataElement) {
 		MCR.addCall("dataElement", dataElement);
 	}
 
 	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
+	public void addChildren(Collection<DataChild> dataElements) {
 		MCR.addCall("dataElements", dataElements);
 	}
 
 	@Override
-	public List<DataElement> getChildren() {
+	public List<DataChild> getChildren() {
 		MCR.addCall();
-		List<DataElement> returned = Arrays.asList(new DataAtomicSpy("spyNameInData", "spyValue"));
+		List<DataChild> returned = Arrays.asList(new DataAtomicSpy("spyNameInData", "spyValue"));
 		MCR.addReturned(returned);
 		return returned;
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String nameInData) {
+	public List<DataChild> getAllChildrenWithNameInData(String nameInData) {
 		MCR.addCall("nameInData", nameInData);
-		List<DataElement> returned = Arrays.asList(new DataAtomicSpy("spyNameInData", "spyValue"));
+		List<DataChild> returned = Arrays.asList(new DataAtomicSpy("spyNameInData", "spyValue"));
 		MCR.addReturned(returned);
 		return returned;
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String nameInData,
 			DataAttribute... childAttributes) {
 		for (DataAttribute dataAttribute : childAttributes) {
 			sentInAttributes.add(dataAttribute);
 		}
 		MCR.addCall("nameInData", nameInData, "childAttributes", childAttributes);
-		List<DataElement> returned = Arrays.asList(new DataAtomicSpy("spyNameInData", "spyValue"));
+		List<DataChild> returned = Arrays.asList(new DataAtomicSpy("spyNameInData", "spyValue"));
 		MCR.addReturned(returned);
 		return returned;
 	}
 
 	@Override
-	public DataElement getFirstChildWithNameInData(String nameInData) {
+	public DataChild getFirstChildWithNameInData(String nameInData) {
 		MCR.addCall("nameInData", nameInData);
-		DataElement returned = new DataAtomicSpy("spyNameInData", "spyValue");
+		DataChild returned = new DataAtomicSpy("spyNameInData", "spyValue");
 		MCR.addReturned(returned);
 		return returned;
 	}
@@ -230,6 +230,18 @@ public class DataGroupForWrapperSpy implements DataGroup {
 	public Collection<DataAttribute> getAttributes() {
 		MCR.addCall();
 		List<DataAttribute> emptyList = Collections.emptyList();
+		MCR.addReturned(emptyList);
+		return emptyList;
+	}
+
+	@Override
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
+			String childNameInData, DataAttribute... childAttributes) {
+		for (DataAttribute dataAttribute : childAttributes) {
+			sentInAttributes.add(dataAttribute);
+		}
+		MCR.addCall("childNameInData", childNameInData, "childAttributes", childAttributes);
+		List<DataAtomic> emptyList = Collections.emptyList();
 		MCR.addReturned(emptyList);
 		return emptyList;
 	}

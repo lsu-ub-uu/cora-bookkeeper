@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
 class DataTextVariableValidator implements DataElementValidator {
 
@@ -33,7 +33,7 @@ class DataTextVariableValidator implements DataElementValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateData(DataElement dataElement) {
+	public ValidationAnswer validateData(DataChild dataElement) {
 		DataAtomic dataAtomic = (DataAtomic) dataElement;
 		dataValue = dataAtomic.getValue();
 		if (finalValueIsDefinedInMetadata()) {

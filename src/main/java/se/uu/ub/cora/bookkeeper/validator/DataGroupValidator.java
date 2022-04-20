@@ -30,7 +30,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 class DataGroupValidator implements DataElementValidator {
@@ -58,7 +58,7 @@ class DataGroupValidator implements DataElementValidator {
 	 *         of errors
 	 */
 	@Override
-	public ValidationAnswer validateData(DataElement dataGroup) {
+	public ValidationAnswer validateData(DataChild dataGroup) {
 		this.dataGroup = (DataGroup) dataGroup;
 		validationAnswer = new ValidationAnswer();
 		validateNameInDataAndAttributes(dataGroup);
@@ -66,7 +66,7 @@ class DataGroupValidator implements DataElementValidator {
 		return validationAnswer;
 	}
 
-	private void validateNameInDataAndAttributes(DataElement dataGroup) {
+	private void validateNameInDataAndAttributes(DataChild dataGroup) {
 		MetadataMatchData metadataMatchData = MetadataMatchDataImp
 				.withMetadataHolder(metadataHolder);
 		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(metadataGroup, dataGroup);
@@ -105,7 +105,7 @@ class DataGroupValidator implements DataElementValidator {
 	private int validateAndCountChildrenWithReferenceId(String referenceId, boolean mayBeRepeated) {
 		int childrenFound = 0;
 		Set<String> repeatIds = new HashSet<>();
-		for (DataElement childData : dataGroup.getChildren()) {
+		for (DataChild childData : dataGroup.getChildren()) {
 			if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
 				childrenFound++;
 				validateRepeatId(mayBeRepeated, repeatIds, childData);
@@ -116,7 +116,7 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateRepeatId(boolean mayBeRepeated, Set<String> repeatIds,
-			DataElement childData) {
+			DataChild childData) {
 		if (mayBeRepeated) {
 			validateRepeatId(repeatIds, childData);
 		} else {
@@ -124,7 +124,7 @@ class DataGroupValidator implements DataElementValidator {
 		}
 	}
 
-	private void validateRepeatId(Set<String> repeatIds, DataElement childData) {
+	private void validateRepeatId(Set<String> repeatIds, DataChild childData) {
 		String repeatId = childData.getRepeatId();
 		if (repeatId == null || repeatId.isEmpty()) {
 			validationAnswer.addErrorMessage(
@@ -134,12 +134,12 @@ class DataGroupValidator implements DataElementValidator {
 		}
 	}
 
-	private String createIdentifiedErrorMessage(DataElement childData) {
+	private String createIdentifiedErrorMessage(DataChild childData) {
 		return "Repeatable child " + childData.getNameInData() + " in group "
 				+ dataGroup.getNameInData();
 	}
 
-	private void validateUniqueRepeatId(Set<String> repeatIds, DataElement childData) {
+	private void validateUniqueRepeatId(Set<String> repeatIds, DataChild childData) {
 		String repeatId = childData.getRepeatId();
 		if (repeatIds.contains(repeatId)) {
 			validationAnswer.addErrorMessage(createIdentifiedErrorMessage(childData)
@@ -190,7 +190,7 @@ class DataGroupValidator implements DataElementValidator {
 		return " and attributes: " + joiner.toString();
 	}
 
-	private boolean isChildDataSpecifiedByChildReferenceId(DataElement childData,
+	private boolean isChildDataSpecifiedByChildReferenceId(DataChild childData,
 			String referenceId) {
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
 		if (childElement == null) {
@@ -201,7 +201,7 @@ class DataGroupValidator implements DataElementValidator {
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
 	}
 
-	private void validateNoRepeatId(DataElement childData) {
+	private void validateNoRepeatId(DataChild childData) {
 		String repeatId = childData.getRepeatId();
 		if (repeatId != null) {
 			validationAnswer.addErrorMessage(
@@ -209,7 +209,7 @@ class DataGroupValidator implements DataElementValidator {
 		}
 	}
 
-	private void validateChildElementData(String referenceId, DataElement childData) {
+	private void validateChildElementData(String referenceId, DataChild childData) {
 		DataElementValidator childValidator = dataValidatorFactory.factor(referenceId);
 		ValidationAnswer va = childValidator.validateData(childData);
 		addMessagesFromAnswerToTotalValidationAnswer(va);
@@ -220,7 +220,7 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateDataContainsNoUnspecifiedChildren() {
-		for (DataElement childData : dataGroup.getChildren()) {
+		for (DataChild childData : dataGroup.getChildren()) {
 			if (!isChildDataSpecifiedInMetadataGroup(childData)) {
 				validationAnswer
 						.addErrorMessage("Could not find metadata for child with nameInData: "
@@ -229,7 +229,7 @@ class DataGroupValidator implements DataElementValidator {
 		}
 	}
 
-	private boolean isChildDataSpecifiedInMetadataGroup(DataElement childData) {
+	private boolean isChildDataSpecifiedInMetadataGroup(DataChild childData) {
 		Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
 		for (MetadataChildReference childReference : childReferences) {
 			String referenceId = childReference.getLinkedRecordId();
@@ -240,14 +240,14 @@ class DataGroupValidator implements DataElementValidator {
 		return false;
 	}
 
-	private String getAttributesText(DataElement childData) {
+	private String getAttributesText(DataChild childData) {
 		if (childData.hasAttributes()) {
 			return getTextForExistingDataAttributes(childData);
 		}
 		return "";
 	}
 
-	private String getTextForExistingDataAttributes(DataElement childData) {
+	private String getTextForExistingDataAttributes(DataChild childData) {
 		StringJoiner joiner = new StringJoiner(", ");
 		for (DataAttribute dataAttribute : childData.getAttributes()) {
 			joiner.add(dataAttribute.getNameInData() + ":" + dataAttribute.getValue());

@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 
@@ -37,12 +37,12 @@ public final class PathExtender {
 	}
 
 	public static DataGroup extendPathWithElementInformation(DataGroup path,
-			DataElement dataElement) {
+			DataChild dataElement) {
 		DataGroup elementPath = createPathForDataElement(dataElement);
 		return extendPathWithElementPath(path, elementPath);
 	}
 
-	private static DataGroup createPathForDataElement(DataElement dataElement) {
+	private static DataGroup createPathForDataElement(DataChild dataElement) {
 		DataGroup elementPath = DataGroupProvider.getDataGroupUsingNameInData(LINKED_PATH);
 		elementPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(NAME_IN_DATA,
 				dataElement.getNameInData()));
@@ -51,7 +51,7 @@ public final class PathExtender {
 		return elementPath;
 	}
 
-	private static void extendPathWithAttributes(DataElement dataElement, DataGroup currentPath) {
+	private static void extendPathWithAttributes(DataChild dataElement, DataGroup currentPath) {
 		if (dataElement instanceof DataGroup) {
 			DataGroup subGroup = (DataGroup) dataElement;
 			addAttributesIfExist(currentPath, subGroup);
@@ -74,14 +74,14 @@ public final class PathExtender {
 		}
 	}
 
-	private static void extendPathWithRepeatId(DataElement dataElement, DataGroup currentPath) {
+	private static void extendPathWithRepeatId(DataChild dataElement, DataGroup currentPath) {
 		if (hasNonEmptyRepeatId(dataElement)) {
 			currentPath.addChild(DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(REPEAT_ID,
 					dataElement.getRepeatId()));
 		}
 	}
 
-	private static boolean hasNonEmptyRepeatId(DataElement dataElement) {
+	private static boolean hasNonEmptyRepeatId(DataChild dataElement) {
 		return dataElement.getRepeatId() != null && !"".equals(dataElement.getRepeatId());
 	}
 
