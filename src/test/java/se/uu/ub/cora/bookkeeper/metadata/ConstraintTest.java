@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,13 +20,11 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import se.uu.ub.cora.bookkeeper.DataAttributeSpy;
-import se.uu.ub.cora.data.DataAttribute;
 
 public class ConstraintTest {
 
@@ -52,17 +50,22 @@ public class ConstraintTest {
 
 	@Test
 	public void testAddAttribute() {
-		addAttributeToDefaultConstraint("someName", "someValue");
-		Set<DataAttribute> dataAttributes = defaultConstraint.getDataAttributes();
-		assertEquals(dataAttributes.size(), 1);
 
-		assertEquals(dataAttributes.iterator().next().getNameInData(), "someName");
-		assertEquals(dataAttributes.iterator().next().getValue(), "someValue");
+		addAttributeToDefaultConstraint("someName", List.of("someValue1", "someValue2"));
+		Set<Attribute> metadataAttributes = defaultConstraint.getAttributes();
+		assertEquals(metadataAttributes.size(), 1);
+		Attribute firstAttribute = metadataAttributes.iterator().next();
+
+		assertEquals(firstAttribute.nameInData, "someName");
+		assertEquals(firstAttribute.values.get(0), "someValue1");
+		assertEquals(firstAttribute.values.get(1), "someValue2");
 	}
 
-	private void addAttributeToDefaultConstraint(String nameInData, String value) {
-		DataAttribute dataAttribute = new DataAttributeSpy(nameInData, value);
-		defaultConstraint.addAttribute(dataAttribute);
+	private void addAttributeToDefaultConstraint(String nameInData, List<String> value) {
+		Attribute metadataAttribute = Attribute
+				.createAttributeUsingNameInDataAndValueList(nameInData, value);
+
+		defaultConstraint.addAttribute(metadataAttribute);
 	}
 
 }

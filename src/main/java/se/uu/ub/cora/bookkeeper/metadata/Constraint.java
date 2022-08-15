@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,12 +21,10 @@ package se.uu.ub.cora.bookkeeper.metadata;
 import java.util.HashSet;
 import java.util.Set;
 
-import se.uu.ub.cora.data.DataAttribute;
-
 public class Constraint {
 
 	private String nameInData;
-	private Set<DataAttribute> dataAttributes = new HashSet<>();
+	private Set<Attribute> attributes = new HashSet<>();
 	private ConstraintType constraintType;
 
 	public Constraint(String nameInData) {
@@ -37,12 +35,12 @@ public class Constraint {
 		return nameInData;
 	}
 
-	public void addAttribute(DataAttribute dataAttribute) {
-		dataAttributes.add(dataAttribute);
+	public void addAttribute(Attribute metadataAttribute) {
+		attributes.add(metadataAttribute);
 	}
 
-	public Set<DataAttribute> getDataAttributes() {
-		return dataAttributes;
+	public Set<Attribute> getAttributes() {
+		return attributes;
 	}
 
 	public void setType(ConstraintType constraintType) {
