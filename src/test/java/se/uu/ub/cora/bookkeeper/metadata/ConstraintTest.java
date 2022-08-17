@@ -20,26 +20,34 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.List;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.data.DataChildFilter;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.testspies.data.DataChildFilterSpy;
+import se.uu.ub.cora.testspies.data.DataFactorySpy;
 
 public class ConstraintTest {
 
 	private Constraint defaultConstraint;
 	String nameInData = "someNameInData";
 	ConstraintType type = ConstraintType.WRITE;
+	private DataFactorySpy dataFactorySpy;
 
 	@BeforeMethod
 	public void setUp() {
+		dataFactorySpy = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 		defaultConstraint = new Constraint(nameInData);
 	}
 
 	@Test
 	public void testNameInData() {
 		assertEquals(defaultConstraint.getNameInData(), nameInData);
+		dataFactorySpy.MCR.assertParameters("factorDataChildFilterUsingNameInData", 0, nameInData);
 	}
 
 	@Test
@@ -49,23 +57,22 @@ public class ConstraintTest {
 	}
 
 	@Test
-	public void testAddAttribute() {
-
-		addAttributeToDefaultConstraint("someName", List.of("someValue1", "someValue2"));
-		Set<Attribute> metadataAttributes = defaultConstraint.getAttributes();
-		assertEquals(metadataAttributes.size(), 1);
-		Attribute firstAttribute = metadataAttributes.iterator().next();
-
-		assertEquals(firstAttribute.nameInData, "someName");
-		assertEquals(firstAttribute.values.get(0), "someValue1");
-		assertEquals(firstAttribute.values.get(1), "someValue2");
+	public void testGetDataChildFilter() {
+		DataChildFilter childFilter = getCreatedChildFilterFromProviderSpy();
+		assertEquals(defaultConstraint.getDataChildFilter(), childFilter);
 	}
 
-	private void addAttributeToDefaultConstraint(String nameInData, List<String> value) {
-		Attribute metadataAttribute = Attribute
-				.createAttributeUsingNameInDataAndValueList(nameInData, value);
-
-		defaultConstraint.addAttribute(metadataAttribute);
+	private DataChildFilterSpy getCreatedChildFilterFromProviderSpy() {
+		return (DataChildFilterSpy) dataFactorySpy.MCR
+				.getReturnValue("factorDataChildFilterUsingNameInData", 0);
 	}
 
+	@Test
+	public void testAddAttributeToConstraint() throws Exception {
+		DataChildFilterSpy childFilter = getCreatedChildFilterFromProviderSpy();
+		Set<String> possibleValues = Set.of("1", "2");
+		defaultConstraint.addAttributeUsingNameInDataAndPossibleValues(nameInData, possibleValues);
+		childFilter.MCR.assertParameters("addAttributeUsingNameInDataAndPossibleValues", 0,
+				nameInData, possibleValues);
+	}
 }
