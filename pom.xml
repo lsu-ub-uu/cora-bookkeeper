@@ -27,7 +27,7 @@
 		<coradata.version>7.1-SNAPSHOT</coradata.version>
 		<storage.version>6.2.0</storage.version>
 		<json.version>3.3.0</json.version>
-		<testutils.version>1.4.0</testutils.version>
+		<testutils.version>1.5.0</testutils.version>
 		<testspies.version>1.2-SNAPSHOT</testspies.version>
 	</properties>
 

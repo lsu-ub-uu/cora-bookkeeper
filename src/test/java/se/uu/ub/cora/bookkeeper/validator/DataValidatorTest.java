@@ -29,12 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 /**
  * ValidateDataTest tests that the ValidateData class correctly validates data based on the
@@ -58,15 +59,26 @@ public class DataValidatorTest {
 		validatorFactory = new DataElementValidatorFactorySpy();
 		addRecordTypesToHolder();
 		dataValidator = new DataValidatorImp(metadataStorage, validatorFactory, recordTypeHolder);
-		dataGroupToValidate = new DataGroupSpy("someGroup");
+		dataGroupToValidate = new DataGroupSpy();
 	}
 
 	private void addRecordTypesToHolder() {
-		DataGroupCheckCallsSpy someRecordTypeWithFilter = new DataGroupCheckCallsSpy();
-		recordTypeHolder.put(SOME_RECORD_TYPE_WITH_LINKS, someRecordTypeWithFilter);
+		DataGroupSpy someRecordTypeWithLinks = new DataGroupSpy();
+		someRecordTypeWithLinks.MRV.setDefaultReturnValuesSupplier("containsChildWithNameInData",
+				(Supplier<Boolean>) () -> true);
 
-		DataGroupCheckCallsSpy someRecordTypeWithoutFilter = new DataGroupCheckCallsSpy();
-		recordTypeHolder.put(SOME_RECORD_TYPE_WITHOUT_LINKS, someRecordTypeWithoutFilter);
+		DataGroupSpy indexSettingsDataGroupSpy = new DataGroupSpy();
+		indexSettingsDataGroupSpy.MRV.setDefaultReturnValuesSupplier(
+				"getFirstAtomicValueWithNameInData",
+				(Supplier<String>) () -> "someValueForlinkedRecordId");
+
+		someRecordTypeWithLinks.MRV.setDefaultReturnValuesSupplier("getFirstGroupWithNameInData",
+				(Supplier<DataGroupSpy>) () -> indexSettingsDataGroupSpy);
+
+		recordTypeHolder.put(SOME_RECORD_TYPE_WITH_LINKS, someRecordTypeWithLinks);
+
+		DataGroupSpy someRecordTypeWithoutLinks = new DataGroupSpy();
+		recordTypeHolder.put(SOME_RECORD_TYPE_WITHOUT_LINKS, someRecordTypeWithoutLinks);
 	}
 
 	@Test
@@ -141,7 +153,7 @@ public class DataValidatorTest {
 
 	@Test
 	public void testValidateListFilter() {
-		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
+		DataGroupSpy filterDataGroup = new DataGroupSpy();
 
 		ValidationAnswer validationAnswer = dataValidator
 				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, filterDataGroup);
@@ -151,7 +163,7 @@ public class DataValidatorTest {
 	}
 
 	private void assertValidationOfRecordTypeWithLinks(String nameInData,
-			ValidationAnswer validationAnswer, DataGroupCheckCallsSpy filterDataGroup) {
+			ValidationAnswer validationAnswer, DataGroupSpy filterDataGroup) {
 
 		String extractedLinkID = assertExtractionOfLinkFromRecordTypeInRecordTypeHolder(nameInData);
 
@@ -159,10 +171,10 @@ public class DataValidatorTest {
 	}
 
 	private String assertExtractionOfLinkFromRecordTypeInRecordTypeHolder(String nameInData) {
-		DataGroupCheckCallsSpy recordTypeGroupSpy = (DataGroupCheckCallsSpy) recordTypeHolder
+		DataGroupSpy recordTypeGroupSpy = (DataGroupSpy) recordTypeHolder
 				.get(SOME_RECORD_TYPE_WITH_LINKS);
 		recordTypeGroupSpy.MCR.assertParameters("getFirstGroupWithNameInData", 0, nameInData);
-		DataGroupCheckCallsSpy firstGroupWithNameInDataSpy = (DataGroupCheckCallsSpy) recordTypeGroupSpy.MCR
+		DataGroupSpy firstGroupWithNameInDataSpy = (DataGroupSpy) recordTypeGroupSpy.MCR
 				.getReturnValue("getFirstGroupWithNameInData", 0);
 
 		firstGroupWithNameInDataSpy.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0,
@@ -174,7 +186,7 @@ public class DataValidatorTest {
 	}
 
 	private void asssertValidationAnswerIsFromValidator(ValidationAnswer validationAnswer,
-			DataGroupCheckCallsSpy filterDataGroup, String extractedLinkID) {
+			DataGroupSpy filterDataGroup, String extractedLinkID) {
 		validatorFactory.MCR.assertParameters("factor", 0, extractedLinkID);
 
 		DataElementValidatorSpy validatorSpy = (DataElementValidatorSpy) validatorFactory.MCR
@@ -191,7 +203,7 @@ public class DataValidatorTest {
 	public void testValidateListFilterInvalidOneMessage() {
 		validatorFactory.numOfInvalidMessages = 1;
 		ValidationAnswer validationAnswer = dataValidator
-				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupCheckCallsSpy());
+				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupSpy());
 
 		assertValidationAnswerIsInvalid(validationAnswer);
 
@@ -201,7 +213,7 @@ public class DataValidatorTest {
 	public void testValidateListFilterNoValidatorFactored() {
 		validatorFactory.throwError = true;
 		ValidationAnswer validationAnswer = dataValidator
-				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupCheckCallsSpy());
+				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupSpy());
 		assertTrue(validatorFactory.factorWasCalled);
 
 		List<String> errorMessagesAsList = getErrorMessagesAsList(validationAnswer);
@@ -214,11 +226,12 @@ public class DataValidatorTest {
 	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""
 			+ "No " + FILTER + " exists for recordType: " + SOME_RECORD_TYPE_WITHOUT_LINKS)
 	public void testValidateNoListFilterThrowsException() {
-		DataGroupCheckCallsSpy dataGroupWithoutFilterSpy = (DataGroupCheckCallsSpy) recordTypeHolder
+		DataGroupSpy dataGroupWithoutFilterSpy = (DataGroupSpy) recordTypeHolder
 				.get(SOME_RECORD_TYPE_WITHOUT_LINKS);
-		dataGroupWithoutFilterSpy.nameInDatasToNotContain.add(FILTER);
+		dataGroupWithoutFilterSpy.MRV.setDefaultReturnValuesSupplier("containsChildWithNameInData",
+				(Supplier<Boolean>) () -> false);
 
-		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
+		DataGroupSpy filterDataGroup = new DataGroupSpy();
 		dataValidator.validateListFilter(SOME_RECORD_TYPE_WITHOUT_LINKS, filterDataGroup);
 
 	}
@@ -231,10 +244,11 @@ public class DataValidatorTest {
 	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""
 			+ "No " + INDEX_SETTINGS + " exists for recordType: " + SOME_RECORD_TYPE_WITHOUT_LINKS)
 	public void testValidateNoIndexSettingThrowsException() {
-		DataGroupCheckCallsSpy dataGroupWithoutLinksSpy = (DataGroupCheckCallsSpy) recordTypeHolder
+		DataGroupSpy dataGroupWithoutLinksSpy = (DataGroupSpy) recordTypeHolder
 				.get(SOME_RECORD_TYPE_WITHOUT_LINKS);
-		dataGroupWithoutLinksSpy.nameInDatasToNotContain.add(INDEX_SETTINGS);
-		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
+		dataGroupWithoutLinksSpy.MRV.setDefaultReturnValuesSupplier("containsChildWithNameInData",
+				(Supplier<Boolean>) () -> false);
+		DataGroupSpy filterDataGroup = new DataGroupSpy();
 
 		dataValidator.validateIndexSettings(SOME_RECORD_TYPE_WITHOUT_LINKS, filterDataGroup);
 	}
@@ -242,20 +256,19 @@ public class DataValidatorTest {
 	@Test
 	public void testValidateIndexFilterExtractIndexSettingsFactorValidator() throws Exception {
 
-		DataGroupCheckCallsSpy filterDataGroup = new DataGroupCheckCallsSpy();
+		DataGroupSpy filterDataGroup = new DataGroupSpy();
 
 		ValidationAnswer validationAnswer = dataValidator
 				.validateIndexSettings(SOME_RECORD_TYPE_WITH_LINKS, filterDataGroup);
 
 		assertValidationOfRecordTypeWithLinks(INDEX_SETTINGS, validationAnswer, filterDataGroup);
-
 	}
 
 	@Test
 	public void testValidateIndexSettingsInvalidOneMessage() {
 		validatorFactory.numOfInvalidMessages = 1;
 		ValidationAnswer validationAnswer = dataValidator
-				.validateIndexSettings(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupCheckCallsSpy());
+				.validateIndexSettings(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupSpy());
 
 		assertValidationAnswerIsInvalid(validationAnswer);
 
@@ -269,10 +282,15 @@ public class DataValidatorTest {
 	}
 
 	@Test
-	public void testValidateIndeSettingsNoValidatorFactored() {
+	public void testValidateIndexSettingsNoValidatorFactored() {
 		validatorFactory.throwError = true;
+
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setDefaultReturnValuesSupplier("containsChildWithNameInData",
+				(Supplier<Boolean>) () -> true);
 		ValidationAnswer validationAnswer = dataValidator
-				.validateIndexSettings(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupCheckCallsSpy());
+				.validateIndexSettings(SOME_RECORD_TYPE_WITH_LINKS, dataGroupSpy);
+
 		assertTrue(validatorFactory.factorWasCalled);
 
 		List<String> errorMessagesAsList = getErrorMessagesAsList(validationAnswer);

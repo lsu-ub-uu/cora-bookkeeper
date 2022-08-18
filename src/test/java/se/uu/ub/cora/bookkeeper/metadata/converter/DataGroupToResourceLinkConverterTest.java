@@ -26,7 +26,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -55,11 +55,11 @@ public class DataGroupToResourceLinkConverterTest {
 	}
 
 	private DataGroup createDataGroup() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "resourceLink");
 		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
@@ -72,7 +72,7 @@ public class DataGroupToResourceLinkConverterTest {
 
 	private DataGroup addTextWithNameInDataAndId(DataGroup dataGroup, String textIdNameInData,
 			String textId) {
-		DataGroup textIdGroup = new DataGroupSpy(textIdNameInData);
+		DataGroup textIdGroup = new DataGroupOldSpy(textIdNameInData);
 		textIdGroup.addChild(new DataAtomicSpy("linkedRecordType", "someRecordType"));
 		textIdGroup.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		dataGroup.addChild(textIdGroup);

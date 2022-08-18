@@ -25,24 +25,30 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 public class GroupMatcherTest {
 
 	private MetadataMatchDataSpy dataMatcher;
 	private GroupMatcher matcher;
-	private DataGroupForDataRedactorSpy dataGroupSpy;
+	private DataGroupSpy dataGroupSpy;
 	private MetadataGroupSpy metadataGroupSpy;
 
 	@BeforeMethod
 	public void setUp() {
 		dataMatcher = new MetadataMatchDataSpy();
-		dataGroupSpy = new DataGroupForDataRedactorSpy("organisation");
+		dataGroupSpy = new DataGroupSpy();
+		DataGroupSpy child = new DataGroupSpy();
+		dataGroupSpy.MRV.setDefaultReturnValuesSupplier("getAllGroupsWithNameInData",
+				(Supplier<List<DataGroupSpy>>) () -> List.of(child));
+
 		metadataGroupSpy = new MetadataGroupSpy("recordInfoGroup", "recordInfo");
 		matcher = new GroupMatcher(dataMatcher, dataGroupSpy, metadataGroupSpy);
 	}

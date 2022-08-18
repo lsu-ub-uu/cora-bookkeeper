@@ -25,11 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 
@@ -81,7 +82,7 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 		if (dataGroups.containsKey(childNameInData)) {
 			return dataGroups.get(childNameInData);
 		}
-		return new DataGroupSpy(childNameInData);
+		return new DataGroupOldSpy(childNameInData);
 	}
 
 	@Override
@@ -90,8 +91,8 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 			DataAtomicSpy atomicSpyChild = (DataAtomicSpy) dataElement;
 			atomicValues.put(atomicSpyChild.nameInData, atomicSpyChild.value);
 
-		} else if (dataElement instanceof DataGroupSpy) {
-			DataGroupSpy dataGroup = (DataGroupSpy) dataElement;
+		} else if (dataElement instanceof DataGroupOldSpy) {
+			DataGroupOldSpy dataGroup = (DataGroupOldSpy) dataElement;
 			String dataGroupNameInData = dataGroup.nameInData;
 			dataGroups.put(dataGroupNameInData, dataGroup);
 
@@ -242,5 +243,17 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 			String childNameInData, DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<DataChild> getAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

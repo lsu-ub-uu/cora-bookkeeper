@@ -24,7 +24,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.data.DataGroup;
@@ -48,9 +48,9 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	}
 
 	private DataGroup createChildRefOtherMetadata() {
-		DataGroup dataGroup = new DataGroupSpy("childReference");
+		DataGroup dataGroup = new DataGroupOldSpy("childReference");
 
-		DataGroup ref = new DataGroupSpy("ref");
+		DataGroup ref = new DataGroupOldSpy("ref");
 		ref.addAttributeByIdWithValue("type", "group");
 		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataGroup"));
 		ref.addChild(new DataAtomicSpy("linkedRecordId", "otherMetadata"));
@@ -145,7 +145,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	private DataGroup createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
 			String linkedRecordType, String indexTermId, String type) {
-		DataGroup childRefTerm = new DataGroupSpy("childRefCollectTerm");
+		DataGroup childRefTerm = new DataGroupOldSpy("childRefCollectTerm");
 		childRefTerm.addChild(new DataAtomicSpy("linkedRecordType", linkedRecordType));
 		childRefTerm.addChild(new DataAtomicSpy("linkedRecordId", indexTermId));
 		childRefTerm.addAttributeByIdWithValue("type", type);
@@ -205,7 +205,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 	private void setNumOfChildRefCollectTermsToReturnFromSpy(DataGroup dataGroup,
 			int numOfCollectTermsToReturn) {
-		((DataGroupSpy) dataGroup).numOfGetAllGroupsWithNameInDataToReturn
+		((DataGroupOldSpy) dataGroup).numOfGetAllGroupsWithNameInDataToReturn
 				.put("childRefCollectTerm", numOfCollectTermsToReturn);
 	}
 

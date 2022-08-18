@@ -27,7 +27,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
@@ -44,18 +44,18 @@ public class DataGroupToRecordLinkConverterTest {
 	}
 
 	private DataGroup createDataGroupContainingRecordLink() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "recordLink");
 		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 		addTexts(dataGroup);
 
-		DataGroup linkedRecordType = new DataGroupSpy("linkedRecordType");
+		DataGroup linkedRecordType = new DataGroupOldSpy("linkedRecordType");
 		linkedRecordType.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		linkedRecordType.addChild(new DataAtomicSpy("linkedRecordId", "someRecordType"));
 		dataGroup.addChild(linkedRecordType);
@@ -65,12 +65,12 @@ public class DataGroupToRecordLinkConverterTest {
 	}
 
 	private void addTexts(DataGroup dataGroup) {
-		DataGroup text = new DataGroupSpy("textId");
+		DataGroup text = new DataGroupOldSpy("textId");
 		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = new DataGroupSpy("defTextId");
+		DataGroup defText = new DataGroupOldSpy("defTextId");
 		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
@@ -89,7 +89,7 @@ public class DataGroupToRecordLinkConverterTest {
 
 	@Test
 	public void testToMetadataWithLinkedPath() {
-		dataGroup.addChild(new DataGroupSpy("linkedPath"));
+		dataGroup.addChild(new DataGroupOldSpy("linkedPath"));
 
 		RecordLink recordLink = converter.toMetadata();
 
@@ -107,7 +107,7 @@ public class DataGroupToRecordLinkConverterTest {
 
 	@Test
 	public void testToMetadataWithRefParentId() {
-		DataGroup refParentId = new DataGroupSpy("refParentId");
+		DataGroup refParentId = new DataGroupOldSpy("refParentId");
 		refParentId.addChild(new DataAtomicSpy("linkedRecordType", "metadataRecordLink"));
 		refParentId.addChild(new DataAtomicSpy("linkedRecordId", "someParent"));
 		dataGroup.addChild(refParentId);
@@ -122,7 +122,7 @@ public class DataGroupToRecordLinkConverterTest {
 		DataGroup recordLinkDataGroup = createDataGroupContainingRecordLink();
 		DataCreator.addAttributesToDataGroup(recordLinkDataGroup);
 
-		DataGroupSpy attributesGroup = (DataGroupSpy) recordLinkDataGroup
+		DataGroupOldSpy attributesGroup = (DataGroupOldSpy) recordLinkDataGroup
 				.getFirstGroupWithNameInData("attributeReferences");
 		attributesGroup.numOfGetAllGroupsWithNameInDataToReturn.put("ref", 3);
 

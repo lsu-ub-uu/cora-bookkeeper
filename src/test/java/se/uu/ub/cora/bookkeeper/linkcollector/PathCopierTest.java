@@ -30,7 +30,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
@@ -79,7 +79,7 @@ public class PathCopierTest {
 	}
 
 	private DataGroup createPathToCopy() {
-		DataGroup pathToCopy = new DataGroupSpy("linkedPath");
+		DataGroup pathToCopy = new DataGroupOldSpy("linkedPath");
 		pathToCopy.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
 		return pathToCopy;
 	}
@@ -136,8 +136,8 @@ public class PathCopierTest {
 	}
 
 	private DataGroup createAttributes() {
-		DataGroup attributes = new DataGroupSpy("attributes");
-		DataGroup attribute = new DataGroupSpy("attribute");
+		DataGroup attributes = new DataGroupOldSpy("attributes");
+		DataGroup attribute = new DataGroupOldSpy("attribute");
 		attributes.addChild(attribute);
 		attribute.addChild(new DataAtomicSpy("attributeName", "type"));
 		attribute.addChild(new DataAtomicSpy("attributeValue", "person"));

@@ -24,7 +24,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
@@ -45,10 +45,10 @@ public class DataGroupToCollectionVariableConverterTest {
 	}
 
 	private DataGroup createDataGroup() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionVar");
 
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
@@ -58,7 +58,7 @@ public class DataGroupToCollectionVariableConverterTest {
 		DataCreator.addTextToGroupWithNameInDataLinkedIdAndLinkedType(dataGroup, "defTextId",
 				"otherDefTextId", "testSystem");
 
-		DataGroup refCollection = new DataGroupSpy("refCollection");
+		DataGroup refCollection = new DataGroupOldSpy("refCollection");
 		refCollection.addChild(new DataAtomicSpy("linkedRecordType", "metadataItemCollection"));
 		refCollection.addChild(new DataAtomicSpy("linkedRecordId", "refCollection"));
 		dataGroup.addChild(refCollection);
@@ -79,7 +79,7 @@ public class DataGroupToCollectionVariableConverterTest {
 	@Test
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
-		DataGroup refParentGroup = new DataGroupSpy("refParentId");
+		DataGroup refParentGroup = new DataGroupOldSpy("refParentId");
 		refParentGroup
 				.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
 		refParentGroup.addChild(new DataAtomicSpy("linkedRecordId", "refParentId"));
@@ -120,14 +120,14 @@ public class DataGroupToCollectionVariableConverterTest {
 	}
 
 	private void createAndAddAttributeReferences(DataGroup dataGroup) {
-		DataGroup attributeReferences = new DataGroupSpy("attributeReferences");
+		DataGroup attributeReferences = new DataGroupOldSpy("attributeReferences");
 		attributeReferences.addChild(createRef("numberTypeCollectionVar", "0"));
 		attributeReferences.addChild(createRef("someOtherCollectionVar", "1"));
 		dataGroup.addChild(attributeReferences);
 	}
 
-	private DataGroupSpy createRef(String linkedRecordId, String repeatId) {
-		DataGroupSpy ref = new DataGroupSpy("ref");
+	private DataGroupOldSpy createRef(String linkedRecordId, String repeatId) {
+		DataGroupOldSpy ref = new DataGroupOldSpy("ref");
 		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
 		ref.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
 		ref.setRepeatId(repeatId);

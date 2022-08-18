@@ -21,9 +21,11 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataGroupRedactorSpy implements DataGroupRedactor {
@@ -40,7 +42,7 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions) {
 		MCR.addCall("dataGroup", dataGroup, "recordPartConstraints", recordPartConstraints,
 				"recordPartPermissions", recordPartPermissions);
-		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
+		DataGroupWrapperSpy dataGroupSpy = new DataGroupWrapperSpy();
 
 		setRemoveHasBeenCalled(dataGroupSpy);
 		MCR.addReturned(dataGroupSpy);
@@ -48,11 +50,14 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 
 	}
 
-	private void setRemoveHasBeenCalled(DataGroupForDataRedactorSpy dataGroupSpy) {
+	private void setRemoveHasBeenCalled(DataGroupSpy dataGroupSpy) {
 		if (removeHasBeenCalledList.isEmpty()) {
-			dataGroupSpy.removeHasBeenCalled = false;
+			dataGroupSpy.MRV.setDefaultReturnValuesSupplier("hasRemovedBeenCalled",
+					(Supplier<Boolean>) () -> false);
 		} else {
-			dataGroupSpy.removeHasBeenCalled = removeHasBeenCalledList.get(noOfCalls);
+			boolean removeHasBeenCalled = removeHasBeenCalledList.get(noOfCalls);
+			dataGroupSpy.MRV.setDefaultReturnValuesSupplier("hasRemovedBeenCalled",
+					(Supplier<Boolean>) () -> removeHasBeenCalled);
 		}
 		noOfCalls++;
 	}
@@ -65,12 +70,11 @@ public class DataGroupRedactorSpy implements DataGroupRedactor {
 				"recordPartConstraints", recordPartConstraints, "recordPartPermissions",
 				recordPartPermissions);
 
-		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("spyNameInData");
+		DataGroupWrapperSpy dataGroupSpy = new DataGroupWrapperSpy();
 
 		setRemoveHasBeenCalled(dataGroupSpy);
 
 		MCR.addReturned(dataGroupSpy);
 		return dataGroupSpy;
 	}
-
 }

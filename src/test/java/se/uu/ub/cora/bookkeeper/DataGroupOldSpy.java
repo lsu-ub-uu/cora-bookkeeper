@@ -33,7 +33,7 @@ import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 
-public class DataGroupSpy implements DataGroup {
+public class DataGroupOldSpy implements DataGroup {
 
 	public String nameInData;
 	public List<DataChild> children = new ArrayList<>();
@@ -45,7 +45,7 @@ public class DataGroupSpy implements DataGroup {
 	private String repeatId;
 	public Map<String, Integer> numOfGetAllGroupsWithNameInDataToReturn = new HashMap<>();
 
-	public DataGroupSpy(String nameInData) {
+	public DataGroupOldSpy(String nameInData) {
 		this.nameInData = nameInData;
 	}
 
@@ -134,7 +134,7 @@ public class DataGroupSpy implements DataGroup {
 		} else if (atomicValues.containsKey(nameInData)) {
 			return new DataAtomicSpy(nameInData, atomicValues.get(nameInData));
 		}
-		DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
+		DataGroupOldSpy dataGroupSpy = new DataGroupOldSpy(nameInData);
 		if ("refCollection".contentEquals(nameInData)) {
 			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someSpyLinkedRecordId"));
 		}
@@ -146,7 +146,7 @@ public class DataGroupSpy implements DataGroup {
 		List<DataGroup> matchingDataGroups = new ArrayList<>();
 		if (numOfGetAllGroupsWithNameInDataToReturn.containsKey(nameInData)) {
 			for (int i = 0; i < numOfGetAllGroupsWithNameInDataToReturn.get(nameInData); i++) {
-				DataGroupSpy dataGroupSpy = new DataGroupSpy(nameInData);
+				DataGroupOldSpy dataGroupSpy = new DataGroupOldSpy(nameInData);
 				possiblyAddChildren(nameInData, dataGroupSpy);
 				matchingDataGroups.add(dataGroupSpy);
 			}
@@ -158,7 +158,7 @@ public class DataGroupSpy implements DataGroup {
 		return matchingDataGroups;
 	}
 
-	private void possiblyAddChildren(String nameInData, DataGroupSpy dataGroupSpy) {
+	private void possiblyAddChildren(String nameInData, DataGroupOldSpy dataGroupSpy) {
 		if ("childRefCollectTerm".equals(nameInData)) {
 			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 			dataGroupSpy.addAttributeByIdWithValue("type", "someAttributeTypeFromSpy");

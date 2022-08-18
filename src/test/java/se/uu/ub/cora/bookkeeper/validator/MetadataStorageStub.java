@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
 
@@ -37,10 +37,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups = new ArrayList<>();
 
 		// textVar2
-		DataGroup textVar2 = new DataGroupSpy("metadata");
+		DataGroup textVar2 = new DataGroupOldSpy("metadata");
 		textVar2.addAttributeByIdWithValue("type", "textVariable");
 
-		DataGroup textVar2RecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup textVar2RecordInfo = new DataGroupOldSpy("recordInfo");
 		textVar2RecordInfo.addChild(new DataAtomicSpy("id", "textVar2"));
 		textVar2.addChild(textVar2RecordInfo);
 
@@ -52,10 +52,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(textVar2);
 
 		// groupTypeVar
-		DataGroup groupTypeVar = new DataGroupSpy("metadata");
+		DataGroup groupTypeVar = new DataGroupOldSpy("metadata");
 		groupTypeVar.addAttributeByIdWithValue("type", "collectionVariable");
 
-		DataGroup groupTypeVarRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup groupTypeVarRecordInfo = new DataGroupOldSpy("recordInfo");
 		groupTypeVarRecordInfo.addChild(new DataAtomicSpy("id", "groupTypeVar"));
 		groupTypeVar.addChild(groupTypeVarRecordInfo);
 
@@ -63,7 +63,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(groupTypeVar, "textId", "groupTypeVarText");
 		addTextByNameInDataAndId(groupTypeVar, "defTextId", "groupTypeVarDefText");
 
-		DataGroup refCollection = new DataGroupSpy("refCollection");
+		DataGroup refCollection = new DataGroupOldSpy("refCollection");
 		refCollection.addChild(new DataAtomicSpy("linkedRecordType", "metadataItemCollection"));
 		refCollection.addChild(new DataAtomicSpy("linkedRecordId", "groupTypeCollection"));
 		groupTypeVar.addChild(refCollection);
@@ -71,10 +71,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(groupTypeVar);
 
 		// groupType1
-		DataGroup groupType1 = new DataGroupSpy("metadata");
+		DataGroup groupType1 = new DataGroupOldSpy("metadata");
 		groupType1.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup groupType1RecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup groupType1RecordInfo = new DataGroupOldSpy("recordInfo");
 		groupType1RecordInfo.addChild(new DataAtomicSpy("id", "groupType1"));
 		groupType1.addChild(groupType1RecordInfo);
 
@@ -86,10 +86,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(groupType1, "defTextId", "groupType1DefText");
 
 		// groupType2
-		DataGroup groupType2 = new DataGroupSpy("metadata");
+		DataGroup groupType2 = new DataGroupOldSpy("metadata");
 		groupType2.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup groupType2RecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup groupType2RecordInfo = new DataGroupOldSpy("recordInfo");
 		groupType2RecordInfo.addChild(new DataAtomicSpy("id", "groupType2"));
 		groupType2.addChild(groupType2RecordInfo);
 
@@ -99,10 +99,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(groupType2);
 
 		// groupTypeCollection
-		DataGroup groupTypeCollection = new DataGroupSpy("metadata");
+		DataGroup groupTypeCollection = new DataGroupOldSpy("metadata");
 		groupTypeCollection.addAttributeByIdWithValue("type", "itemCollection");
 
-		DataGroup groupTypeCollectionRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup groupTypeCollectionRecordInfo = new DataGroupOldSpy("recordInfo");
 		groupTypeCollectionRecordInfo.addChild(new DataAtomicSpy("id", "groupTypeCollection"));
 		groupTypeCollection.addChild(groupTypeCollectionRecordInfo);
 
@@ -110,7 +110,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(groupTypeCollection, "textId", "groupTypeCollectionText");
 		addTextByNameInDataAndId(groupTypeCollection, "defTextId", "groupTypeCollectionDefText");
 
-		DataGroup collectionItemReferences = new DataGroupSpy("collectionItemReferences");
+		DataGroup collectionItemReferences = new DataGroupOldSpy("collectionItemReferences");
 
 		createAndAddItemReference(collectionItemReferences, "groupType1", "one");
 		createAndAddItemReference(collectionItemReferences, "groupType2", "two");
@@ -120,10 +120,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(groupTypeCollection);
 
 		// child (textVar)
-		DataGroup textVar = new DataGroupSpy("metadata");
+		DataGroup textVar = new DataGroupOldSpy("metadata");
 		textVar.addAttributeByIdWithValue("type", "textVariable");
 
-		DataGroup textVarRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup textVarRecordInfo = new DataGroupOldSpy("recordInfo");
 		textVarRecordInfo.addChild(new DataAtomicSpy("id", "textVarId"));
 		textVar.addChild(textVarRecordInfo);
 
@@ -136,10 +136,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(textVar);
 
 		// group
-		DataGroup group = new DataGroupSpy("metadata");
+		DataGroup group = new DataGroupOldSpy("metadata");
 		group.addAttributeByIdWithValue("type", "group");
 
-		DataGroup groupRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup groupRecordInfo = new DataGroupOldSpy("recordInfo");
 		groupRecordInfo.addChild(new DataAtomicSpy("id", "group"));
 		group.addChild(groupRecordInfo);
 
@@ -147,18 +147,18 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(group, "textId", "groupTextId");
 		addTextByNameInDataAndId(group, "defTextId", "groupDefText");
 
-		DataGroup attributeReferences = new DataGroupSpy("attributeReferences");
-		DataGroup attributeRef = new DataGroupSpy("ref");
+		DataGroup attributeReferences = new DataGroupOldSpy("attributeReferences");
+		DataGroup attributeRef = new DataGroupOldSpy("ref");
 		attributeRef.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
 		attributeRef.addChild(new DataAtomicSpy("linkedRecordId", "groupTypeVar"));
 		attributeReferences.addChild(attributeRef);
 		group.addChild(attributeReferences);
 
-		DataGroup childReferences = new DataGroupSpy("childReferences");
+		DataGroup childReferences = new DataGroupOldSpy("childReferences");
 		group.addChild(childReferences);
 
-		DataGroup childReference = new DataGroupSpy("childReference");
-		DataGroup ref = new DataGroupSpy("ref");
+		DataGroup childReference = new DataGroupOldSpy("childReference");
+		DataGroup ref = new DataGroupOldSpy("ref");
 		ref.addAttributeByIdWithValue("type", "textVariable");
 		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataTextVariable"));
 		ref.addChild(new DataAtomicSpy("linkedRecordId", "textVarId"));
@@ -180,10 +180,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(group);
 
 		// collection
-		DataGroup colVar2 = new DataGroupSpy("metadata");
+		DataGroup colVar2 = new DataGroupOldSpy("metadata");
 		colVar2.addAttributeByIdWithValue("type", "collectionVariable");
 
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "collectionVar2"));
 		colVar2.addChild(recordInfo);
 
@@ -191,7 +191,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(colVar2, "textId", "collectionVarText");
 		addTextByNameInDataAndId(colVar2, "defTextId", "collectionVarDefText");
 
-		DataGroup refCollection2 = new DataGroupSpy("refCollection");
+		DataGroup refCollection2 = new DataGroupOldSpy("refCollection");
 		refCollection2.addChild(new DataAtomicSpy("linkedRecordType", "metadataItemCollection"));
 		refCollection2.addChild(new DataAtomicSpy("linkedRecordId", "authorityTypeCollection"));
 		colVar2.addChild(refCollection2);
@@ -199,10 +199,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(colVar2);
 
 		// itemCollection
-		DataGroup authority = new DataGroupSpy("metadata");
+		DataGroup authority = new DataGroupOldSpy("metadata");
 		authority.addAttributeByIdWithValue("type", "itemCollection");
 
-		DataGroup authorityRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup authorityRecordInfo = new DataGroupOldSpy("recordInfo");
 		authorityRecordInfo.addChild(new DataAtomicSpy("id", "authorityTypeCollection"));
 		authority.addChild(authorityRecordInfo);
 
@@ -210,7 +210,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		authority.addChild(createTextGroup("textId", "authorityTypeCollectionTextId"));
 		authority.addChild(createTextGroup("defTextId", "authorityTypeCollectionDefTextId"));
 
-		DataGroup authorityItemReferences = new DataGroupSpy("collectionItemReferences");
+		DataGroup authorityItemReferences = new DataGroupOldSpy("collectionItemReferences");
 
 		createAndAddItemReference(authorityItemReferences, "person", "one");
 		createAndAddItemReference(authorityItemReferences, "family", "two");
@@ -220,10 +220,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(authority);
 
 		// personItem
-		DataGroup personItem = new DataGroupSpy("metadata");
+		DataGroup personItem = new DataGroupOldSpy("metadata");
 		personItem.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup personRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup personRecordInfo = new DataGroupOldSpy("recordInfo");
 		personRecordInfo.addChild(new DataAtomicSpy("id", "person"));
 		personItem.addChild(personRecordInfo);
 
@@ -234,10 +234,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(personItem);
 
 		// familyItem
-		DataGroup familyItem = new DataGroupSpy("metadata");
+		DataGroup familyItem = new DataGroupOldSpy("metadata");
 		familyItem.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup familyRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup familyRecordInfo = new DataGroupOldSpy("recordInfo");
 		familyRecordInfo.addChild(new DataAtomicSpy("id", "family"));
 		familyItem.addChild(familyRecordInfo);
 
@@ -247,10 +247,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(familyItem);
 
 		// organisationItem
-		DataGroup organisationItem = new DataGroupSpy("metadata");
+		DataGroup organisationItem = new DataGroupOldSpy("metadata");
 		organisationItem.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup organisationRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup organisationRecordInfo = new DataGroupOldSpy("recordInfo");
 		organisationRecordInfo.addChild(new DataAtomicSpy("id", "organisation"));
 		organisationItem.addChild(organisationRecordInfo);
 
@@ -260,10 +260,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(organisationItem);
 
 		// placeItem
-		DataGroup placeItem = new DataGroupSpy("metadata");
+		DataGroup placeItem = new DataGroupOldSpy("metadata");
 		placeItem.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup placeRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup placeRecordInfo = new DataGroupOldSpy("recordInfo");
 		placeRecordInfo.addChild(new DataAtomicSpy("id", "place"));
 		placeItem.addChild(placeRecordInfo);
 
@@ -274,10 +274,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		dataGroups.add(placeItem);
 
 		// linkedRecordId (textVar)
-		DataGroup linkedRecordIdTextVar = new DataGroupSpy("metadata");
+		DataGroup linkedRecordIdTextVar = new DataGroupOldSpy("metadata");
 		linkedRecordIdTextVar.addAttributeByIdWithValue("type", "textVariable");
 
-		DataGroup linkedRecordIdTextVarRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup linkedRecordIdTextVarRecordInfo = new DataGroupOldSpy("recordInfo");
 		linkedRecordIdTextVarRecordInfo.addChild(new DataAtomicSpy("id", "linkedRecordIdTextVar"));
 		linkedRecordIdTextVar.addChild(linkedRecordIdTextVarRecordInfo);
 
@@ -293,7 +293,7 @@ public class MetadataStorageStub implements MetadataStorage {
 	}
 
 	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
-		DataGroup text = new DataGroupSpy(nameInData);
+		DataGroup text = new DataGroupOldSpy(nameInData);
 		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		text.addChild(new DataAtomicSpy("linkedRecordId", textId));
 		dataGroup.addChild(text);
@@ -301,7 +301,7 @@ public class MetadataStorageStub implements MetadataStorage {
 
 	private void createAndAddItemReference(DataGroup collectionItemReferences,
 			String linkedRecordId, String repeatId) {
-		DataGroup ref1 = new DataGroupSpy("ref");
+		DataGroup ref1 = new DataGroupOldSpy("ref");
 		ref1.setRepeatId(repeatId);
 		ref1.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionItem"));
 		ref1.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
@@ -317,10 +317,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		 * "name":"linkedRecordType","value":"someRecordType"}]}
 		 */
 		// recordLink
-		DataGroup testLinkGroup = new DataGroupSpy("metadata");
+		DataGroup testLinkGroup = new DataGroupOldSpy("metadata");
 		testLinkGroup.addAttributeByIdWithValue("type", "recordLink");
 
-		DataGroup testLinkGroupRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup testLinkGroupRecordInfo = new DataGroupOldSpy("recordInfo");
 		testLinkGroupRecordInfo.addChild(new DataAtomicSpy("id", "testLink"));
 		testLinkGroup.addChild(testLinkGroupRecordInfo);
 
@@ -329,7 +329,7 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(testLinkGroup, "textId", "testLinkTextId");
 		addTextByNameInDataAndId(testLinkGroup, "defTextId", "testLinkDefText");
 
-		DataGroup linkedRecordType = new DataGroupSpy("linkedRecordType");
+		DataGroup linkedRecordType = new DataGroupOldSpy("linkedRecordType");
 		linkedRecordType.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		linkedRecordType.addChild(new DataAtomicSpy("linkedRecordId", "linkedRecordType1"));
 		testLinkGroup.addChild(linkedRecordType);
@@ -351,10 +351,10 @@ public class MetadataStorageStub implements MetadataStorage {
 		 * {"name":"repeatMax","value":"5"}]}]}]}
 		 */
 		// group
-		DataGroup bushGroup = new DataGroupSpy("metadata");
+		DataGroup bushGroup = new DataGroupOldSpy("metadata");
 		bushGroup.addAttributeByIdWithValue("type", "group");
 
-		DataGroup groupRecordInfo = new DataGroupSpy("recordInfo");
+		DataGroup groupRecordInfo = new DataGroupOldSpy("recordInfo");
 		groupRecordInfo.addChild(new DataAtomicSpy("id", "bush"));
 		bushGroup.addChild(groupRecordInfo);
 
@@ -362,11 +362,11 @@ public class MetadataStorageStub implements MetadataStorage {
 		addTextByNameInDataAndId(bushGroup, "textId", "bushTextId");
 		addTextByNameInDataAndId(bushGroup, "defTextId", "bushDefText");
 
-		DataGroup childReferences = new DataGroupSpy("childReferences");
+		DataGroup childReferences = new DataGroupOldSpy("childReferences");
 		bushGroup.addChild(childReferences);
 
-		DataGroup childReference = new DataGroupSpy("childReference");
-		DataGroup ref = new DataGroupSpy("ref");
+		DataGroup childReference = new DataGroupOldSpy("childReference");
+		DataGroup ref = new DataGroupOldSpy("ref");
 		ref.addAttributeByIdWithValue("type", "recordLink");
 		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataRecordLink"));
 		ref.addChild(new DataAtomicSpy("linkedRecordId", "testLink"));
@@ -380,7 +380,7 @@ public class MetadataStorageStub implements MetadataStorage {
 	}
 
 	private DataGroup createTextGroup(String nameInData, String linkedRecordId) {
-		DataGroup text = new DataGroupSpy(nameInData);
+		DataGroup text = new DataGroupOldSpy(nameInData);
 		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		text.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
 		return text;
@@ -401,12 +401,12 @@ public class MetadataStorageStub implements MetadataStorage {
 	@Override
 	public Collection<DataGroup> getRecordTypes() {
 		List<DataGroup> recordTypes = new ArrayList<>();
-		DataGroup image = new DataGroupSpy("image");
+		DataGroup image = new DataGroupOldSpy("image");
 
 		DataGroup recordInfo = createRecordInfoWithIdAndType("image", "recordType");
 		image.addChild(recordInfo);
 
-		DataGroup parentId = new DataGroupSpy("parentId");
+		DataGroup parentId = new DataGroupOldSpy("parentId");
 		image.addChild(parentId);
 
 		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
@@ -452,9 +452,9 @@ public class MetadataStorageStub implements MetadataStorage {
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", id));
-		DataGroup type = new DataGroupSpy("type");
+		DataGroup type = new DataGroupOldSpy("type");
 		type.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		type.addChild(new DataAtomicSpy("linkedRecordId", typeString));
 		recordInfo.addChild(type);

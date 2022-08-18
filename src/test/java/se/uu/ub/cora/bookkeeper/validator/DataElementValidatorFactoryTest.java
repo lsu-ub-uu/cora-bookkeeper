@@ -29,7 +29,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -50,8 +50,8 @@ public class DataElementValidatorFactoryTest {
 
 	@BeforeMethod
 	public void setup() {
-		DataGroup image = new DataGroupSpy("image");
-		DataGroup parentId = new DataGroupSpy("parentId");
+		DataGroup image = new DataGroupOldSpy("image");
+		DataGroup parentId = new DataGroupOldSpy("parentId");
 		image.addChild(parentId);
 		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));

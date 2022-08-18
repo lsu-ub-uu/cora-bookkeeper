@@ -30,7 +30,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
@@ -81,7 +81,7 @@ public class PathExtenderTest {
 	}
 
 	private DataGroup createDataGroup() {
-		return new DataGroupSpy("someData");
+		return new DataGroupOldSpy("someData");
 	}
 
 	private void checkExtendedPath(DataGroup extendedPath) {
@@ -91,7 +91,7 @@ public class PathExtenderTest {
 
 	@Test
 	public void testExtendPathUsingDataRecordLink() {
-		DataGroup dataRecordLink = new DataGroupSpy("someData");
+		DataGroup dataRecordLink = new DataGroupOldSpy("someData");
 
 		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "someRecordType");
 		dataRecordLink.addChild(linkedRecordType);
@@ -181,7 +181,7 @@ public class PathExtenderTest {
 	}
 
 	private DataGroup createPath() {
-		DataGroup pathToCopy = new DataGroupSpy("linkedPath");
+		DataGroup pathToCopy = new DataGroupOldSpy("linkedPath");
 		pathToCopy.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
 		return pathToCopy;
 	}
