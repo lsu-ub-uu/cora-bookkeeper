@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -35,7 +35,9 @@ import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.testspies.data.DataChildFilterSpy;
 import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 public class DataGroupWrapperTest {
@@ -541,6 +543,7 @@ public class DataGroupWrapperTest {
 	@Test
 	public void testAddAttributeByIdWithValue() throws Exception {
 		wrapperAsDG.addAttributeByIdWithValue("someNameInData", "someValue");
+
 		dataGroup.MCR.assertParameters("addAttributeByIdWithValue", 0, "someNameInData",
 				"someValue");
 	}
@@ -548,26 +551,44 @@ public class DataGroupWrapperTest {
 	@Test
 	public void testHasAttributes() throws Exception {
 		boolean hasAttributes = wrapperAsDG.hasAttributes();
-		dataGroup.MCR.assertParameters("hasAttributes", 0);
 
+		dataGroup.MCR.assertParameters("hasAttributes", 0);
 		dataGroup.MCR.assertReturn("hasAttributes", 0, hasAttributes);
 	}
 
 	@Test
 	public void testGetAttribute() throws Exception {
 		DataAttribute attribute = wrapperAsDG.getAttribute("nameInData");
-		dataGroup.MCR.assertParameters("getAttribute", 0, "nameInData");
 
+		dataGroup.MCR.assertParameters("getAttribute", 0, "nameInData");
 		dataGroup.MCR.assertReturn("getAttribute", 0, attribute);
 	}
 
 	@Test
 	public void testGetAttributes() throws Exception {
 		Collection<DataAttribute> attributes = wrapperAsDG.getAttributes();
+
 		dataGroup.MCR.assertParameters("getAttributes", 0);
-
 		dataGroup.MCR.assertReturn("getAttributes", 0, attributes);
-
 	}
 
+	@Test
+	public void testGetAllChildrenMatchinFilter() throws Exception {
+		DataChildFilter childFilter = new DataChildFilterSpy();
+
+		Collection<DataChild> children = wrapperAsDG.getAllChildrenMatchingFilter(childFilter);
+
+		dataGroup.MCR.assertParameters("getAllChildrenMatchingFilter", 0, childFilter);
+		dataGroup.MCR.assertReturn("getAllChildrenMatchingFilter", 0, children);
+	}
+
+	@Test
+	public void testRemoveAllChildrenMatchinFilter() throws Exception {
+		DataChildFilter childFilter = new DataChildFilterSpy();
+
+		boolean anyChildRemoved = wrapperAsDG.removeAllChildrenMatchingFilter(childFilter);
+
+		dataGroup.MCR.assertParameters("removeAllChildrenMatchingFilter", 0, childFilter);
+		dataGroup.MCR.assertReturn("removeAllChildrenMatchingFilter", 0, anyChildRemoved);
+	}
 }

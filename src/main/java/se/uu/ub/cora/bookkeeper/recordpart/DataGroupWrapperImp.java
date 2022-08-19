@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -263,14 +263,12 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public List<DataChild> getAllChildrenMatchingFilter(DataChildFilter childFilter) {
-		// TODO Auto-generated method stub
-		return null;
+		return dataGroup.getAllChildrenMatchingFilter(childFilter);
 	}
 
 	@Override
 	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
-		// TODO Auto-generated method stub
-		return false;
+		return dataGroup.removeAllChildrenMatchingFilter(childFilter);
 	}
 
 }
