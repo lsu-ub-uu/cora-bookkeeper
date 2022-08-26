@@ -36,6 +36,7 @@ import se.uu.ub.cora.data.DataGroup;
 public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	Map<String, List<List<DataAttribute>>> removedElements = new HashMap<>();
 	DataGroup dataGroup;
+	private List<DataChildFilter> childFiltersCalledForRemove = new ArrayList<>();
 
 	public DataGroupWrapperImp(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
@@ -170,6 +171,11 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public boolean hasRemovedBeenCalled(DataChild child) {
+		for (DataChildFilter dataChildFilter : childFiltersCalledForRemove) {
+			if (dataChildFilter.childMatches(child)) {
+				return true;
+			}
+		}
 		if (removeHasNotBeenCalledForNameInData(child)) {
 			return false;
 		}
@@ -268,6 +274,7 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		childFiltersCalledForRemove.add(childFilter);
 		return dataGroup.removeAllChildrenMatchingFilter(childFilter);
 	}
 

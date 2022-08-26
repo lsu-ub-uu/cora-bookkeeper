@@ -25,6 +25,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -38,6 +39,7 @@ import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testspies.data.DataChildFilterSpy;
+import se.uu.ub.cora.testspies.data.DataChildSpy;
 import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 public class DataGroupWrapperTest {
@@ -590,5 +592,41 @@ public class DataGroupWrapperTest {
 
 		dataGroup.MCR.assertParameters("removeAllChildrenMatchingFilter", 0, childFilter);
 		dataGroup.MCR.assertReturn("removeAllChildrenMatchingFilter", 0, anyChildRemoved);
+	}
+
+	@Test
+	public void testRemoveAllChildrenMatchinFilter_hasRemovedBeenCalled() throws Exception {
+		DataChildSpy otherChild = new DataChildSpy();
+		DataChildFilterSpy otherChildFilter = createChildFilterSpyWithChildMatchesDefaultFalse();
+
+		DataChildSpy matchingChild = new DataChildSpy();
+		DataChildFilterSpy matchingChildFilter = createChildFilterSpyWithChildMatchesDefaultFalse();
+		setChildFilterMatchesChildToTrue(matchingChildFilter, matchingChild);
+
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(matchingChild));
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(otherChild));
+
+		wrapperAsDGW.removeAllChildrenMatchingFilter(otherChildFilter);
+
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(otherChild));
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(matchingChild));
+
+		wrapperAsDGW.removeAllChildrenMatchingFilter(matchingChildFilter);
+
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(otherChild));
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(matchingChild));
+	}
+
+	private DataChildFilterSpy createChildFilterSpyWithChildMatchesDefaultFalse() {
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+		childFilter.MRV.setDefaultReturnValuesSupplier("childMatches",
+				(Supplier<Boolean>) () -> false);
+		return childFilter;
+	}
+
+	private void setChildFilterMatchesChildToTrue(DataChildFilterSpy childFilter,
+			DataChildSpy child) {
+		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches",
+				(Supplier<Boolean>) () -> true, child);
 	}
 }
