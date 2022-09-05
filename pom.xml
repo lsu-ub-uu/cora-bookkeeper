@@ -24,11 +24,11 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>7.1-SNAPSHOT</coradata.version>
-		<storage.version>6.2.0</storage.version>
+		<coradata.version>7.1.0</coradata.version>
+		<storage.version>6.4.0</storage.version>
 		<json.version>3.3.0</json.version>
 		<testutils.version>1.5.0</testutils.version>
-		<testspies.version>1.2-SNAPSHOT</testspies.version>
+		<testspies.version>1.2.0</testspies.version>
 	</properties>
 
 	<scm>
