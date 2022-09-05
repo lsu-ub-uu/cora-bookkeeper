@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -249,7 +250,12 @@ class DataGroupValidator implements DataElementValidator {
 
 	private String getTextForExistingDataAttributes(DataChild childData) {
 		StringJoiner joiner = new StringJoiner(", ");
-		for (DataAttribute dataAttribute : childData.getAttributes()) {
+		Collection<DataAttribute> attributes = childData.getAttributes();
+
+		Comparator<? super DataAttribute> attributeComparator = (o1, o2) -> o1.getNameInData()
+				.compareTo(o2.getNameInData());
+		for (DataAttribute dataAttribute : attributes.stream().sorted(attributeComparator)
+				.toList()) {
 			joiner.add(dataAttribute.getNameInData() + ":" + dataAttribute.getValue());
 		}
 		return " and attributes: " + joiner.toString();

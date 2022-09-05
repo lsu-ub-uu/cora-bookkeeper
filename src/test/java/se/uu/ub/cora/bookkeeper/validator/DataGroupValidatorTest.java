@@ -23,7 +23,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
@@ -443,7 +445,8 @@ public class DataGroupValidatorTest {
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not validate as attribute value is invalid");
 	}
@@ -458,7 +461,8 @@ public class DataGroupValidatorTest {
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not be valid as it does not have the needed attribute");
 	}
@@ -487,10 +491,10 @@ public class DataGroupValidatorTest {
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 
 		assertFalse(validationAnswer.dataIsValid(), "The group should be validate to false");
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertTrue(validationAnswer.getErrorMessages().contains(
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
+		assertTrue(errorMessages.contains(
 				"TextVariable with nameInData:text1NameInData is NOT valid, regular expression(((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}) does not match:66:66"));
-
 	}
 
 	@Test
@@ -530,7 +534,8 @@ public class DataGroupValidatorTest {
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(), "The group should not be valid");
 	}
 
@@ -798,9 +803,9 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
-		assertEquals(validationAnswer.getErrorMessages().size(), 4);
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 4);
 		assertFalse(validationAnswer.dataIsValid());
-
 	}
 
 	@Test
@@ -823,7 +828,8 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
-		assertEquals(validationAnswer.getErrorMessages().size(), 4);
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 4);
 		assertFalse(validationAnswer.dataIsValid());
 	}
 
@@ -849,9 +855,18 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
-		assertEquals(validationAnswer.getErrorMessages().size(), 2);
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 2);
 		assertFalse(validationAnswer.dataIsValid(),
 				"Should not be valid, since we have an extra attribute in group 2");
+
+		Iterator<String> iterator = errorMessages.iterator();
+		// iterator.next();
+		assertEquals(iterator.next(), "Did not find enough data children with "
+				+ "referenceId: test2(with nameInData:testGroup and attributes: dateType:null).");
+		assertEquals(iterator.next(),
+				"Could not find metadata for child with " + "nameInData: testGroup and "
+						+ "attributes: dateType:deathYear, extraAttribute:value");
 	}
 
 	@Test
