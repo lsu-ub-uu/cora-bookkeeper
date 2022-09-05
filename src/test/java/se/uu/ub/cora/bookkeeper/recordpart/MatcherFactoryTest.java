@@ -24,12 +24,13 @@ import static org.testng.Assert.assertSame;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 public class MatcherFactoryTest {
 
 	@Test
 	public void testFactor() {
-		DataGroupForDataRedactorSpy dataGroupSpy = new DataGroupForDataRedactorSpy("organisation");
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
 		MetadataGroupSpy metadataGroupSpy = new MetadataGroupSpy("recordInfoGroup", "recordInfo");
 		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
 		MatcherFactory factory = new MatcherFactoryImp(dataMatcher);

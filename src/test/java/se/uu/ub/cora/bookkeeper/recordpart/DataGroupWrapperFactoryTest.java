@@ -22,7 +22,7 @@ import static org.testng.Assert.assertSame;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperFactoryTest {
@@ -30,7 +30,7 @@ public class DataGroupWrapperFactoryTest {
 	@Test
 	public void testFactor() {
 		DataGroupWrapperFactoryImp factory = new DataGroupWrapperFactoryImp();
-		DataGroup dataGroup = new DataGroupSpy("someNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("someNameInData");
 		DataGroupWrapperImp wrapper = factory.factor(dataGroup);
 		assertSame(wrapper.getDataGroup(), dataGroup);
 	}

@@ -20,6 +20,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
@@ -34,15 +35,11 @@ public class DataGroupWrapperFactorySpy implements DataGroupWrapperFactory {
 	@Override
 	public DataGroupWrapper factor(DataGroup dataGroup) {
 		MCR.addCall("dataGroup", dataGroup);
-		// sentInDataGroups.add(dataGroup);
-		DataGroupWrapperSpy wrapper = new DataGroupWrapperSpy(dataGroup);
-		wrapper.removeHasBeenCalled = removeHasBeenCalled;
-		// for (Entry<String, List<List<DataAttribute>>> entry : nameInDatasToRemove.entrySet()) {
-		// for (List<DataAttribute> list : entry.getValue()) {
-		// wrapper.removeAllChildrenWithNameInDataAndAttributes(entry.getKey(),
-		// list.stream().toArray(DataAttribute[]::new));
-		// }
-		// }
+		DataGroupWrapperSpy wrapper = new DataGroupWrapperSpy();
+
+		wrapper.MRV.setDefaultReturnValuesSupplier("hasRemovedBeenCalled",
+				(Supplier<Boolean>) () -> removeHasBeenCalled);
+
 		factoredWrappers.add(wrapper);
 		MCR.addReturned(wrapper);
 		return wrapper;

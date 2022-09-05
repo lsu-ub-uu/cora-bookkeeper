@@ -23,14 +23,16 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
@@ -57,8 +59,8 @@ public class DataGroupValidatorTest {
 		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
 		dataAtomicFactory = new DataAtomicFactorySpy();
 		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
-		DataGroup image = new DataGroupSpy("image");
-		DataGroup parentId = new DataGroupSpy("parentId");
+		DataGroup image = new DataGroupOldSpy("image");
+		DataGroup parentId = new DataGroupOldSpy("parentId");
 		image.addChild(parentId);
 		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));
@@ -70,7 +72,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildWrongNameInData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("groupDataERRORId");
+		DataGroup dataGroup = new DataGroupOldSpy("groupDataERRORId");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
@@ -97,7 +99,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildValidData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid(),
@@ -118,7 +120,7 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = new DataGroupValidator(dataValidatorFactory,
 				metadataHolder, group);
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addChild(new DataAtomicSpy("NOT_text1NameInData", "10:10"));
 		dataElementValidator.validateData(dataGroup);
 	}
@@ -127,7 +129,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildExtraAttribute() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("groupTypeVar", "groupType1");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
@@ -141,7 +143,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildInvalidChildNameInData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addChild(new DataAtomicSpy("textNameInDataERROR", "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
@@ -155,7 +157,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildInvalidChildData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10Error10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
@@ -168,7 +170,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildMissingChildData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 2, "Only one error message");
@@ -180,7 +182,7 @@ public class DataGroupValidatorTest {
 	public void testOneGroupNoAttributesOneTextChildExtraChildData() {
 		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
@@ -199,7 +201,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupId");
 
-		DataGroup dataGroup = new DataGroupSpy("groupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("groupNameInData");
 		dataGroup.addChild(DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
 				"recordLinkNameInData", "recordLinkLinkedRecordType", "someRecordLinkId"));
 
@@ -233,7 +235,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
@@ -248,7 +250,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1ERRORNameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
@@ -265,7 +267,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
@@ -283,7 +285,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addAttributeByIdWithValue("_INVALID_NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
@@ -318,12 +320,12 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
 		// dataGroup
-		DataGroup dataGroup = new DataGroupSpy("childGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("childGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
 
 		// dataGroup2
-		DataGroup dataGroup2 = new DataGroupSpy("parentGroupNameInData");
+		DataGroup dataGroup2 = new DataGroupOldSpy("parentGroupNameInData");
 		dataGroup2.addAttributeByIdWithValue("col2NameInData", "choice1NameInData");
 		dataGroup2.addChild(new DataAtomicSpy("text2NameInData", "10:10"));
 		dataGroup2.addChild(dataGroup);
@@ -402,7 +404,7 @@ public class DataGroupValidatorTest {
 	public void testValidAttribute() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
@@ -438,12 +440,13 @@ public class DataGroupValidatorTest {
 	public void testInvalidAttribute() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not validate as attribute value is invalid");
 	}
@@ -452,13 +455,14 @@ public class DataGroupValidatorTest {
 	public void testMissingAttribute() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		// dataGroup.addAttributeByIdWithValue("col1NameInData",
 		// "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(),
 				"The group should not be valid as it does not have the needed attribute");
 	}
@@ -467,7 +471,7 @@ public class DataGroupValidatorTest {
 	public void testExtraAttribute() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addAttributeByIdWithValue("col2NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
@@ -480,24 +484,24 @@ public class DataGroupValidatorTest {
 	public void testValidateOneWrongDataChildElement() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "66:66", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 
 		assertFalse(validationAnswer.dataIsValid(), "The group should be validate to false");
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
-		assertTrue(validationAnswer.getErrorMessages().contains(
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
+		assertTrue(errorMessages.contains(
 				"TextVariable with nameInData:text1NameInData is NOT valid, regular expression(((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}) does not match:66:66"));
-
 	}
 
 	@Test
 	public void testValidateTwoRightDataChildElements() throws Exception {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "01:11", "1"));
@@ -510,7 +514,7 @@ public class DataGroupValidatorTest {
 	public void testValidateWithOneRightAndOneWrongAttributeName() throws Exception {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addAttributeByIdWithValue("col2NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
@@ -525,12 +529,13 @@ public class DataGroupValidatorTest {
 	public void testValidateWithOneWrongAttributeValue() throws Exception {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1_WRONG_NameInData");
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 1, "Only one error message");
 		assertFalse(validationAnswer.dataIsValid(), "The group should not be valid");
 	}
 
@@ -538,7 +543,7 @@ public class DataGroupValidatorTest {
 	public void dataWithNameInDataNotInMetadataShouldNotBeValid() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		dataGroup.addChild(new DataAtomicSpy("unknownNameInData", "10:10", "0"));
 
@@ -557,7 +562,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 		dataGroup.addAttributeByIdWithValue("col1NameInData", "choice1NameInData");
 		// 1-x,1-1,0-x
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "one"));
@@ -607,7 +612,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		DataAtomic dataAtomic = new DataAtomicSpy("text1NameInData", "10:10", "3");
 		// dataAtomic.setRepeatId("3");
@@ -623,7 +628,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		DataAtomic dataAtomic = new DataAtomicSpy("text1NameInData", "10:10");
 		dataGroup.addChild(dataAtomic);
@@ -641,7 +646,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", ""));
 
@@ -657,7 +662,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "1"));
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:20", "1"));
@@ -675,7 +680,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		dataGroup.addChild(new DataAtomicSpy("text1NameInData", "10:10", "1"));
 
@@ -698,7 +703,7 @@ public class DataGroupValidatorTest {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
-		DataGroup dataParent = new DataGroupSpy("parentGroupNameInData");
+		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
 
 		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
 				"text1NameInData"));
@@ -718,7 +723,7 @@ public class DataGroupValidatorTest {
 
 	private DataGroup createDataGroupWithTextChildAndOneAttribute(final String attributeName,
 			final String attributeValue, final String childGroupNameInData) {
-		DataGroup childGroup1 = new DataGroupSpy("testGroup");
+		DataGroup childGroup1 = new DataGroupOldSpy("testGroup");
 		childGroup1.addAttributeByIdWithValue(attributeName, attributeValue);
 		childGroup1.addChild(new DataAtomicSpy(childGroupNameInData, "10:10"));
 		return childGroup1;
@@ -785,7 +790,7 @@ public class DataGroupValidatorTest {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
-		DataGroup dataParent = new DataGroupSpy("parentGroupNameInData");
+		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
 		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
 				"text1NameInData"));
 		dataParent.addChild(createDataGroupWithTextChildAndOneAttribute("dateType", "birthYear",
@@ -798,9 +803,9 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
-		assertEquals(validationAnswer.getErrorMessages().size(), 4);
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 4);
 		assertFalse(validationAnswer.dataIsValid());
-
 	}
 
 	@Test
@@ -808,10 +813,10 @@ public class DataGroupValidatorTest {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
-		DataGroup dataParent = new DataGroupSpy("parentGroupNameInData");
-		DataGroup childGroup1 = new DataGroupSpy("testGroup");
+		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
+		DataGroup childGroup1 = new DataGroupOldSpy("testGroup");
 		childGroup1.addChild(new DataAtomicSpy("text1NameInData", "10:10"));
-		DataGroup childGroup2 = new DataGroupSpy("testGroup");
+		DataGroup childGroup2 = new DataGroupOldSpy("testGroup");
 		childGroup2.addChild(new DataAtomicSpy("text2NameInData", "10:10"));
 		dataParent.addChild(childGroup1);
 		dataParent.addChild(childGroup2);
@@ -823,7 +828,8 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
-		assertEquals(validationAnswer.getErrorMessages().size(), 4);
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 4);
 		assertFalse(validationAnswer.dataIsValid());
 	}
 
@@ -832,7 +838,7 @@ public class DataGroupValidatorTest {
 		MetadataHolder metadataHolder = new MetadataHolder();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
-		DataGroup dataParent = new DataGroupSpy("parentGroupNameInData");
+		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
 		DataGroup childGroup2 = createDataGroupWithTextChildAndOneAttribute("dateType", "deathYear",
 				"text2NameInData");
 		childGroup2.addAttributeByIdWithValue("extraAttribute", "value");
@@ -849,9 +855,18 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
-		assertEquals(validationAnswer.getErrorMessages().size(), 2);
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 2);
 		assertFalse(validationAnswer.dataIsValid(),
 				"Should not be valid, since we have an extra attribute in group 2");
+
+		Iterator<String> iterator = errorMessages.iterator();
+		// iterator.next();
+		assertEquals(iterator.next(), "Did not find enough data children with "
+				+ "referenceId: test2(with nameInData:testGroup and attributes: dateType:null).");
+		assertEquals(iterator.next(),
+				"Could not find metadata for child with " + "nameInData: testGroup and "
+						+ "attributes: dateType:deathYear, extraAttribute:value");
 	}
 
 	@Test
@@ -896,8 +911,8 @@ public class DataGroupValidatorTest {
 		DataCreator.addDataGroupAsMetadataChildReferenceToParent(child, parent);
 		DataCreator.addDefaultCollectionTwoChoices("col1", child, metadataHolder);
 
-		DataGroup dataGrandParent = new DataGroupSpy("grandParentGroupNameInData");
-		DataGroup dataParent = new DataGroupSpy("parentGroupNameInData");
+		DataGroup dataGrandParent = new DataGroupOldSpy("grandParentGroupNameInData");
+		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
 		dataGrandParent.addChild(dataParent);
 
 		DataGroup dataChild = createDataGroupWithTextChildAndOneAttribute("col1NameInData",
@@ -925,7 +940,7 @@ public class DataGroupValidatorTest {
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
-		DataGroup dataGroup = new DataGroupSpy("testGroupNameInData");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1, "Only one error message");

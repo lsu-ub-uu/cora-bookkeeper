@@ -29,7 +29,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
@@ -38,7 +38,6 @@ import se.uu.ub.cora.data.DataFactory;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.DataRecordLinkProvider;
 import se.uu.ub.cora.storage.MetadataStorage;
 import se.uu.ub.cora.testspies.data.DataFactorySpy;
 
@@ -58,8 +57,8 @@ public class DataRecordLinkCollectorTest {
 		metadataStorage = new MetadataStorageStub();
 		dataGroupFactory = new DataGroupFactorySpy();
 		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
-		dataRecordLinkFactory = new DataRecordLinkFactorySpy();
-		DataRecordLinkProvider.setDataRecordLinkFactory(dataRecordLinkFactory);
+		// dataRecordLinkFactory = new DataRecordLinkFactorySpy();
+		// DataRecordLinkProvider.setDataRecordLinkFactory(dataRecordLinkFactory);
 		dataAtomicFactory = new DataAtomicFactorySpy();
 		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
@@ -73,7 +72,7 @@ public class DataRecordLinkCollectorTest {
 
 	@Test
 	public void testCollectLinksGroupWithoutLink() {
-		DataGroup dataGroup = new DataGroupSpy("bush");
+		DataGroup dataGroup = new DataGroupOldSpy("bush");
 		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
 				"recordId");
 		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
@@ -87,8 +86,8 @@ public class DataRecordLinkCollectorTest {
 
 	@Test
 	public void testCollectLinksGroupWithOneLink() {
-		DataGroup dataGroup = new DataGroupSpy("bush");
-		DataGroup dataTestLink = new DataGroupSpy("testLink");
+		DataGroup dataGroup = new DataGroupOldSpy("bush");
+		DataGroup dataTestLink = new DataGroupOldSpy("testLink");
 
 		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "bush");
 		dataTestLink.addChild(linkedRecordType);

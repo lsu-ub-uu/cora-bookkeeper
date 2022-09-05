@@ -29,7 +29,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
@@ -239,7 +239,7 @@ public class DataGroupTermCollectorTest {
 	}
 
 	private DataGroup createBookWithNoTitle() {
-		DataGroup book = new DataGroupSpy("book");
+		DataGroup book = new DataGroupOldSpy("book");
 		DataGroup recordInfo = createRecordInfo();
 		book.addChild(recordInfo);
 
@@ -249,14 +249,14 @@ public class DataGroupTermCollectorTest {
 	private void addChildrenToBook(DataGroup book) {
 		book.addChild(new DataAtomicSpy("bookTitle", "Some title"));
 		book.addChild(new DataAtomicSpy("bookSubTitle", "Some subtitle"));
-		DataGroup personRole = new DataGroupSpy("personRole");
+		DataGroup personRole = new DataGroupOldSpy("personRole");
 		personRole.addChild(new DataAtomicSpy("name", "Kalle Kula"));
 		personRole.setRepeatId("0");
 		book.addChild(personRole);
 	}
 
 	private void addLinkToOtherBook(DataGroup book) {
-		DataGroup otherBookLink = new DataGroupSpy("otherBook");
+		DataGroup otherBookLink = new DataGroupOldSpy("otherBook");
 		otherBookLink.addChild(new DataAtomicSpy("linkedRecordType", "book"));
 		otherBookLink.addChild(new DataAtomicSpy("linkedRecordId", "someOtherBookId"));
 		otherBookLink.setRepeatId("0");
@@ -264,7 +264,7 @@ public class DataGroupTermCollectorTest {
 	}
 
 	private DataGroup createRecordInfo() {
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "book1"));
 		DataGroup type = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
 				"type", "recordType", "book");

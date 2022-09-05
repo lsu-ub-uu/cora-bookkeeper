@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -30,11 +30,13 @@ import java.util.function.Predicate;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	Map<String, List<List<DataAttribute>>> removedElements = new HashMap<>();
 	DataGroup dataGroup;
+	private List<DataChildFilter> childFiltersCalledForRemove = new ArrayList<>();
 
 	public DataGroupWrapperImp(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
@@ -169,6 +171,11 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public boolean hasRemovedBeenCalled(DataChild child) {
+		for (DataChildFilter dataChildFilter : childFiltersCalledForRemove) {
+			if (dataChildFilter.childMatches(child)) {
+				return true;
+			}
+		}
 		if (removeHasNotBeenCalledForNameInData(child)) {
 			return false;
 		}
@@ -258,6 +265,17 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	@Override
 	public Collection<DataAttribute> getAttributes() {
 		return dataGroup.getAttributes();
+	}
+
+	@Override
+	public List<DataChild> getAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		return dataGroup.getAllChildrenMatchingFilter(childFilter);
+	}
+
+	@Override
+	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		childFiltersCalledForRemove.add(childFilter);
+		return dataGroup.removeAllChildrenMatchingFilter(childFilter);
 	}
 
 }

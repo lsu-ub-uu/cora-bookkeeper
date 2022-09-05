@@ -26,33 +26,33 @@ import java.util.Iterator;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToItemCollectionConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
 
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
 
-		DataGroup text = new DataGroupSpy("textId");
+		DataGroup text = new DataGroupOldSpy("textId");
 		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = new DataGroupSpy("defTextId");
+		DataGroup defText = new DataGroupOldSpy("defTextId");
 		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 
-		DataGroup collectionItemReferences = new DataGroupSpy("collectionItemReferences");
+		DataGroup collectionItemReferences = new DataGroupOldSpy("collectionItemReferences");
 
 		createAndAddItemReference(collectionItemReferences, "choice1", "one");
 		createAndAddItemReference(collectionItemReferences, "choice2", "two");
@@ -77,7 +77,7 @@ public class DataGroupToItemCollectionConverterTest {
 
 	private void createAndAddItemReference(DataGroup collectionItemReferences,
 			String linkedRecordId, String repeatId) {
-		DataGroup ref1 = new DataGroupSpy("ref");
+		DataGroup ref1 = new DataGroupOldSpy("ref");
 		ref1.setRepeatId(repeatId);
 		ref1.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionItem"));
 		ref1.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
@@ -21,7 +21,7 @@ public class CollectedDataCreatorSpy implements CollectedDataCreator {
 		MCR.addCall("collectedTerms", collectedTerms, "record", record);
 		this.collectedTerms = collectedTerms;
 
-		DataGroup collectedData = new DataGroupSpy("collectedDataFromSpy");
+		DataGroup collectedData = new DataGroupOldSpy("collectedDataFromSpy");
 		MCR.addReturned(collectedData);
 		return collectedData;
 	}
@@ -32,7 +32,7 @@ public class CollectedDataCreatorSpy implements CollectedDataCreator {
 		MCR.addCall("collectedTerms", collectedTerms);
 		this.collectedTerms = collectedTerms;
 
-		DataGroup collectedData = new DataGroupSpy("collectedDataFromSpy");
+		DataGroup collectedData = new DataGroupOldSpy("collectedDataFromSpy");
 
 		MCR.addReturned(collectedData);
 		return collectedData;

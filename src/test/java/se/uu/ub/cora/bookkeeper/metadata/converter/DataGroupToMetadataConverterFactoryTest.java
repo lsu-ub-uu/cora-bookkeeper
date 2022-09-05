@@ -24,13 +24,13 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToMetadataConverterFactoryTest {
 	@Test(expectedExceptions = DataConversionException.class)
 	public void testFactorNotMetadata() {
-		DataGroup dataGroup = new DataGroupSpy("metadataNOT");
+		DataGroup dataGroup = new DataGroupOldSpy("metadataNOT");
 		dataGroup.addAttributeByIdWithValue("type", "group");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -39,7 +39,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test(expectedExceptions = DataConversionException.class)
 	public void testFactorWrongType() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "groupNOT");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -48,7 +48,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorGroup() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "group");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -58,7 +58,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorCollectionItem() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionItem");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -68,7 +68,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorCollectionVariable() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionVariable");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -78,7 +78,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorItemCollection() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -88,7 +88,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorTextVariable() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "textVariable");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -98,7 +98,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorNumberVariable() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "numberVariable");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -108,7 +108,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorRecordLink() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "recordLink");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();
@@ -118,7 +118,7 @@ public class DataGroupToMetadataConverterFactoryTest {
 
 	@Test
 	public void testFactorResourceLink() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "resourceLink");
 		DataGroupToMetadataConverterFactory converterFactory = DataGroupToMetadataConverterFactoryImp
 				.forDataGroups();

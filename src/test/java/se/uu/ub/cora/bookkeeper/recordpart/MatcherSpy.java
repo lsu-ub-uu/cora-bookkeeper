@@ -26,7 +26,7 @@ public class MatcherSpy implements Matcher {
 	public boolean hasMatchingChildWasCalled = false;
 	public boolean getMatchingChildWasCalled = false;
 	public boolean hasMatchingChild = true;
-	public DataGroupForDataRedactorSpy returnedDataGroup;
+	public DataGroupWrapperSpy returnedDataGroup;
 	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
@@ -34,7 +34,7 @@ public class MatcherSpy implements Matcher {
 	public DataGroup getMatchingDataChild() {
 		MCR.addCall();
 		getMatchingChildWasCalled = true;
-		returnedDataGroup = new DataGroupForDataRedactorSpy("spyNameInData");
+		returnedDataGroup = new DataGroupWrapperSpy();
 		MCR.addReturned(returnedDataGroup);
 		return returnedDataGroup;
 	}

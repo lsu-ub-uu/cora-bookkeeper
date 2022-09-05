@@ -36,17 +36,20 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.testspies.data.DataFactorySpy;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataRedactorTest {
 	private DataRedactorImp dataRedactor;
 
-	private DataGroupForDataRedactorSpy topDataGroupSpy;
+	private DataGroupSpy topDataGroupSpy;
 	private Set<Constraint> emptyConstraints;
 	private Set<String> emptyPermissions;
 	private Set<Constraint> someConstraints;
-	private DataGroupForDataRedactorSpy originalDataGroup;
-	private DataGroupForDataRedactorSpy updatedDataGroup;
+	private DataGroupSpy originalDataGroup;
+	private DataGroupSpy updatedDataGroup;
 	private DataGroupRedactorSpy dataGroupRedactorSpy;
 	private MethodCallRecorder dataGroupRedactorMCR;
 	private MetadataHolderSpy metadataHolder;
@@ -58,8 +61,13 @@ public class DataRedactorTest {
 	private MatcherFactorySpy matcherFactory;
 	private MethodCallRecorder matcherFactoryMCR;
 
+	private DataFactorySpy dataFactorySpy;
+
 	@BeforeMethod
 	public void setUp() {
+		dataFactorySpy = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+
 		metadataHolder = new MetadataHolderSpy();
 		metadataHolderMCR = metadataHolder.MCR;
 		dataGroupRedactorSpy = new DataGroupRedactorSpy();
@@ -70,12 +78,13 @@ public class DataRedactorTest {
 		matcherFactoryMCR = matcherFactory.MCR;
 		dataRedactor = new DataRedactorImp(metadataHolder, dataGroupRedactorSpy, wrapperFactory,
 				matcherFactory);
-		topDataGroupSpy = new DataGroupForDataRedactorSpy("someDataGroup");
+		topDataGroupSpy = new DataGroupSpy();
+
 		emptyConstraints = Collections.emptySet();
 		emptyPermissions = Collections.emptySet();
 		someConstraints = createConstraintForSome();
-		originalDataGroup = new DataGroupForDataRedactorSpy("originalDataGroup");
-		updatedDataGroup = new DataGroupForDataRedactorSpy("changedDataGroup");
+		originalDataGroup = new DataGroupSpy();
+		updatedDataGroup = new DataGroupSpy();
 	}
 
 	private Set<Constraint> createConstraintForSome() {
@@ -136,13 +145,13 @@ public class DataRedactorTest {
 	}
 
 	private void assertGroupRedactorCalledForFirstChildGroup() {
-		DataGroupForDataRedactorSpy firstChildGroup = getGroupReturnedFromMatcherWithCallNumber(0);
+		DataGroupWrapperSpy firstChildGroup = getGroupReturnedFromMatcherWithCallNumber(0);
 		dataGroupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 1,
 				firstChildGroup, someConstraints, emptyPermissions);
 	}
 
 	private void assertGroupRedactorCalledForSecondChildGroup() {
-		DataGroupForDataRedactorSpy secondChildGroup = getGroupReturnedFromMatcherWithCallNumber(1);
+		DataGroupWrapperSpy secondChildGroup = getGroupReturnedFromMatcherWithCallNumber(1);
 		dataGroupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 2,
 				secondChildGroup, someConstraints, emptyPermissions);
 	}
@@ -164,10 +173,10 @@ public class DataRedactorTest {
 		return metadataChild;
 	}
 
-	private DataGroupForDataRedactorSpy getGroupReturnedFromMatcherWithCallNumber(
-			int firstGroupNumber) {
+	private DataGroupWrapperSpy getGroupReturnedFromMatcherWithCallNumber(int firstGroupNumber) {
 		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(firstGroupNumber);
-		DataGroupForDataRedactorSpy firstChildGroup = matcherSpy.returnedDataGroup;
+		// DataGroupForDataRedactorSpy firstChildGroup = matcherSpy.returnedDataGroup;
+		DataGroupWrapperSpy firstChildGroup = matcherSpy.returnedDataGroup;
 		return firstChildGroup;
 	}
 
@@ -251,7 +260,7 @@ public class DataRedactorTest {
 	}
 
 	private void assertGroupRedactorCalledForFirstGrandChildGroup() {
-		DataGroupForDataRedactorSpy grandChildGroup = getGroupReturnedFromMatcherWithCallNumber(1);
+		DataGroupWrapperSpy grandChildGroup = getGroupReturnedFromMatcherWithCallNumber(1);
 
 		dataGroupRedactorMCR.assertParameters("removeChildrenForConstraintsWithoutPermissions", 2,
 				grandChildGroup, someConstraints, emptyPermissions);
@@ -275,7 +284,7 @@ public class DataRedactorTest {
 
 		assertEquals(matcherFactory.returnedMatchers.size(), 1);
 
-		DataGroupForDataRedactorSpy returnedRedactedGroup = (DataGroupForDataRedactorSpy) dataGroupRedactorMCR
+		DataGroupWrapperSpy returnedRedactedGroup = (DataGroupWrapperSpy) dataGroupRedactorMCR
 				.getReturnValue("removeChildrenForConstraintsWithoutPermissions", 0);
 
 		MetadataGroup returnedMetadataChild = (MetadataGroup) metadataHolderMCR
@@ -327,7 +336,10 @@ public class DataRedactorTest {
 	private void topGroupIsWrappedAndDataGroupRedactorReplaceCalledForTopLevel() {
 		DataGroupWrapperSpy wTopDataGroupSpy = (DataGroupWrapperSpy) wrapperFactoryMCR
 				.getReturnValue("factor", 0);
-		assertSame(wTopDataGroupSpy.dataGroup, topDataGroupSpy);
+
+		DataGroup wrappedDataGroup = (DataGroup) wrapperFactoryMCR
+				.getValueForMethodNameAndCallNumberAndParameterName("factor", 0, "dataGroup");
+		assertSame(wrappedDataGroup, topDataGroupSpy);
 
 		dataGroupRedactorMCR.assertParameters("replaceChildrenForConstraintsWithoutPermissions", 0,
 				originalDataGroup, wTopDataGroupSpy, someConstraints, emptyPermissions);
@@ -389,7 +401,7 @@ public class DataRedactorTest {
 		MetadataGroup returnedMetadataChild1 = (MetadataGroup) metadataHolderMCR
 				.getReturnValue("getMetadataElement", 1);
 
-		DataGroupForDataRedactorSpy wTopDataGroupSpy = (DataGroupForDataRedactorSpy) dataGroupRedactorMCR
+		DataGroupWrapperSpy wTopDataGroupSpy = (DataGroupWrapperSpy) dataGroupRedactorMCR
 				.getReturnValue("replaceChildrenForConstraintsWithoutPermissions", 0);
 		matcherFactoryMCR.assertParameters("factor", 0, wTopDataGroupSpy, returnedMetadataChild1);
 	}
@@ -408,6 +420,7 @@ public class DataRedactorTest {
 	public void testReplaceOneChildGroupReplacedDataAfterTopReplace() throws Exception {
 		matcherFactory.hasMatchingChildList.add(true);
 		dataGroupRedactorSpy.removeHasBeenCalledList.add(true);
+		// dataGroupRedactorSpy.removeHasBeenCalledList.add(true);
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildToDataGroup(topGroup, "metadataGroup", "type", 0, 1);
@@ -426,7 +439,7 @@ public class DataRedactorTest {
 
 		DataGroup childData1 = (DataGroup) matcherChild1.MCR.getReturnValue("getMatchingDataChild",
 				0);
-		DataGroupForDataRedactorSpy wTopDataGroup = (DataGroupForDataRedactorSpy) dataGroupRedactorMCR
+		DataGroupSpy wTopDataGroup = (DataGroupSpy) dataGroupRedactorMCR
 				.getReturnValue("replaceChildrenForConstraintsWithoutPermissions", 0);
 		wTopDataGroup.MCR.assertParameters("hasRemovedBeenCalled", 0, childData1);
 	}
@@ -490,7 +503,10 @@ public class DataRedactorTest {
 
 		DataGroupWrapperSpy wTopDataGroupSpy2 = (DataGroupWrapperSpy) wrapperFactoryMCR
 				.getReturnValue("factor", 1);
-		assertSame(wTopDataGroupSpy2.dataGroup, childData1);
+		DataGroup wrappedDataGroup = (DataGroup) wrapperFactoryMCR
+				.getValueForMethodNameAndCallNumberAndParameterName("factor", 1, "dataGroup");
+		// assertSame(wTopDataGroupSpy2.dataGroup, childData1);
+		assertSame(wrappedDataGroup, childData1);
 		dataGroupRedactorMCR.assertParameters("replaceChildrenForConstraintsWithoutPermissions", 1,
 				childOriginal1, wTopDataGroupSpy2, someConstraints, emptyPermissions);
 	}

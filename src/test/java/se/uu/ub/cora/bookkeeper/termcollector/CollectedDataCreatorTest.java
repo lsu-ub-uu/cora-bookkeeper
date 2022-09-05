@@ -29,7 +29,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.data.DataAtomicProvider;
@@ -152,7 +152,7 @@ public class CollectedDataCreatorTest {
 	}
 
 	private DataGroup createBasicDataGroup() {
-		DataGroup book = new DataGroupSpy("book");
+		DataGroup book = new DataGroupOldSpy("book");
 		DataGroup recordInfo = createRecordInfo("book", "book:111", "testSystem");
 		book.addChild(recordInfo);
 
@@ -160,13 +160,13 @@ public class CollectedDataCreatorTest {
 	}
 
 	private DataGroup createRecordInfo(String type, String id, String dataDivider) {
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", id));
-		DataGroup typeGroup = new DataGroupSpy("type");
+		DataGroup typeGroup = new DataGroupOldSpy("type");
 		typeGroup.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		typeGroup.addChild(new DataAtomicSpy("linkedRecordId", type));
 		recordInfo.addChild(typeGroup);
-		DataGroup dataDividerGroup = new DataGroupSpy("dataDivider");
+		DataGroup dataDividerGroup = new DataGroupOldSpy("dataDivider");
 		dataDividerGroup.addChild(new DataAtomicSpy("linkedRecordType", "system"));
 		dataDividerGroup.addChild(new DataAtomicSpy("linkedRecordId", dataDivider));
 		recordInfo.addChild(dataDividerGroup);
@@ -174,10 +174,10 @@ public class CollectedDataCreatorTest {
 	}
 
 	private DataGroup createCollectedDataTerm(String collectTermValue, String collectTermId) {
-		DataGroup dataTerm = new DataGroupSpy("collectedDataTerm");
+		DataGroup dataTerm = new DataGroupOldSpy("collectedDataTerm");
 		dataTerm.addChild(new DataAtomicSpy("collectTermId", collectTermId));
 		dataTerm.addChild(new DataAtomicSpy("collectTermValue", collectTermValue));
-		DataGroup extraData = new DataGroupSpy("extraData");
+		DataGroup extraData = new DataGroupOldSpy("extraData");
 		extraData.addChild(new DataAtomicSpy("indexType", "indexTypeString"));
 		dataTerm.addChild(extraData);
 		dataTerm.addAttributeByIdWithValue("type", "index");

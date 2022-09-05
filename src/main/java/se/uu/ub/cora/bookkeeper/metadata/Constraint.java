@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,31 +18,24 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataChildFilter;
+import se.uu.ub.cora.data.DataProvider;
 
 public class Constraint {
 
 	private String nameInData;
-	private Set<DataAttribute> dataAttributes = new HashSet<>();
 	private ConstraintType constraintType;
+	private DataChildFilter childFilter;
 
 	public Constraint(String nameInData) {
 		this.nameInData = nameInData;
+		childFilter = DataProvider.createDataChildFilterUsingChildNameInData(nameInData);
 	}
 
 	public String getNameInData() {
 		return nameInData;
-	}
-
-	public void addAttribute(DataAttribute dataAttribute) {
-		dataAttributes.add(dataAttribute);
-	}
-
-	public Set<DataAttribute> getDataAttributes() {
-		return dataAttributes;
 	}
 
 	public void setType(ConstraintType constraintType) {
@@ -53,4 +46,12 @@ public class Constraint {
 		return constraintType;
 	}
 
+	public DataChildFilter getDataChildFilter() {
+		return childFilter;
+	}
+
+	public void addAttributeUsingNameInDataAndPossibleValues(String nameInData,
+			Set<String> possibleValues) {
+		childFilter.addAttributeUsingNameInDataAndPossibleValues(nameInData, possibleValues);
+	}
 }

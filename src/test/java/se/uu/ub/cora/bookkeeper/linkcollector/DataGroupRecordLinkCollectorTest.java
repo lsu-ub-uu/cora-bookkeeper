@@ -11,7 +11,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
@@ -49,7 +49,7 @@ public class DataGroupRecordLinkCollectorTest {
 	@Test
 	public void testOneGroupWithNoLink() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithNoLink("test");
-		DataGroup dataGroup = new DataGroupSpy("testGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 
 		assertEquals(dataGroupFactory.usedNameInDatas.size(), 0);
 		assertEquals(dataAtomicFactory.usedNameInDatas.size(), 0);
@@ -74,19 +74,17 @@ public class DataGroupRecordLinkCollectorTest {
 
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
 		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		// assertEquals(namesOfGroupsFactored.get(2), "from");
-		// assertEquals(namesOfGroupsFactored.get(3), "to");
 	}
 
 	private DataGroup createDataGroupWithOneLink() {
-		DataGroup dataGroup = new DataGroupSpy("testGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
 		return dataGroup;
 	}
 
 	private DataGroup createTestLinkWithRecordTypeAndRecordId() {
-		DataGroup dataRecordLink = new DataGroupSpy("testLink");
+		DataGroup dataRecordLink = new DataGroupOldSpy("testLink");
 		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "someRecordType");
 		dataRecordLink.addChild(linkedRecordType);
 		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "someRecordId");
@@ -110,22 +108,12 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private void assertCorrectChildrenForBasicLink() {
 		assertCorrectAtomicDataUsingIndexNameInDataAndValue(0, "nameInData", "testLink");
-		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(1, "linkedRecordType",
-		// "fromRecordType");
-		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(2, "linkedRecordId", "fromRecordId");
-		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(3, "linkedRecordType",
-		// "someRecordType");
-		// assertCorrectAtomicDataUsingIndexNameInDataAndValue(4, "linkedRecordId", "someRecordId");
 	}
 
 	private void assertCorrectGroupsFactoredForOneGroupWithOneLink() {
 		List<String> namesOfGroupsFactored = dataGroupFactory.usedNameInDatas;
-		// assertEquals(namesOfGroupsFactored.size(), 4);
 		assertEquals(namesOfGroupsFactored.size(), 2);
-		// assertEquals(namesOfGroupsFactored.get(0), "linkedPath");
 		assertEquals(namesOfGroupsFactored.get(1), "recordToRecordLink");
-		// assertEquals(namesOfGroupsFactored.get(2), "from");
-		// assertEquals(namesOfGroupsFactored.get(2), "to");
 	}
 
 	private void assertCorrectAtomicDataUsingIndexNameInDataAndValue(int index, String nameInData,
@@ -162,7 +150,7 @@ public class DataGroupRecordLinkCollectorTest {
 	private void addOtherChild(DataGroup dataGroup) {
 		DataAtomic dataAtomic = new DataAtomicSpy("textVar", "some text");
 		dataGroup.addChild(dataAtomic);
-		DataGroup dataSubGroup = new DataGroupSpy("subGroup");
+		DataGroup dataSubGroup = new DataGroupOldSpy("subGroup");
 		dataGroup.addChild(dataSubGroup);
 	}
 
@@ -211,7 +199,7 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private DataGroup createDataGroupContainingLinkWithRepeatId() {
 		// DataGroup dataGroup = DataGroupProvider.getDataGroupUsingNameInData("testGroup");
-		DataGroup dataGroup = new DataGroupSpy("testGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
@@ -225,7 +213,7 @@ public class DataGroupRecordLinkCollectorTest {
 	@Test
 	public void testOneGroupWithOneLinkWithEmptyFromLinkedRepeatId() {
 		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
-		DataGroup dataGroup = new DataGroupSpy("testGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
@@ -260,8 +248,8 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	private DataGroup createGroupInGroupWithOneLink() {
-		DataGroup topDataGroup = new DataGroupSpy("topGroup");
-		DataGroup dataGroup = new DataGroupSpy("testGroup");
+		DataGroup topDataGroup = new DataGroupOldSpy("topGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 		topDataGroup.addChild(dataGroup);
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
@@ -307,14 +295,14 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	private DataGroup createGroupInGroupInGroupWithOneLink() {
-		DataGroup topTopDataGroup = new DataGroupSpy("topTopGroup");
+		DataGroup topTopDataGroup = new DataGroupOldSpy("topTopGroup");
 
-		DataGroup topDataGroup = new DataGroupSpy("topGroup");
+		DataGroup topDataGroup = new DataGroupOldSpy("topGroup");
 		topDataGroup.addAttributeByIdWithValue("attribute1", "attrValue");
 		topDataGroup.setRepeatId("g6");
 		topTopDataGroup.addChild(topDataGroup);
 
-		DataGroup dataGroup = new DataGroupSpy("testGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 		topDataGroup.addChild(dataGroup);
 
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();

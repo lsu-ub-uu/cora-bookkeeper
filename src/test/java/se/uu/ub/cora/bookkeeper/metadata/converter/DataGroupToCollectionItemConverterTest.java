@@ -24,17 +24,17 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupToCollectionItemConverterTest {
 	@Test
 	public void testToMetadata() {
-		DataGroup dataGroup = new DataGroupSpy("metadata");
+		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "collectionItem");
 
-		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
@@ -53,12 +53,12 @@ public class DataGroupToCollectionItemConverterTest {
 	}
 
 	private void addTexts(DataGroup dataGroup) {
-		DataGroup text = new DataGroupSpy("textId");
+		DataGroup text = new DataGroupOldSpy("textId");
 		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
-		DataGroup defText = new DataGroupSpy("defTextId");
+		DataGroup defText = new DataGroupOldSpy("defTextId");
 		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
 		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);

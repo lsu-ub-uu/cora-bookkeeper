@@ -18,12 +18,10 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -43,11 +41,6 @@ public class DataGroupRedactorImp implements DataGroupRedactor {
 		if (noPermissionExist(permissions, constraint.getNameInData())) {
 			removeMatchingChildren(dataGroup, constraint);
 		}
-	}
-
-	private DataAttribute[] getAttributesAsArray(Constraint constraint) {
-		List<DataAttribute> attributes = new ArrayList<>(constraint.getDataAttributes());
-		return attributes.stream().toArray(DataAttribute[]::new);
 	}
 
 	private boolean noPermissionExist(Set<String> permissions, String constraint) {
@@ -74,15 +67,12 @@ public class DataGroupRedactorImp implements DataGroupRedactor {
 	private void replaceChild(DataGroup originalDataGroup, DataGroup updatedDataGroup,
 			Constraint constraint) {
 		removeMatchingChildren(updatedDataGroup, constraint);
-		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		List<DataChild> allChildren = originalDataGroup.getAllChildrenWithNameInDataAndAttributes(
-				constraint.getNameInData(), attributeArray);
+		List<DataChild> allChildren = originalDataGroup
+				.getAllChildrenMatchingFilter(constraint.getDataChildFilter());
 		updatedDataGroup.addChildren(allChildren);
 	}
 
 	private void removeMatchingChildren(DataGroup updatedDataGroup, Constraint constraint) {
-		DataAttribute[] attributeArray = getAttributesAsArray(constraint);
-		updatedDataGroup.removeAllChildrenWithNameInDataAndAttributes(constraint.getNameInData(),
-				attributeArray);
+		updatedDataGroup.removeAllChildrenMatchingFilter(constraint.getDataChildFilter());
 	}
 }
