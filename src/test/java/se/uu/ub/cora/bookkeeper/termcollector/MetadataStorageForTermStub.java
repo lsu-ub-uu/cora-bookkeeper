@@ -330,6 +330,10 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 				"otherBookSecondIndexTerm", "indexTypeId", "otherBook");
 		collectTerms.add(otherBookSecondIndexTerm);
 
+		DataGroup nameStorageTerm = createStorageTermMetadataWithIdAndPermissionKeyAndStorageKey(
+				"nameStorageTerm", "nameStorageTermValue", "nameStorageTermKey");
+		collectTerms.add(nameStorageTerm);
+
 		return collectTerms;
 	}
 
@@ -339,6 +343,7 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		DataGroup titleIndexTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
 				id, "index", nameInData, recordType);
 		DataGroup extraData = new DataGroupOldSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("indexFieldName", "indexFieldNameForId:" + id));
 		extraData.addChild(new DataAtomicSpy("indexType", indexType));
 		titleIndexTerm.addChild(extraData);
 		return titleIndexTerm;
@@ -363,6 +368,17 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		extraData.addChild(new DataAtomicSpy("permissionKey", permissionName));
 		permissionTerm.addChild(extraData);
 		return permissionTerm;
+	}
+
+	private DataGroup createStorageTermMetadataWithIdAndPermissionKeyAndStorageKey(
+			String collectTermId, String collectTermValue, String storageKey) {
+		String recordType = "collectStorageTerm";
+		DataGroup storageTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
+				collectTermId, "storage", collectTermValue, recordType);
+		DataGroup extraData = new DataGroupOldSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("storageKey", storageKey));
+		storageTerm.addChild(extraData);
+		return storageTerm;
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {

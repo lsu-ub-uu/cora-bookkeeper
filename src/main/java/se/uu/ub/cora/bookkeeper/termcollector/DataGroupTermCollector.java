@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collectterms.CollectTerms;
 
 /**
  * DataGroupTermCollector collects terms specified in metadata for a DataGroup.
@@ -42,7 +43,7 @@ public interface DataGroupTermCollector {
 	 *         The collected terms are added in sub DataGroups with nameInData, permission, storage,
 	 *         and index respectively.
 	 */
-	DataGroup collectTerms(String metadataGroupId, DataGroup dataGroup);
+	CollectTerms collectTerms(String metadataGroupId, DataGroup dataGroup);
 
 	/**
 	 * collectTermsWithoutTypeAndId is used to extract collect terms from a dataGroup based on the
