@@ -146,8 +146,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void possiblyCollectTerms(MetadataElement childMetadataElement,
 			String childMetadataGroupId, DataChild childDataElement) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			collectTermsFromDataUsingMetadata(childMetadataGroupId,
-					(DataGroup) childDataElement);
+			collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childDataElement);
 		}
 	}
 
@@ -281,7 +280,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return new PermissionTerm(collectTermId, value, permissionKey);
 	}
 
-	MetadataStorage onlyForTestGetMetadataStorage() {
+	public MetadataStorage onlyForTestGetMetadataStorage() {
 		// needed for test
 		return metadataStorage;
 	}
