@@ -30,38 +30,25 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.data.collectterms.CollectTerms;
 import se.uu.ub.cora.data.collectterms.IndexTerm;
 import se.uu.ub.cora.data.collectterms.PermissionTerm;
-import se.uu.ub.cora.storage.MetadataStorage;
+import se.uu.ub.cora.data.collectterms.StorageTerm;
 import se.uu.ub.cora.testspies.data.DataRecordLinkSpy;
 
 public class DataGroupTermCollectorTest {
-	private static final String INDEX_FIELD_NAME = "indexFieldNameForId:";
-	private DataGroupTermCollectorImp collector;
-	private MetadataStorage metadataStorage;
-	private CollectedDataCreatorSpy collectedDataCreator;
-	private DataGroupFactorySpy dataGroupFactory;
-	private DataAtomicFactorySpy dataAtomicFactory;
 
+	private MetadataStorageForTermStub metadataStorage;
+	private DataGroupTermCollectorImp collector;
 	private DataGroup basicDataGroup;
+	private static final String INDEX_FIELD_NAME = "indexFieldNameForId:";
 
 	@BeforeMethod
 	public void setUp() {
-		dataGroupFactory = new DataGroupFactorySpy();
-		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
-		dataAtomicFactory = new DataAtomicFactorySpy();
-		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
-
 		metadataStorage = new MetadataStorageForTermStub();
-		collectedDataCreator = new CollectedDataCreatorSpy();
-		collector = new DataGroupTermCollectorImp(metadataStorage, collectedDataCreator);
+		collector = new DataGroupTermCollectorImp(metadataStorage);
 		basicDataGroup = createBookWithNoTitle();
 	}
 
@@ -79,7 +66,6 @@ public class DataGroupTermCollectorTest {
 		assertTrue(collectedData.recordType.isEmpty());
 		assertTrue(collectedData.recordId.isEmpty());
 		assertSizesPSI(collectedData, 0, 0, 0);
-
 	}
 
 	@Test
@@ -229,6 +215,45 @@ public class DataGroupTermCollectorTest {
 				"titleIndexTerm");
 	}
 
+	@Test
+	public void testStorageTermCollectorTwoCollectedTermSameAtomicValue() {
+		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+
+		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
+				basicDataGroup);
+
+		assertSizesPSI(collectedData, 0, 2, 0);
+
+		List<StorageTerm> storageTerms = collectedData.storageTerms;
+		assertStorageTerm(storageTerms.get(0), "titleStorageTerm", "Some title",
+				"STORAGEKEY_titleStorageTerm");
+		assertStorageTerm(storageTerms.get(1), "titleSecondStorageTerm", "Some title",
+				"STORAGEKEY_titleSecondStorageTerm");
+	}
+
+	private void assertStorageTerm(StorageTerm storageTerm, String id, String value,
+			String storageKey) {
+		assertEquals(storageTerm.id(), id);
+		assertEquals(storageTerm.value(), value);
+		assertEquals(storageTerm.storageKey(), storageKey);
+	}
+
+	@Test
+	public void testTermCollectorTwoStorageTermsSameLink() {
+		addLinkToOtherBook(basicDataGroup);
+
+		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
+				basicDataGroup);
+
+		assertSizesPSI(collectedData, 0, 2, 0);
+
+		List<StorageTerm> storageTerms = collectedData.storageTerms;
+		assertStorageTerm(storageTerms.get(0), "otherBookStorageTerm", "book_someOtherBookId",
+				"STORAGEKEY_otherBookStorageTerm");
+		assertStorageTerm(storageTerms.get(1), "otherBookSecondStorageTerm", "book_someOtherBookId",
+				"STORAGEKEY_otherBookSecondStorageTerm");
+	}
+
 	private DataGroup createBookWithNoTitle() {
 		DataGroup book = new DataGroupOldSpy("book");
 		DataGroup recordInfo = createRecordInfo();
@@ -286,5 +311,13 @@ public class DataGroupTermCollectorTest {
 						"system", "testSystem");
 		recordInfo.addChild(dataDivider);
 		return recordInfo;
+	}
+
+	@Test
+	public void testMetadataHolderLoadOnlyOnce() throws Exception {
+		collector.collectTerms("bookGroup", basicDataGroup);
+		collector.collectTerms("bookGroup", basicDataGroup);
+		collector.collectTerms("bookGroup", basicDataGroup);
+		metadataStorage.MCR.assertNumberOfCallsToMethod("getMetadataElements", 1);
 	}
 }
