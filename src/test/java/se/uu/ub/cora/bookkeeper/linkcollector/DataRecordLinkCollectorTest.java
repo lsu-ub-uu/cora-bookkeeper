@@ -47,7 +47,6 @@ public class DataRecordLinkCollectorTest {
 	private MetadataStorage metadataStorage;
 	private DataGroupFactorySpy dataGroupFactory;
 	private DataAtomicFactorySpy dataAtomicFactory;
-	private DataRecordLinkFactorySpy dataRecordLinkFactory;
 
 	@BeforeMethod
 	public void setUp() {
@@ -57,8 +56,6 @@ public class DataRecordLinkCollectorTest {
 		metadataStorage = new MetadataStorageStub();
 		dataGroupFactory = new DataGroupFactorySpy();
 		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
-		// dataRecordLinkFactory = new DataRecordLinkFactorySpy();
-		// DataRecordLinkProvider.setDataRecordLinkFactory(dataRecordLinkFactory);
 		dataAtomicFactory = new DataAtomicFactorySpy();
 		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
