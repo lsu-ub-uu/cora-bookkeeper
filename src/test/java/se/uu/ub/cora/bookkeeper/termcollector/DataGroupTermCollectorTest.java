@@ -69,6 +69,28 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
+	public void testResultFromTermCollectorNoRecordIdAndRecordTypePartsAndCollectedTerms() {
+		DataGroup dataGroupWithoutIdAndType = createBookWithWithoutIdAndPartsOfType();
+
+		CollectTerms collectedData = collector.collectTerms("bookGroup", dataGroupWithoutIdAndType);
+
+		assertTrue(collectedData.recordType.isEmpty());
+		assertTrue(collectedData.recordId.isEmpty());
+		assertSizesPSI(collectedData, 0, 0, 0);
+	}
+
+	@Test
+	public void testResultFromTermCollectorNoRecordInfoAndCollectedTerms() {
+		DataGroup dataGroupWithoutIdAndType = new DataGroupOldSpy("book");
+
+		CollectTerms collectedData = collector.collectTerms("bookGroup", dataGroupWithoutIdAndType);
+
+		assertTrue(collectedData.recordType.isEmpty());
+		assertTrue(collectedData.recordId.isEmpty());
+		assertSizesPSI(collectedData, 0, 0, 0);
+	}
+
+	@Test
 	public void testResultFromTermCollectorNoCollectedTerms() {
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataGroup);
 
@@ -310,6 +332,25 @@ public class DataGroupTermCollectorTest {
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("dataDivider",
 						"system", "testSystem");
 		recordInfo.addChild(dataDivider);
+		return recordInfo;
+	}
+
+	private DataGroup createBookWithWithoutIdAndPartsOfType() {
+		DataGroup book = new DataGroupOldSpy("book");
+		DataGroup recordInfo = createRecordInfoWithOutIdAndPartsOfType();
+		book.addChild(recordInfo);
+
+		return book;
+	}
+
+	private DataGroup createRecordInfoWithOutIdAndPartsOfType() {
+		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
+		DataGroup dataDivider = DataCreator
+				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("dataDivider",
+						"system", "testSystem");
+		recordInfo.addChild(dataDivider);
+		DataGroup type = new DataGroupOldSpy("type");
+		recordInfo.addChild(type);
 		return recordInfo;
 	}
 

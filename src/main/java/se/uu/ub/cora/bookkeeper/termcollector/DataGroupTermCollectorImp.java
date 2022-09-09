@@ -44,6 +44,7 @@ import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
+	private static final String RECORD_INFO = "recordInfo";
 	private MetadataStorage metadataStorage;
 	private MetadataHolder metadataHolder;
 	private CollectTermHolder collectTermHolder;
@@ -69,20 +70,22 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private Optional<String> extractTypeFromRecord(DataGroup dataGroup) {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		if (!recordInfo.containsChildWithNameInData("type")) {
+		try {
+			DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData(RECORD_INFO);
+			DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
+			return Optional.of(typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId"));
+		} catch (Exception e) {
 			return Optional.empty();
 		}
-		DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
-		return Optional.of(typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId"));
 	}
 
 	private Optional<String> extractIdFromDataRecord(DataGroup dataGroup) {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		if (!recordInfo.containsChildWithNameInData("id")) {
+		try {
+			DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData(RECORD_INFO);
+			return Optional.of(recordInfo.getFirstAtomicValueWithNameInData("id"));
+		} catch (Exception e) {
 			return Optional.empty();
 		}
-		return Optional.of(recordInfo.getFirstAtomicValueWithNameInData("id"));
 	}
 
 	private void prepareAndCollectTermsFromData(String metadataGroupId, DataGroup dataGroup) {
