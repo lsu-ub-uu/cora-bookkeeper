@@ -32,10 +32,10 @@ import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.collectterms.CollectTerms;
-import se.uu.ub.cora.data.collectterms.IndexTerm;
-import se.uu.ub.cora.data.collectterms.PermissionTerm;
-import se.uu.ub.cora.data.collectterms.StorageTerm;
+import se.uu.ub.cora.data.collected.CollectTerms;
+import se.uu.ub.cora.data.collected.IndexTerm;
+import se.uu.ub.cora.data.collected.PermissionTerm;
+import se.uu.ub.cora.data.collected.StorageTerm;
 import se.uu.ub.cora.testspies.data.DataRecordLinkSpy;
 
 public class DataGroupTermCollectorTest {

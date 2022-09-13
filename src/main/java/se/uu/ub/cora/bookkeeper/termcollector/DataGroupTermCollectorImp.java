@@ -36,10 +36,10 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.data.collectterms.CollectTerms;
-import se.uu.ub.cora.data.collectterms.IndexTerm;
-import se.uu.ub.cora.data.collectterms.PermissionTerm;
-import se.uu.ub.cora.data.collectterms.StorageTerm;
+import se.uu.ub.cora.data.collected.CollectTerms;
+import se.uu.ub.cora.data.collected.IndexTerm;
+import se.uu.ub.cora.data.collected.PermissionTerm;
+import se.uu.ub.cora.data.collected.StorageTerm;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {

@@ -19,7 +19,7 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.collectterms.CollectTerms;
+import se.uu.ub.cora.data.collected.CollectTerms;
 
 /**
  * DataGroupTermCollector collects terms specified in metadata for a DataGroup.
