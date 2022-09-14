@@ -25,7 +25,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
-import se.uu.ub.cora.data.collected.RecordToRecordLink;
+import se.uu.ub.cora.data.collected.Link;
 import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
@@ -38,8 +38,7 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	}
 
 	@Override
-	public List<RecordToRecordLink> collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
-			String fromRecordId) {
+	public List<Link> collectLinks(String metadataId, DataGroup dataGroup) {
 		getMetadataFromStorage();
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
 				fromRecordType, fromRecordId);

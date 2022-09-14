@@ -22,11 +22,10 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.List;
 
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.collected.RecordToRecordLink;
+import se.uu.ub.cora.data.collected.Link;
 
 public interface DataRecordLinkCollector {
 
-	List<RecordToRecordLink> collectLinks(String metadataId, DataGroup dataGroup,
-			String fromRecordType, String fromRecordId);
+	List<Link> collectLinks(String metadataId, DataGroup dataGroup);
 
 }

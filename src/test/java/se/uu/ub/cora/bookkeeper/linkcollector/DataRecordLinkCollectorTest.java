@@ -70,8 +70,7 @@ public class DataRecordLinkCollectorTest {
 	@Test
 	public void testCollectLinksGroupWithoutLink() {
 		DataGroup dataGroup = new DataGroupOldSpy("bush");
-		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "recordType",
-				"recordId");
+		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup);
 		assertEquals(collectedLinks.getNameInData(), "collectedDataLinks");
 		assertTrue(collectedLinks.getChildren().isEmpty());
 
@@ -93,8 +92,7 @@ public class DataRecordLinkCollectorTest {
 		dataTestLink.addChild(linkedRecordId);
 		dataGroup.addChild(dataTestLink);
 
-		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup, "fromRecordType",
-				"fromRecordId");
+		DataGroup collectedLinks = linkCollector.collectLinks("bush", dataGroup);
 		List<DataChild> linkList = collectedLinks.getChildren();
 		assertEquals(linkList.size(), 1);
 
