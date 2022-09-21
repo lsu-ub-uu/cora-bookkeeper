@@ -26,12 +26,16 @@ import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.storage.MetadataStorage;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MetadataStorageForTermStub implements MetadataStorage {
 	private List<DataGroup> dataGroups;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
+		MCR.addCall();
+
 		dataGroups = new ArrayList<>();
 
 		DataGroup book = createBookMetadataGroup();
@@ -39,6 +43,9 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 
 		DataGroup bookWithMoreCollectTerms = createBookWithMoreCollectTermsMetadataGroup();
 		dataGroups.add(bookWithMoreCollectTerms);
+
+		DataGroup bookWithStorageCollectTerms = createBookWithStorageCollectTermsMetadataGroup();
+		dataGroups.add(bookWithStorageCollectTerms);
 
 		DataGroup personRoleGroup = createPersonRoleGroup();
 		dataGroups.add(personRoleGroup);
@@ -56,6 +63,7 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		DataGroup otherBookLink = createOtherBookLink();
 		dataGroups.add(otherBookLink);
 
+		MCR.addReturned(dataGroups);
 		return dataGroups;
 	}
 
@@ -164,6 +172,62 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		return childReferences;
 	}
 
+	private DataGroup createBookWithStorageCollectTermsMetadataGroup() {
+
+		DataGroup book = new DataGroupOldSpy("metadata");
+		book.addAttributeByIdWithValue("type", "group");
+		DataGroup recordInfo = createRecordInfoWithIdAndType("bookWithStorageCollectTermsGroup",
+				"metadataGroup");
+		book.addChild(recordInfo);
+		book.addChild(new DataAtomicSpy("nameInData", "book"));
+		addTextByNameInDataAndId(book, "textId", "bookTextId");
+		addTextByNameInDataAndId(book, "defTextId", "bookDefTextId");
+
+		DataGroup childReferences = createChildReferencesForBookWithStorageCollectTerms();
+		book.addChild(childReferences);
+		return book;
+	}
+
+	private DataGroup createChildReferencesForBookWithStorageCollectTerms() {
+		DataGroup childReferences = new DataGroupOldSpy("childReferences");
+
+		DataGroup childReferenceTitle = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"bookTitleTextVar", "1", "1");
+		DataGroup childRefTitleIndexTerm = createCollectStorageTermWithNameAndRepeatId(
+				"titleStorageTerm", "0");
+		childReferenceTitle.addChild(childRefTitleIndexTerm);
+		DataGroup childRefTitleIndexTerm2 = createCollectStorageTermWithNameAndRepeatId(
+				"titleSecondStorageTerm", "0");
+		childReferenceTitle.addChild(childRefTitleIndexTerm2);
+		childReferences.addChild(childReferenceTitle);
+
+		DataGroup childReferencePersonRole = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"personRoleGroup", "1", "2");
+		DataGroup childRefGroupIndexTerm = createCollectStorageTermWithNameAndRepeatId(
+				"someGroupStorageTerm", "0");
+		childReferencePersonRole.addChild(childRefGroupIndexTerm);
+		childReferences.addChild(childReferencePersonRole);
+
+		DataGroup childReferenceSubTitle = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"bookSubTitleTextVar", "0", "5");
+		DataGroup childRefSubTitleIndexTerm = createCollectStorageTermWithNameAndRepeatId(
+				"subTitleStorageTerm", "0");
+		childReferenceSubTitle.addChild(childRefSubTitleIndexTerm);
+		childReferences.addChild(childReferenceSubTitle);
+
+		DataGroup childReferenceOtherBook = createChildReferenceWithIdRepeatMinAndRepeatMax(
+				"otherBookLink", "0", "5");
+		DataGroup childRefOtherBookIndexTerm = createCollectStorageTermWithNameAndRepeatId(
+				"otherBookStorageTerm", "0");
+		childReferenceOtherBook.addChild(childRefOtherBookIndexTerm);
+		DataGroup childRefOtherBookIndexTerm2 = createCollectStorageTermWithNameAndRepeatId(
+				"otherBookSecondStorageTerm", "0");
+		childReferenceOtherBook.addChild(childRefOtherBookIndexTerm2);
+		childReferences.addChild(childReferenceOtherBook);
+
+		return childReferences;
+	}
+
 	private DataGroup createChildReferenceWithIdRepeatMinAndRepeatMax(String id, String repeatMin,
 			String repeatMax) {
 		DataGroup childReference = new DataGroupOldSpy("childReference");
@@ -192,6 +256,16 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 				.addChild(new DataAtomicSpy("linkedRecordType", "collectPermissionTerm"));
 		childRefCollectTerm.addChild(new DataAtomicSpy("linkedRecordId", collectPermissionTermId));
 		childRefCollectTerm.addAttributeByIdWithValue("type", "permission");
+		return childRefCollectTerm;
+	}
+
+	private DataGroup createCollectStorageTermWithNameAndRepeatId(String collectIndexTermId,
+			String repeatId) {
+		DataGroup childRefCollectTerm = new DataGroupOldSpy("childRefCollectTerm");
+		childRefCollectTerm.addChild(new DataAtomicSpy("linkedRecordType", "collectStorageTerm"));
+		childRefCollectTerm.addChild(new DataAtomicSpy("linkedRecordId", collectIndexTermId));
+		childRefCollectTerm.setRepeatId(repeatId);
+		childRefCollectTerm.addAttributeByIdWithValue("type", "storage");
 		return childRefCollectTerm;
 	}
 
@@ -318,10 +392,6 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 				"textIndexTerm", "indexTypeString", "text");
 		collectTerms.add(textIndexTerm);
 
-		DataGroup namePermissionTerm = createPermissionTermMetadataWithIdAndPermissionKeyAndNameInData(
-				"namePermissionTerm", "PERMISSIONFORNAME", "name");
-		collectTerms.add(namePermissionTerm);
-
 		DataGroup otherBookIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
 				"otherBookIndexTerm", "indexTypeId", "otherBook");
 		collectTerms.add(otherBookIndexTerm);
@@ -330,6 +400,38 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 				"otherBookSecondIndexTerm", "indexTypeId", "otherBook");
 		collectTerms.add(otherBookSecondIndexTerm);
 
+		DataGroup namePermissionTerm = createPermissionTermMetadataWithIdAndPermissionKeyAndNameInData(
+				"namePermissionTerm", "PERMISSIONFORNAME", "name");
+		collectTerms.add(namePermissionTerm);
+
+		DataGroup titleStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"titleStorageTerm", "storageTypeString", "STORAGEKEY_titleStorageTerm");
+		collectTerms.add(titleStorageTerm);
+
+		DataGroup titleSecondStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"titleSecondStorageTerm", "storageTypeString", "STORAGEKEY_titleSecondStorageTerm");
+		collectTerms.add(titleSecondStorageTerm);
+
+		DataGroup nameStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"nameStorageTerm", "storageTypeString", "STORAGEKEY_nameStorageTerm");
+		collectTerms.add(nameStorageTerm);
+
+		DataGroup subTitleStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"subTitleStorageTerm", "storageTypeString", "STORAGEKEY_subTitleStorageTerm");
+		collectTerms.add(subTitleStorageTerm);
+
+		DataGroup textStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"textStorageTerm", "storageTypeString", "STORAGEKEY_textStorageTerm");
+		collectTerms.add(textStorageTerm);
+
+		DataGroup otherBookStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"otherBookStorageTerm", "storageTypeId", "STORAGEKEY_otherBookStorageTerm");
+		collectTerms.add(otherBookStorageTerm);
+
+		DataGroup otherBookSecondStorageTerm = createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+				"otherBookSecondStorageTerm", "storageTypeId",
+				"STORAGEKEY_otherBookSecondStorageTerm");
+		collectTerms.add(otherBookSecondStorageTerm);
 		return collectTerms;
 	}
 
@@ -339,6 +441,7 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		DataGroup titleIndexTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
 				id, "index", nameInData, recordType);
 		DataGroup extraData = new DataGroupOldSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("indexFieldName", "indexFieldNameForId:" + id));
 		extraData.addChild(new DataAtomicSpy("indexType", indexType));
 		titleIndexTerm.addChild(extraData);
 		return titleIndexTerm;
@@ -363,6 +466,17 @@ public class MetadataStorageForTermStub implements MetadataStorage {
 		extraData.addChild(new DataAtomicSpy("permissionKey", permissionName));
 		permissionTerm.addChild(extraData);
 		return permissionTerm;
+	}
+
+	private DataGroup createStorageTermMetadataWithTermIdAndTermValueAndStorageKey(
+			String collectTermId, String collectTermValue, String storageKey) {
+		String recordType = "collectStorageTerm";
+		DataGroup storageTerm = createCollectTermMetadataWithIdAndCollectTypeAndNameInDataAndRecordType(
+				collectTermId, "storage", collectTermValue, recordType);
+		DataGroup extraData = new DataGroupOldSpy("extraData");
+		extraData.addChild(new DataAtomicSpy("storageKey", storageKey));
+		storageTerm.addChild(extraData);
+		return storageTerm;
 	}
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {

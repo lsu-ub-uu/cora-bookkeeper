@@ -18,14 +18,14 @@
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
-	<version>7.2-SNAPSHOT</version>
+	<version>8.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>7.1.0</coradata.version>
-		<storage.version>6.4.0</storage.version>
+		<coradata.version>7.2-SNAPSHOT</coradata.version>
+		<storage.version>7.0-SNAPSHOT</storage.version>
 		<json.version>3.3.0</json.version>
 		<testutils.version>1.5.0</testutils.version>
 		<testspies.version>1.2.0</testspies.version>

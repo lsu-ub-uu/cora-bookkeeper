@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
@@ -32,30 +33,21 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataGroupProvider;
-import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.collected.Link;
 
 public class DataGroupRecordLinkCollector {
 
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
-	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private MetadataHolder metadataHolder;
-	private String fromRecordType;
-	private String fromRecordId;
-	private List<DataGroup> linkList;
+	private Collection<Link> linkList;
 	private DataGroup dataGroup;
-	private DataGroup elementPath;
 
-	public DataGroupRecordLinkCollector(MetadataHolder metadataHolder, String fromRecordType,
-			String fromRecordId) {
+	public DataGroupRecordLinkCollector(MetadataHolder metadataHolder) {
 		this.metadataHolder = metadataHolder;
-		this.fromRecordType = fromRecordType;
-		this.fromRecordId = fromRecordId;
 	}
 
-	public List<DataGroup> collectLinks(String metadataGroupId, DataGroup dataGroup) {
+	public List<Link> collectLinks(String metadataGroupId, DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 		linkList = new ArrayList<>();
 
@@ -124,61 +116,38 @@ public class DataGroupRecordLinkCollector {
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,
 			DataChild childDataElement) {
-		DataGroup childPath = createChildPath(childDataElement);
 
 		if (isRecordLink(childMetadataElement)) {
-			createRecordToRecordLink((RecordLink) childMetadataElement,
-					(DataGroup) childDataElement, childPath);
+			createRecordToRecordLink((DataGroup) childDataElement);
 		} else {
-			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement, childPath);
+			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement);
 		}
 	}
 
-	private DataGroup createChildPath(DataChild childDataElement) {
-		DataGroup pathCopy = PathCopier.copyPath(elementPath);
-		return PathExtender.extendPathWithElementInformation(pathCopy, childDataElement);
+	private void createRecordToRecordLink(DataGroup dataElement) {
+		linkList.add(createToPart(dataElement));
 	}
 
-	private void createRecordToRecordLink(RecordLink recordLink, DataGroup dataElement,
-			DataGroup fromPath) {
-		DataGroup recordToRecordLink = DataGroupProvider
-				.getDataGroupUsingNameInData("recordToRecordLink");
-		recordToRecordLink.addChild(createFromPart(dataElement, fromPath));
-		recordToRecordLink.addChild(createToPart(dataElement, recordLink));
-		linkList.add(recordToRecordLink);
-	}
-
-	private DataRecordLink createFromPart(DataChild dataElement, DataGroup fromPath) {
-		DataRecordLink from = DataProvider.createRecordLinkUsingNameInDataAndTypeAndId("from",
-				fromRecordType, fromRecordId);
-		return from;
-	}
-
-	private DataRecordLink createToPart(DataGroup dataElement, RecordLink recordLink) {
+	private Link createToPart(DataGroup dataElement) {
 		String type = dataElement.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
 		String id = dataElement.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		DataRecordLink to = DataProvider.createRecordLinkUsingNameInDataAndTypeAndId("to", type,
-				id);
-		return to;
+		return new Link(type, id);
 	}
 
-	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup,
-			DataGroup pathCopy) {
-		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder,
-				fromRecordType, fromRecordId);
+	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup) {
+		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder);
 
-		List<DataGroup> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
-				subGroup, pathCopy);
+		Collection<Link> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
+				subGroup);
 		linkList.addAll(collectedLinks);
 	}
 
-	private List<DataGroup> collectSubLinks(String metadataId, DataGroup subGroup, DataGroup path) {
-		elementPath = path;
+	private List<Link> collectSubLinks(String metadataId, DataGroup subGroup) {
 		return collectLinks(metadataId, subGroup);
 	}
 
-	private List<DataGroup> copyLinkList() {
-		List<DataGroup> listOut = new ArrayList<>();
+	private List<Link> copyLinkList() {
+		List<Link> listOut = new ArrayList<>();
 		listOut.addAll(linkList);
 		return listOut;
 	}

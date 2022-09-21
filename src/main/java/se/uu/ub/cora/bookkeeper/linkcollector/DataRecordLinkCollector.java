@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,11 +19,13 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
+import java.util.List;
+
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collected.Link;
 
 public interface DataRecordLinkCollector {
 
-	DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
-			String fromRecordId);
+	List<Link> collectLinks(String metadataId, DataGroup dataGroup);
 
 }
