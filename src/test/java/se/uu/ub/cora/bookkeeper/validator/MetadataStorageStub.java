@@ -25,10 +25,10 @@ import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.storage.MetadataStorage;
 
-public class MetadataStorageStub implements MetadataStorage {
+public class MetadataStorageStub implements MetadataStorageView {
 
 	private List<DataGroup> dataGroups;
 

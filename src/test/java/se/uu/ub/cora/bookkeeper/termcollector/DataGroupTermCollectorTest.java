@@ -36,7 +36,7 @@ import se.uu.ub.cora.data.collected.CollectTerms;
 import se.uu.ub.cora.data.collected.IndexTerm;
 import se.uu.ub.cora.data.collected.PermissionTerm;
 import se.uu.ub.cora.data.collected.StorageTerm;
-import se.uu.ub.cora.testspies.data.DataRecordLinkSpy;
+import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
 
 public class DataGroupTermCollectorTest {
 

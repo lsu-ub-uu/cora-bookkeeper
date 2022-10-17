@@ -35,7 +35,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.testspies.data.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 
 /**
  * ValidateDataTest tests that the ValidateData class correctly validates data based on the
