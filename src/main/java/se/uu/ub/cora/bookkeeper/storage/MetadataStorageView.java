@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -33,13 +33,73 @@ import se.uu.ub.cora.data.DataGroup;
  */
 public interface MetadataStorageView {
 
+	/**
+	 * getMetadataElements returns a Collection of {@link DataGroup} with all metadata elements that
+	 * exists in storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty collection be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	Collection<DataGroup> getMetadataElements();
 
+	/**
+	 * getPresentationElements returns a Collection of {@link DataGroup} with all presentation
+	 * elements that exists in storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty collection be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	Collection<DataGroup> getPresentationElements();
 
+	/**
+	 * getTexts returns a Collection of {@link DataGroup} with all text elements that exists in
+	 * storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty collection be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	Collection<DataGroup> getTexts();
 
+	/**
+	 * getRecordTypes returns a Collection of {@link DataGroup} with all recordType elements that
+	 * exists in storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty collection be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	Collection<DataGroup> getRecordTypes();
 
+	/**
+	 * getCollectTerms returns a Collection of {@link DataGroup} with all collectTerm elements that
+	 * exists in storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty collection be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	Collection<DataGroup> getCollectTerms();
 }

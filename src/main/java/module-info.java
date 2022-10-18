@@ -8,7 +8,7 @@
  */
 module se.uu.ub.cora.bookkeeper {
 	requires transitive se.uu.ub.cora.data;
-	requires transitive se.uu.ub.cora.storage;
+	// requires transitive se.uu.ub.cora.storage;
 	requires se.uu.ub.cora.initialize;
 
 	exports se.uu.ub.cora.bookkeeper.linkcollector;
