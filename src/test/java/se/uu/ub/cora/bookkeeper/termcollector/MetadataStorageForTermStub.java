@@ -24,11 +24,11 @@ import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.storage.MetadataStorage;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class MetadataStorageForTermStub implements MetadataStorage {
+public class MetadataStorageForTermStub implements MetadataStorageView {
 	private List<DataGroup> dataGroups;
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 

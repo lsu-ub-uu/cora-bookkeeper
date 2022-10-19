@@ -38,9 +38,9 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.testspies.data.DataChildFilterSpy;
-import se.uu.ub.cora.testspies.data.DataChildSpy;
-import se.uu.ub.cora.testspies.data.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataChildFilterSpy;
+import se.uu.ub.cora.data.spies.DataChildSpy;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 
 public class DataGroupWrapperTest {
 

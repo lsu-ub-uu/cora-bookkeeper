@@ -21,13 +21,13 @@ package se.uu.ub.cora.bookkeeper.validator;
 import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.storage.MetadataStorage;
 
 public class DataValidatorFactoryImp implements DataValidatorFactory {
 
 	@Override
-	public DataValidator factor(MetadataStorage metadataStorage,
+	public DataValidator factor(MetadataStorageView metadataStorage,
 			Map<String, DataGroup> recordTypeHolder, MetadataHolder metadataHolder) {
 		DataElementValidatorFactory dataElementValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);

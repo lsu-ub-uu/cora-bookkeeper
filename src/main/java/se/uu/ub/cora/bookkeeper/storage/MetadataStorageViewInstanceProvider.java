@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,15 +16,21 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordpart;
+package se.uu.ub.cora.bookkeeper.storage;
 
-import se.uu.ub.cora.data.DataChild;
-import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.initialize.SelectOrder;
 
-public class DataGroupWrapperSpy extends DataGroupSpy implements DataGroupWrapper {
+/**
+ * AppTokenStorageViewInstanceProvider is used to provide storage for AppToken
+ */
+public interface MetadataStorageViewInstanceProvider extends SelectOrder {
 
-	@Override
-	public boolean hasRemovedBeenCalled(DataChild child) {
-		return (boolean) MCR.addCallAndReturnFromMRV("child", child);
-	}
+	/**
+	 * getStorageView should be implemented in such a way that it returns an AppTokenStorage that
+	 * can be used by AppTokenVerifier
+	 * 
+	 * @return An AppTokenStorageView that gives access to storage for the implementing
+	 *         AppTokenStorage
+	 */
+	MetadataStorageView getStorageView();
 }

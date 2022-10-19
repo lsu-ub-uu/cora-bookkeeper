@@ -27,8 +27,8 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.testspies.data.DataChildFilterSpy;
-import se.uu.ub.cora.testspies.data.DataFactorySpy;
+import se.uu.ub.cora.data.spies.DataChildFilterSpy;
+import se.uu.ub.cora.data.spies.DataFactorySpy;
 
 public class ConstraintTest {
 

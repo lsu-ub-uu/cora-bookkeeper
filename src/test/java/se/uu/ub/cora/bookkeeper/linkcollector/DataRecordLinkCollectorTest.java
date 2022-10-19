@@ -29,19 +29,19 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataFactory;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.collected.Link;
-import se.uu.ub.cora.storage.MetadataStorage;
-import se.uu.ub.cora.testspies.data.DataFactorySpy;
+import se.uu.ub.cora.data.spies.DataFactorySpy;
 
 public class DataRecordLinkCollectorTest {
 	private DataFactory dataFactory;
 	private DataRecordLinkCollector linkCollector;
-	private MetadataStorage metadataStorage;
+	private MetadataStorageView metadataStorage;
 
 	@BeforeMethod
 	public void setUp() {

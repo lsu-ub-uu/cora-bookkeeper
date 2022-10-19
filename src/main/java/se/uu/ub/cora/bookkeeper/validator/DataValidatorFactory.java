@@ -21,12 +21,12 @@ package se.uu.ub.cora.bookkeeper.validator;
 import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.storage.MetadataStorage;
 
 public interface DataValidatorFactory {
 
-	DataValidator factor(MetadataStorage metadataStorage, Map<String, DataGroup> recordTypeHolder,
-			MetadataHolder metadataHolder);
+	DataValidator factor(MetadataStorageView metadataStorage,
+			Map<String, DataGroup> recordTypeHolder, MetadataHolder metadataHolder);
 
 }

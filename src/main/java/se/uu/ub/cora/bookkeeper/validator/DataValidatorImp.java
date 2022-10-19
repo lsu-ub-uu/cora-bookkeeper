@@ -21,19 +21,19 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Map;
 
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.storage.MetadataStorage;
 
 /**
  * ValidateData is a class to validate if a set of data is valid according to its metadataFormat
  */
 class DataValidatorImp implements DataValidator {
 
-	private MetadataStorage metadataStorage;
+	private MetadataStorageView metadataStorage;
 	private DataElementValidatorFactory dataValidatorFactory;
 	private Map<String, DataGroup> recordTypeHolder;
 
-	DataValidatorImp(MetadataStorage metadataStorage, DataElementValidatorFactory validatorFactory,
+	DataValidatorImp(MetadataStorageView metadataStorage, DataElementValidatorFactory validatorFactory,
 			Map<String, DataGroup> recordTypeHolder) {
 		this.metadataStorage = metadataStorage;
 		this.dataValidatorFactory = validatorFactory;
@@ -110,7 +110,7 @@ class DataValidatorImp implements DataValidator {
 		return extractAndValidate(recordType, indexSettings, linkNameInData);
 	}
 
-	MetadataStorage getMetadataStorage() {
+	MetadataStorageView getMetadataStorage() {
 		// needed for test
 		return metadataStorage;
 	}

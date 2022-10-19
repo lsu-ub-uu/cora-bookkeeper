@@ -24,28 +24,29 @@
 	<name>Bookkeeper</name>
 
 	<properties>
-		<coradata.version>7.2-SNAPSHOT</coradata.version>
-		<storage.version>7.0-SNAPSHOT</storage.version>
 		<initialize.version>1.0-SNAPSHOT</initialize.version>
+		<coradata.version>7.2-SNAPSHOT</coradata.version>
 		<logger.version>2.5.0</logger.version>
 		<json.version>3.3.0</json.version>
 		<testutils.version>1.5.0</testutils.version>
-		<testspies.version>1.2.0</testspies.version>
+		<logger-spies.version>1.0-SNAPSHOT</logger-spies.version>
+		<initialize-spies.version>1.0-SNAPSHOT</initialize-spies.version>
+		<coradata-spies.version>1.0-SNAPSHOT</coradata-spies.version>
 	</properties>
 
 	<scm>
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-bookkeeper.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-bookkeeper.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-bookkeeper.git</url>
-	  <tag>release/4.4</tag>
-  </scm>
+		<tag>release/4.4</tag>
+	</scm>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>${testng.version}</version>
-			<scope>test</scope>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>initialize</artifactId>
+			<version>${initialize.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
@@ -61,20 +62,8 @@
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>storage</artifactId>
-			<version>${storage.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>logger</artifactId>
 			<version>${logger.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>initialize</artifactId>
-			<version>${initialize.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -85,10 +74,28 @@
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>testspies</artifactId>
-			<version>${testspies.version}</version>
+			<artifactId>initialize-spies</artifactId>
+			<version>${initialize-spies.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>logger-spies</artifactId>
+			<version>${logger-spies.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>coradata-spies</artifactId>
+			<version>${coradata-spies.version}</version>
+			<scope>test</scope>
+		</dependency>
+			<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 </project>
