@@ -255,7 +255,7 @@ public class DataGroupTermCollectorTest {
 
 	private void assertStorageTerm(StorageTerm storageTerm, String id, String value,
 			String storageKey) {
-		assertEquals(storageTerm.id(), id);
+		assertEquals(storageTerm.storageTermId(), id);
 		assertEquals(storageTerm.value(), value);
 		assertEquals(storageTerm.storageKey(), storageKey);
 	}
