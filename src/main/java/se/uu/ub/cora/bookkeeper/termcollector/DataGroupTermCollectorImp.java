@@ -274,7 +274,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private StorageTerm buildStorageTerm(String collectTermId, String value, DataGroup extraData) {
 		String storageKey = extraData.getFirstAtomicValueWithNameInData("storageKey");
-		return new StorageTerm(collectTermId, value, storageKey);
+		return new StorageTerm(collectTermId, storageKey, value);
 	}
 
 	private PermissionTerm buildPermissionTerm(String collectTermId, String value,
