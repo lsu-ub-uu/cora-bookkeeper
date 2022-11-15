@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
-import java.util.List;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
@@ -37,13 +37,13 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	}
 
 	@Override
-	public List<Link> collectLinks(String metadataId, DataGroup dataGroup) {
+	public Set<Link> collectLinks(String metadataId, DataGroup dataGroup) {
 		getMetadataFromStorage();
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder);
 		return collectLinksAndAddToDataGroup(metadataId, dataGroup, collector);
 	}
 
-	private List<Link> collectLinksAndAddToDataGroup(String metadataId, DataGroup dataGroup,
+	private Set<Link> collectLinksAndAddToDataGroup(String metadataId, DataGroup dataGroup,
 			DataGroupRecordLinkCollector collector) {
 		return collector.collectLinks(metadataId, dataGroup);
 	}

@@ -19,9 +19,10 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
@@ -40,16 +41,16 @@ public class DataGroupRecordLinkCollector {
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private MetadataHolder metadataHolder;
-	private Collection<Link> linkList;
+	private Set<Link> linkSet;
 	private DataGroup dataGroup;
 
 	public DataGroupRecordLinkCollector(MetadataHolder metadataHolder) {
 		this.metadataHolder = metadataHolder;
 	}
 
-	public List<Link> collectLinks(String metadataGroupId, DataGroup dataGroup) {
+	public Set<Link> collectLinks(String metadataGroupId, DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
-		linkList = new ArrayList<>();
+		linkSet = new LinkedHashSet<>();
 
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
@@ -125,7 +126,7 @@ public class DataGroupRecordLinkCollector {
 	}
 
 	private void createRecordToRecordLink(DataGroup dataElement) {
-		linkList.add(createToPart(dataElement));
+		linkSet.add(createToPart(dataElement));
 	}
 
 	private Link createToPart(DataGroup dataElement) {
@@ -134,21 +135,22 @@ public class DataGroupRecordLinkCollector {
 		return new Link(type, id);
 	}
 
-	private void collectLinksFromSubGroup(MetadataElement childMetadataElement, DataGroup subGroup) {
+	private void collectLinksFromSubGroup(MetadataElement childMetadataElement,
+			DataGroup subGroup) {
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder);
 
 		Collection<Link> collectedLinks = collector.collectSubLinks(childMetadataElement.getId(),
 				subGroup);
-		linkList.addAll(collectedLinks);
+		linkSet.addAll(collectedLinks);
 	}
 
-	private List<Link> collectSubLinks(String metadataId, DataGroup subGroup) {
+	private Set<Link> collectSubLinks(String metadataId, DataGroup subGroup) {
 		return collectLinks(metadataId, subGroup);
 	}
 
-	private List<Link> copyLinkList() {
-		List<Link> listOut = new ArrayList<>();
-		listOut.addAll(linkList);
-		return listOut;
+	private Set<Link> copyLinkList() {
+		// List<Link> listOut = new ArrayList<>();
+		// listOut.addAll(linkList);
+		return Set.copyOf(linkSet);
 	}
 }

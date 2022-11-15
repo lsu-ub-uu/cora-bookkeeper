@@ -26,32 +26,28 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.spies.DataFactorySpy;
 
 public class MetadataMatchDataTest {
 	private static final String NAME_IN_DATA = "nameInData";
 	private MetadataHolder metadataHolder;
 	private MetadataMatchData metadataMatch;
-	private DataGroupFactorySpy dataGroupFactory;
-	private DataAtomicFactorySpy dataAtomicFactory;
+	private DataFactorySpy dataFactorySpy;
 
 	@BeforeMethod
 	public void setUp() {
-		dataGroupFactory = new DataGroupFactorySpy();
-		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
-		dataAtomicFactory = new DataAtomicFactorySpy();
-		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
+		dataFactorySpy = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+
 		metadataHolder = new MetadataHolder();
 		metadataMatch = MetadataMatchDataImp.withMetadataHolder(metadataHolder);
 	}
@@ -80,6 +76,12 @@ public class MetadataMatchDataTest {
 
 	@Test
 	public void testMatchingAttributeOnGroup() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue",
+				() -> "collectionItem2NameInData");
+		dataFactorySpy.MRV.setDefaultReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy);
+
 		addCollectionVariableToMetadataHolder();
 		addCollectionVariableChildWithFinalValue();
 		MetadataGroup metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("id",
@@ -89,7 +91,10 @@ public class MetadataMatchDataTest {
 		DataGroup dataElement = new DataGroupOldSpy(NAME_IN_DATA);
 		dataElement.addAttributeByIdWithValue("collectionVariableNameInData",
 				"collectionItem2NameInData");
-		assertTrue(dataIsMatching(metadataElement, dataElement));
+
+		ValidationAnswer metadataSpecifiesData = metadataMatch
+				.metadataSpecifiesData(metadataElement, dataElement);
+		assertTrue(metadataSpecifiesData.dataIsValid());
 	}
 
 	private void addCollectionVariableToMetadataHolder() {
@@ -198,6 +203,18 @@ public class MetadataMatchDataTest {
 
 	@Test
 	public void testMatchingTwoAttributeOnGroup() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue",
+				() -> "collectionItem2NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "collectionVariableNameInData", "collectionItem2NameInData");
+
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy2 = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy2.MRV.setDefaultReturnValuesSupplier("getValue",
+				() -> "collectionItem3NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy2, "collectionVariable3NameInData", "collectionItem3NameInData");
+
 		addCollectionVariableToMetadataHolder();
 		addCollectionVariableChildWithFinalValue();
 		addCollectionVariableChildWithFinalValue3();
@@ -212,7 +229,11 @@ public class MetadataMatchDataTest {
 				"collectionItem2NameInData");
 		dataElement.addAttributeByIdWithValue("collectionVariable3NameInData",
 				"collectionItem3NameInData");
-		assertTrue(dataIsMatching(metadataElement, dataElement));
+		ValidationAnswer metadataSpecifiesData = metadataMatch
+				.metadataSpecifiesData(metadataElement, dataElement);
+		dataFactorySpy.MCR.assertNumberOfCallsToMethod("factorAtomicUsingNameInDataAndValue", 2);
+
+		assertTrue(metadataSpecifiesData.dataIsValid());
 	}
 
 	private void addCollectionVariableChildWithFinalValue3() {
