@@ -23,6 +23,7 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
@@ -246,10 +247,13 @@ public class DataGroupTermCollectorTest {
 
 		assertSizesPSI(collectedData, 0, 2, 0);
 
-		List<StorageTerm> storageTerms = collectedData.storageTerms;
-		assertStorageTerm(storageTerms.get(0), "titleStorageTerm", "Some title",
+		Set<StorageTerm> storageTerms = collectedData.storageTerms;
+		StorageTerm storageTerm0 = (StorageTerm) storageTerms.toArray()[0];
+		StorageTerm storageTerm1 = (StorageTerm) storageTerms.toArray()[1];
+
+		assertStorageTerm(storageTerm0, "titleStorageTerm", "Some title",
 				"STORAGEKEY_titleStorageTerm");
-		assertStorageTerm(storageTerms.get(1), "titleSecondStorageTerm", "Some title",
+		assertStorageTerm(storageTerm1, "titleSecondStorageTerm", "Some title",
 				"STORAGEKEY_titleSecondStorageTerm");
 	}
 
@@ -269,10 +273,12 @@ public class DataGroupTermCollectorTest {
 
 		assertSizesPSI(collectedData, 0, 2, 0);
 
-		List<StorageTerm> storageTerms = collectedData.storageTerms;
-		assertStorageTerm(storageTerms.get(0), "otherBookStorageTerm", "book_someOtherBookId",
+		Set<StorageTerm> storageTerms = collectedData.storageTerms;
+		StorageTerm storageTerm0 = (StorageTerm) storageTerms.toArray()[0];
+		StorageTerm storageTerm1 = (StorageTerm) storageTerms.toArray()[1];
+		assertStorageTerm(storageTerm0, "otherBookStorageTerm", "book_someOtherBookId",
 				"STORAGEKEY_otherBookStorageTerm");
-		assertStorageTerm(storageTerms.get(1), "otherBookSecondStorageTerm", "book_someOtherBookId",
+		assertStorageTerm(storageTerm1, "otherBookSecondStorageTerm", "book_someOtherBookId",
 				"STORAGEKEY_otherBookSecondStorageTerm");
 	}
 

@@ -30,6 +30,7 @@ import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class MetadataStorageForTermStub implements MetadataStorageView {
 	private List<DataGroup> dataGroups;
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override

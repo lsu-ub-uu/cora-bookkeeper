@@ -33,8 +33,6 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataAtomicFactorySpy;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataGroupFactorySpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
@@ -44,16 +42,12 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 
 public class DataGroupValidatorTest {
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
-	private DataGroupFactorySpy dataGroupFactory;
-	private DataAtomicFactorySpy dataAtomicFactory;
 	private DataFactorySpy dataFactorySpy;
 
 	@BeforeMethod
@@ -61,16 +55,6 @@ public class DataGroupValidatorTest {
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 
-		// se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new
-		// se.uu.ub.cora.data.spies.DataAtomicSpy();
-		// dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "attrValue");
-		// dataFactorySpy.MRV.setDefaultReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
-		// () -> dataAtomicSpy);
-
-		dataGroupFactory = new DataGroupFactorySpy();
-		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
-		dataAtomicFactory = new DataAtomicFactorySpy();
-		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
 		DataGroup image = new DataGroupOldSpy("image");
 		DataGroup parentId = new DataGroupOldSpy("parentId");
 		image.addChild(parentId);
@@ -316,6 +300,12 @@ public class DataGroupValidatorTest {
 	}
 
 	private MetadataHolder createOneGroupOneAttributeOneTextChild() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
+
 		MetadataHolder metadataHolder = new MetadataHolder();
 		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
 		DataCreator.addDefaultCollectionTwoChoices("col1", group, metadataHolder);
@@ -347,6 +337,17 @@ public class DataGroupValidatorTest {
 	}
 
 	private MetadataHolder createTwoGroupsTwoAttributesOneTextChildOneGroupChild() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
+
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col2NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "col2NameInData", "choice1NameInData");
+
 		MetadataHolder metadataHolder = new MetadataHolder();
 
 		MetadataGroup childGroup = DataCreator.createMetaDataGroup("child", metadataHolder);
@@ -426,10 +427,20 @@ public class DataGroupValidatorTest {
 	}
 
 	private DataElementValidator createMetadataForOneSimpleGroupReturnDataElementValidator() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
+
 		MetadataHolder metadataHolder = createMetadataForOneSimpleGroup();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
-		return dataValidatorFactory.factor("testGroupId");
+		// return dataValidatorFactory.factor("testGroupId");
+		MetadataGroup metadataElement = (MetadataGroup) metadataHolder
+				.getMetadataElement("testGroupId");
+		return new DataGroupValidator(dataValidatorFactory, metadataHolder, metadataElement);
+		// return new DataGroupValidator(dataElementFactory, metadataHolder, metadataElement);
 	}
 
 	private MetadataHolder createMetadataForOneSimpleGroup() {
@@ -560,15 +571,23 @@ public class DataGroupValidatorTest {
 		dataGroup.addChild(new DataAtomicSpy("unknownNameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
+
+		dataFactorySpy.MCR.assertParameters("factorAtomicUsingNameInDataAndValue", 0,
+				"col1NameInData", "choice1NameInData");
+		dataFactorySpy.MCR.assertNumberOfCallsToMethod("factorAtomicUsingNameInDataAndValue", 1);
+
 		Object[] errorMessages = validationAnswer.getErrorMessages().toArray();
-		assertEquals(errorMessages.length, 2);
 		assertEquals(errorMessages[0], "Did not find enough data children with referenceId: "
 				+ "text1Id(with nameInData:text1NameInData).");
+		assertEquals(errorMessages[1],
+				"Could not find metadata for child with nameInData: unknownNameInData");
+		assertEquals(errorMessages.length, 2);
 		assertFalse(validationAnswer.dataIsValid(), "The group should not be valid");
 	}
 
 	@Test
 	public void testAdvancedGroupOneRightDataChildElement() {
+
 		MetadataHolder metadataHolder = createMetadataForOneGroupDoubleAttributesAndChildren();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
@@ -587,6 +606,11 @@ public class DataGroupValidatorTest {
 	}
 
 	private MetadataHolder createMetadataForOneGroupDoubleAttributesAndChildren() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
 		MetadataHolder metadataHolder = new MetadataHolder();
 
 		// group
@@ -743,6 +767,18 @@ public class DataGroupValidatorTest {
 
 	private void createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(
 			final MetadataHolder metadataHolder) {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "birthYear");
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "dateType");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy, "dateType", "birthYear");
+
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy2 = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy2.MRV.setDefaultReturnValuesSupplier("getValue", () -> "deathYear");
+		dataAtomicSpy2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "dateType");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy2, "dateType", "deathYear");
+
 		MetadataGroup parent = DataCreator.createMetaDataGroup("parent", metadataHolder);
 		MetadataGroup group1 = DataCreator.createMetaDataGroupWithIdAndNameInData("test1",
 				"testGroup", metadataHolder);
@@ -867,6 +903,7 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
+
 		Collection<String> errorMessages = validationAnswer.getErrorMessages();
 		assertEquals(errorMessages.size(), 2);
 		assertFalse(validationAnswer.dataIsValid(),
@@ -894,6 +931,15 @@ public class DataGroupValidatorTest {
 				.factor("grandParentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGrandParent);
+
+		dataFactorySpy.MCR.assertNumberOfCallsToMethod("factorAtomicUsingNameInDataAndValue", 3);
+		dataFactorySpy.MCR.assertParameters("factorAtomicUsingNameInDataAndValue", 0,
+				"col1NameInData", "choice2NameInData");
+		dataFactorySpy.MCR.assertParameters("factorAtomicUsingNameInDataAndValue", 1,
+				"col1NameInData", "choice2NameInData");
+		dataFactorySpy.MCR.assertParameters("factorAtomicUsingNameInDataAndValue", 2,
+				"col1NameInData", "choice2NameInData");
+
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
@@ -914,6 +960,13 @@ public class DataGroupValidatorTest {
 
 	private DataGroup createGroupsInThreeLevelsWithMatchingData(final MetadataHolder metadataHolder,
 			final boolean addExtraChildToData) {
+
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy2 = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy2.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice2NameInData");
+		dataAtomicSpy2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
+		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy2, "col1NameInData", "choice2NameInData");
+
 		MetadataGroup grandParent = DataCreator.createMetaDataGroup("grandParent", metadataHolder);
 		MetadataGroup parent = DataCreator.createMetaDataGroup("parent", metadataHolder);
 		MetadataGroup child = DataCreator.createMetaDataGroupWithIdAndNameInData("test1",

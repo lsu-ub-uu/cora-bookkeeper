@@ -106,7 +106,6 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
 		String value = dataAttribute.getValue();
 
-		// return DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(nameInData, value);
 		return DataProvider.createAtomicUsingNameInDataAndValue(nameInData, value);
 	}
 

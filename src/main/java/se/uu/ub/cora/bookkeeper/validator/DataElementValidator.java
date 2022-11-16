@@ -23,6 +23,15 @@ import se.uu.ub.cora.data.DataChild;
 
 interface DataElementValidator {
 
+	/**
+	 * validateData validates that the entered dataGroup is correct according to this validators
+	 * metadataGroup
+	 *
+	 * @param dataGroup
+	 *            A DataGroup to validate
+	 * @return A ValidationAnswer with information if the dataGroup has valid data and if not a list
+	 *         of errors
+	 */
 	ValidationAnswer validateData(DataChild dataElement);
 
 }

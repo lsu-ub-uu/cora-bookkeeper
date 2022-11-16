@@ -23,12 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * MetadataHolder holds all information about MetadataFormats MetadataGroups and
- * MetadataVariables
- * 
- * @author <a href="mailto:olov.mckie@ub.uu.se">Olov McKie</a>
- *
- * @since 0.1
+ * MetadataHolder holds all information about MetadataFormats MetadataGroups and MetadataVariables
  *
  */
 public class MetadataHolder {
@@ -46,8 +41,7 @@ public class MetadataHolder {
 	}
 
 	/**
-	 * getMetadataElement returns the requested MetadataElement based on the
-	 * parameter elementId
+	 * getMetadataElement returns the requested MetadataElement based on the parameter elementId
 	 * 
 	 * @param elementId
 	 *            A String with the id of the Metadata element to get
