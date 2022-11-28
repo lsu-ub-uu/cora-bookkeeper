@@ -55,7 +55,8 @@ public class DataGroupRecordLinkCollector {
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
 		collectLinksFromDataGroupUsingMetadataChildren(metadataChildReferences);
-		return copyLinkList();
+		// return copyLinkList();
+		return linkSet;
 	}
 
 	private List<MetadataChildReference> getMetadataGroupChildReferences(String metadataGroupId) {

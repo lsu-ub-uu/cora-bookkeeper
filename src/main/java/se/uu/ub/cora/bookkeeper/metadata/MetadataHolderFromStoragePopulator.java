@@ -34,9 +34,16 @@ public final class MetadataHolderFromStoragePopulator {
 	public MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage(
 			MetadataStorageView metadataStorage) {
 		MetadataHolder mh = new MetadataHolder();
+
+		long t1 = System.currentTimeMillis();
+
 		Collection<DataGroup> metadataElementDataGroups = metadataStorage.getMetadataElements();
+		long t2 = System.currentTimeMillis();
 		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups,
 				mh);
+		long t3 = System.currentTimeMillis();
+		System.out.println("MetadataHolderFromStoragePopulator read:(" + (t2 - t1) + ") convert: "
+				+ (t3 - t2));
 		return mh;
 	}
 

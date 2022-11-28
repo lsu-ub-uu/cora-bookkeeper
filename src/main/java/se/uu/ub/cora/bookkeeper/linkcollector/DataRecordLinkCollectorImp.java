@@ -22,7 +22,6 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.Link;
@@ -32,13 +31,16 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	private MetadataStorageView metadataStorage;
 	private MetadataHolder metadataHolder;
 
-	public DataRecordLinkCollectorImp(MetadataStorageView metadataStorage) {
-		this.metadataStorage = metadataStorage;
+	// public DataRecordLinkCollectorImp(MetadataStorageView metadataStorage) {
+	// this.metadataStorage = metadataStorage;
+	// }
+	public DataRecordLinkCollectorImp(MetadataHolder metadataHolder) {
+		this.metadataHolder = metadataHolder;
 	}
 
 	@Override
 	public Set<Link> collectLinks(String metadataId, DataGroup dataGroup) {
-		getMetadataFromStorage();
+		// getMetadataFromStorage();
 		DataGroupRecordLinkCollector collector = new DataGroupRecordLinkCollector(metadataHolder);
 		return collectLinksAndAddToDataGroup(metadataId, dataGroup, collector);
 	}
@@ -48,10 +50,10 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 		return collector.collectLinks(metadataId, dataGroup);
 	}
 
-	private void getMetadataFromStorage() {
-		metadataHolder = new MetadataHolderFromStoragePopulator()
-				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
-	}
+	// private void getMetadataFromStorage() {
+	// metadataHolder = new MetadataHolderFromStoragePopulator()
+	// .createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
+	// }
 
 	public MetadataStorageView getMetadataStorage() {
 		// needed for test
