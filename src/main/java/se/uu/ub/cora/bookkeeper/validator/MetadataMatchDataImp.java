@@ -25,9 +25,9 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataProvider;
 
 public final class MetadataMatchDataImp implements MetadataMatchData {
 
@@ -106,8 +106,7 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 		String nameInData = getNameInDataForAttributeReference(mdAttributeReference);
 		String value = dataAttribute.getValue();
 
-		return DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(nameInData, value);
-		// return DataProvider.createAtomicUsingNameInDataAndValue(nameInData, value);
+		return DataProvider.createAtomicUsingNameInDataAndValue(nameInData, value);
 	}
 
 	private void validateAttribute(String mdAttributeReference, DataAtomic dataElement) {

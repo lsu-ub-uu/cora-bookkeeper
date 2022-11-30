@@ -19,13 +19,13 @@
 
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
-import java.util.List;
+import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.Link;
 
 public interface DataRecordLinkCollector {
 
-	List<Link> collectLinks(String metadataId, DataGroup dataGroup);
+	Set<Link> collectLinks(String metadataId, DataGroup dataGroup);
 
 }

@@ -22,7 +22,7 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 
-import java.util.List;
+import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -61,7 +61,7 @@ public class DataRecordLinkCollectorTest {
 	@Test
 	public void testCollectLinksGroupWithoutLink() {
 		DataGroup dataGroup = new DataGroupOldSpy("bush");
-		List<Link> collectedLinks = linkCollector.collectLinks("bush", dataGroup);
+		Set<Link> collectedLinks = linkCollector.collectLinks("bush", dataGroup);
 		assertEquals(collectedLinks.size(), 0);
 	}
 
@@ -77,9 +77,10 @@ public class DataRecordLinkCollectorTest {
 		dataTestLink.addChild(linkedRecordId);
 		dataGroup.addChild(dataTestLink);
 
-		List<Link> collectedLinks = linkCollector.collectLinks("bush", dataGroup);
+		Set<Link> collectedLinks = linkCollector.collectLinks("bush", dataGroup);
 		assertEquals(collectedLinks.size(), 1);
-		Link link = collectedLinks.get(0);
+		Object[] collectedLinksArray = collectedLinks.toArray();
+		Link link = (Link) collectedLinksArray[0];
 		assertEquals(link.type(), "bush");
 		assertEquals(link.id(), "bush1");
 

@@ -21,7 +21,9 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
@@ -30,11 +32,12 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class MetadataStorageStub implements MetadataStorageView {
 
-	private List<DataGroup> dataGroups;
+	private Set<DataGroup> dataGroups;
 
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
-		dataGroups = new ArrayList<>();
+		// dataGroups = new ArrayList<>();
+		dataGroups = new LinkedHashSet<>();
 
 		// textVar2
 		DataGroup textVar2 = new DataGroupOldSpy("metadata");
