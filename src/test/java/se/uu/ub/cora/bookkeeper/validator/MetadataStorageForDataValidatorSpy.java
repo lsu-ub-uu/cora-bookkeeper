@@ -69,4 +69,10 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 		return null;
 	}
 
+	@Override
+	public Collection<ValidationType> getValidationTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

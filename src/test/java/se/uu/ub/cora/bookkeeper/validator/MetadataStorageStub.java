@@ -464,4 +464,10 @@ public class MetadataStorageStub implements MetadataStorageView {
 		return recordInfo;
 	}
 
+	@Override
+	public Collection<ValidationType> getValidationTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

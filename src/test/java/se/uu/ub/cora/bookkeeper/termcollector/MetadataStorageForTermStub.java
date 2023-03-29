@@ -25,6 +25,7 @@ import java.util.List;
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
@@ -488,6 +489,12 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 		type.addChild(new DataAtomicSpy("linkedRecordId", typeString));
 		recordInfo.addChild(type);
 		return recordInfo;
+	}
+
+	@Override
+	public Collection<ValidationType> getValidationTypes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

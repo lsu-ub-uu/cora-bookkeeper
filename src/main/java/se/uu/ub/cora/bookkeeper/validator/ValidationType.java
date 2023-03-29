@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,14 +18,17 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
-import java.util.Map;
-
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.data.DataGroup;
-
-public interface DataValidatorFactory {
-
-	DataValidator factor(Map<String, DataGroup> recordTypeHolder,
-			MetadataHolder metadataHolder);
+/**
+ * ValidationType holds information about one validation type.
+ * 
+ * @param validatesRecordTypeId
+ *            String with the id of the recordType that this validationType is intended to validate.
+ * @param createDefinitionId
+ *            String with the id of definition metadataGroup for create for this validationType.
+ * @param updateDefinitionId
+ *            String with the id of definition metadataGroup for update for this validationType.
+ */
+public record ValidationType(String validatesRecordTypeId, String createDefinitionId,
+		String updateDefinitionId) {
 
 }

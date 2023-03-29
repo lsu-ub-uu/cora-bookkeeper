@@ -31,28 +31,23 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class DataValidatorFactoryTest {
 	private Map<String, DataGroup> recordTypeHolderSpy = new HashMap<>();
-	private MetadataStorageForDataValidatorSpy metadataStorageSpy;
 	private MetadataHolderSpy metadataHolderSpy;
 
 	@Test
 	public void testFactor() throws Exception {
-		metadataStorageSpy = new MetadataStorageForDataValidatorSpy();
 		metadataHolderSpy = new MetadataHolderSpy();
 
 		DataValidatorFactory factory = new DataValidatorFactoryImp();
 
-		DataValidatorImp dataValidator = (DataValidatorImp) factory.factor(metadataStorageSpy,
-				recordTypeHolderSpy, metadataHolderSpy);
+		DataValidatorImp dataValidator = (DataValidatorImp) factory.factor(recordTypeHolderSpy,
+				metadataHolderSpy);
 		assertTrue(dataValidator instanceof DataValidatorImp);
 
-		assertSame(dataValidator.getMetadataStorage(), metadataStorageSpy);
 		assertSame(dataValidator.getRecordTypeHolder(), recordTypeHolderSpy);
 		DataElementValidatorFactoryImp dataElementValidatorFactory = (DataElementValidatorFactoryImp) dataValidator
 				.getDataElementValidatorFactory();
 		assertTrue(dataElementValidatorFactory instanceof DataElementValidatorFactoryImp);
 		assertSame(dataElementValidatorFactory.getRecordTypeHolder(), recordTypeHolderSpy);
 		assertSame(dataElementValidatorFactory.getMetadataHolder(), metadataHolderSpy);
-
-		// ;
 	}
 }

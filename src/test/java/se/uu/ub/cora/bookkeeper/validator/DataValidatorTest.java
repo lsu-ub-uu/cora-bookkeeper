@@ -48,17 +48,15 @@ public class DataValidatorTest {
 	private static final String SOME_RECORD_TYPE_WITHOUT_LINKS = "someRecordTypeWithoutLinks";
 	private static final String SOME_RECORD_TYPE_WITH_LINKS = "someRecordTypeWithLinks";
 	private DataValidatorImp dataValidator;
-	private MetadataStorageForDataValidatorSpy metadataStorage;
 	private DataGroup dataGroupToValidate;
 	private DataElementValidatorFactorySpy validatorFactory;
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 
 	@BeforeMethod
 	public void setUp() {
-		metadataStorage = new MetadataStorageForDataValidatorSpy();
 		validatorFactory = new DataElementValidatorFactorySpy();
 		addRecordTypesToHolder();
-		dataValidator = new DataValidatorImp(metadataStorage, validatorFactory, recordTypeHolder);
+		dataValidator = new DataValidatorImp(validatorFactory, recordTypeHolder);
 		dataGroupToValidate = new DataGroupSpy();
 	}
 
@@ -79,12 +77,6 @@ public class DataValidatorTest {
 
 		DataGroupSpy someRecordTypeWithoutLinks = new DataGroupSpy();
 		recordTypeHolder.put(SOME_RECORD_TYPE_WITHOUT_LINKS, someRecordTypeWithoutLinks);
-	}
-
-	@Test
-	public void testGetMetadataStorage() {
-		DataValidatorImp dataValidatorImp = dataValidator;
-		assertSame(dataValidatorImp.getMetadataStorage(), metadataStorage);
 	}
 
 	@Test

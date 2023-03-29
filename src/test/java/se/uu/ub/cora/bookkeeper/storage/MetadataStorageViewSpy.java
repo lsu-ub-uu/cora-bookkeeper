@@ -20,6 +20,7 @@ package se.uu.ub.cora.bookkeeper.storage;
 
 import java.util.Collection;
 
+import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
@@ -58,6 +59,12 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 
 	@Override
 	public Collection<DataGroup> getCollectTerms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<ValidationType> getValidationTypes() {
 		// TODO Auto-generated method stub
 		return null;
 	}

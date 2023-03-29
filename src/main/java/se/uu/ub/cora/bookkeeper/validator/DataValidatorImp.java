@@ -21,7 +21,6 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -29,13 +28,11 @@ import se.uu.ub.cora.data.DataGroup;
  */
 class DataValidatorImp implements DataValidator {
 
-	private MetadataStorageView metadataStorage;
 	private DataElementValidatorFactory dataValidatorFactory;
 	private Map<String, DataGroup> recordTypeHolder;
 
-	DataValidatorImp(MetadataStorageView metadataStorage, DataElementValidatorFactory validatorFactory,
+	DataValidatorImp(DataElementValidatorFactory validatorFactory,
 			Map<String, DataGroup> recordTypeHolder) {
-		this.metadataStorage = metadataStorage;
 		this.dataValidatorFactory = validatorFactory;
 		this.recordTypeHolder = recordTypeHolder;
 	}
@@ -108,11 +105,6 @@ class DataValidatorImp implements DataValidator {
 	public ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings) {
 		String linkNameInData = "indexSettings";
 		return extractAndValidate(recordType, indexSettings, linkNameInData);
-	}
-
-	MetadataStorageView getMetadataStorage() {
-		// needed for test
-		return metadataStorage;
 	}
 
 	DataElementValidatorFactory getDataElementValidatorFactory() {
