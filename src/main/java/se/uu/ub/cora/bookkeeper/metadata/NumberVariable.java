@@ -30,7 +30,7 @@ public class NumberVariable extends MetadataElement {
 	private int numOfDecimals;
 	private final List<String> attributeReferences = new ArrayList<>();
 
-	private NumberVariable(StandardMetadataParameters standardParams, LimitsContainer limits,
+	protected NumberVariable(StandardMetadataParameters standardParams, LimitsContainer limits,
 			LimitsContainer warnLimits, int numOfDecimals) {
 		super(standardParams.id, standardParams.nameInData, standardParams.textId,
 				standardParams.defTextId);

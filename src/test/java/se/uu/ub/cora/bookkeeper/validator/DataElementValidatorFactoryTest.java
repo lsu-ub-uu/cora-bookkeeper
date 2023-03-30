@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017 Uppsala University Library
+ * Copyright 2015, 2017, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,120 +20,137 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
-import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
-import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
-import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
-import se.uu.ub.cora.bookkeeper.metadata.TextContainer;
-import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
+import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataElementValidatorFactoryTest {
 
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
-	private MetadataHolder metadataHolder;
+	private MetadataHolderSpy metadataHolderDefault;
 	private DataElementValidatorFactoryImp dataValidatorFactory;
+	private MetadataHolderFromStoragePopulatorSpy metadataHolderPopulator;
+	private MetadataHolderSpy metadataHolderShouldNotBeUsed;
 
 	@BeforeMethod
 	public void setup() {
-		DataGroup image = new DataGroupOldSpy("image");
-		DataGroup parentId = new DataGroupOldSpy("parentId");
-		image.addChild(parentId);
-		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));
-		recordTypeHolder.put("image", image);
+		recordTypeHolder = new HashMap<String, DataGroup>();
 
-		metadataHolder = new MetadataHolder();
-		dataValidatorFactory = new DataElementValidatorFactoryImp(recordTypeHolder, metadataHolder);
+		metadataHolderDefault = new MetadataHolderSpy();
+		metadataHolderShouldNotBeUsed = new MetadataHolderSpy();
+		metadataHolderPopulator = new MetadataHolderFromStoragePopulatorSpy();
+		metadataHolderPopulator.MRV.setReturnValues(
+				"createAndPopulateMetadataHolderFromMetadataStorage",
+				List.of(metadataHolderDefault, metadataHolderShouldNotBeUsed));
+
+		dataValidatorFactory = new DataElementValidatorFactoryImp(recordTypeHolder,
+				metadataHolderPopulator);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataGroup() {
-		metadataHolder.addMetadataElement(MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
-				"metadataGroupId", "nameInData", "textId", "defTextId"));
-		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("metadataGroupId");
-		assertTrue(dataGroupValidator instanceof DataGroupValidator);
+		String elementId = "metadataGroupId";
+		MetadataGroupSpy metadataGroup = new MetadataGroupSpy(elementId, "someNameInData");
+		addMetadataElementSpyToMetadataHolderSpy(elementId, metadataGroup);
+
+		DataGroupValidator validator = (DataGroupValidator) dataValidatorFactory.factor(elementId);
+
+		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
+
+		assertSame(validator.onlyForTestGetDataElementValidatorFactory(), dataValidatorFactory);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolderDefault);
+		assertSame(validator.onlyForTestGetMetadataElement(), metadataGroup);
+
+	}
+
+	private void assertCallToMetadataHolderPopulatorAndGetMetadataElements(String elementId) {
+		metadataHolderPopulator.MCR
+				.assertParameters("createAndPopulateMetadataHolderFromMetadataStorage", 0);
+		MetadataHolderSpy metadataHolder = (MetadataHolderSpy) metadataHolderPopulator.MCR
+				.getReturnValue("createAndPopulateMetadataHolderFromMetadataStorage", 0);
+		metadataHolder.MCR.assertParameters("getMetadataElement", 0, elementId);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataTextVariable() {
-		metadataHolder.addMetadataElement(
-				TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
-						"textVariableId", "nameInData", "textId", "defTextId",
-						"((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$)|^$){1}"));
+		String elementId = "textVariableId";
+		TextVariableSpy textVariable = new TextVariableSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, textVariable);
 
-		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("textVariableId");
-		assertTrue(dataGroupValidator instanceof DataTextVariableValidator);
+		DataTextVariableValidator validator = (DataTextVariableValidator) dataValidatorFactory
+				.factor(elementId);
+
+		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
+
+		assertSame(validator.onlyForTestGetMetadataElement(), textVariable);
+
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataNumberVariable() {
-		NumberVariable numberVariable = createNumberVariable();
+		String elementId = "someNumberVariableId";
+		NumberVariableSpy numberVariable = new NumberVariableSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, numberVariable);
 
-		metadataHolder.addMetadataElement(numberVariable);
+		DataNumberVariableValidator validator = (DataNumberVariableValidator) dataValidatorFactory
+				.factor(elementId);
 
-		DataElementValidator dataGroupValidator = dataValidatorFactory
-				.factor("someNumberVariableId");
-		assertTrue(dataGroupValidator instanceof DataNumberVariableValidator);
-	}
-
-	private NumberVariable createNumberVariable() {
-		TextContainer textContainer = TextContainer.usingTextIdAndDefTextId("someText",
-				"someDefText");
-		StandardMetadataParameters standardParams = StandardMetadataParameters
-				.usingIdNameInDataAndTextContainer("someNumberVariableId", "someNameInData",
-						textContainer);
-
-		LimitsContainer limits = LimitsContainer.usingMinAndMax(1, 10);
-		LimitsContainer warnLimits = LimitsContainer.usingMinAndMax(2, 8);
-
-		NumberVariable numberVariable = NumberVariable
-				.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParams, limits,
-						warnLimits, 0);
-		return numberVariable;
-	}
-
-	@Test
-	public void testFactorDataValidatorMetadataRecordLink() {
-		metadataHolder.addMetadataElement(
-				RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(
-						"recordLinkId", "nameInData", "textId", "defTextId", "someRecordType"));
-
-		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("recordLinkId");
-		assertTrue(dataGroupValidator instanceof DataRecordLinkValidator);
+		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
+		assertSame(validator.onlyForTestGetMetadataElement(), numberVariable);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataCollectionVariable() {
-		metadataHolder.addMetadataElement(new CollectionVariable("collectionVariableId",
-				"nameInData", "textId", "defTextId", "collectionId"));
+		String elementId = "collectionVariableId";
+		CollectionVariableSpy collectionVariable = new CollectionVariableSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, collectionVariable);
 
-		DataElementValidator dataGroupValidator = dataValidatorFactory
-				.factor("collectionVariableId");
-		assertTrue(dataGroupValidator instanceof DataCollectionVariableValidator);
+		DataCollectionVariableValidator validator = (DataCollectionVariableValidator) dataValidatorFactory
+				.factor(elementId);
+
+		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
+		assertSame(validator.onlyForTestGetMetadataElement(), collectionVariable);
+	}
+
+	@Test
+	public void testFactorDataValidatorMetadataRecordLink() {
+		String elementId = "recordLinkId";
+		RecordLinkSpy recordLink = new RecordLinkSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, recordLink);
+
+		DataRecordLinkValidator validator = (DataRecordLinkValidator) dataValidatorFactory
+				.factor(elementId);
+
+		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
+		assertSame(validator.onlyForTestGetMetadataElement(), recordLink);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataResourceLink() {
-		metadataHolder.addMetadataElement(ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(
-				"masterResource", "nameInData", "textId", "defTextId"));
+		String elementId = "resourceLink";
 
-		DataElementValidator dataGroupValidator = dataValidatorFactory.factor("masterResource");
-		assertTrue(dataGroupValidator instanceof DataResourceLinkValidator);
+		addMetadataElementSpyToMetadataHolderSpy(elementId, new ResourceLinkSpy());
+
+		DataResourceLinkValidator validator = (DataResourceLinkValidator) dataValidatorFactory
+				.factor(elementId);
+
+		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolderDefault);
+	}
+
+	private void addMetadataElementSpyToMetadataHolderSpy(String elementId,
+			MetadataElement resourceLink) {
+		metadataHolderDefault.elementsToReturn.put(elementId, resourceLink);
 	}
 
 	@Test(expectedExceptions = DataValidationException.class)
@@ -143,11 +160,35 @@ public class DataElementValidatorFactoryTest {
 
 	@Test
 	public void testGetMetadataHolder() {
-		assertSame(dataValidatorFactory.getMetadataHolder(), metadataHolder);
+		try {
+			dataValidatorFactory.factor("elementNotFound");
+
+			fail();
+		} catch (Exception e) {
+			assertSame(dataValidatorFactory.onlyForTestGetMetadataHolder(), metadataHolderDefault);
+		}
 	}
 
 	@Test
 	public void testGetRecordTypeHolder() {
-		assertSame(dataValidatorFactory.getRecordTypeHolder(), recordTypeHolder);
+		assertSame(dataValidatorFactory.onlyForTestGetRecordTypeHolder(), recordTypeHolder);
+	}
+
+	@Test
+	public void testMakeSureOnlyOneMetadataHolderIsCreated() throws Exception {
+		String elementId = "resourceLink";
+
+		addMetadataElementSpyToMetadataHolderSpy(elementId, new ResourceLinkSpy());
+
+		dataValidatorFactory.factor(elementId);
+		var metadataHolderCall1 = dataValidatorFactory.onlyForTestGetMetadataHolder();
+
+		dataValidatorFactory.factor(elementId);
+		var metadataHolderCall2 = dataValidatorFactory.onlyForTestGetMetadataHolder();
+
+		assertSame(metadataHolderCall1, metadataHolderCall2);
+		assertSame(metadataHolderCall1, metadataHolderDefault);
+		assertSame(metadataHolderCall2, metadataHolderDefault);
+
 	}
 }

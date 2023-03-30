@@ -30,7 +30,7 @@ import java.util.List;
  * @since 0.1
  *
  */
-public final class TextVariable extends MetadataElement {
+public class TextVariable extends MetadataElement {
 
 	private final String regularExpression;
 	private String refParentId;
@@ -43,7 +43,7 @@ public final class TextVariable extends MetadataElement {
 		return new TextVariable(id, nameInData, textId, defTextId, regularExpression);
 	}
 
-	private TextVariable(String id, String nameInData, String textId, String defTextId,
+	protected TextVariable(String id, String nameInData, String textId, String defTextId,
 			String regularExpression) {
 		super(id, nameInData, textId, defTextId);
 		this.regularExpression = regularExpression;

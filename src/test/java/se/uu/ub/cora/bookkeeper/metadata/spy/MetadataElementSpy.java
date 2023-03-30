@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Olov McKie
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,17 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.bookkeeper.metadata.spy;
 
-package se.uu.ub.cora.bookkeeper.metadata;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 
-public class ResourceLink extends MetadataElement {
+public class MetadataElementSpy extends MetadataElement {
+	public MetadataElementSpy() {
+		super(null, null, null, null);
+	}
 
-	public ResourceLink(String id, String nameInData, String textId, String defTextId) {
+	public MetadataElementSpy(String id, String nameInData, String textId, String defTextId) {
 		super(id, nameInData, textId, defTextId);
+		// TODO Auto-generated constructor stub
 	}
 
-	public static ResourceLink withIdAndNameInDataAndTextIdAndDefTextId(String id,
-			String nameInData, String textId, String defTextId) {
-		return new ResourceLink(id, nameInData, textId, defTextId);
-	}
 }

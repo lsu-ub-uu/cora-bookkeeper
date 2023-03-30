@@ -28,13 +28,14 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataResourceLinkValidatorTest {
 	private DataResourceLinkValidator dataResourceLinkValidator;
-	private MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolder metadataHolder = new MetadataHolderImp();
 
 	@BeforeMethod
 	public void setUp() {

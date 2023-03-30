@@ -6,12 +6,13 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupRecordLinkCollectorMetadataCreator {
-	private MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolder metadataHolder = new MetadataHolderImp();
 
 	void addMetadataForOneGroupWithNoLink(String id) {
 		metadataHolder

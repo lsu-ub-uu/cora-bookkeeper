@@ -27,7 +27,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
@@ -97,8 +97,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private MetadataHolder populateMetadataHolderFromMetadataStorage() {
-		return new MetadataHolderFromStoragePopulator()
-				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
+		return new MetadataHolderPopulatorImp()
+				.createAndPopulateMetadataHolderFromMetadataStorage();
 	}
 
 	private void populateCollectTermHolderFromMetadataStorage() {

@@ -31,6 +31,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.data.DataAtomic;
 
 public class DataCollectionVariableValidatorTest {
@@ -38,7 +39,7 @@ public class DataCollectionVariableValidatorTest {
 
 	@BeforeMethod
 	public void setUp() {
-		metadataHolder = new MetadataHolder();
+		metadataHolder = new MetadataHolderImp();
 	}
 
 	@Test

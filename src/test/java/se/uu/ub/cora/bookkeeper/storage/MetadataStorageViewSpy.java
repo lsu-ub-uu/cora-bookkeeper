@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Uppsala University Library
+ * Copyright 2022, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.storage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
@@ -31,42 +32,42 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 
 	public MetadataStorageViewSpy() {
 		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getMetadataElements", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getPresentationElements", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getTexts", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getRecordTypes", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getCollectTerms", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getValidationTypes", ArrayList<ValidationType>::new);
 	}
 
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public Collection<DataGroup> getPresentationElements() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public Collection<DataGroup> getTexts() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public Collection<DataGroup> getRecordTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public Collection<DataGroup> getCollectTerms() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public Collection<ValidationType> getValidationTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Collection<ValidationType>) MCR.addCallAndReturnFromMRV();
 	}
 
 }

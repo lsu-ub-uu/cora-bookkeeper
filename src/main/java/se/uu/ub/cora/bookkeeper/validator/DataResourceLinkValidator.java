@@ -116,4 +116,9 @@ class DataResourceLinkValidator implements DataElementValidator {
 	private void validateMimeType() {
 		validateChild("mimeTypeTextVar", "mimeType");
 	}
+
+	MetadataHolder onlyForTestGetMetadataHolder() {
+		return metadataHolder;
+	}
+
 }

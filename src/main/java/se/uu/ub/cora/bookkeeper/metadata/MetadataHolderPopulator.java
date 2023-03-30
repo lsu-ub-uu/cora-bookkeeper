@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,23 +16,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import static org.testng.Assert.assertEquals;
+public interface MetadataHolderPopulator {
 
-import org.testng.annotations.Test;
+	MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage();
 
-public class MetadataHolderTest {
-	@Test
-	public void testInit() {
-		MetadataHolder metadataHolder = new MetadataHolderImp();
-		String regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
-		MetadataElement textElement = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id", "nameInData",
-						"textId", "defTextId", regularExpression);
-		metadataHolder.addMetadataElement(textElement);
-		assertEquals(metadataHolder.getMetadataElement("id"), textElement,
-				"textElement should be the same one that was entered");
-	}
 }

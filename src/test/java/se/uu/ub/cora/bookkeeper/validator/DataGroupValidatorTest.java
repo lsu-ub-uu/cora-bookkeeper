@@ -39,6 +39,7 @@ import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataAtomic;
@@ -78,14 +79,14 @@ public class DataGroupValidatorTest {
 	}
 
 	private DataElementValidator createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator() {
-		MetadataHolder metadataHolder = createOneGroupNoAttributesOneTextChild();
+		MetadataHolderImp metadataHolder = createOneGroupNoAttributesOneTextChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		return dataValidatorFactory.factor("testGroupId");
 	}
 
-	private MetadataHolder createOneGroupNoAttributesOneTextChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolderImp createOneGroupNoAttributesOneTextChild() {
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group, metadataHolder);
 		return metadataHolder;
@@ -104,7 +105,7 @@ public class DataGroupValidatorTest {
 
 	@Test(expectedExceptions = DataValidationException.class)
 	public void testMetadataGroupThatRefersToMetadataChildThatDoesNotExist() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
 		MetadataChildReference groupChild = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadataGroup",
@@ -190,7 +191,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testOneGroupNoAttributesOneRecordLinkChildValidData() {
-		MetadataHolder metadataHolder = createOneGroupNoAttributesOneRecordLinkChild();
+		MetadataHolderImp metadataHolder = createOneGroupNoAttributesOneRecordLinkChild();
 		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
 
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
@@ -213,8 +214,8 @@ public class DataGroupValidatorTest {
 		metadataHolder.addMetadataElement(linkedRecordIdTextVar);
 	}
 
-	private MetadataHolder createOneGroupNoAttributesOneRecordLinkChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolderImp createOneGroupNoAttributesOneRecordLinkChild() {
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		MetadataGroup group = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId("groupId",
 				"groupNameInData", "groupTextId", "groupDefTextId");
 		metadataHolder.addMetadataElement(group);
@@ -226,7 +227,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testOneGroupOneAttributeOneTextChildValidData() {
-		MetadataHolder metadataHolder = createOneGroupOneAttributeOneTextChild();
+		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -241,7 +242,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testOneGroupOneAttributeOneTextChildInvalidAttribute() {
-		MetadataHolder metadataHolder = createOneGroupOneAttributeOneTextChild();
+		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -258,7 +259,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testOneGroupOneAttributeOneTextChildMissingAttribute() {
-		MetadataHolder metadataHolder = createOneGroupOneAttributeOneTextChild();
+		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -274,7 +275,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testOneGroupOneAttributeOneTextChildInvalidExtraAttribute() {
-		MetadataHolder metadataHolder = createOneGroupOneAttributeOneTextChild();
+		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
 		createSecondCollectionVariable(metadataHolder);
 
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
@@ -299,14 +300,14 @@ public class DataGroupValidatorTest {
 		metadataHolder.addMetadataElement(colVar2);
 	}
 
-	private MetadataHolder createOneGroupOneAttributeOneTextChild() {
+	private MetadataHolderImp createOneGroupOneAttributeOneTextChild() {
 		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
 		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
 
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		MetadataGroup group = DataCreator.createMetaDataGroup("test", metadataHolder);
 		DataCreator.addDefaultCollectionTwoChoices("col1", group, metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group, metadataHolder);
@@ -316,7 +317,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testTwoGroupsTwoAttributesOneTextChildOneGroupChildValidData() {
-		MetadataHolder metadataHolder = createTwoGroupsTwoAttributesOneTextChildOneGroupChild();
+		MetadataHolderImp metadataHolder = createTwoGroupsTwoAttributesOneTextChildOneGroupChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
@@ -336,7 +337,7 @@ public class DataGroupValidatorTest {
 				"The group should be valid as it has valid data");
 	}
 
-	private MetadataHolder createTwoGroupsTwoAttributesOneTextChildOneGroupChild() {
+	private MetadataHolderImp createTwoGroupsTwoAttributesOneTextChildOneGroupChild() {
 		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
@@ -348,7 +349,7 @@ public class DataGroupValidatorTest {
 		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy, "col2NameInData", "choice1NameInData");
 
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		MetadataGroup childGroup = DataCreator.createMetaDataGroup("child", metadataHolder);
 		MetadataGroup parentGroup = DataCreator.createMetaDataGroup("parent", metadataHolder);
@@ -433,7 +434,7 @@ public class DataGroupValidatorTest {
 		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
 
-		MetadataHolder metadataHolder = createMetadataForOneSimpleGroup();
+		MetadataHolderImp metadataHolder = createMetadataForOneSimpleGroup();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		// return dataValidatorFactory.factor("testGroupId");
@@ -443,8 +444,8 @@ public class DataGroupValidatorTest {
 		// return new DataGroupValidator(dataElementFactory, metadataHolder, metadataElement);
 	}
 
-	private MetadataHolder createMetadataForOneSimpleGroup() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolderImp createMetadataForOneSimpleGroup() {
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		// group
 		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);
@@ -588,7 +589,7 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testAdvancedGroupOneRightDataChildElement() {
 
-		MetadataHolder metadataHolder = createMetadataForOneGroupDoubleAttributesAndChildren();
+		MetadataHolderImp metadataHolder = createMetadataForOneGroupDoubleAttributesAndChildren();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -605,13 +606,13 @@ public class DataGroupValidatorTest {
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid());
 	}
 
-	private MetadataHolder createMetadataForOneGroupDoubleAttributesAndChildren() {
+	private MetadataHolderImp createMetadataForOneGroupDoubleAttributesAndChildren() {
 		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "col1NameInData");
 		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		// group
 		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);
@@ -629,8 +630,8 @@ public class DataGroupValidatorTest {
 		return metadataHolder;
 	}
 
-	private MetadataHolder createMetadataGroupWithUnlimitedChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolderImp createMetadataGroupWithUnlimitedChild() {
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		// group
 		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);
@@ -643,7 +644,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testValidRepeatChild() {
-		MetadataHolder metadataHolder = createMetadataGroupWithUnlimitedChild();
+		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -659,7 +660,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testInvalidRepeatChildMissing() {
-		MetadataHolder metadataHolder = createMetadataGroupWithUnlimitedChild();
+		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -677,7 +678,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testInvalidRepeatChildEmpty() {
-		MetadataHolder metadataHolder = createMetadataGroupWithUnlimitedChild();
+		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -693,7 +694,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testSameRepeatId() {
-		MetadataHolder metadataHolder = createMetadataGroupWithUnlimitedChild();
+		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -711,7 +712,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testRepeatIdWhereNotExpected() {
-		MetadataHolder metadataHolder = createMetadataGroupWithOneChild();
+		MetadataHolderImp metadataHolder = createMetadataGroupWithOneChild();
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
 				recordTypeHolder, metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
@@ -725,8 +726,8 @@ public class DataGroupValidatorTest {
 		assertFalse(validationAnswer.dataIsValid(), "The group should be validate to false");
 	}
 
-	private MetadataHolder createMetadataGroupWithOneChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolderImp createMetadataGroupWithOneChild() {
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);
 		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", metadataGroup, metadataHolder);
@@ -736,7 +737,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testTwoGroupsWithSameAttributeDifferentValues() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
@@ -835,7 +836,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testTwoGroupsWithSameAttributeSameValueInData() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
@@ -858,7 +859,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testTwoGroupsWithoutRelevantAttribute() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
@@ -883,7 +884,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testTwoGroupsWithAttributesNotFoundInMetadata() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 		createMetadataTwoGroupsOneTextWithSameParentDifferentAttributeValues(metadataHolder);
 
 		DataGroup dataParent = new DataGroupOldSpy("parentGroupNameInData");
@@ -920,7 +921,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testGroupValidationThreeLevels() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder,
 				false);
@@ -945,7 +946,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testGroupValidationThreeLevelsErrorInChild() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder, true);
 
@@ -993,7 +994,7 @@ public class DataGroupValidatorTest {
 
 	@Test
 	public void testInvalidDataGroupWhenChildrenMissing() {
-		MetadataHolder metadataHolder = new MetadataHolder();
+		MetadataHolderImp metadataHolder = new MetadataHolderImp();
 
 		// group
 		MetadataGroup metadataGroup = DataCreator.createMetaDataGroup("test", metadataHolder);

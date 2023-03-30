@@ -1,5 +1,5 @@
 /*
- * Copyright 2022, 2023 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,29 +16,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.storage;
+package se.uu.ub.cora.bookkeeper.metadata.spy;
 
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class MetadataStorageViewInstanceProviderSpy implements MetadataStorageViewInstanceProvider {
+public class DataGroupToMetadataConverterFactorySpy implements DataGroupToMetadataConverterFactory {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public MetadataStorageViewInstanceProviderSpy() {
+	public DataGroupToMetadataConverterFactorySpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getStorageView", MetadataStorageViewSpy::new);
-		MRV.setDefaultReturnValuesSupplier("getOrderToSelectImplementionsBy", () -> 0);
+		MRV.setDefaultReturnValuesSupplier("factorForDataGroupContainingMetadata",
+				DataGroupToMetadataConverterSpy::new);
 	}
 
 	@Override
-	public MetadataStorageView getStorageView() {
-		return (MetadataStorageView) MCR.addCallAndReturnFromMRV();
-	}
-
-	@Override
-	public int getOrderToSelectImplementionsBy() {
-		return (int) MCR.addCallAndReturnFromMRV();
+	public DataGroupToMetadataConverter factorForDataGroupContainingMetadata(DataGroup dataGroup) {
+		return (DataGroupToMetadataConverter) MCR.addCallAndReturnFromMRV("dataGroup", dataGroup);
 	}
 
 }

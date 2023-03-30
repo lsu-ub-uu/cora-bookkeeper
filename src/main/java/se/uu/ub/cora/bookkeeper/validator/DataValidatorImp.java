@@ -107,13 +107,11 @@ class DataValidatorImp implements DataValidator {
 		return extractAndValidate(recordType, indexSettings, linkNameInData);
 	}
 
-	DataElementValidatorFactory getDataElementValidatorFactory() {
-		// needed for test
+	DataElementValidatorFactory onlyForTestGetDataElementValidatorFactory() {
 		return dataValidatorFactory;
 	}
 
-	Map<String, DataGroup> getRecordTypeHolder() {
-		// needed for test
+	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
 		return recordTypeHolder;
 	}
 }

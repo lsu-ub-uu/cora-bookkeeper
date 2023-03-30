@@ -20,6 +20,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.text.MessageFormat;
 
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
@@ -105,6 +106,10 @@ class DataNumberVariableValidator implements DataElementValidator {
 
 	private boolean valueIsBelowAcceptedMinValue(double dataAsDouble) {
 		return dataAsDouble < numberVariable.getMin();
+	}
+
+	MetadataElement onlyForTestGetMetadataElement() {
+		return numberVariable;
 	}
 
 }

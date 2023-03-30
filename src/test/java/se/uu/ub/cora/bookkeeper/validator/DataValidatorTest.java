@@ -140,7 +140,7 @@ public class DataValidatorTest {
 
 	@Test
 	public void testGetDataValidatorFactory() {
-		assertSame(dataValidator.getDataElementValidatorFactory(), validatorFactory);
+		assertSame(dataValidator.onlyForTestGetDataElementValidatorFactory(), validatorFactory);
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class DataValidatorTest {
 
 	@Test
 	public void testgetRecordTypeHolder() throws Exception {
-		assertNotNull(dataValidator.getRecordTypeHolder());
+		assertNotNull(dataValidator.onlyForTestGetRecordTypeHolder());
 	}
 
 	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""

@@ -35,6 +35,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
@@ -46,7 +47,7 @@ import se.uu.ub.cora.data.spies.DataFactorySpy;
 public class DataRecordLinkValidatorTest {
 	private RecordLink dataLink;
 	private DataRecordLinkValidator dataLinkValidator;
-	private MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolder metadataHolder = new MetadataHolderImp();
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 
 	private DataFactorySpy dataFactorySpy;

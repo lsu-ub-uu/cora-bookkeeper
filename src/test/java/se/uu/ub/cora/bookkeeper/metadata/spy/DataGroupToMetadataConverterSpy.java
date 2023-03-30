@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,30 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.metadata;
+package se.uu.ub.cora.bookkeeper.metadata.spy;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class MetadataHolderSpy extends MetadataHolderImp {
-	@SuppressWarnings("exports")
+public class DataGroupToMetadataConverterSpy implements DataGroupToMetadataConverter {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public Map<String, MetadataElement> elementsToReturn = new HashMap<>();
-
-	@Override
-	public void addMetadataElement(MetadataElement metadataElement) {
-
+	public DataGroupToMetadataConverterSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("toMetadata", MetadataElementSpy::new);
 	}
 
 	@Override
-	public MetadataElement getMetadataElement(String elementId) {
-		MCR.addCall("elementId", elementId);
-		MetadataElement metadataElement = elementsToReturn.get(elementId);
-
-		MCR.addReturned(metadataElement);
-		return metadataElement;
+	public MetadataElement toMetadata() {
+		return (MetadataElement) MCR.addCallAndReturnFromMRV();
 	}
+
 }
