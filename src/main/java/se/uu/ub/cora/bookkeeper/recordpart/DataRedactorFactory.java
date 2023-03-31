@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,25 +18,11 @@
  */
 package se.uu.ub.cora.bookkeeper.recordpart;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
-import se.uu.ub.cora.data.DataGroup;
+/**
+ * DataRedactorFactory creates new instances of {@link DataRedactor}
+ */
+public interface DataRedactorFactory {
 
-public class MatcherFactoryImp implements MatcherFactory {
-
-	private MetadataMatchData dataMatcher;
-
-	public MatcherFactoryImp(MetadataMatchData dataMatcher) {
-		this.dataMatcher = dataMatcher;
-	}
-
-	@Override
-	public Matcher factor(DataGroup dataGroup, MetadataGroup metadataGroup) {
-		return new GroupMatcher(dataMatcher, dataGroup, metadataGroup);
-	}
-
-	public MetadataMatchData onlyForTestGetMetadataMatchData() {
-		return dataMatcher;
-	}
+	DataRedactor factor();
 
 }

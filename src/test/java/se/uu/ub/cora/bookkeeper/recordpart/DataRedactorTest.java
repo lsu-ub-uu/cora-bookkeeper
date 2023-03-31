@@ -96,10 +96,10 @@ public class DataRedactorTest {
 
 	@Test
 	public void testInit() {
-		assertSame(dataRedactor.getMetadataHolder(), metadataHolder);
-		assertSame(dataRedactor.getDataGroupRedactor(), dataGroupRedactorSpy);
-		assertSame(dataRedactor.getDataGroupWrapperFactory(), wrapperFactory);
-		assertSame(dataRedactor.getMatcherFactory(), matcherFactory);
+		assertSame(dataRedactor.onlyForTestGetMetadataHolder(), metadataHolder);
+		assertSame(dataRedactor.onlyForTestGetDataGroupRedactor(), dataGroupRedactorSpy);
+		assertSame(dataRedactor.onlyForTestGetDataGroupWrapperFactory(), wrapperFactory);
+		assertSame(dataRedactor.onlyForTestGetMatcherFactory(), matcherFactory);
 	}
 
 	@Test
@@ -175,7 +175,6 @@ public class DataRedactorTest {
 
 	private DataGroupWrapperSpy getGroupReturnedFromMatcherWithCallNumber(int firstGroupNumber) {
 		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(firstGroupNumber);
-		// DataGroupForDataRedactorSpy firstChildGroup = matcherSpy.returnedDataGroup;
 		DataGroupWrapperSpy firstChildGroup = matcherSpy.returnedDataGroup;
 		return firstChildGroup;
 	}

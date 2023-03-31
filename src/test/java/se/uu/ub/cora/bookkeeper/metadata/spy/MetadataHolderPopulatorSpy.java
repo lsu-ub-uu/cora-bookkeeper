@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
+package se.uu.ub.cora.bookkeeper.metadata.spy;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulator;
@@ -24,11 +24,11 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class MetadataHolderFromStoragePopulatorSpy implements MetadataHolderPopulator {
+public class MetadataHolderPopulatorSpy implements MetadataHolderPopulator {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public MetadataHolderFromStoragePopulatorSpy() {
+	public MetadataHolderPopulatorSpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("createAndPopulateMetadataHolderFromMetadataStorage",
 				MetadataHolderSpy::new);

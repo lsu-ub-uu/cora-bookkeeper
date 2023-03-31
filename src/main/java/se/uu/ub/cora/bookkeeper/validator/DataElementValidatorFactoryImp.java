@@ -86,7 +86,6 @@ class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 	}
 
 	public MetadataHolderPopulator onlyForTestGetMetadataHolderPopulator() {
-		// TODO Auto-generated method stub
 		return metadataHolderPopulator;
 	}
 }

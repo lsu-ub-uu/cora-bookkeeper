@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
+import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataHolderPopulatorSpy;
 import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -39,7 +40,7 @@ public class DataElementValidatorFactoryTest {
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 	private MetadataHolderSpy metadataHolderDefault;
 	private DataElementValidatorFactoryImp dataValidatorFactory;
-	private MetadataHolderFromStoragePopulatorSpy metadataHolderPopulator;
+	private MetadataHolderPopulatorSpy metadataHolderPopulator;
 	private MetadataHolderSpy metadataHolderShouldNotBeUsed;
 
 	@BeforeMethod
@@ -48,7 +49,7 @@ public class DataElementValidatorFactoryTest {
 
 		metadataHolderDefault = new MetadataHolderSpy();
 		metadataHolderShouldNotBeUsed = new MetadataHolderSpy();
-		metadataHolderPopulator = new MetadataHolderFromStoragePopulatorSpy();
+		metadataHolderPopulator = new MetadataHolderPopulatorSpy();
 		metadataHolderPopulator.MRV.setReturnValues(
 				"createAndPopulateMetadataHolderFromMetadataStorage",
 				List.of(metadataHolderDefault, metadataHolderShouldNotBeUsed));
