@@ -32,7 +32,6 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 
 	@Override
 	public DataValidator factor() {
-
 		Map<String, DataGroup> recordTypeHolder = createRecordTypeHolder(
 				metadataStorage.getRecordTypes());
 

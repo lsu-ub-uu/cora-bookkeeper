@@ -19,7 +19,6 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
@@ -31,6 +30,8 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
@@ -38,6 +39,8 @@ import se.uu.ub.cora.data.collected.IndexTerm;
 import se.uu.ub.cora.data.collected.PermissionTerm;
 import se.uu.ub.cora.data.collected.StorageTerm;
 import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataGroupTermCollectorTest {
 
@@ -45,17 +48,23 @@ public class DataGroupTermCollectorTest {
 	private DataGroupTermCollectorImp collector;
 	private DataGroup basicDataGroup;
 	private static final String INDEX_FIELD_NAME = "indexFieldNameForId:";
+	private LoggerFactorySpy loggerFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		metadataStorage = new MetadataStorageForTermStub();
-		collector = new DataGroupTermCollectorImp(metadataStorage);
-		basicDataGroup = createBookWithNoTitle();
-	}
+		loggerFactory = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactory);
 
-	@Test
-	public void testGetMetadataStorage() {
-		assertSame(collector.onlyForTestGetMetadataStorage(), metadataStorage);
+		metadataStorage = new MetadataStorageForTermStub();
+
+		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
+		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
+				() -> metadataStorage);
+		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+
+		// collector = new DataGroupTermCollectorImp(metadataStorage);
+		collector = new DataGroupTermCollectorImp();
+		basicDataGroup = createBookWithNoTitle();
 	}
 
 	@Test

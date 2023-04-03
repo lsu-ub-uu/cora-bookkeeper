@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
 
 import java.util.Set;
 
@@ -29,7 +28,9 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataFactory;
@@ -37,25 +38,31 @@ import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.collected.Link;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataRecordLinkCollectorTest {
 	private DataFactory dataFactory;
 	private DataRecordLinkCollector linkCollector;
 	private MetadataStorageView metadataStorage;
+	private LoggerFactorySpy loggerFactory;
 
 	@BeforeMethod
 	public void setUp() {
+		loggerFactory = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactory);
+
 		dataFactory = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactory);
 
 		metadataStorage = new MetadataStorageStub();
-		linkCollector = new DataRecordLinkCollectorImp(metadataStorage);
-	}
 
-	@Test
-	public void testGetMetadataStorage() {
-		DataRecordLinkCollectorImp collectorImp = (DataRecordLinkCollectorImp) linkCollector;
-		assertSame(collectorImp.getMetadataStorage(), metadataStorage);
+		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
+		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
+				() -> metadataStorage);
+		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+
+		linkCollector = new DataRecordLinkCollectorImp();
 	}
 
 	@Test

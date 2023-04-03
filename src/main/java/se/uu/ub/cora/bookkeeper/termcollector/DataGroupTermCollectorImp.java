@@ -29,6 +29,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
@@ -45,15 +46,15 @@ import se.uu.ub.cora.data.collected.StorageTerm;
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private static final String RECORD_INFO = "recordInfo";
-	private MetadataStorageView metadataStorage;
+	// private MetadataStorageView metadataStorage;
 	private MetadataHolder metadataHolder;
 	private CollectTermHolder collectTermHolder;
 
 	private CollectTerms collectTerms;
 
-	public DataGroupTermCollectorImp(MetadataStorageView metadataStorage) {
-		this.metadataStorage = metadataStorage;
-	}
+	// public DataGroupTermCollectorImp(MetadataStorageView metadataStorage) {
+	// this.metadataStorage = metadataStorage;
+	// }
 
 	@Override
 	public CollectTerms collectTerms(String metadataGroupId, DataGroup dataGroup) {
@@ -103,6 +104,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private void populateCollectTermHolderFromMetadataStorage() {
 		collectTermHolder = new CollectTermHolder();
+		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
 		for (DataGroup collectTerm : metadataStorage.getCollectTerms()) {
 			collectTermHolder.addCollectTerm(collectTerm);
 		}
@@ -283,8 +285,4 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return new PermissionTerm(collectTermId, value, permissionKey);
 	}
 
-	public MetadataStorageView onlyForTestGetMetadataStorage() {
-		// needed for test
-		return metadataStorage;
-	}
 }

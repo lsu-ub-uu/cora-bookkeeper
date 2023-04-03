@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -37,10 +37,12 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataHolderPopulatorSpy;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
@@ -50,6 +52,7 @@ import se.uu.ub.cora.data.spies.DataFactorySpy;
 public class DataGroupValidatorTest {
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 	private DataFactorySpy dataFactorySpy;
+	private MetadataHolderPopulatorSpy metadataHolderPopulator;
 
 	@BeforeMethod
 	public void setUp() {
@@ -62,6 +65,7 @@ public class DataGroupValidatorTest {
 		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
 		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));
 		recordTypeHolder.put("image", image);
+		metadataHolderPopulator = new MetadataHolderPopulatorSpy();
 
 	}
 
@@ -80,9 +84,21 @@ public class DataGroupValidatorTest {
 
 	private DataElementValidator createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator() {
 		MetadataHolderImp metadataHolder = createOneGroupNoAttributesOneTextChild();
+
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
+		MetadataElement metadataElement = metadataHolder.getMetadataElement("testGroupId");
+		return new DataGroupValidator(dataValidatorFactory, metadataHolder,
+				(MetadataGroup) metadataElement);
+	}
+
+	private DataElementValidatorFactory setUpDataElementValidatorFactoryWithMetadataHolder(
+			MetadataHolderImp metadataHolder) {
+		metadataHolderPopulator.MRV.setDefaultReturnValuesSupplier(
+				"createAndPopulateMetadataHolderFromMetadataStorage", () -> metadataHolder);
 		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
-		return dataValidatorFactory.factor("testGroupId");
+				recordTypeHolder, metadataHolderPopulator);
+		return dataValidatorFactory;
 	}
 
 	private MetadataHolderImp createOneGroupNoAttributesOneTextChild() {
@@ -112,8 +128,9 @@ public class DataGroupValidatorTest {
 						"IdToChildThatDoesNotExist", 1, 1);
 
 		group.addChildReference(groupChild);
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
+
 		DataElementValidator dataElementValidator = new DataGroupValidator(dataValidatorFactory,
 				metadataHolder, group);
 
@@ -194,8 +211,8 @@ public class DataGroupValidatorTest {
 		MetadataHolderImp metadataHolder = createOneGroupNoAttributesOneRecordLinkChild();
 		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
 
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("groupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("groupNameInData");
@@ -228,8 +245,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testOneGroupOneAttributeOneTextChildValidData() {
 		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -243,8 +260,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testOneGroupOneAttributeOneTextChildInvalidAttribute() {
 		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -260,8 +277,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testOneGroupOneAttributeOneTextChildMissingAttribute() {
 		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -278,8 +295,8 @@ public class DataGroupValidatorTest {
 		MetadataHolderImp metadataHolder = createOneGroupOneAttributeOneTextChild();
 		createSecondCollectionVariable(metadataHolder);
 
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -318,8 +335,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testTwoGroupsTwoAttributesOneTextChildOneGroupChildValidData() {
 		MetadataHolderImp metadataHolder = createTwoGroupsTwoAttributesOneTextChildOneGroupChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
 		// dataGroup
@@ -435,8 +452,8 @@ public class DataGroupValidatorTest {
 				() -> dataAtomicSpy, "col1NameInData", "choice1NameInData");
 
 		MetadataHolderImp metadataHolder = createMetadataForOneSimpleGroup();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		// return dataValidatorFactory.factor("testGroupId");
 		MetadataGroup metadataElement = (MetadataGroup) metadataHolder
 				.getMetadataElement("testGroupId");
@@ -590,8 +607,8 @@ public class DataGroupValidatorTest {
 	public void testAdvancedGroupOneRightDataChildElement() {
 
 		MetadataHolderImp metadataHolder = createMetadataForOneGroupDoubleAttributesAndChildren();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -645,8 +662,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testValidRepeatChild() {
 		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -661,8 +678,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testInvalidRepeatChildMissing() {
 		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -679,8 +696,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testInvalidRepeatChildEmpty() {
 		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -695,8 +712,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testSameRepeatId() {
 		MetadataHolderImp metadataHolder = createMetadataGroupWithUnlimitedChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -713,8 +730,8 @@ public class DataGroupValidatorTest {
 	@Test
 	public void testRepeatIdWhereNotExpected() {
 		MetadataHolderImp metadataHolder = createMetadataGroupWithOneChild();
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -750,8 +767,8 @@ public class DataGroupValidatorTest {
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
 		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
 
@@ -848,8 +865,8 @@ public class DataGroupValidatorTest {
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
 		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
 		Collection<String> errorMessages = validationAnswer.getErrorMessages();
@@ -873,8 +890,8 @@ public class DataGroupValidatorTest {
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
 		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
 		Collection<String> errorMessages = validationAnswer.getErrorMessages();
@@ -899,8 +916,8 @@ public class DataGroupValidatorTest {
 				"linkNameInData", "recordLinkLinkedRecordType", "linkedRecordId"));
 
 		addLinkedRecordIdTextVarToMetadataHolder(metadataHolder);
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("parentGroupId");
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataParent);
@@ -926,8 +943,8 @@ public class DataGroupValidatorTest {
 		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder,
 				false);
 
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory
 				.factor("grandParentGroupId");
 
@@ -950,8 +967,8 @@ public class DataGroupValidatorTest {
 
 		DataGroup dataGrandParent = createGroupsInThreeLevelsWithMatchingData(metadataHolder, true);
 
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory
 				.factor("grandParentGroupId");
 
@@ -1002,8 +1019,8 @@ public class DataGroupValidatorTest {
 		DataCreator.addTextVarChildReferenceToGroupMinMax("text1", 0, 4, metadataGroup,
 				metadataHolder);
 
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
+		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
+				metadataHolder);
 		DataElementValidator dataElementValidator = dataValidatorFactory.factor("testGroupId");
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");

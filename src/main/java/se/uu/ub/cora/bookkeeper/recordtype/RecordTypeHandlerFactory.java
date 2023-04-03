@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,25 +16,29 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordpart;
+package se.uu.ub.cora.bookkeeper.recordtype;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.data.DataGroup;
 
-public class MatcherFactoryImp implements MatcherFactory {
-	private MetadataMatchData dataMatcher;
+/**
+ * RecordTypeHandlerFactory is a factor class that creates new RecordTypeHandlers.
+ *
+ */
 
-	public MatcherFactoryImp(MetadataMatchData dataMatcher) {
-		this.dataMatcher = dataMatcher;
-	}
+public interface RecordTypeHandlerFactory {
+	/**
+	 * 
+	 * @param dataGroup
+	 * @return
+	 */
+	RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup);
 
-	@Override
-	public Matcher factor(DataGroup dataGroup, MetadataGroup metadataGroup) {
-		return new GroupMatcher(dataMatcher, dataGroup, metadataGroup);
-	}
-
-	public MetadataMatchData onlyForTestGetMetadataMatchData() {
-		return dataMatcher;
-	}
+	/**
+	 * factorUsingRecordTypeId method factors a RecordTypeHandler using recordTypeId.
+	 * 
+	 * @param recordTypeId
+	 *            is an String with the id of the recordtype that the handler is created with
+	 * @return
+	 */
+	RecordTypeHandler factorUsingRecordTypeId(String recordTypeId);
 }
