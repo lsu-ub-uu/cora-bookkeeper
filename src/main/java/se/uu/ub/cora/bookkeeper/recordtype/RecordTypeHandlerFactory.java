@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 
 /**
  * RecordTypeHandlerFactory is a factor class that creates new RecordTypeHandlers.
@@ -41,4 +42,13 @@ public interface RecordTypeHandlerFactory {
 	 * @return
 	 */
 	RecordTypeHandler factorUsingRecordTypeId(String recordTypeId);
+
+	/**
+	 * factorUsingDataRecordGroup create
+	 * 
+	 * @param dataRecordGroup
+	 *            is a DataRecordGroup
+	 * @return
+	 */
+	RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,8 +23,13 @@ import static org.testng.Assert.assertSame;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactoryImp;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.storage.RecordStorage;
@@ -37,6 +42,8 @@ public class RecordTypeHandlerFactoryTest {
 	private RecordStorage recordStorage;
 	private RecordTypeHandlerFactoryImp factory;
 	private RecordStorageInstanceProviderSpy instanceProvider;
+	private MetadataStorageViewSpy metadataStorage;
+	private MetadataStorageViewInstanceProviderSpy metaStorageInstProviderSpy;
 
 	@BeforeMethod
 	private void beforeMethod() {
@@ -50,19 +57,28 @@ public class RecordTypeHandlerFactoryTest {
 		instanceProvider.MRV.setDefaultReturnValuesSupplier("getRecordStorage",
 				() -> recordStorage);
 
+		metadataStorage = new MetadataStorageViewSpy();
+
+		metaStorageInstProviderSpy = new MetadataStorageViewInstanceProviderSpy();
+		metaStorageInstProviderSpy.MRV.setDefaultReturnValuesSupplier("getStorageView",
+				() -> metadataStorage);
+		MetadataStorageProvider
+				.onlyForTestSetMetadataStorageViewInstanceProvider(metaStorageInstProviderSpy);
+
 		factory = new RecordTypeHandlerFactoryImp();
 	}
 
 	@Test
 	public void testRecordStorageLoadedOnceOnFirstCallToFactor() throws Exception {
 		DataGroupSpy dataGroup = createTopDataGroup();
-
 		instanceProvider.MCR.assertMethodNotCalled("getRecordStorage");
 
 		factory.factorUsingDataGroup(dataGroup);
 		factory.factorUsingDataGroup(dataGroup);
 		factory.factorUsingRecordTypeId("someRecordTypeId1");
 		factory.factorUsingRecordTypeId("someRecordTypeId2");
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 
 		instanceProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 1);
 	}
@@ -92,6 +108,34 @@ public class RecordTypeHandlerFactoryTest {
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
 		assertSame(recordTypeHandler.onlyForTestGetRecordTypeId(), recordTypeId);
 		assertSame(recordTypeHandler.getRecordTypeHandlerFactory(), factory);
+	}
+
+	@Test
+	public void testFactorUsingDataRecordGroupWithSValidationType() throws Exception {
+		String validationTypeId = "someValidationTypeId";
+		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
+		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getValidationType",
+				() -> validationTypeId);
+
+		RecordTypeHandlerFactory factoryInterface = factory;
+		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factoryInterface
+				.factorUsingDataRecordGroup(dataRecordGroup);
+
+		assertSame(recordTypeHandler.getRecordTypeHandlerFactory(), factory);
+		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
+		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorage);
+		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
+
+	}
+
+	@Test
+	public void testMetadatatorageLoadedOnceOnFirstCallToFactor() throws Exception {
+		metaStorageInstProviderSpy.MCR.assertMethodNotCalled("getStorageView");
+
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
+
+		metaStorageInstProviderSpy.MCR.assertNumberOfCallsToMethod("getStorageView", 1);
 	}
 
 }

@@ -69,11 +69,6 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void onlyForTestGetRecordStorage() throws Exception {
-
-	}
-
-	@Test
 	public void testInitializeFromStorage() throws Exception {
 		RecordTypeHandler recordTypeHandler = RecordTypeHandlerImp
 				.usingRecordStorageAndRecordTypeId(null, recordStorage, SOME_ID);

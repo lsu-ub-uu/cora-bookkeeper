@@ -19,30 +19,51 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 
 public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	private RecordStorage recordStorage;
+	private MetadataStorageView metadataStorage;
 
 	@Override
 	public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
-		if (recordStorage == null) {
-			recordStorage = RecordStorageProvider.getRecordStorage();
-		}
+		ensureRecordStorageFetchedOnlyOnce();
 
 		return RecordTypeHandlerImp.usingRecordStorageAndDataGroup(this, recordStorage, dataGroup);
 	}
 
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
-		if (recordStorage == null) {
-			recordStorage = RecordStorageProvider.getRecordStorage();
-		}
+		ensureRecordStorageFetchedOnlyOnce();
 
 		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(this, recordStorage,
 				recordTypeId);
+	}
+
+	private void ensureRecordStorageFetchedOnlyOnce() {
+		if (recordStorage == null) {
+			recordStorage = RecordStorageProvider.getRecordStorage();
+		}
+	}
+
+	@Override
+	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		ensureRecordStorageFetchedOnlyOnce();
+		ensureMetadataStorageFetchedOnlyOnce();
+
+		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
+				this, recordStorage, metadataStorage, dataRecordGroup.getValidationType());
+	}
+
+	private void ensureMetadataStorageFetchedOnlyOnce() {
+		if (metadataStorage == null) {
+			metadataStorage = MetadataStorageProvider.getStorageView();
+		}
 	}
 
 }

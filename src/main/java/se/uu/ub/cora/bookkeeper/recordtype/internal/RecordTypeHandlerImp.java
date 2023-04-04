@@ -31,6 +31,7 @@ import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.Filter;
@@ -59,6 +60,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private RecordTypeHandlerFactory recordTypeHandlerFactory;
 	private Set<String> readChildren = new HashSet<>();
 	private List<String> metadataCollectionItemTypes;
+	private MetadataStorageView metadataStorageView;
+	private String validationTypeId;
 
 	RecordTypeHandlerImp() {
 		// only for test
@@ -68,6 +71,20 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
 			String recordTypeId) {
 		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
+	}
+
+	public static RecordTypeHandler usingRecordStorageAndDataGroup(
+			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+			DataGroup dataGroup) {
+		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
+	}
+
+	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
+			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+			MetadataStorageView metadataStorageView, String validationTypeId) {
+
+		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage,
+				metadataStorageView, validationTypeId);
 	}
 
 	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
@@ -86,10 +103,13 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		recordTypeId = getIdFromMetadatagGroup(dataGroup);
 	}
 
-	public static RecordTypeHandler usingRecordStorageAndDataGroup(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			DataGroup dataGroup) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
+	public RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
+			RecordStorage recordStorage, MetadataStorageView metadataStorageView,
+			String validationTypeId) {
+		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+		this.recordStorage = recordStorage;
+		this.metadataStorageView = metadataStorageView;
+		this.validationTypeId = validationTypeId;
 	}
 
 	@Override
@@ -587,8 +607,16 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return recordStorage;
 	}
 
-	public Object onlyForTestGetRecordTypeId() {
+	public String onlyForTestGetRecordTypeId() {
 		return recordTypeId;
+	}
+
+	public MetadataStorageView onlyForTestGetMetadataStorage() {
+		return metadataStorageView;
+	}
+
+	public String onlyForTestGetValidationTypeId() {
+		return validationTypeId;
 	}
 
 }
