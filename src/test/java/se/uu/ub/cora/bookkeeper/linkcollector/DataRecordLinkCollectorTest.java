@@ -26,7 +26,7 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
@@ -77,10 +77,10 @@ public class DataRecordLinkCollectorTest {
 		DataGroup dataGroup = new DataGroupOldSpy("bush");
 		DataGroup dataTestLink = new DataGroupOldSpy("testLink");
 
-		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "bush");
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", "bush");
 		dataTestLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "bush1");
+		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", "bush1");
 		dataTestLink.addChild(linkedRecordId);
 		dataGroup.addChild(dataTestLink);
 

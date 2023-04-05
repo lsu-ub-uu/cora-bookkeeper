@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -50,10 +50,10 @@ public class DataGroupToMetadataGroupConverterTest {
 		dataGroup.addAttributeByIdWithValue("type", "group");
 
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "other"));
 		addTexts(dataGroup);
 
 		DataGroup childReferences = new DataGroupOldSpy("childReferences");
@@ -62,29 +62,29 @@ public class DataGroupToMetadataGroupConverterTest {
 		DataGroup childReference = new DataGroupOldSpy("childReference");
 		DataGroup ref = new DataGroupOldSpy("ref");
 		ref.addAttributeByIdWithValue("type", "group");
-		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataGroup"));
-		ref.addChild(new DataAtomicSpy("linkedRecordId", "otherMetadata"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataGroup"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordId", "otherMetadata"));
 		childReference.addChild(ref);
-		childReference.addChild(new DataAtomicSpy("repeatMin", "0"));
-		childReference.addChild(new DataAtomicSpy("repeatMinKey", "SOME_KEY"));
-		childReference.addChild(new DataAtomicSpy("repeatMax", "16"));
-		childReference.addChild(new DataAtomicSpy("secret", "true"));
-		childReference.addChild(new DataAtomicSpy("secretKey", "SECRET_KEY"));
-		childReference.addChild(new DataAtomicSpy("readOnly", "true"));
-		childReference.addChild(new DataAtomicSpy("readOnlyKey", "READONLY_KEY"));
+		childReference.addChild(new DataAtomicOldSpy("repeatMin", "0"));
+		childReference.addChild(new DataAtomicOldSpy("repeatMinKey", "SOME_KEY"));
+		childReference.addChild(new DataAtomicOldSpy("repeatMax", "16"));
+		childReference.addChild(new DataAtomicOldSpy("secret", "true"));
+		childReference.addChild(new DataAtomicOldSpy("secretKey", "SECRET_KEY"));
+		childReference.addChild(new DataAtomicOldSpy("readOnly", "true"));
+		childReference.addChild(new DataAtomicOldSpy("readOnlyKey", "READONLY_KEY"));
 		childReferences.addChild(childReference);
 		return dataGroup;
 	}
 
 	private void addTexts(DataGroup dataGroup) {
 		DataGroup text = new DataGroupOldSpy("textId");
-		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
-		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
+		text.addChild(new DataAtomicOldSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicOldSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
 		DataGroup defText = new DataGroupOldSpy("defTextId");
-		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
-		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
+		defText.addChild(new DataAtomicOldSpy("linkedRecordType", "textSystemOne"));
+		defText.addChild(new DataAtomicOldSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 	}
 
@@ -132,8 +132,8 @@ public class DataGroupToMetadataGroupConverterTest {
 	public void testToMetadataAsChildGroup() {
 		DataGroup dataGroup = createDataGroup();
 		DataGroup refParentId = new DataGroupOldSpy("refParentId");
-		refParentId.addChild(new DataAtomicSpy("linkedRecordType", "metadataGroup"));
-		refParentId.addChild(new DataAtomicSpy("linkedRecordId", "refParentId"));
+		refParentId.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataGroup"));
+		refParentId.addChild(new DataAtomicOldSpy("linkedRecordId", "refParentId"));
 		dataGroup.addChild(refParentId);
 
 		DataGroupToMetadataGroupConverter converter = DataGroupToMetadataGroupConverter

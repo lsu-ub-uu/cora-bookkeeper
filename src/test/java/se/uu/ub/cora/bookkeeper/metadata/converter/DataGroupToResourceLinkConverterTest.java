@@ -25,7 +25,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
 import se.uu.ub.cora.data.DataGroup;
@@ -57,13 +57,13 @@ public class DataGroupToResourceLinkConverterTest {
 	private DataGroup createDataGroup() {
 		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "resourceLink");
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "other"));
 
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "other"));
 
 		addTextWithNameInDataAndId(dataGroup, "textId", "otherTextId");
 		addTextWithNameInDataAndId(dataGroup, "defTextId", "otherDefTextId");
@@ -73,8 +73,8 @@ public class DataGroupToResourceLinkConverterTest {
 	private DataGroup addTextWithNameInDataAndId(DataGroup dataGroup, String textIdNameInData,
 			String textId) {
 		DataGroup textIdGroup = new DataGroupOldSpy(textIdNameInData);
-		textIdGroup.addChild(new DataAtomicSpy("linkedRecordType", "someRecordType"));
-		textIdGroup.addChild(new DataAtomicSpy("linkedRecordId", textId));
+		textIdGroup.addChild(new DataAtomicOldSpy("linkedRecordType", "someRecordType"));
+		textIdGroup.addChild(new DataAtomicOldSpy("linkedRecordId", textId));
 		dataGroup.addChild(textIdGroup);
 		return textIdGroup;
 	}

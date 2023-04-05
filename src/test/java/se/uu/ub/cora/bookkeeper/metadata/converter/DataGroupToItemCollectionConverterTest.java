@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.data.DataGroup;
@@ -37,19 +37,19 @@ public class DataGroupToItemCollectionConverterTest {
 		dataGroup.addAttributeByIdWithValue("type", "itemCollection");
 
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "other"));
 
 		DataGroup text = new DataGroupOldSpy("textId");
-		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
-		text.addChild(new DataAtomicSpy("linkedRecordId", "otherTextId"));
+		text.addChild(new DataAtomicOldSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicOldSpy("linkedRecordId", "otherTextId"));
 		dataGroup.addChild(text);
 
 		DataGroup defText = new DataGroupOldSpy("defTextId");
-		defText.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
-		defText.addChild(new DataAtomicSpy("linkedRecordId", "otherDefTextId"));
+		defText.addChild(new DataAtomicOldSpy("linkedRecordType", "textSystemOne"));
+		defText.addChild(new DataAtomicOldSpy("linkedRecordId", "otherDefTextId"));
 		dataGroup.addChild(defText);
 
 		DataGroup collectionItemReferences = new DataGroupOldSpy("collectionItemReferences");
@@ -79,8 +79,8 @@ public class DataGroupToItemCollectionConverterTest {
 			String linkedRecordId, String repeatId) {
 		DataGroup ref1 = new DataGroupOldSpy("ref");
 		ref1.setRepeatId(repeatId);
-		ref1.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionItem"));
-		ref1.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		ref1.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataCollectionItem"));
+		ref1.addChild(new DataAtomicOldSpy("linkedRecordId", linkedRecordId));
 		collectionItemReferences.addChild(ref1);
 	}
 }

@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
@@ -56,7 +56,7 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 		recordTypes = new ArrayList<>();
 		DataGroup recordType = new DataGroupOldSpy("someRecordType");
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "someRecordId"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "someRecordId"));
 		recordType.addChild(recordInfo);
 
 		recordTypes.add(recordType);

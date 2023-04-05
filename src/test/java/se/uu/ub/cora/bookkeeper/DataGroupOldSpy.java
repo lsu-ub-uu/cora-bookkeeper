@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import se.uu.ub.cora.data.DataAtomic;
@@ -75,8 +76,8 @@ public class DataGroupOldSpy implements DataGroup {
 
 	@Override
 	public void addChild(DataChild dataElement) {
-		if (dataElement instanceof DataAtomicSpy) {
-			DataAtomicSpy atomicSpyChild = (DataAtomicSpy) dataElement;
+		if (dataElement instanceof DataAtomicOldSpy) {
+			DataAtomicOldSpy atomicSpyChild = (DataAtomicOldSpy) dataElement;
 			atomicValues.put(atomicSpyChild.nameInData, atomicSpyChild.value);
 
 		} else if (dataElement instanceof DataGroup) {
@@ -132,11 +133,11 @@ public class DataGroupOldSpy implements DataGroup {
 		if (dataGroups.containsKey(nameInData)) {
 			return dataGroups.get(nameInData);
 		} else if (atomicValues.containsKey(nameInData)) {
-			return new DataAtomicSpy(nameInData, atomicValues.get(nameInData));
+			return new DataAtomicOldSpy(nameInData, atomicValues.get(nameInData));
 		}
 		DataGroupOldSpy dataGroupSpy = new DataGroupOldSpy(nameInData);
 		if ("refCollection".contentEquals(nameInData)) {
-			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someSpyLinkedRecordId"));
+			dataGroupSpy.addChild(new DataAtomicOldSpy("linkedRecordId", "someSpyLinkedRecordId"));
 		}
 		return dataGroupSpy;
 	}
@@ -160,10 +161,10 @@ public class DataGroupOldSpy implements DataGroup {
 
 	private void possiblyAddChildren(String nameInData, DataGroupOldSpy dataGroupSpy) {
 		if ("childRefCollectTerm".equals(nameInData)) {
-			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
+			dataGroupSpy.addChild(new DataAtomicOldSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 			dataGroupSpy.addAttributeByIdWithValue("type", "someAttributeTypeFromSpy");
 		} else if ("ref".equals(nameInData)) {
-			dataGroupSpy.addChild(new DataAtomicSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
+			dataGroupSpy.addChild(new DataAtomicOldSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 		}
 
 	}
@@ -279,6 +280,43 @@ public class DataGroupOldSpy implements DataGroup {
 	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public <T> boolean containsChildOfTypeAndName(Class<T> type, String name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public <T extends DataChild> T getFirstChildOfTypeAndName(Class<T> type, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends DataChild> boolean removeFirstChildWithTypeAndName(Class<T> type,
+			String name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public <T extends DataChild> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }

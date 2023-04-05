@@ -24,7 +24,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataGroup;
@@ -60,26 +60,26 @@ public class DataGroupToTextVariableConverterTest {
 	private DataGroup createDataGroup() {
 		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		dataGroup.addAttributeByIdWithValue("type", "textVar");
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "other"));
 
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "otherId"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "otherId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "other"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "other"));
 
 		addTextByNameInDataAndId(dataGroup, "textId", "otherTextId");
 		addTextByNameInDataAndId(dataGroup, "defTextId", "otherDefTextId");
 
 		dataGroup.addChild(
-				new DataAtomicSpy("regEx", "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
+				new DataAtomicOldSpy("regEx", "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}"));
 		return dataGroup;
 	}
 
 	private void addTextByNameInDataAndId(DataGroup dataGroup, String nameInData, String textId) {
 		DataGroup text = new DataGroupOldSpy(nameInData);
-		text.addChild(new DataAtomicSpy("linkedRecordType", "textSystemOne"));
-		text.addChild(new DataAtomicSpy("linkedRecordId", textId));
+		text.addChild(new DataAtomicOldSpy("linkedRecordType", "textSystemOne"));
+		text.addChild(new DataAtomicOldSpy("linkedRecordId", textId));
 		dataGroup.addChild(text);
 	}
 
@@ -87,8 +87,8 @@ public class DataGroupToTextVariableConverterTest {
 	public void testToMetadataWithRefParentId() {
 		DataGroup dataGroup = createDataGroup();
 		DataGroup refParentId = new DataGroupOldSpy("refParentId");
-		refParentId.addChild(new DataAtomicSpy("linkedRecordType", "metadataTextVariable"));
-		refParentId.addChild(new DataAtomicSpy("linkedRecordId", "refParentId"));
+		refParentId.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataTextVariable"));
+		refParentId.addChild(new DataAtomicOldSpy("linkedRecordId", "refParentId"));
 		dataGroup.addChild(refParentId);
 
 		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
@@ -102,7 +102,7 @@ public class DataGroupToTextVariableConverterTest {
 	@Test
 	public void testToMetadataWithFinalValue() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(new DataAtomicSpy("finalValue", "finalValue"));
+		dataGroup.addChild(new DataAtomicOldSpy("finalValue", "finalValue"));
 
 		DataGroupToTextVariableConverter converter = DataGroupToTextVariableConverter
 				.fromDataGroup(dataGroup);
@@ -137,8 +137,8 @@ public class DataGroupToTextVariableConverterTest {
 
 	private DataGroupOldSpy createRef(String linkedRecordId, String repeatId) {
 		DataGroupOldSpy ref = new DataGroupOldSpy("ref");
-		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
-		ref.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordId", linkedRecordId));
 		ref.setRepeatId(repeatId);
 		return ref;
 	}

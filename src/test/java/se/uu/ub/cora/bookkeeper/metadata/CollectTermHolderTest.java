@@ -22,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -33,10 +33,10 @@ public class CollectTermHolderTest {
 		DataGroup searchTerm = new DataGroupOldSpy("searchTerm");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
 		searchTerm.addChild(recordInfo);
-		searchTerm.addChild(new DataAtomicSpy("searchTermType", "final"));
+		searchTerm.addChild(new DataAtomicOldSpy("searchTermType", "final"));
 		DataGroup searchFieldRef = new DataGroupOldSpy("searchFieldRef");
-		searchFieldRef.addChild(new DataAtomicSpy("linkedRecordType", "metadata"));
-		searchFieldRef.addChild(new DataAtomicSpy("linkedRecordId", "searchTitleTextVar"));
+		searchFieldRef.addChild(new DataAtomicOldSpy("linkedRecordType", "metadata"));
+		searchFieldRef.addChild(new DataAtomicOldSpy("linkedRecordId", "searchTitleTextVar"));
 
 		searchTerm.addChild(searchFieldRef);
 
@@ -48,10 +48,10 @@ public class CollectTermHolderTest {
 
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", id));
+		recordInfo.addChild(new DataAtomicOldSpy("id", id));
 		DataGroup type = new DataGroupOldSpy("type");
-		type.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
-		type.addChild(new DataAtomicSpy("linkedRecordId", typeString));
+		type.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
+		type.addChild(new DataAtomicOldSpy("linkedRecordId", typeString));
 		recordInfo.addChild(type);
 		return recordInfo;
 	}

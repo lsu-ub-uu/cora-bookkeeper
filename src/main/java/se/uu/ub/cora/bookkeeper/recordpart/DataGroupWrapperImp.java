@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import se.uu.ub.cora.data.DataAtomic;
@@ -35,8 +37,12 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	Map<String, List<List<DataAttribute>>> removedElements = new HashMap<>();
+	Map<Class, Set<String>> removedTypes = new HashMap<>();
+	Class<? extends DataChild> removedType;
+	String removedName;
 	DataGroup dataGroup;
 	private List<DataChildFilter> childFiltersCalledForRemove = new ArrayList<>();
+	private TypeInfo typeInfo;
 
 	public DataGroupWrapperImp(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
@@ -171,6 +177,23 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public boolean hasRemovedBeenCalled(DataChild child) {
+		// Set<String> set = removedTypes.get(child.getClass().getSimpleName());
+		// Class next = removedTypes.keySet().iterator().next();
+		// if (child instanceof next) {
+		//
+		// }
+		// if (set.contains(child.getNameInData())) {
+		// return true;
+		// }
+		// if (class1.isInstance(removedType)) {
+		if (null != typeInfo && typeInfo.type.isInstance(child)
+				&& typeInfo.name.equals(child.getNameInData())) {
+			return true;
+		}
+		// if (removedType.isInstance(child)) {
+		// return true;
+		// }
+
 		for (DataChildFilter dataChildFilter : childFiltersCalledForRemove) {
 			if (dataChildFilter.childMatches(child)) {
 				return true;
@@ -278,4 +301,43 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 		return dataGroup.removeAllChildrenMatchingFilter(childFilter);
 	}
 
+	@Override
+	public <T> boolean containsChildOfTypeAndName(Class<T> type, String name) {
+		return dataGroup.containsChildOfTypeAndName(type, name);
+	}
+
+	@Override
+	public <T extends DataChild> T getFirstChildOfTypeAndName(Class<T> type, String name) {
+		return dataGroup.getFirstChildOfTypeAndName(type, name);
+	}
+
+	@Override
+	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
+		return dataGroup.getChildrenOfTypeAndName(type, name);
+	}
+
+	@Override
+	public <T extends DataChild> boolean removeFirstChildWithTypeAndName(Class<T> type,
+			String name) {
+		// removedTypes.put(type, Set.of(name));
+		removedType = type;
+		removedName = name;
+		typeInfo = new TypeInfo(type, name);
+		return dataGroup.removeFirstChildWithTypeAndName(type, name);
+	}
+
+	@Override
+	public <T extends DataChild> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+	private record TypeInfo(Class<? extends DataChild> type, String name) {
+	}
 }

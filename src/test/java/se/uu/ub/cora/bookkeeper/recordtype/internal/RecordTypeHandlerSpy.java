@@ -150,8 +150,8 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		return metadataDataGroup;
 	}
 
-	private DataAtomicSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
-		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
+	private DataAtomicOldSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
+		DataAtomicOldSpy dataAtomicSpy = new DataAtomicOldSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
 		return dataAtomicSpy;

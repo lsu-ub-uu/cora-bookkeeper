@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.testdata;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
@@ -153,10 +153,10 @@ public class DataCreator {
 			String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
 		DataGroup dataRecordLink = new DataGroupOldSpy(nameInData);
 
-		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", linkedRecordTypeString);
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", linkedRecordTypeString);
 		dataRecordLink.addChild(linkedRecordType);
 
-		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", linkedRecordIdString);
+		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", linkedRecordIdString);
 		dataRecordLink.addChild(linkedRecordId);
 		return dataRecordLink;
 	}
@@ -165,10 +165,10 @@ public class DataCreator {
 			String nameInData, String streamId, String filename, String filesize, String mimeType) {
 		DataGroup dataResourceLink = new DataGroupOldSpy(nameInData);
 
-		dataResourceLink.addChild(new DataAtomicSpy("streamId", streamId));
-		dataResourceLink.addChild(new DataAtomicSpy("filename", filename));
-		dataResourceLink.addChild(new DataAtomicSpy("filesize", filesize));
-		dataResourceLink.addChild(new DataAtomicSpy("mimeType", mimeType));
+		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", streamId));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filename", filename));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", filesize));
+		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", mimeType));
 		return dataResourceLink;
 	}
 
@@ -184,8 +184,8 @@ public class DataCreator {
 	private static void createAndAddRefWithLinkedRecordIdAndRepeatId(DataGroup attributeReference,
 			String linkedRecordId, String repeatId) {
 		DataGroup ref = new DataGroupOldSpy("ref");
-		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
-		ref.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordId", linkedRecordId));
 		ref.setRepeatId(repeatId);
 		attributeReference.addChild(ref);
 	}
@@ -193,8 +193,8 @@ public class DataCreator {
 	public static void addTextToGroupWithNameInDataLinkedIdAndLinkedType(DataGroup dataGroup,
 			String nameInData, String linkedRecordId, String linkedRecordType) {
 		DataGroup text = new DataGroupOldSpy(nameInData);
-		text.addChild(new DataAtomicSpy("linkedRecordType", linkedRecordType));
-		text.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		text.addChild(new DataAtomicOldSpy("linkedRecordType", linkedRecordType));
+		text.addChild(new DataAtomicOldSpy("linkedRecordId", linkedRecordId));
 		dataGroup.addChild(text);
 	}
 }
