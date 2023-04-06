@@ -102,24 +102,32 @@ public interface RecordTypeHandler {
 	boolean shouldAutoGenerateId();
 
 	/**
-	 * getNewMetadataId returns the metadataId for the top level dataGroup to use for validating
-	 * data when creating a new record, used in the specified recordType in RecordTypeHandler
+	 * getCreateDefinitionId returns the metadataId for the top level metadataGroup to use for
+	 * validating data when creating a new record.
 	 * 
-	 * @return String with metadataId
+	 * @return A String with metadataGroup id or empty if it can't be found
 	 */
-	String getNewMetadataId();
+	String getCreateDefinitionId();
 
 	/**
-	 * getMetadataId returns the metadataId for the top level dataGroup to use for validating data
-	 * when updating data, used in the specified recordType in RecordTypeHandler
+	 * getUpdateDefinitionId returns the metadataId for the top level metadatadataGroup to use for
+	 * validating data when updating a new record.
+	 * 
+	 * @return A String with metadataGroup id or empty if it can't be found
+	 */
+	String getUpdateDefinitionId();
+
+	/**
+	 * getDefinitionId returns the metadataId for the top level metadataGroup that describes all
+	 * possible data for the recordType.
 	 * 
 	 * @return String with metadataId
 	 */
-	String getMetadataId();
+	String getDefinitionId();
 
 	/**
 	 * getMetadataGroup is used to get the metadata group as a DataGroup using the implementation of
-	 * {@link #getMetadataId()}.
+	 * {@link #getDefinitionId()}.
 	 * 
 	 * @return DataGroup of the recordPart used in the RecordTypeHandler
 	 */

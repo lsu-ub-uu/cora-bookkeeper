@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
@@ -73,6 +74,12 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 	public Collection<ValidationType> getValidationTypes() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Optional<ValidationType> getValidationType(String validationId) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }

@@ -314,8 +314,8 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 		return metadataGroup;
 	}
 
-	private DataAtomicOldSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
-		DataAtomicOldSpy dataAtomicSpy = new DataAtomicOldSpy();
+	private DataAtomicSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
+		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
 		return dataAtomicSpy;

@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import se.uu.ub.cora.data.DataAtomic;
@@ -36,13 +35,10 @@ import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
-	Map<String, List<List<DataAttribute>>> removedElements = new HashMap<>();
-	Map<Class, Set<String>> removedTypes = new HashMap<>();
-	Class<? extends DataChild> removedType;
-	String removedName;
-	DataGroup dataGroup;
+	private Map<String, List<List<DataAttribute>>> removedElements = new HashMap<>();
+	private List<TypeName> removedTypeNames = new ArrayList<>();
 	private List<DataChildFilter> childFiltersCalledForRemove = new ArrayList<>();
-	private TypeInfo typeInfo;
+	private DataGroup dataGroup;
 
 	public DataGroupWrapperImp(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
@@ -177,32 +173,42 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 
 	@Override
 	public boolean hasRemovedBeenCalled(DataChild child) {
-		// Set<String> set = removedTypes.get(child.getClass().getSimpleName());
-		// Class next = removedTypes.keySet().iterator().next();
-		// if (child instanceof next) {
-		//
-		// }
-		// if (set.contains(child.getNameInData())) {
-		// return true;
-		// }
-		// if (class1.isInstance(removedType)) {
-		if (null != typeInfo && typeInfo.type.isInstance(child)
-				&& typeInfo.name.equals(child.getNameInData())) {
+		if (removedHasBeenCalledUsingTypeAndName(child)) {
 			return true;
 		}
-		// if (removedType.isInstance(child)) {
-		// return true;
-		// }
-
-		for (DataChildFilter dataChildFilter : childFiltersCalledForRemove) {
-			if (dataChildFilter.childMatches(child)) {
-				return true;
-			}
+		if (removedHasBeenCalledUsingFilter(child)) {
+			return true;
 		}
 		if (removeHasNotBeenCalledForNameInData(child)) {
 			return false;
 		}
 		return removeHasBeenCalledForChildsAttributes(child);
+	}
+
+	private boolean removedHasBeenCalledUsingTypeAndName(DataChild child) {
+		for (TypeName typeInfo : removedTypeNames) {
+			if (sameType(child, typeInfo) && sameName(child, typeInfo)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean sameType(DataChild child, TypeName typeInfo) {
+		return typeInfo.type().isInstance(child);
+	}
+
+	private boolean sameName(DataChild child, TypeName typeInfo) {
+		return typeInfo.name().equals(child.getNameInData());
+	}
+
+	private boolean removedHasBeenCalledUsingFilter(DataChild child) {
+		for (DataChildFilter dataChildFilter : childFiltersCalledForRemove) {
+			if (dataChildFilter.childMatches(child)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean removeHasNotBeenCalledForNameInData(DataChild child) {
@@ -319,25 +325,24 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	@Override
 	public <T extends DataChild> boolean removeFirstChildWithTypeAndName(Class<T> type,
 			String name) {
-		// removedTypes.put(type, Set.of(name));
-		removedType = type;
-		removedName = name;
-		typeInfo = new TypeInfo(type, name);
+		TypeName typeName = new TypeName(type, name);
+		removedTypeNames.add(typeName);
 		return dataGroup.removeFirstChildWithTypeAndName(type, name);
 	}
 
 	@Override
 	public <T extends DataChild> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
-		// TODO Auto-generated method stub
-		return false;
+		TypeName typeInfo = new TypeName(type, name);
+		removedTypeNames.add(typeInfo);
+		return dataGroup.removeChildrenWithTypeAndName(type, name);
 	}
 
 	@Override
 	public Optional<String> getAttributeValue(String nameInData) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return dataGroup.getAttributeValue(nameInData);
 	}
 
-	private record TypeInfo(Class<? extends DataChild> type, String name) {
+	record TypeName(Class<? extends DataChild> type, String name) {
 	}
+
 }

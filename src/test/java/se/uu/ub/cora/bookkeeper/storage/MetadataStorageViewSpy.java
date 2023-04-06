@@ -20,6 +20,7 @@ package se.uu.ub.cora.bookkeeper.storage;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
@@ -37,6 +38,7 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 		MRV.setDefaultReturnValuesSupplier("getTexts", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getRecordTypes", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getCollectTerms", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getValidationType", () -> Optional.empty());
 		MRV.setDefaultReturnValuesSupplier("getValidationTypes", ArrayList<ValidationType>::new);
 	}
 
@@ -63,6 +65,11 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 	@Override
 	public Collection<DataGroup> getCollectTerms() {
 		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public Optional<ValidationType> getValidationType(String validationId) {
+		return (Optional<ValidationType>) MCR.addCallAndReturnFromMRV("validationId", validationId);
 	}
 
 	@Override

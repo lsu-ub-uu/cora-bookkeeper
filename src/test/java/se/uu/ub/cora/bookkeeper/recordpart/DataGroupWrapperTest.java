@@ -25,6 +25,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
@@ -714,8 +715,70 @@ public class DataGroupWrapperTest {
 		child.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
 
 		wrapperAsDG.removeFirstChildWithTypeAndName(DataAtomic.class, name);
+		wrapperAsDG.removeFirstChildWithTypeAndName(DataGroup.class, name);
 
 		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
 	}
 
+	@Test
+	public void testRemoveChildrenWithTypeAndNameSentOnToWrappedGroup() throws Exception {
+		String methodName = "removeChildrenWithTypeAndName";
+
+		boolean answer = wrapperAsDG.removeChildrenWithTypeAndName(type, name);
+
+		dataGroup.MCR.assertParameters(methodName, 0, type, name);
+		dataGroup.MCR.assertReturn(methodName, 0, answer);
+	}
+
+	@Test
+	public void testRemoveChildrenWithTypeAndNameFalseIfWrongNameInData() throws Exception {
+		DataChildSpy child = new DataChildSpy();
+		child.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "someOtherName");
+
+		wrapperAsDG.removeChildrenWithTypeAndName(type, name);
+
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testRemoveChildrenWithTypeAndNameFalseIfWrongClass() throws Exception {
+		DataGroupSpy child = new DataGroupSpy();
+		child.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
+
+		wrapperAsDG.removeChildrenWithTypeAndName(DataAtomic.class, name);
+
+		assertFalse(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testRemoveChildrenWithTypeAndNameTrueIfSameClassAndNameInData() throws Exception {
+		DataAtomicSpy child = new DataAtomicSpy();
+		child.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
+
+		wrapperAsDG.removeChildrenWithTypeAndName(DataAtomic.class, name);
+
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testRemoveChildrenWithTypeAndNameTrueIfSameClassAndNameInDataMultiple()
+			throws Exception {
+		DataAtomicSpy child = new DataAtomicSpy();
+		child.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
+
+		wrapperAsDG.removeChildrenWithTypeAndName(DataAtomic.class, name);
+		wrapperAsDG.removeChildrenWithTypeAndName(DataGroup.class, name);
+
+		assertTrue(wrapperAsDGW.hasRemovedBeenCalled(child));
+	}
+
+	@Test
+	public void testGetAttributeValueSentOnToWrappedGroup() throws Exception {
+		String methodName = "getAttributeValue";
+
+		Optional<String> answer = wrapperAsDG.getAttributeValue(name);
+
+		dataGroup.MCR.assertParameters(methodName, 0, name);
+		dataGroup.MCR.assertReturn(methodName, 0, answer);
+	}
 }

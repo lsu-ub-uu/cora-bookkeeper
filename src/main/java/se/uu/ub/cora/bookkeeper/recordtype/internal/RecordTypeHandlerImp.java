@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
@@ -32,6 +33,8 @@ import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
+import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.Filter;
@@ -62,22 +65,23 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private List<String> metadataCollectionItemTypes;
 	private MetadataStorageView metadataStorageView;
 	private String validationTypeId;
+	private ValidationType validationType;
 
 	RecordTypeHandlerImp() {
 		// only for test
 	}
 
-	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			String recordTypeId) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
-	}
-
-	public static RecordTypeHandler usingRecordStorageAndDataGroup(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			DataGroup dataGroup) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
-	}
+	// public static RecordTypeHandler usingRecordStorageAndRecordTypeId(
+	// RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+	// String recordTypeId) {
+	// return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
+	// }
+	//
+	// public static RecordTypeHandler usingRecordStorageAndDataGroup(
+	// RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+	// DataGroup dataGroup) {
+	// return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
+	// }
 
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
 			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
@@ -87,21 +91,21 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 				metadataStorageView, validationTypeId);
 	}
 
-	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, String recordTypeId) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-		this.recordStorage = recordStorage;
-		this.recordTypeId = recordTypeId;
-		recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
-	}
-
-	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, DataGroup dataGroup) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-		this.recordStorage = recordStorage;
-		recordType = dataGroup;
-		recordTypeId = getIdFromMetadatagGroup(dataGroup);
-	}
+	// private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
+	// RecordStorage recordStorage, String recordTypeId) {
+	// this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+	// this.recordStorage = recordStorage;
+	// this.recordTypeId = recordTypeId;
+	// recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
+	// }
+	//
+	// private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
+	// RecordStorage recordStorage, DataGroup dataGroup) {
+	// this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+	// this.recordStorage = recordStorage;
+	// recordType = dataGroup;
+	// recordTypeId = getIdFromMetadatagGroup(dataGroup);
+	// }
 
 	public RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
 			RecordStorage recordStorage, MetadataStorageView metadataStorageView,
@@ -110,6 +114,18 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = metadataStorageView;
 		this.validationTypeId = validationTypeId;
+		Optional<ValidationType> oValidationType = metadataStorageView
+				.getValidationType(validationTypeId);
+		if (oValidationType.isEmpty()) {
+			throw DataValidationException.withMessage(
+					"ValidationType with id: " + validationTypeId + ", does not exist.");
+		}
+
+		validationType = oValidationType.get();
+		recordType = recordStorage.read(List.of(RECORD_TYPE),
+				validationType.validatesRecordTypeId());
+		recordTypeId = getIdFromMetadatagGroup(recordType);
+
 	}
 
 	@Override
@@ -129,14 +145,17 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
-	public String getNewMetadataId() {
-		DataRecordLink metadataLink = (DataRecordLink) recordType
-				.getFirstChildWithNameInData("newMetadataId");
-		return metadataLink.getLinkedRecordId();
+	public String getCreateDefinitionId() {
+		return validationType.createDefinitionId();
 	}
 
 	@Override
-	public String getMetadataId() {
+	public String getUpdateDefinitionId() {
+		return validationType.updateDefinitionId();
+	}
+
+	@Override
+	public String getDefinitionId() {
 		DataRecordLink metadataLink = (DataRecordLink) recordType
 				.getFirstChildWithNameInData("metadataId");
 		return metadataLink.getLinkedRecordId();
@@ -181,7 +200,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public DataGroup getMetadataGroup() {
 		if (metadataGroup == null) {
-			metadataGroup = recordStorage.read(List.of(METADATA_GROUP), getMetadataId());
+			metadataGroup = recordStorage.read(List.of(METADATA_GROUP), getDefinitionId());
 		}
 		return metadataGroup;
 	}
@@ -521,14 +540,14 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private List<DataGroup> getAllChildReferencesForCreate() {
-		DataGroup metadataGroupForMetadata = getNewMetadataGroup();
+		DataGroup metadataGroupForMetadata = getCreateDefinitionGroup();
 		DataGroup childReferences = metadataGroupForMetadata
 				.getFirstGroupWithNameInData("childReferences");
 		return childReferences.getAllGroupsWithNameInData("childReference");
 	}
 
-	private DataGroup getNewMetadataGroup() {
-		return recordStorage.read(List.of(METADATA_GROUP), getNewMetadataId());
+	private DataGroup getCreateDefinitionGroup() {
+		return recordStorage.read(List.of(METADATA_GROUP), getCreateDefinitionId());
 	}
 
 	@Override

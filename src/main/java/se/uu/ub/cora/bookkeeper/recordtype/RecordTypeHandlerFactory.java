@@ -23,9 +23,7 @@ import se.uu.ub.cora.data.DataRecordGroup;
 
 /**
  * RecordTypeHandlerFactory is a factor class that creates new RecordTypeHandlers.
- *
  */
-
 public interface RecordTypeHandlerFactory {
 	/**
 	 * 

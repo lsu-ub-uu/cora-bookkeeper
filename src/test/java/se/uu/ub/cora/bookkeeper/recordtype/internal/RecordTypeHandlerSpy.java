@@ -94,7 +94,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	}
 
 	@Override
-	public String getNewMetadataId() {
+	public String getCreateDefinitionId() {
 		// MCR.addCall();
 		// String returnValue = "fakeMetadataIdFromRecordTypeHandlerSpy";
 		// MCR.addReturned(returnValue);
@@ -103,7 +103,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	}
 
 	@Override
-	public String getMetadataId() {
+	public String getDefinitionId() {
 		// MCR.addCall();
 		// String returnValue = "fakeMetadataIdFromRecordTypeHandlerSpy";
 		// MCR.addReturned(returnValue);
@@ -150,8 +150,8 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		return metadataDataGroup;
 	}
 
-	private DataAtomicOldSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
-		DataAtomicOldSpy dataAtomicSpy = new DataAtomicOldSpy();
+	private DataAtomicSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
+		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
 		return dataAtomicSpy;
@@ -287,6 +287,12 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	@Override
 	public List<String> getListOfRecordTypeIdsToReadFromStorage() {
 		return (List<String>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public String getUpdateDefinitionId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

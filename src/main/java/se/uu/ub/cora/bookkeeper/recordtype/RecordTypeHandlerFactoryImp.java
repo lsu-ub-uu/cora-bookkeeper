@@ -32,20 +32,20 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 
 	@Override
 	public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
-		ensureRecordStorageFetchedOnlyOnce();
+		ensureRecordStorageIsFetched();
 
 		return RecordTypeHandlerImp.usingRecordStorageAndDataGroup(this, recordStorage, dataGroup);
 	}
 
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
-		ensureRecordStorageFetchedOnlyOnce();
+		ensureRecordStorageIsFetched();
 
 		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(this, recordStorage,
 				recordTypeId);
 	}
 
-	private void ensureRecordStorageFetchedOnlyOnce() {
+	private void ensureRecordStorageIsFetched() {
 		if (recordStorage == null) {
 			recordStorage = RecordStorageProvider.getRecordStorage();
 		}
@@ -53,14 +53,14 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 
 	@Override
 	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
-		ensureRecordStorageFetchedOnlyOnce();
-		ensureMetadataStorageFetchedOnlyOnce();
+		ensureRecordStorageIsFetched();
+		ensureMetadataStorageIsFetched();
 
 		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
 				this, recordStorage, metadataStorage, dataRecordGroup.getValidationType());
 	}
 
-	private void ensureMetadataStorageFetchedOnlyOnce() {
+	private void ensureMetadataStorageIsFetched() {
 		if (metadataStorage == null) {
 			metadataStorage = MetadataStorageProvider.getStorageView();
 		}

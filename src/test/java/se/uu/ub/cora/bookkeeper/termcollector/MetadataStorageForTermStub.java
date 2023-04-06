@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
@@ -256,7 +257,8 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 		DataGroup childRefCollectTerm = new DataGroupOldSpy("childRefCollectTerm");
 		childRefCollectTerm
 				.addChild(new DataAtomicOldSpy("linkedRecordType", "collectPermissionTerm"));
-		childRefCollectTerm.addChild(new DataAtomicOldSpy("linkedRecordId", collectPermissionTermId));
+		childRefCollectTerm
+				.addChild(new DataAtomicOldSpy("linkedRecordId", collectPermissionTermId));
 		childRefCollectTerm.addAttributeByIdWithValue("type", "permission");
 		return childRefCollectTerm;
 	}
@@ -264,7 +266,8 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	private DataGroup createCollectStorageTermWithNameAndRepeatId(String collectIndexTermId,
 			String repeatId) {
 		DataGroup childRefCollectTerm = new DataGroupOldSpy("childRefCollectTerm");
-		childRefCollectTerm.addChild(new DataAtomicOldSpy("linkedRecordType", "collectStorageTerm"));
+		childRefCollectTerm
+				.addChild(new DataAtomicOldSpy("linkedRecordType", "collectStorageTerm"));
 		childRefCollectTerm.addChild(new DataAtomicOldSpy("linkedRecordId", collectIndexTermId));
 		childRefCollectTerm.setRepeatId(repeatId);
 		childRefCollectTerm.addAttributeByIdWithValue("type", "storage");
@@ -495,6 +498,12 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	public Collection<ValidationType> getValidationTypes() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Optional<ValidationType> getValidationType(String validationId) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }

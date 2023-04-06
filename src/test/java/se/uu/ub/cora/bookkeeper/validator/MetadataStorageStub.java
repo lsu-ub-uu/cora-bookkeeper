@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
@@ -152,7 +153,8 @@ public class MetadataStorageStub implements MetadataStorageView {
 
 		DataGroup attributeReferences = new DataGroupOldSpy("attributeReferences");
 		DataGroup attributeRef = new DataGroupOldSpy("ref");
-		attributeRef.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataCollectionVariable"));
+		attributeRef
+				.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataCollectionVariable"));
 		attributeRef.addChild(new DataAtomicOldSpy("linkedRecordId", "groupTypeVar"));
 		attributeReferences.addChild(attributeRef);
 		group.addChild(attributeReferences);
@@ -281,7 +283,8 @@ public class MetadataStorageStub implements MetadataStorageView {
 		linkedRecordIdTextVar.addAttributeByIdWithValue("type", "textVariable");
 
 		DataGroup linkedRecordIdTextVarRecordInfo = new DataGroupOldSpy("recordInfo");
-		linkedRecordIdTextVarRecordInfo.addChild(new DataAtomicOldSpy("id", "linkedRecordIdTextVar"));
+		linkedRecordIdTextVarRecordInfo
+				.addChild(new DataAtomicOldSpy("id", "linkedRecordIdTextVar"));
 		linkedRecordIdTextVar.addChild(linkedRecordIdTextVarRecordInfo);
 
 		linkedRecordIdTextVar.addChild(new DataAtomicOldSpy("nameInData", "linkedRecordId"));
@@ -468,6 +471,12 @@ public class MetadataStorageStub implements MetadataStorageView {
 	public Collection<ValidationType> getValidationTypes() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Optional<ValidationType> getValidationType(String validationId) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }
