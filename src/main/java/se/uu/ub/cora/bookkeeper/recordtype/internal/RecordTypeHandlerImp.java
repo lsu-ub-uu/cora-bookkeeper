@@ -71,17 +71,25 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		// only for test
 	}
 
-	// public static RecordTypeHandler usingRecordStorageAndRecordTypeId(
-	// RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-	// String recordTypeId) {
-	// return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
-	// }
-	//
-	// public static RecordTypeHandler usingRecordStorageAndDataGroup(
-	// RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-	// DataGroup dataGroup) {
-	// return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
-	// }
+	/**
+	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
+	 */
+	@Deprecated(forRemoval = true)
+	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(
+			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+			String recordTypeId) {
+		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
+	}
+
+	/**
+	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
+	 */
+	@Deprecated(forRemoval = true)
+	public static RecordTypeHandler usingRecordStorageAndDataGroup(
+			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+			DataGroup dataGroup) {
+		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
+	}
 
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
 			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
@@ -91,21 +99,21 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 				metadataStorageView, validationTypeId);
 	}
 
-	// private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-	// RecordStorage recordStorage, String recordTypeId) {
-	// this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-	// this.recordStorage = recordStorage;
-	// this.recordTypeId = recordTypeId;
-	// recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
-	// }
-	//
-	// private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-	// RecordStorage recordStorage, DataGroup dataGroup) {
-	// this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-	// this.recordStorage = recordStorage;
-	// recordType = dataGroup;
-	// recordTypeId = getIdFromMetadatagGroup(dataGroup);
-	// }
+	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
+			RecordStorage recordStorage, String recordTypeId) {
+		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+		this.recordStorage = recordStorage;
+		this.recordTypeId = recordTypeId;
+		recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
+	}
+
+	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
+			RecordStorage recordStorage, DataGroup dataGroup) {
+		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+		this.recordStorage = recordStorage;
+		recordType = dataGroup;
+		recordTypeId = getIdFromMetadatagGroup(dataGroup);
+	}
 
 	public RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
 			RecordStorage recordStorage, MetadataStorageView metadataStorageView,
@@ -146,11 +154,25 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public String getCreateDefinitionId() {
+		// TODO: exception not tested should be removed during this big change when depricated
+		// constructors are removed
+		if (null == validationType) {
+			throw new RuntimeException(
+					"Validation type probably loaded through depricated constructor,"
+							+ " this method is not expected to be called when loaded that way");
+		}
 		return validationType.createDefinitionId();
 	}
 
 	@Override
 	public String getUpdateDefinitionId() {
+		// TODO: exception not tested should be removed during this big change when depricated
+		// constructors are removed
+		if (null == validationType) {
+			throw new RuntimeException(
+					"Validation type probably loaded through depricated constructor,"
+							+ " this method is not expected to be called when loaded that way");
+		}
 		return validationType.updateDefinitionId();
 	}
 

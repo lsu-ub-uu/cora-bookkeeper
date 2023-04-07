@@ -20,6 +20,8 @@ package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
 import static org.testng.Assert.assertSame;
 
+import java.util.Optional;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -28,6 +30,7 @@ import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactoryImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
+import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.logger.LoggerProvider;
@@ -42,7 +45,7 @@ public class RecordTypeHandlerFactoryTest {
 	private RecordStorage recordStorage;
 	private RecordTypeHandlerFactoryImp factory;
 	private RecordStorageInstanceProviderSpy instanceProvider;
-	private MetadataStorageViewSpy metadataStorage;
+	private MetadataStorageViewSpy metadataStorageViewSpy;
 	private MetadataStorageViewInstanceProviderSpy metaStorageInstProviderSpy;
 
 	@BeforeMethod
@@ -57,11 +60,14 @@ public class RecordTypeHandlerFactoryTest {
 		instanceProvider.MRV.setDefaultReturnValuesSupplier("getRecordStorage",
 				() -> recordStorage);
 
-		metadataStorage = new MetadataStorageViewSpy();
+		metadataStorageViewSpy = new MetadataStorageViewSpy();
+		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
+				() -> Optional.of(new ValidationType("someTypeToValidate", "someCreateDefinitionId",
+						"someUpdateDefinitionId")));
 
 		metaStorageInstProviderSpy = new MetadataStorageViewInstanceProviderSpy();
 		metaStorageInstProviderSpy.MRV.setDefaultReturnValuesSupplier("getStorageView",
-				() -> metadataStorage);
+				() -> metadataStorageViewSpy);
 		MetadataStorageProvider
 				.onlyForTestSetMetadataStorageViewInstanceProvider(metaStorageInstProviderSpy);
 
@@ -111,7 +117,7 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testFactorUsingDataRecordGroupWithSValidationType() throws Exception {
+	public void testFactorUsingDataRecordGroupWithValidationType() throws Exception {
 		String validationTypeId = "someValidationTypeId";
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getValidationType",
@@ -123,7 +129,7 @@ public class RecordTypeHandlerFactoryTest {
 
 		assertSame(recordTypeHandler.getRecordTypeHandlerFactory(), factory);
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
-		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorage);
+		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorageViewSpy);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
 
 	}

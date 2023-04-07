@@ -30,6 +30,12 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	private RecordStorage recordStorage;
 	private MetadataStorageView metadataStorage;
 
+	/**
+	 * 
+	 * @param dataGroup
+	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
+	 */
+	@Deprecated(forRemoval = true)
 	@Override
 	public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
 		ensureRecordStorageIsFetched();
@@ -37,6 +43,12 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 		return RecordTypeHandlerImp.usingRecordStorageAndDataGroup(this, recordStorage, dataGroup);
 	}
 
+	/**
+	 * 
+	 * @param dataGroup
+	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
+	 */
+	@Deprecated(forRemoval = true)
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
 		ensureRecordStorageIsFetched();

@@ -28,8 +28,9 @@ public interface RecordTypeHandlerFactory {
 	/**
 	 * 
 	 * @param dataGroup
-	 * @return
+	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
 	 */
+	@Deprecated(forRemoval = true)
 	RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup);
 
 	/**
@@ -37,16 +38,19 @@ public interface RecordTypeHandlerFactory {
 	 * 
 	 * @param recordTypeId
 	 *            is an String with the id of the recordtype that the handler is created with
-	 * @return
+	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
 	 */
+	@Deprecated(forRemoval = true)
 	RecordTypeHandler factorUsingRecordTypeId(String recordTypeId);
 
 	/**
-	 * factorUsingDataRecordGroup create
+	 * factorUsingDataRecordGroup creates a recordTypeHandler based on the information in the
+	 * provided DataRecordGroup, that holds data about the record currently beeing handled.
 	 * 
 	 * @param dataRecordGroup
-	 *            is a DataRecordGroup
-	 * @return
+	 *            is a DataRecordGroup that holds information about the record currently beeing
+	 *            handled
+	 * @return A {@link RecordTypeHandler} for the record beeing handleds recordType
 	 */
 	RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup);
 }
