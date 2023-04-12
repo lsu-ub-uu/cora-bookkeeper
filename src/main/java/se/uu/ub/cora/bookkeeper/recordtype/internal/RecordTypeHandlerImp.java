@@ -468,7 +468,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public String getRecordTypeId() {
-		// needed for test
 		return recordTypeId;
 	}
 
