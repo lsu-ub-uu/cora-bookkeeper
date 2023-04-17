@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
@@ -99,5 +100,9 @@ class DataCollectionVariableValidator implements DataElementValidator {
 		validationAnswer.addErrorMessage("Data value:" + dataValue + " NOT found in collection:"
 				+ referredCollection.getNameInData());
 		return validationAnswer;
+	}
+
+	MetadataElement onlyForTestGetMetadataElement() {
+		return collectionVariable;
 	}
 }

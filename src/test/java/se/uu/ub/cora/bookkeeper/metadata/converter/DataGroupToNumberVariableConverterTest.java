@@ -23,7 +23,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
@@ -68,31 +68,31 @@ public class DataGroupToNumberVariableConverterTest {
 
 	private DataGroup createDataGroup() {
 		DataGroup dataGroup = createRecordInfo();
-		dataGroup.addChild(new DataAtomicSpy("nameInData", "someNameInData"));
+		dataGroup.addChild(new DataAtomicOldSpy("nameInData", "someNameInData"));
 		dataGroup.addChild(createTextGroupUsingNameInDataAndTextId("textId", "someText"));
 		dataGroup.addChild(createTextGroupUsingNameInDataAndTextId("defTextId", "someDefText"));
 
-		dataGroup.addChild(new DataAtomicSpy("min", "0"));
-		dataGroup.addChild(new DataAtomicSpy("max", "5"));
-		dataGroup.addChild(new DataAtomicSpy("warningMin", "1"));
-		dataGroup.addChild(new DataAtomicSpy("warningMax", "4"));
-		dataGroup.addChild(new DataAtomicSpy("warningMax", "4"));
-		dataGroup.addChild(new DataAtomicSpy("numberOfDecimals", "1"));
+		dataGroup.addChild(new DataAtomicOldSpy("min", "0"));
+		dataGroup.addChild(new DataAtomicOldSpy("max", "5"));
+		dataGroup.addChild(new DataAtomicOldSpy("warningMin", "1"));
+		dataGroup.addChild(new DataAtomicOldSpy("warningMax", "4"));
+		dataGroup.addChild(new DataAtomicOldSpy("warningMax", "4"));
+		dataGroup.addChild(new DataAtomicOldSpy("numberOfDecimals", "1"));
 		return dataGroup;
 	}
 
 	private DataGroup createRecordInfo() {
 		DataGroup dataGroup = new DataGroupOldSpy("metadata");
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "someNumberVar"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "someNumberVar"));
 		dataGroup.addChild(recordInfo);
 		return dataGroup;
 	}
 
 	private DataGroup createTextGroupUsingNameInDataAndTextId(String nameInData, String textId) {
 		DataGroup textIdGroup = new DataGroupOldSpy(nameInData);
-		textIdGroup.addChild(new DataAtomicSpy("linkedRecordType", "coraText"));
-		textIdGroup.addChild(new DataAtomicSpy("linkedRecordId", textId));
+		textIdGroup.addChild(new DataAtomicOldSpy("linkedRecordType", "coraText"));
+		textIdGroup.addChild(new DataAtomicOldSpy("linkedRecordId", textId));
 		return textIdGroup;
 	}
 
@@ -121,8 +121,8 @@ public class DataGroupToNumberVariableConverterTest {
 
 	private DataGroupOldSpy createRef(String linkedRecordId, String repeatId) {
 		DataGroupOldSpy ref = new DataGroupOldSpy("ref");
-		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataCollectionVariable"));
-		ref.addChild(new DataAtomicSpy("linkedRecordId", linkedRecordId));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataCollectionVariable"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordId", linkedRecordId));
 		ref.setRepeatId(repeatId);
 		return ref;
 	}

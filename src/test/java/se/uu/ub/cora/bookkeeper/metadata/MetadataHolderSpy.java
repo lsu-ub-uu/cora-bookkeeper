@@ -23,7 +23,7 @@ import java.util.Map;
 
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class MetadataHolderSpy extends MetadataHolder {
+public class MetadataHolderSpy extends MetadataHolderImp {
 	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 

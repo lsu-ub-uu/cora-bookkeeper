@@ -26,7 +26,7 @@ import java.util.Collection;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
@@ -58,7 +58,7 @@ public class DataNumberVariableValidatorTest {
 
 	@Test
 	public void testInvalidNumberBelowMinimum() {
-		DataAtomic number = new DataAtomicSpy("nameInData", "0");
+		DataAtomic number = new DataAtomicOldSpy("nameInData", "0");
 		ValidationAnswer validateAnswer = numberDataValidator.validateData(number);
 		assertTrue(validateAnswer.dataIsInvalid());
 
@@ -89,7 +89,7 @@ public class DataNumberVariableValidatorTest {
 
 	@Test
 	public void testInvalidNumberOverMaximum() {
-		DataAtomic number = new DataAtomicSpy("nameInData", "12");
+		DataAtomic number = new DataAtomicOldSpy("nameInData", "12");
 		ValidationAnswer validateAnswer = numberDataValidator.validateData(number);
 		assertTrue(validateAnswer.dataIsInvalid());
 		assertNumberOfErrorMessages(validateAnswer, 1);
@@ -102,25 +102,25 @@ public class DataNumberVariableValidatorTest {
 
 	@Test
 	public void testValidNumberSameAsMin() {
-		DataAtomic number = new DataAtomicSpy("nameInData", String.valueOf(min));
+		DataAtomic number = new DataAtomicOldSpy("nameInData", String.valueOf(min));
 		assertTrue(numberDataValidator.validateData(number).dataIsValid());
 	}
 
 	@Test
 	public void testValidNumberSameAsMax() {
-		DataAtomic number = new DataAtomicSpy("nameInData", String.valueOf(max));
+		DataAtomic number = new DataAtomicOldSpy("nameInData", String.valueOf(max));
 		assertTrue(numberDataValidator.validateData(number).dataIsValid());
 	}
 
 	@Test
 	public void testValidNumberBetweenMinAndMax() {
-		DataAtomic number = new DataAtomicSpy("nameInData", "3");
+		DataAtomic number = new DataAtomicOldSpy("nameInData", "3");
 		assertTrue(numberDataValidator.validateData(number).dataIsValid());
 	}
 
 	@Test
 	public void testValidNumberBetweenMinAndMaxButTooManyDecimals() {
-		DataAtomic number = new DataAtomicSpy("nameInData", "3.1245674456543");
+		DataAtomic number = new DataAtomicOldSpy("nameInData", "3.1245674456543");
 		ValidationAnswer validateAnswer = numberDataValidator.validateData(number);
 		assertTrue(validateAnswer.dataIsInvalid());
 

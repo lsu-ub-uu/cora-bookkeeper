@@ -43,7 +43,7 @@ public class MatcherFactoryTest {
 	public void testGetMetadataMatchData() {
 		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
 		MatcherFactoryImp factory = new MatcherFactoryImp(dataMatcher);
-		assertSame(factory.getMetadataMatchData(), dataMatcher);
+		assertSame(factory.onlyForTestGetMetadataMatchData(), dataMatcher);
 	}
 
 }

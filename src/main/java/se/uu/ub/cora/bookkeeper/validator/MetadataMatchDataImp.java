@@ -154,8 +154,7 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 		return false;
 	}
 
-	public MetadataHolder getMetadataHolder() {
-		// needed for test
+	public MetadataHolder onlyForTestGetMetadataHolder() {
 		return metadataHolder;
 	}
 }

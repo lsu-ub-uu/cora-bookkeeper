@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.bookkeeper.metadata;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * MetadataHolder holds all information about MetadataFormats MetadataGroups and MetadataVariables
- *
  */
-public class MetadataHolder {
 
-	private Map<String, MetadataElement> metadata = new HashMap<>();
+public interface MetadataHolder {
 
 	/**
 	 * addMetadataElement adds an element to the internal holder of elements
@@ -36,9 +30,7 @@ public class MetadataHolder {
 	 * @param metadataElement
 	 *            A MetadataElement to add to the internal holder
 	 */
-	public void addMetadataElement(MetadataElement metadataElement) {
-		metadata.put(metadataElement.getId(), metadataElement);
-	}
+	void addMetadataElement(MetadataElement metadataElement);
 
 	/**
 	 * getMetadataElement returns the requested MetadataElement based on the parameter elementId
@@ -47,7 +39,6 @@ public class MetadataHolder {
 	 *            A String with the id of the Metadata element to get
 	 * @return The requested MetadataElement
 	 */
-	public MetadataElement getMetadataElement(String elementId) {
-		return metadata.get(elementId);
-	}
+	MetadataElement getMetadataElement(String elementId);
+
 }

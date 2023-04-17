@@ -7,14 +7,22 @@
  * managing the data records from it, is of utmost importance.
  */
 module se.uu.ub.cora.bookkeeper {
+	// dependency on storage should be removed when recordTypeHandler no longer needs it
+	requires se.uu.ub.cora.storage;
 	requires transitive se.uu.ub.cora.data;
 	// requires transitive se.uu.ub.cora.storage;
 	requires se.uu.ub.cora.initialize;
 
 	exports se.uu.ub.cora.bookkeeper.linkcollector;
 	exports se.uu.ub.cora.bookkeeper.metadata;
-	exports se.uu.ub.cora.bookkeeper.termcollector;
-	exports se.uu.ub.cora.bookkeeper.validator;
 	exports se.uu.ub.cora.bookkeeper.recordpart;
 	exports se.uu.ub.cora.bookkeeper.storage;
+	exports se.uu.ub.cora.bookkeeper.termcollector;
+	exports se.uu.ub.cora.bookkeeper.validator;
+	exports se.uu.ub.cora.bookkeeper.recordtype;
+
+	// TODO: might be needed as an intermediate step, copied from spider
+	// exports se.uu.ub.cora.bookkeeper.recordtype.internal
+	// to se.uu.ub.cora.userstorage, se.uu.ub.cora.metadatastorage;
+
 }

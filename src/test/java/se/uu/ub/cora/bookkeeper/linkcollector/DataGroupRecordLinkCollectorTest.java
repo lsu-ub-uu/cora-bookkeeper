@@ -10,7 +10,7 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
@@ -69,9 +69,9 @@ public class DataGroupRecordLinkCollectorTest {
 
 	private DataGroup createTestLinkWithRecordTypeAndRecordId() {
 		DataGroup dataRecordLink = new DataGroupOldSpy("testLink");
-		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "someRecordType");
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", "someRecordType");
 		dataRecordLink.addChild(linkedRecordType);
-		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "someRecordId");
+		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", "someRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 		return dataRecordLink;
 	}
@@ -92,7 +92,7 @@ public class DataGroupRecordLinkCollectorTest {
 	}
 
 	private void addOtherChild(DataGroup dataGroup) {
-		DataAtomic dataAtomic = new DataAtomicSpy("textVar", "some text");
+		DataAtomic dataAtomic = new DataAtomicOldSpy("textVar", "some text");
 		dataGroup.addChild(dataAtomic);
 		DataGroup dataSubGroup = new DataGroupOldSpy("subGroup");
 		dataGroup.addChild(dataSubGroup);
@@ -117,7 +117,7 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
 
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "e3");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "e3");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.setRepeatId("e3");
 		return dataGroup;
@@ -131,7 +131,7 @@ public class DataGroupRecordLinkCollectorTest {
 		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
 		dataGroup.addChild(dataRecordLink);
 
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "someLinkedRepeatId");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "someLinkedRepeatId");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.setRepeatId("");
 

@@ -25,16 +25,17 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataResourceLinkValidatorTest {
 	private DataResourceLinkValidator dataResourceLinkValidator;
-	private MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolder metadataHolder = new MetadataHolderImp();
 
 	@BeforeMethod
 	public void setUp() {
@@ -112,9 +113,9 @@ public class DataResourceLinkValidatorTest {
 
 		// dataResourceLink
 		// .addChild(new DataAtomicSpy("streamId", "imageBinary:123456"));
-		dataResourceLink.addChild(new DataAtomicSpy("filename", "adele.png"));
-		dataResourceLink.addChild(new DataAtomicSpy("filesize", "123456"));
-		dataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filename", "adele.png"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", "123456"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", "application/png"));
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
@@ -138,10 +139,10 @@ public class DataResourceLinkValidatorTest {
 	public void testValidateMissingFilename() {
 		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
 
-		dataResourceLink.addChild(new DataAtomicSpy("streamId", "imageBinary:123456"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", "imageBinary:123456"));
 		// dataResourceLink.addChild(new DataAtomicSpy("filename", "adele.png"));
-		dataResourceLink.addChild(new DataAtomicSpy("filesize", "123456"));
-		dataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", "123456"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", "application/png"));
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
@@ -165,10 +166,10 @@ public class DataResourceLinkValidatorTest {
 	public void testValidateMissingFilesize() {
 		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
 
-		dataResourceLink.addChild(new DataAtomicSpy("streamId", "imageBinary:123456"));
-		dataResourceLink.addChild(new DataAtomicSpy("filename", "adele.png"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", "imageBinary:123456"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filename", "adele.png"));
 		// dataResourceLink.addChild(new DataAtomicSpy("filesize", "123456"));
-		dataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", "application/png"));
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
@@ -192,9 +193,9 @@ public class DataResourceLinkValidatorTest {
 	public void testValidateMissingMimeType() {
 		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
 
-		dataResourceLink.addChild(new DataAtomicSpy("streamId", "imageBinary:123456"));
-		dataResourceLink.addChild(new DataAtomicSpy("filename", "adele.png"));
-		dataResourceLink.addChild(new DataAtomicSpy("filesize", "123456"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", "imageBinary:123456"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filename", "adele.png"));
+		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", "123456"));
 		// dataResourceLink.addChild(new DataAtomicSpy("mimeType",
 		// "application/png"));
 		validateAndAssertDataIsInvalid(dataResourceLink);

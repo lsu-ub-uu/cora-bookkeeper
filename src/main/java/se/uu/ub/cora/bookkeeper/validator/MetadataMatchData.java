@@ -22,7 +22,5 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.data.DataChild;
 
 public interface MetadataMatchData {
-
 	ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement, DataChild dataElement);
-
 }

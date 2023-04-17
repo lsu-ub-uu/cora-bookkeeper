@@ -29,12 +29,13 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
@@ -46,7 +47,7 @@ import se.uu.ub.cora.data.spies.DataFactorySpy;
 public class DataRecordLinkValidatorTest {
 	private RecordLink dataLink;
 	private DataRecordLinkValidator dataLinkValidator;
-	private MetadataHolder metadataHolder = new MetadataHolder();
+	private MetadataHolder metadataHolder = new MetadataHolderImp();
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 
 	private DataFactorySpy dataFactorySpy;
@@ -165,8 +166,8 @@ public class DataRecordLinkValidatorTest {
 		DataGroup image = new DataGroupOldSpy("image");
 		DataGroup parentId = new DataGroupOldSpy("parentId");
 		image.addChild(parentId);
-		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));
+		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
+		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
 		recordTypeHolder.put("image", image);
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
@@ -188,8 +189,8 @@ public class DataRecordLinkValidatorTest {
 		DataGroup image = new DataGroupOldSpy("image");
 		DataGroup parentId = new DataGroupOldSpy("parentId");
 		image.addChild(parentId);
-		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicSpy("linkedRecordId", incorrectParentId));
+		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
+		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", incorrectParentId));
 		recordTypeHolder.put("image", image);
 
 		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
@@ -235,15 +236,15 @@ public class DataRecordLinkValidatorTest {
 	public void testValidateRecordTypeIsGrandChildOfAbstractMetadataRecordType() {
 		DataGroup image = new DataGroupOldSpy("image");
 		DataGroup parentId = new DataGroupOldSpy("parentId");
-		parentId.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicSpy("linkedRecordId", "binary"));
+		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
+		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
 		image.addChild(parentId);
 		recordTypeHolder.put("image", image);
 
 		DataGroup stillImage = new DataGroupOldSpy("stillImage");
 		DataGroup stillImageParent = new DataGroupOldSpy("parentId");
-		stillImageParent.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
-		stillImageParent.addChild(new DataAtomicSpy("linkedRecordId", "image"));
+		stillImageParent.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
+		stillImageParent.addChild(new DataAtomicOldSpy("linkedRecordId", "image"));
 		stillImage.addChild(stillImageParent);
 		recordTypeHolder.put("stillImage", stillImage);
 
@@ -286,7 +287,7 @@ public class DataRecordLinkValidatorTest {
 	public void testValidateNoRecordType() {
 		DataGroup dataRecordLink = new DataGroupOldSpy("nameInData");
 
-		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "myLinkedRecordId");
+		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", "myLinkedRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -309,7 +310,7 @@ public class DataRecordLinkValidatorTest {
 	public void testValidateNoRecordId() {
 		DataGroup dataRecordLink = new DataGroupOldSpy("nameInData");
 
-		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "myLinkedRecordType");
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", "myLinkedRecordType");
 		dataRecordLink.addChild(linkedRecordType);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -324,7 +325,7 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"linkedRecordType", "myLinkedRecordId");
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "x1");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "x1");
 		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -351,7 +352,7 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"linkedRecordType", "myLinkedRecordId");
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "");
 		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -366,7 +367,7 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"linkedRecordType", "myLinkedRecordId");
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "ÅÄÖ");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "ÅÄÖ");
 		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -379,7 +380,7 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"linkedRecordType", "myLinkedRecordId");
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "x1");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "x1");
 		dataRecordLink.addChild(linkedRepeatId);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
@@ -394,7 +395,7 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"linkedRecordType", "myLinkedRecordId");
-		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "x1");
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "x1");
 		dataRecordLink.addChild(linkedRepeatId);
 		dataRecordLink.addChild(new DataGroupOldSpy("linkedPath"));
 

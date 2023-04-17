@@ -251,4 +251,16 @@ class DataGroupValidator implements DataElementValidator {
 		}
 		return " and attributes: " + joiner.toString();
 	}
+
+	DataElementValidatorFactory onlyForTestGetDataElementValidatorFactory() {
+		return dataValidatorFactory;
+	}
+
+	MetadataHolder onlyForTestGetMetadataHolder() {
+		return metadataHolder;
+	}
+
+	MetadataElement onlyForTestGetMetadataElement() {
+		return metadataGroup;
+	}
 }

@@ -20,23 +20,24 @@ package se.uu.ub.cora.bookkeeper;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 
-public class DataAtomicSpy implements DataAtomic {
+public class DataAtomicOldSpy implements DataAtomic {
 
 	public String nameInData;
 	public String value;
 	public String repeatId;
 
-	public DataAtomicSpy(String nameInData, String value) {
+	public DataAtomicOldSpy(String nameInData, String value) {
 		this.nameInData = nameInData;
 		this.value = value;
 	}
 
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
+	public DataAtomicOldSpy(String nameInData, String value, String repeatId) {
 		this.nameInData = nameInData;
 		this.value = value;
 		this.repeatId = repeatId;
@@ -84,6 +85,12 @@ public class DataAtomicSpy implements DataAtomic {
 	@Override
 	public Collection<DataAttribute> getAttributes() {
 		return Collections.emptySet();
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }

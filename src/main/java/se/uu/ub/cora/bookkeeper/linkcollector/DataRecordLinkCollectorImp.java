@@ -22,19 +22,13 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderFromStoragePopulator;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.Link;
 
 public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 
-	private MetadataStorageView metadataStorage;
 	private MetadataHolder metadataHolder;
-
-	public DataRecordLinkCollectorImp(MetadataStorageView metadataStorage) {
-		this.metadataStorage = metadataStorage;
-	}
 
 	@Override
 	public Set<Link> collectLinks(String metadataId, DataGroup dataGroup) {
@@ -49,12 +43,8 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	}
 
 	private void getMetadataFromStorage() {
-		metadataHolder = new MetadataHolderFromStoragePopulator()
-				.createAndPopulateMetadataHolderFromMetadataStorage(metadataStorage);
+		metadataHolder = new MetadataHolderPopulatorImp()
+				.createAndPopulateMetadataHolderFromMetadataStorage();
 	}
 
-	public MetadataStorageView getMetadataStorage() {
-		// needed for test
-		return metadataStorage;
-	}
 }

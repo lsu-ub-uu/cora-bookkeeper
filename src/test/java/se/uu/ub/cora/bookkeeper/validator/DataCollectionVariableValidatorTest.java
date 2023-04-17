@@ -26,11 +26,12 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.data.DataAtomic;
 
 public class DataCollectionVariableValidatorTest {
@@ -38,14 +39,14 @@ public class DataCollectionVariableValidatorTest {
 
 	@BeforeMethod
 	public void setUp() {
-		metadataHolder = new MetadataHolder();
+		metadataHolder = new MetadataHolderImp();
 	}
 
 	@Test
 	public void testValidateValidData() {
 		DataCollectionVariableValidator validator = createCollectionVariableInValidator();
 
-		DataAtomic dataAtomic = new DataAtomicSpy("collectionVarNameInData", "choice1NameInData");
+		DataAtomic dataAtomic = new DataAtomicOldSpy("collectionVarNameInData", "choice1NameInData");
 		assertTrue(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to true");
 	}
@@ -81,7 +82,7 @@ public class DataCollectionVariableValidatorTest {
 	public void testValidateInvalidData() {
 		DataCollectionVariableValidator validator = createCollectionVariableInValidator();
 
-		DataAtomic dataAtomic = new DataAtomicSpy("collectionVarNameInData",
+		DataAtomic dataAtomic = new DataAtomicOldSpy("collectionVarNameInData",
 				"choice1ERRORNameInData");
 		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
 
@@ -98,7 +99,7 @@ public class DataCollectionVariableValidatorTest {
 	public void testValidateFinalValueValidData() {
 		DataCollectionVariableValidator validator = createCollectionVariableWithFinalValue();
 
-		DataAtomic dataAtomic = new DataAtomicSpy("collectionVarNameInData", "choice2NameInData");
+		DataAtomic dataAtomic = new DataAtomicOldSpy("collectionVarNameInData", "choice2NameInData");
 
 		assertTrue(validator.validateData(dataAtomic).dataIsValid(),
 				"The collection variable should be validated to true");
@@ -114,7 +115,7 @@ public class DataCollectionVariableValidatorTest {
 	public void testValidateFinalValueInvalidData() {
 		DataCollectionVariableValidator validator = createCollectionVariableWithFinalValue();
 
-		DataAtomic dataAtomic = new DataAtomicSpy("collectionVarNameInData",
+		DataAtomic dataAtomic = new DataAtomicOldSpy("collectionVarNameInData",
 				"choice1ERRORNameInData");
 		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
 
@@ -125,7 +126,7 @@ public class DataCollectionVariableValidatorTest {
 	public void testValidateFinalValueWrongChoiceData() {
 		DataCollectionVariableValidator validator = createCollectionVariableWithFinalValue();
 
-		DataAtomic dataAtomic = new DataAtomicSpy("collectionVarNameInData", "choice1NameInData");
+		DataAtomic dataAtomic = new DataAtomicOldSpy("collectionVarNameInData", "choice1NameInData");
 		ValidationAnswer validationAnswer = validator.validateData(dataAtomic);
 
 		assertDataInvalidWithOnlyOneErrorMessage(validationAnswer);

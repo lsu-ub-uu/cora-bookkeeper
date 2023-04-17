@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
@@ -81,6 +82,10 @@ class DataTextVariableValidator implements DataElementValidator {
 				+ textVariable.getNameInData() + " is NOT valid, regular expression("
 				+ textVariable.getRegularExpression() + ") does not match:" + dataValue);
 		return validationAnswer;
+	}
+
+	MetadataElement onlyForTestGetMetadataElement() {
+		return textVariable;
 	}
 
 }

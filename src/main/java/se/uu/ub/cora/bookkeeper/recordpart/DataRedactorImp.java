@@ -174,19 +174,19 @@ public class DataRedactorImp implements DataRedactor {
 		}
 	}
 
-	public MetadataHolder getMetadataHolder() {
+	public MetadataHolder onlyForTestGetMetadataHolder() {
 		return metadataHolder;
 	}
 
-	public DataGroupRedactor getDataGroupRedactor() {
+	public DataGroupRedactor onlyForTestGetDataGroupRedactor() {
 		return dataGroupRedactor;
 	}
 
-	public DataGroupWrapperFactory getDataGroupWrapperFactory() {
+	public DataGroupWrapperFactory onlyForTestGetDataGroupWrapperFactory() {
 		return wrapperFactory;
 	}
 
-	public MatcherFactory getMatcherFactory() {
+	public MatcherFactory onlyForTestGetMatcherFactory() {
 		return matcherFactory;
 	}
 

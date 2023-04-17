@@ -23,7 +23,6 @@ import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.data.DataGroup;
 
 public class MatcherFactoryImp implements MatcherFactory {
-
 	private MetadataMatchData dataMatcher;
 
 	public MatcherFactoryImp(MetadataMatchData dataMatcher) {
@@ -35,8 +34,7 @@ public class MatcherFactoryImp implements MatcherFactory {
 		return new GroupMatcher(dataMatcher, dataGroup, metadataGroup);
 	}
 
-	public MetadataMatchData getMetadataMatchData() {
+	public MetadataMatchData onlyForTestGetMetadataMatchData() {
 		return dataMatcher;
 	}
-
 }

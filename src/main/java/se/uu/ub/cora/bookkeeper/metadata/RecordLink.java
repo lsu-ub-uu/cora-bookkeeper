@@ -24,14 +24,14 @@ import java.util.List;
 
 import se.uu.ub.cora.data.DataGroup;
 
-public final class RecordLink extends MetadataElement {
+public class RecordLink extends MetadataElement {
 	private String linkedRecordType;
 	private DataGroup linkedPath;
 	private String refParentId;
 	private String finalValue;
 	private final List<String> attributeReferences = new ArrayList<>();
 
-	private RecordLink(String id, String nameInData, String textId, String defTextId,
+	public RecordLink(String id, String nameInData, String textId, String defTextId,
 			String linkedRecordType) {
 		super(id, nameInData, textId, defTextId);
 		this.linkedRecordType = linkedRecordType;

@@ -23,7 +23,7 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
@@ -34,8 +34,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	public void testToMetadata() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
 
-		dataGroup.addChild(new DataAtomicSpy("repeatMin", "0"));
-		dataGroup.addChild(new DataAtomicSpy("repeatMax", "16"));
+		dataGroup.addChild(new DataAtomicOldSpy("repeatMin", "0"));
+		dataGroup.addChild(new DataAtomicOldSpy("repeatMax", "16"));
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
@@ -52,8 +52,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 
 		DataGroup ref = new DataGroupOldSpy("ref");
 		ref.addAttributeByIdWithValue("type", "group");
-		ref.addChild(new DataAtomicSpy("linkedRecordType", "metadataGroup"));
-		ref.addChild(new DataAtomicSpy("linkedRecordId", "otherMetadata"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordType", "metadataGroup"));
+		ref.addChild(new DataAtomicOldSpy("linkedRecordId", "otherMetadata"));
 		dataGroup.addChild(ref);
 		return dataGroup;
 	}
@@ -75,8 +75,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadataRepeatMaxValueX() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
-		dataGroup.addChild(new DataAtomicSpy("repeatMin", "0"));
-		dataGroup.addChild(new DataAtomicSpy("repeatMax", "X"));
+		dataGroup.addChild(new DataAtomicOldSpy("repeatMin", "0"));
+		dataGroup.addChild(new DataAtomicOldSpy("repeatMax", "X"));
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
@@ -110,8 +110,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	private DataGroup createDataGroup() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
 
-		dataGroup.addChild(new DataAtomicSpy("repeatMin", "0"));
-		dataGroup.addChild(new DataAtomicSpy("repeatMax", "16"));
+		dataGroup.addChild(new DataAtomicOldSpy("repeatMin", "0"));
+		dataGroup.addChild(new DataAtomicOldSpy("repeatMax", "16"));
 		return dataGroup;
 	}
 
@@ -146,8 +146,8 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	private DataGroup createChildRefCollectTermWithLinkedRecordTypeAndIdAndType(
 			String linkedRecordType, String indexTermId, String type) {
 		DataGroup childRefTerm = new DataGroupOldSpy("childRefCollectTerm");
-		childRefTerm.addChild(new DataAtomicSpy("linkedRecordType", linkedRecordType));
-		childRefTerm.addChild(new DataAtomicSpy("linkedRecordId", indexTermId));
+		childRefTerm.addChild(new DataAtomicOldSpy("linkedRecordType", linkedRecordType));
+		childRefTerm.addChild(new DataAtomicOldSpy("linkedRecordId", indexTermId));
 		childRefTerm.addAttributeByIdWithValue("type", type);
 		return childRefTerm;
 	}
@@ -212,7 +212,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadataRecordPartConstraintReadWrite() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(new DataAtomicSpy("recordPartConstraint", "readWrite"));
+		dataGroup.addChild(new DataAtomicOldSpy("recordPartConstraint", "readWrite"));
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
@@ -224,7 +224,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadataRecordPartConstraintWrite() {
 		DataGroup dataGroup = createDataGroup();
-		dataGroup.addChild(new DataAtomicSpy("recordPartConstraint", "write"));
+		dataGroup.addChild(new DataAtomicOldSpy("recordPartConstraint", "write"));
 
 		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);

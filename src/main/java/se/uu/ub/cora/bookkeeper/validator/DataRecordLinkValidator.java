@@ -252,4 +252,7 @@ class DataRecordLinkValidator implements DataElementValidator {
 		return dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID);
 	}
 
+	MetadataElement onlyForTestGetMetadataElement() {
+		return recordLink;
+	}
 }

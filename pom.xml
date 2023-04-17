@@ -24,14 +24,18 @@
 	<name>Bookkeeper</name>
 
 	<properties>
+		<!--dependency on storage should be removed when recordTypeHandler no longer needs it-->
+		<storage.version>8.0.0</storage.version>
+		<storagespies.version>1.4.0</storagespies.version>
+		
 		<initialize.version>1.3.0</initialize.version>
-		<coradata.version>7.6.0</coradata.version>
+		<coradata.version>7.7-SNAPSHOT</coradata.version>
 		<logger.version>2.8.0</logger.version>
 		<json.version>3.7.0</json.version>
 		<testutils.version>1.9.0</testutils.version>
 		<logger-spies.version>1.3.0</logger-spies.version>
 		<initialize-spies.version>1.3.0</initialize-spies.version>
-		<coradata-spies.version>1.4.0</coradata-spies.version>
+		<coradata-spies.version>1.5-SNAPSHOT</coradata-spies.version>
 	</properties>
 
 	<scm>
@@ -42,6 +46,20 @@
 	</scm>
 
 	<dependencies>
+		<!--dependency on storage should be removed when recordTypeHandler no longer needs it-->
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>storage</artifactId>
+			<version>${storage.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>storage-spies</artifactId>
+			<version>${storagespies.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>initialize</artifactId>

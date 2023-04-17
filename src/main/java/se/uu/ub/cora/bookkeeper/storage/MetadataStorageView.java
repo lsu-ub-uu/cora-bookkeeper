@@ -20,7 +20,9 @@
 package se.uu.ub.cora.bookkeeper.storage;
 
 import java.util.Collection;
+import java.util.Optional;
 
+import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -90,6 +92,33 @@ public interface MetadataStorageView {
 	Collection<DataGroup> getRecordTypes();
 
 	/**
+	 * getValidationType returns a {@link ValidationType} with the valiationType for the specified
+	 * validationId record that exists in storage.
+	 * </p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested element can not be read.
+	 * </p>
+	 * 
+	 * @param validationId
+	 *            A String with the id of the validation type to get from storage
+	 * @return An Optional with the requested validationType or empty if it does not exsist in
+	 *         storage
+	 */
+	Optional<ValidationType> getValidationType(String validationId);
+
+	/**
+	 * getValidationTypes returns a Collection of {@link ValidationType} with all valiationType
+	 * elements that exists in storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty collection be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 */
+	Collection<ValidationType> getValidationTypes();
+
+	/**
 	 * getCollectTerms returns a Collection of {@link DataGroup} with all collectTerm elements that
 	 * exists in storage.
 	 * </p>
@@ -102,4 +131,5 @@ public interface MetadataStorageView {
 	 * @return
 	 */
 	Collection<DataGroup> getCollectTerms();
+
 }

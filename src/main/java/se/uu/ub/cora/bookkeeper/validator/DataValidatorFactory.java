@@ -18,15 +18,8 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
-import java.util.Map;
-
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
-import se.uu.ub.cora.data.DataGroup;
-
 public interface DataValidatorFactory {
 
-	DataValidator factor(MetadataStorageView metadataStorage,
-			Map<String, DataGroup> recordTypeHolder, MetadataHolder metadataHolder);
+	DataValidator factor();
 
 }

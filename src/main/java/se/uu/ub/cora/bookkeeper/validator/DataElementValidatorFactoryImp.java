@@ -25,6 +25,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulator;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
@@ -33,17 +34,23 @@ import se.uu.ub.cora.data.DataGroup;
 
 class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 
-	private MetadataHolder metadataHolder;
 	private Map<String, DataGroup> recordTypeHolder;
+	private MetadataHolderPopulator metadataHolderPopulator;
+	private MetadataHolder metadataHolder;
 
 	public DataElementValidatorFactoryImp(Map<String, DataGroup> recordTypeHolder,
-			MetadataHolder metadataHolder) {
+			MetadataHolderPopulator metadataHolderPopulator) {
 		this.recordTypeHolder = recordTypeHolder;
-		this.metadataHolder = metadataHolder;
+		this.metadataHolderPopulator = metadataHolderPopulator;
 	}
 
 	@Override
 	public DataElementValidator factor(String elementId) {
+		if (metadataHolder == null) {
+			metadataHolder = metadataHolderPopulator
+					.createAndPopulateMetadataHolderFromMetadataStorage();
+		}
+
 		MetadataElement metadataElement = metadataHolder.getMetadataElement(elementId);
 
 		if (metadataElement instanceof MetadataGroup) {
@@ -70,13 +77,15 @@ class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 				.withMessage("No validator created for element with id: " + elementId);
 	}
 
-	public MetadataHolder getMetadataHolder() {
-		// needed for test
+	MetadataHolder onlyForTestGetMetadataHolder() {
 		return metadataHolder;
 	}
 
-	public Map<String, DataGroup> getRecordTypeHolder() {
-		// needed for test
+	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
 		return recordTypeHolder;
+	}
+
+	public MetadataHolderPopulator onlyForTestGetMetadataHolderPopulator() {
+		return metadataHolderPopulator;
 	}
 }

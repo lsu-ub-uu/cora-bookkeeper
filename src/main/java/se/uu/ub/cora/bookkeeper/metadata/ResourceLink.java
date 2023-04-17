@@ -19,9 +19,9 @@
 
 package se.uu.ub.cora.bookkeeper.metadata;
 
-public final class ResourceLink extends MetadataElement {
+public class ResourceLink extends MetadataElement {
 
-	private ResourceLink(String id, String nameInData, String textId, String defTextId) {
+	public ResourceLink(String id, String nameInData, String textId, String defTextId) {
 		super(id, nameInData, textId, defTextId);
 	}
 

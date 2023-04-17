@@ -32,6 +32,6 @@ public class MetadataMatchDataFactoryTest {
 		MetadataHolder metadataHolder = new MetadataHolderSpy();
 		MetadataMatchDataFactory factory = MetadataMatchFactoryImp.usingMetadataHolder(metadataHolder);
 		MetadataMatchDataImp matcher = (MetadataMatchDataImp) factory.factor();
-		assertSame(matcher.getMetadataHolder(), metadataHolder);
+		assertSame(matcher.onlyForTestGetMetadataHolder(), metadataHolder);
 	}
 }

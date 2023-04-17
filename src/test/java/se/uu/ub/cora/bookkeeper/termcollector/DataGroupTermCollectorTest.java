@@ -19,7 +19,6 @@
 package se.uu.ub.cora.bookkeeper.termcollector;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
@@ -29,8 +28,10 @@ import java.util.function.Supplier;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicSpy;
+import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
@@ -38,6 +39,8 @@ import se.uu.ub.cora.data.collected.IndexTerm;
 import se.uu.ub.cora.data.collected.PermissionTerm;
 import se.uu.ub.cora.data.collected.StorageTerm;
 import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataGroupTermCollectorTest {
 
@@ -45,17 +48,23 @@ public class DataGroupTermCollectorTest {
 	private DataGroupTermCollectorImp collector;
 	private DataGroup basicDataGroup;
 	private static final String INDEX_FIELD_NAME = "indexFieldNameForId:";
+	private LoggerFactorySpy loggerFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		metadataStorage = new MetadataStorageForTermStub();
-		collector = new DataGroupTermCollectorImp(metadataStorage);
-		basicDataGroup = createBookWithNoTitle();
-	}
+		loggerFactory = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactory);
 
-	@Test
-	public void testGetMetadataStorage() {
-		assertSame(collector.onlyForTestGetMetadataStorage(), metadataStorage);
+		metadataStorage = new MetadataStorageForTermStub();
+
+		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
+		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
+				() -> metadataStorage);
+		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+
+		// collector = new DataGroupTermCollectorImp(metadataStorage);
+		collector = new DataGroupTermCollectorImp();
+		basicDataGroup = createBookWithNoTitle();
 	}
 
 	@Test
@@ -109,7 +118,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testIndexTermCollectorOneCollectedTermAtomicValue() {
-		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookTitle", "Some title"));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataGroup);
 
@@ -131,7 +140,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testIndexTermCollectorTwoCollectedTermSameAtomicValue() {
-		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookTitle", "Some title"));
 
 		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
 				basicDataGroup);
@@ -147,9 +156,9 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testIndexTermCollectorThreeCollectedTermTwoWithSameAtomicValue() {
-		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
-		basicDataGroup.addChild(new DataAtomicSpy("bookSubTitle", "Some subtitle", "0"));
-		basicDataGroup.addChild(new DataAtomicSpy("bookSubTitle", "Some other subtitle", "1"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookSubTitle", "Some subtitle", "0"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookSubTitle", "Some other subtitle", "1"));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataGroup);
 
@@ -223,7 +232,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
-		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookTitle", "Some title"));
 
 		CollectTerms collectedData1 = collector.collectTerms("bookGroup", basicDataGroup);
 
@@ -240,7 +249,7 @@ public class DataGroupTermCollectorTest {
 
 	@Test
 	public void testStorageTermCollectorTwoCollectedTermSameAtomicValue() {
-		basicDataGroup.addChild(new DataAtomicSpy("bookTitle", "Some title"));
+		basicDataGroup.addChild(new DataAtomicOldSpy("bookTitle", "Some title"));
 
 		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
 				basicDataGroup);
@@ -291,10 +300,10 @@ public class DataGroupTermCollectorTest {
 	}
 
 	private void addChildrenToBook(DataGroup book) {
-		book.addChild(new DataAtomicSpy("bookTitle", "Some title"));
-		book.addChild(new DataAtomicSpy("bookSubTitle", "Some subtitle"));
+		book.addChild(new DataAtomicOldSpy("bookTitle", "Some title"));
+		book.addChild(new DataAtomicOldSpy("bookSubTitle", "Some subtitle"));
 		DataGroup personRole = new DataGroupOldSpy("personRole");
-		personRole.addChild(new DataAtomicSpy("name", "Kalle Kula"));
+		personRole.addChild(new DataAtomicOldSpy("name", "Kalle Kula"));
 		personRole.setRepeatId("0");
 		book.addChild(personRole);
 	}
@@ -313,7 +322,7 @@ public class DataGroupTermCollectorTest {
 
 	private DataGroup createRecordInfo() {
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
-		recordInfo.addChild(new DataAtomicSpy("id", "book1"));
+		recordInfo.addChild(new DataAtomicOldSpy("id", "book1"));
 		DataGroup type = DataCreator.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(
 				"type", "recordType", "book");
 		recordInfo.addChild(type);

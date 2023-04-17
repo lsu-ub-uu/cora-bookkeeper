@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,20 +18,40 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataValidatorFactoryImp implements DataValidatorFactory {
+	private MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
 
 	@Override
-	public DataValidator factor(MetadataStorageView metadataStorage,
-			Map<String, DataGroup> recordTypeHolder, MetadataHolder metadataHolder) {
+	public DataValidator factor() {
+		Map<String, DataGroup> recordTypeHolder = createRecordTypeHolder(
+				metadataStorage.getRecordTypes());
+
 		DataElementValidatorFactory dataElementValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolder);
-		return new DataValidatorImp(metadataStorage, dataElementValidatorFactory, recordTypeHolder);
+				recordTypeHolder, new MetadataHolderPopulatorImp());
+		return new DataValidatorImp(dataElementValidatorFactory, recordTypeHolder);
 	}
 
+	private Map<String, DataGroup> createRecordTypeHolder(Collection<DataGroup> recordTypes) {
+		Map<String, DataGroup> recordTypeHolder = new HashMap<>();
+		for (DataGroup dataGroup : recordTypes) {
+			addInfoForRecordTypeToHolder(recordTypeHolder, dataGroup);
+		}
+		return recordTypeHolder;
+	}
+
+	private void addInfoForRecordTypeToHolder(Map<String, DataGroup> recordTypeHolder,
+			DataGroup dataGroup) {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		String recordId = recordInfo.getFirstAtomicValueWithNameInData("id");
+		recordTypeHolder.put(recordId, dataGroup);
+	}
 }

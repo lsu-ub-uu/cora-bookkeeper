@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,41 +18,132 @@
  */
 package se.uu.ub.cora.bookkeeper.validator;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataValidatorFactoryTest {
-	private Map<String, DataGroup> recordTypeHolderSpy = new HashMap<>();
-	private MetadataStorageForDataValidatorSpy metadataStorageSpy;
-	private MetadataHolderSpy metadataHolderSpy;
+	private DataValidatorFactoryImp factory;
+
+	private MetadataStorageViewSpy metadataStorageView;
+	private MetadataStorageViewInstanceProviderSpy metaStorageInstanceProviderSpy;
+
+	private DataGroupSpy recordTypeGroup1;
+	private DataGroupSpy recordTypeGroup2;
+
+	@BeforeMethod
+	private void beforeMethod() {
+		LoggerFactorySpy loggerFactorySpy = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+
+		metadataStorageView = new MetadataStorageViewSpy();
+		metaStorageInstanceProviderSpy = new MetadataStorageViewInstanceProviderSpy();
+		metaStorageInstanceProviderSpy.MRV.setDefaultReturnValuesSupplier("getStorageView",
+				() -> metadataStorageView);
+
+		MetadataStorageProvider
+				.onlyForTestSetMetadataStorageViewInstanceProvider(metaStorageInstanceProviderSpy);
+		factory = new DataValidatorFactoryImp();
+	}
 
 	@Test
-	public void testFactor() throws Exception {
-		metadataStorageSpy = new MetadataStorageForDataValidatorSpy();
-		metadataHolderSpy = new MetadataHolderSpy();
+	public void testFactorNoRecordTypes() throws Exception {
 
-		DataValidatorFactory factory = new DataValidatorFactoryImp();
+		DataValidatorImp dataValidator = (DataValidatorImp) factory.factor();
 
-		DataValidatorImp dataValidator = (DataValidatorImp) factory.factor(metadataStorageSpy,
-				recordTypeHolderSpy, metadataHolderSpy);
 		assertTrue(dataValidator instanceof DataValidatorImp);
 
-		assertSame(dataValidator.getMetadataStorage(), metadataStorageSpy);
-		assertSame(dataValidator.getRecordTypeHolder(), recordTypeHolderSpy);
-		DataElementValidatorFactoryImp dataElementValidatorFactory = (DataElementValidatorFactoryImp) dataValidator
-				.getDataElementValidatorFactory();
-		assertTrue(dataElementValidatorFactory instanceof DataElementValidatorFactoryImp);
-		assertSame(dataElementValidatorFactory.getRecordTypeHolder(), recordTypeHolderSpy);
-		assertSame(dataElementValidatorFactory.getMetadataHolder(), metadataHolderSpy);
-
-		// ;
+		assertDataElementValidatorFactory(dataValidator);
+		assertDataValidatorCreatedWithCorrectInput(dataValidator);
 	}
+
+	private void assertDataValidatorCreatedWithCorrectInput(DataValidatorImp dataValidator) {
+		Map<String, DataGroup> recordTypeHolder = dataValidator.onlyForTestGetRecordTypeHolder();
+		assertTrue(recordTypeHolder instanceof HashMap<String, DataGroup>);
+		assertEquals(recordTypeHolder.size(), 0);
+	}
+
+	private void assertDataElementValidatorFactory(DataValidatorImp dataValidator) {
+		DataElementValidatorFactoryImp dataElementValidatorFactory = (DataElementValidatorFactoryImp) dataValidator
+				.onlyForTestGetDataElementValidatorFactory();
+		Map<String, DataGroup> recordTypeHolder = dataElementValidatorFactory
+				.onlyForTestGetRecordTypeHolder();
+
+		assertTrue(dataElementValidatorFactory instanceof DataElementValidatorFactoryImp);
+		assertTrue(recordTypeHolder instanceof HashMap<String, DataGroup>);
+		assertEquals(recordTypeHolder.size(), 0);
+
+		assertTrue(dataElementValidatorFactory
+				.onlyForTestGetMetadataHolderPopulator() instanceof MetadataHolderPopulatorImp);
+	}
+
+	@Test
+	public void testCreateRecordTypeHolder() throws Exception {
+
+		prepareTestAddRecordTypesForCreationOfRecordTypeHolder();
+
+		DataValidatorImp dataValidator = (DataValidatorImp) factory.factor();
+
+		recordTypeGroup1.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
+		DataGroupSpy recordInfo1 = (DataGroupSpy) recordTypeGroup1.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+		recordInfo1.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "id");
+
+		recordTypeGroup2.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
+		DataGroupSpy recordInfo2 = (DataGroupSpy) recordTypeGroup2.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+		recordInfo2.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "id");
+
+		DataElementValidatorFactoryImp dataElementValidatorFactory = (DataElementValidatorFactoryImp) dataValidator
+				.onlyForTestGetDataElementValidatorFactory();
+		;
+		Map<String, DataGroup> recordTypeHolderFromDataValidator = dataValidator
+				.onlyForTestGetRecordTypeHolder();
+		assertEquals(recordTypeHolderFromDataValidator.size(), 2);
+		assertSame(recordTypeHolderFromDataValidator.get("someId1"), recordTypeGroup1);
+		assertSame(recordTypeHolderFromDataValidator.get("someId2"), recordTypeGroup2);
+
+		Map<String, DataGroup> recordTypeHolderFromDataElementValidatorFactory = dataElementValidatorFactory
+				.onlyForTestGetRecordTypeHolder();
+		assertEquals(recordTypeHolderFromDataElementValidatorFactory.get("someId1"),
+				recordTypeGroup1);
+		assertEquals(recordTypeHolderFromDataElementValidatorFactory.get("someId2"),
+				recordTypeGroup2);
+	}
+
+	private void prepareTestAddRecordTypesForCreationOfRecordTypeHolder() {
+		recordTypeGroup1 = new DataGroupSpy();
+		DataGroupSpy recordInfoGroup1 = new DataGroupSpy();
+		recordInfoGroup1.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				() -> "someId1", "id");
+		recordTypeGroup1.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				() -> recordInfoGroup1, "recordInfo");
+
+		recordTypeGroup2 = new DataGroupSpy();
+		DataGroupSpy recordInfoGroup2 = new DataGroupSpy();
+		recordInfoGroup2.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				() -> "someId2", "id");
+		recordTypeGroup2.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				() -> recordInfoGroup2, "recordInfo");
+
+		metadataStorageView.MRV.setDefaultReturnValuesSupplier("getRecordTypes",
+				() -> List.of(recordTypeGroup1, recordTypeGroup2));
+	}
+
 }

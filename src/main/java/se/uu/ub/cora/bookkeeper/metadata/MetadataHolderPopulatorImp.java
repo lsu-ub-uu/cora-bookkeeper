@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019 Uppsala University Library
+ * Copyright 2017, 2019, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,18 +23,21 @@ import java.util.Collection;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
 import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
-public final class MetadataHolderFromStoragePopulator {
+public final class MetadataHolderPopulatorImp implements MetadataHolderPopulator {
 
 	DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
 			.forDataGroups();
 
-	public MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage(
-			MetadataStorageView metadataStorage) {
-		MetadataHolder mh = new MetadataHolder();
-		Collection<DataGroup> metadataElementDataGroups = metadataStorage.getMetadataElements();
+	@Override
+	public MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage() {
+		MetadataStorageView metadataStorageView = MetadataStorageProvider.getStorageView();
+		MetadataHolder mh = new MetadataHolderImp();
+
+		Collection<DataGroup> metadataElementDataGroups = metadataStorageView.getMetadataElements();
 		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups,
 				mh);
 		return mh;
@@ -52,5 +55,14 @@ public final class MetadataHolderFromStoragePopulator {
 		DataGroupToMetadataConverter converter = factory
 				.factorForDataGroupContainingMetadata(metadataElement);
 		mh.addMetadataElement(converter.toMetadata());
+	}
+
+	DataGroupToMetadataConverterFactory onlyForTestGetDataGroupToMetadataConverterFactory() {
+		return factory;
+	}
+
+	void onlyForTestSetDataGroupToMetadataConverter(
+			DataGroupToMetadataConverterFactory factorySpy) {
+		this.factory = factorySpy;
 	}
 }

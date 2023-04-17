@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Uppsala University Library
+ * Copyright 2022, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -28,6 +28,7 @@ public class MetadataStorageViewInstanceProviderSpy implements MetadataStorageVi
 	public MetadataStorageViewInstanceProviderSpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getStorageView", MetadataStorageViewSpy::new);
+		MRV.setDefaultReturnValuesSupplier("getOrderToSelectImplementionsBy", () -> 0);
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class MetadataStorageViewInstanceProviderSpy implements MetadataStorageVi
 
 	@Override
 	public int getOrderToSelectImplementionsBy() {
-		return 0;
+		return (int) MCR.addCallAndReturnFromMRV();
 	}
 
 }
