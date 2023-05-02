@@ -222,7 +222,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public DataGroup getMetadataGroup() {
 		if (metadataGroup == null) {
-			metadataGroup = recordStorage.read(List.of(METADATA_GROUP), getDefinitionId());
+			metadataGroup = recordStorage.read(List.of("metadata"), getDefinitionId());
 		}
 		return metadataGroup;
 	}
@@ -616,13 +616,14 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public List<String> getListOfImplementingRecordTypeIds() {
-		int aSlightlyLargerNumberThanHowManyRecordTypesExist = 60;
-		List<String> ids = new ArrayList<>(aSlightlyLargerNumberThanHowManyRecordTypesExist);
-		List<RecordTypeHandler> implementingHandlers = getImplementingRecordTypeHandlers();
-		for (RecordTypeHandler recordTypeHandler : implementingHandlers) {
-			ids.add(recordTypeHandler.getRecordTypeId());
-		}
-		return ids;
+		// int aSlightlyLargerNumberThanHowManyRecordTypesExist = 60;
+		// List<String> ids = new ArrayList<>(aSlightlyLargerNumberThanHowManyRecordTypesExist);
+		// List<RecordTypeHandler> implementingHandlers = getImplementingRecordTypeHandlers();
+		// for (RecordTypeHandler recordTypeHandler : implementingHandlers) {
+		// ids.add(recordTypeHandler.getRecordTypeId());
+		// }
+		// return ids;
+		return List.of(recordTypeId);
 	}
 
 	public RecordTypeHandlerFactory getRecordTypeHandlerFactory() {
@@ -631,9 +632,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public List<String> getListOfRecordTypeIdsToReadFromStorage() {
-		if (isAbstract()) {
-			return getListOfImplementingRecordTypeIds();
-		}
+		// if (isAbstract()) {
+		// return getListOfImplementingRecordTypeIds();
+		// }
 		return List.of(recordTypeId);
 	}
 

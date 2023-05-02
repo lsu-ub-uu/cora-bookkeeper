@@ -53,7 +53,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 
 				}
 			}
-			if ("metadataGroup".equals(type) && "organisation".equals(id)) {
+			if ("metadata".equals(type) && "organisation".equals(id)) {
 				// return createMetadataGroupForOrganisation();
 				DataGroup metadata = createMetadataGroupForOrganisation();
 				MCR.addReturned(metadata);
@@ -61,12 +61,12 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 
 			}
 
-			if ("metadataGroup".equals(type) && "organisationChildWithAttribute".equals(id)) {
+			if ("metadata".equals(type) && "organisationChildWithAttribute".equals(id)) {
 				DataGroup metadata = createMetadataGroupForOrganisationWithChildWithAttribute();
 				MCR.addReturned(metadata);
 				return metadata;
 			}
-			if ("metadataGroup".equals(type) && "organisationChildWithAttributeNew".equals(id)) {
+			if ("metadata".equals(type) && "organisationChildWithAttributeNew".equals(id)) {
 				if (useStandardMetadataGroupForNew) {
 					DataGroup metadata = createMetadataGroupForOrganisationWithChildWithAttribute();
 					MCR.addReturned(metadata);
@@ -77,13 +77,13 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 				return metadata;
 			}
 
-			if ("metadataGroup".equals(type) && "organisationRecursiveChild".equals(id)) {
+			if ("metadata".equals(type) && "organisationRecursiveChild".equals(id)) {
 				DataGroup returnedValue = createMetadataGroupForOrganisationRecursiveChild();
 				MCR.addReturned(returnedValue);
 				return returnedValue;
 
 			}
-			if ("metadataGroup".equals(type) && "organisationNew".equals(id)) {
+			if ("metadata".equals(type) && "organisationNew".equals(id)) {
 				if (useStandardMetadataGroupForNew) {
 					DataGroup metadata = createMetadataGroupForOrganisation();
 					MCR.addReturned(metadata);
@@ -129,7 +129,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 				MCR.addReturned(metadata);
 				return metadata;
 			}
-			if ("metadataGroup".equals(type) && "organisationAlternativeNameGroup".equals(id)) {
+			if ("metadata".equals(type) && "organisationAlternativeNameGroup".equals(id)) {
 				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(
 						"organisationAlternativeName", "organisationAlternativeNameGroup");
 				DataGroup childReferences = metadataGroup
@@ -151,14 +151,14 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 				}
 				if (numberOfGrandChildrenWithReadWriteConstraint > 1) {
 					DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(
-							"metadataGroup", "grandChildGroup", "0", maxNoOfGrandChildren);
+							"metadata", "grandChildGroup", "0", maxNoOfGrandChildren);
 					childReferences.addChild(grandChildWithReadConstraint);
 				}
 
 				MCR.addReturned(metadataGroup);
 				return metadataGroup;
 			}
-			if ("metadataGroup".equals(type) && "grandChildGroup".equals(id)) {
+			if ("metadata".equals(type) && "grandChildGroup".equals(id)) {
 				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(id,
 						"grandChildGroup");
 
@@ -170,7 +170,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 				MCR.addReturned(metadataGroup);
 				return metadataGroup;
 			}
-			if ("metadataGroup".equals(type) && "divaOrganisationNameGroup".equals(id)) {
+			if ("metadata".equals(type) && "divaOrganisationNameGroup".equals(id)) {
 				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(
 						"organisationName", "divaOrganisationNameGroup");
 
@@ -182,7 +182,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 				MCR.addReturned(metadataGroup);
 				return metadataGroup;
 			}
-			if ("metadataGroup".equals(type) && "divaOrganisationRecursiveNameGroup".equals(id)) {
+			if ("metadata".equals(type) && "divaOrganisationRecursiveNameGroup".equals(id)) {
 				// DataGroupSpy metadataGroup =
 				// createMetadataGroupWithChildReferences("organisationName",
 				// "divaOrganisationRecursiveNameGroup");
@@ -199,7 +199,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 						"metadataTextVariable", "showInPortalTextVar", "0", "1");
 				childReferences.addChild(grandChildWithReadConstraint);
 
-				DataGroupSpiderOldSpy recursiveChild = createChildReference("metadataGroup",
+				DataGroupSpiderOldSpy recursiveChild = createChildReference("metadata",
 						"divaOrganisationRecursiveNameGroup", "0", "1");
 				childReferences.addChild(recursiveChild);
 
@@ -324,7 +324,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 	private DataGroup createMetadataGroupForOrganisationNew() {
 		DataGroupSpiderOldSpy dataGroupSpy = createBasicMetadataGroup("organinsationNewGroup");
 		DataGroupSpiderOldSpy childReferences = new DataGroupSpiderOldSpy("childReferences");
-		DataGroupSpiderOldSpy childReference = createChildReference("metadataGroup",
+		DataGroupSpiderOldSpy childReference = createChildReference("metadata",
 				"divaOrganisationNameGroup", "0", "1");
 		childReferences.addChild(childReference);
 
@@ -389,7 +389,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 	private DataGroup createMetadataGroupForOrganisation() {
 		DataGroupSpiderOldSpy dataGroupSpy = createBasicMetadataGroup("organisationGroup");
 		DataGroupSpiderOldSpy childReferences = new DataGroupSpiderOldSpy("childReferences");
-		DataGroupSpiderOldSpy childReference = createChildReference("metadataGroup",
+		DataGroupSpiderOldSpy childReference = createChildReference("metadata",
 				"divaOrganisationNameGroup", "0", "1");
 		childReferences.addChild(childReference);
 
@@ -420,7 +420,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 	private DataGroup createMetadataGroupForOrganisationRecursiveChild() {
 		DataGroupSpiderOldSpy dataGroupSpy = createBasicMetadataGroup("recursiveChild");
 		DataGroupSpiderOldSpy childReferences = new DataGroupSpiderOldSpy("childReferences");
-		DataGroupSpiderOldSpy childReference = createChildReference("metadataGroup",
+		DataGroupSpiderOldSpy childReference = createChildReference("metadata",
 				"divaOrganisationRecursiveNameGroup", "0", "1");
 		childReferences.addChild(childReference);
 		dataGroupSpy.addChild(childReferences);
@@ -433,7 +433,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 		DataGroup childReferences = metadataGroup.getFirstGroupWithNameInData("childReferences");
 		if (numberOfChildrenWithReadWriteConstraint > 0) {
 			DataGroupSpiderOldSpy referenceWithConstraint = createChildReferenceWithConstraint(
-					"metadataGroup", "organisationAlternativeNameGroup", "readWrite", "0", "1");
+					"metadata", "organisationAlternativeNameGroup", "readWrite", "0", "1");
 			childReferences.addChild(referenceWithConstraint);
 		}
 
@@ -445,7 +445,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 		DataGroup childReferences = metadataGroup.getFirstGroupWithNameInData("childReferences");
 		if (numberOfChildrenWithReadWriteConstraint > 0) {
 			DataGroupSpiderOldSpy referenceWithConstraint = createChildReferenceWithConstraint(
-					"metadataGroup", "organisationAlternativeNameGroup", "readWrite", "0", "1");
+					"metadata", "organisationAlternativeNameGroup", "readWrite", "0", "1");
 			childReferences.addChild(referenceWithConstraint);
 		}
 
