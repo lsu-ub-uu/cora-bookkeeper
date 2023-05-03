@@ -35,6 +35,7 @@ import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.Filter;
@@ -42,8 +43,8 @@ import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.StorageReadResult;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
-	private static final String METADATA_GROUP = "metadataGroup";
-	private static final String REPEAT_MAX_WHEN_NOT_REPEATEBLE = "1";
+	// private static final String METADATA_GROUP = "metadataGroup";
+	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
 	private static final String NAME_IN_DATA = "nameInData";
 	private static final String SEARCH = "search";
 	private static final String PARENT_ID = "parentId";
@@ -259,47 +260,30 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	private void collectConstraintForChildReference(DataGroup childReference,
 			Set<Constraint> tempSet) {
-		DataGroup childRef = null;
+		DataGroup child = null;
+		child = readChildRefFromStorage(childReference);
 		if (hasConstraints(childReference)) {
-			childRef = readChildRefFromStorage(childReference);
-			addWriteAndReadWriteConstraints(childReference, childRef, tempSet);
+			addWriteAndReadWriteConstraints(childReference, child, tempSet);
 		}
-		possiblyCollectConstraintsFromChildrenToChildReference(childReference, childRef, tempSet);
+		possiblyCollectConstraintsFromChildrenToChildReference(childReference, child, tempSet);
 	}
 
 	private void possiblyCollectConstraintsFromChildrenToChildReference(DataGroup childReference,
-			DataGroup childRef, Set<Constraint> tempSet) {
-		String repeatMax = getRepeatMax(childReference);
-		String linkedRecordType = getLinkedRecordType(childReference);
-		if (isGroup(linkedRecordType) && notRepetable(repeatMax)) {
-			childRef = ensureChildRefReadFromStorage(childReference, childRef);
-			List<DataGroup> allChildReferences = getAllChildReferences(childRef);
+			DataGroup child, Set<Constraint> tempSet) {
+		if (isGroup(child) && notRepetable(childReference)) {
+			List<DataGroup> allChildReferences = getAllChildReferences(child);
 			collectConstraintsForChildReferences(allChildReferences, tempSet);
 		}
 	}
 
-	private String getRepeatMax(DataGroup childReference) {
-		return childReference.getFirstAtomicValueWithNameInData("repeatMax");
+	private boolean isGroup(DataGroup child) {
+		DataAttribute type = child.getAttribute("type");
+		return "group".equals(type.getValue());
 	}
 
-	private String getLinkedRecordType(DataGroup childReference) {
-		DataGroup ref = childReference.getFirstGroupWithNameInData("ref");
-		return ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
-	}
-
-	private boolean isGroup(String linkedRecordType) {
-		return METADATA_GROUP.equals(linkedRecordType);
-	}
-
-	private boolean notRepetable(String repeatMax) {
-		return REPEAT_MAX_WHEN_NOT_REPEATEBLE.equals(repeatMax);
-	}
-
-	private DataGroup ensureChildRefReadFromStorage(DataGroup childReference, DataGroup childRef) {
-		if (childRef == null) {
-			childRef = readChildRefFromStorage(childReference);
-		}
-		return childRef;
+	private boolean notRepetable(DataGroup childReference) {
+		String repeatMax = childReference.getFirstAtomicValueWithNameInData("repeatMax");
+		return REPEAT_MAX_WHEN_NOT_REPEATABLE.equals(repeatMax);
 	}
 
 	private List<DataGroup> getAllChildReferences(DataGroup metadataGroupForMetadata) {
@@ -331,11 +315,11 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return childReference.containsChildWithNameInData(RECORD_PART_CONSTRAINT);
 	}
 
-	private void addWriteAndReadWriteConstraints(DataGroup childReference, DataGroup childRef,
+	private void addWriteAndReadWriteConstraints(DataGroup childReference, DataGroup child,
 			Set<Constraint> constraints) {
 		String constraintType = getRecordPartConstraintType(childReference);
 
-		Constraint constraint = createConstraintPossibyAddAttributes(childRef);
+		Constraint constraint = createConstraintPossibyAddAttributes(child);
 		constraint.setType(ConstraintType.fromString(constraintType));
 		constraints.add(constraint);
 	}
@@ -344,9 +328,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return childReference.getFirstAtomicValueWithNameInData(RECORD_PART_CONSTRAINT);
 	}
 
-	private Constraint createConstraintPossibyAddAttributes(DataGroup childRef) {
-		Constraint constraint = createConstraint(childRef);
-		possiblyAddAttributes(childRef, constraint);
+	private Constraint createConstraintPossibyAddAttributes(DataGroup child) {
+		Constraint constraint = createConstraint(child);
+		possiblyAddAttributes(child, constraint);
 		return constraint;
 	}
 
@@ -357,19 +341,19 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return recordStorage.read(List.of(linkedRecordType), linkedRecordId);
 	}
 
-	private Constraint createConstraint(DataGroup childRef) {
-		String refNameInData = childRef.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
+	private Constraint createConstraint(DataGroup child) {
+		String refNameInData = child.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
 		return new Constraint(refNameInData);
 	}
 
-	private void possiblyAddAttributes(DataGroup childRef, Constraint constraint) {
-		if (childRef.containsChildWithNameInData("attributeReferences")) {
-			addAttributes(childRef, constraint);
+	private void possiblyAddAttributes(DataGroup child, Constraint constraint) {
+		if (child.containsChildWithNameInData("attributeReferences")) {
+			addAttributes(child, constraint);
 		}
 	}
 
-	private void addAttributes(DataGroup childRef, Constraint constraint) {
-		DataGroup attributeReferences = childRef.getFirstGroupWithNameInData("attributeReferences");
+	private void addAttributes(DataGroup child, Constraint constraint) {
+		DataGroup attributeReferences = child.getFirstGroupWithNameInData("attributeReferences");
 		List<DataGroup> attributeRefs = attributeReferences.getAllGroupsWithNameInData("ref");
 
 		for (DataGroup attributeRef : attributeRefs) {
@@ -568,7 +552,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private DataGroup getCreateDefinitionGroup() {
-		return recordStorage.read(List.of(METADATA_GROUP), getCreateDefinitionId());
+		return recordStorage.read(List.of("metadata"), getCreateDefinitionId());
 	}
 
 	@Override
