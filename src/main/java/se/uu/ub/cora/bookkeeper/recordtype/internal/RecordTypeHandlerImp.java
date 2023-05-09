@@ -43,7 +43,7 @@ import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.StorageReadResult;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
-	// private static final String METADATA_GROUP = "metadataGroup";
+	private static final String METADATA = "metadata";
 	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
 	private static final String NAME_IN_DATA = "nameInData";
 	private static final String SEARCH = "search";
@@ -63,7 +63,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private boolean constraintsForCreateLoaded = false;
 	private RecordTypeHandlerFactory recordTypeHandlerFactory;
 	private Set<String> readChildren = new HashSet<>();
-	private List<String> metadataCollectionItemTypes;
 	private MetadataStorageView metadataStorageView;
 	private String validationTypeId;
 	private ValidationType validationType;
@@ -223,7 +222,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public DataGroup getMetadataGroup() {
 		if (metadataGroup == null) {
-			metadataGroup = recordStorage.read(List.of("metadata"), getDefinitionId());
+			metadataGroup = recordStorage.read(List.of(METADATA), getDefinitionId());
 		}
 		return metadataGroup;
 	}
@@ -394,32 +393,20 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private Set<String> getPossibleAttributeValues(DataGroup collectionVar) {
 		DataGroup refCollectionLink = collectionVar.getFirstGroupWithNameInData("refCollection");
 		String collectionId = refCollectionLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		DataGroup possibleAttributesCollection = recordStorage
-				.read(List.of("metadataItemCollection"), collectionId);
+		DataGroup possibleAttributesCollection = recordStorage.read(List.of(METADATA),
+				collectionId);
 		DataGroup collectionItemReferences = possibleAttributesCollection
 				.getFirstGroupWithNameInData("collectionItemReferences");
 		List<DataGroup> allItemRefs = collectionItemReferences.getAllGroupsWithNameInData("ref");
 
 		Set<String> possibleValues = new LinkedHashSet<>();
-		loadTypesForMetadataCollectionItemGroup();
 		for (DataGroup itemRef : allItemRefs) {
 			String itemId = itemRef.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-			DataGroup itemGroup = recordStorage.read(metadataCollectionItemTypes, itemId);
+			DataGroup itemGroup = recordStorage.read(List.of(METADATA), itemId);
 			String itemValue = itemGroup.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
 			possibleValues.add(itemValue);
 		}
 		return possibleValues;
-	}
-
-	private void loadTypesForMetadataCollectionItemGroup() {
-		if (metadataCollectionItemTypes == null) {
-			DataGroup metadataCollectionItemGroup = recordStorage.read(List.of(RECORD_TYPE),
-					"metadataCollectionItem");
-			RecordTypeHandler recordTypeHandlerMetadataCollectionItem = recordTypeHandlerFactory
-					.factorUsingDataGroup(metadataCollectionItemGroup);
-			metadataCollectionItemTypes = recordTypeHandlerMetadataCollectionItem
-					.getListOfImplementingRecordTypeIds();
-		}
 	}
 
 	private void possiblyAddReadWriteConstraint(Constraint constraint) {
@@ -552,7 +539,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private DataGroup getCreateDefinitionGroup() {
-		return recordStorage.read(List.of("metadata"), getCreateDefinitionId());
+		return recordStorage.read(List.of(METADATA), getCreateDefinitionId());
 	}
 
 	@Override

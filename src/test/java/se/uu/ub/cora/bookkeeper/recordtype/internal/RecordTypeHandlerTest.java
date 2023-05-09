@@ -720,7 +720,7 @@ public class RecordTypeHandlerTest {
 
 		Set<Constraint> constraints = recordTypeHandler.getReadRecordPartConstraints();
 
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 11);
+		storageSpy.MCR.assertNumberOfCallsToMethod("read", 10);
 		assertParementerFirstOnParameterTypesList(storageSpy, "read", 0, RECORD_TYPE);
 		storageSpy.MCR.assertParameter("read", 0, "id", "organisationChildWithAttribute");
 		assertParementerFirstOnParameterTypesList(storageSpy, "read", 1, METADATA);
@@ -741,23 +741,12 @@ public class RecordTypeHandlerTest {
 
 		String collectionId = assertChossableAttributeCollectionVar();
 
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 7, "metadataItemCollection");
+		assertParementerFirstOnParameterTypesList(storageSpy, "read", 7, METADATA);
 		storageSpy.MCR.assertParameter("read", 7, "id", "choosableCollection");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 8, RECORD_TYPE);
-		storageSpy.MCR.assertParameter("read", 8, "id", "metadataCollectionItem");
-
-		var metadataCollectionItemDataGroup = storageSpy.MCR.getReturnValue("read", 8);
-		recordTypeHandlerFactory.MCR.assertParameters("factorUsingDataGroup", 0,
-				metadataCollectionItemDataGroup);
-		RecordTypeHandlerSpy metadataCollectionItemRecordTypeHandler = (RecordTypeHandlerSpy) recordTypeHandlerFactory.MCR
-				.getReturnValue("factorUsingDataGroup", 0);
-		List<?> metadataCollectionItemTypes = (List<?>) metadataCollectionItemRecordTypeHandler.MCR
-				.getReturnValue("getListOfImplementingRecordTypeIds", 0);
-
-		storageSpy.MCR.assertParameters("read", 9, metadataCollectionItemTypes,
-				"choosableCollectionItem1");
-		storageSpy.MCR.assertParameters("read", 10, metadataCollectionItemTypes,
-				"choosableCollectionItem2");
+		storageSpy.MCR.assertParameter("read", 8, "id", "choosableCollectionItem1");
+		storageSpy.MCR.assertParameterAsEqual("read", 8, "types", List.of("metadata"));
+		storageSpy.MCR.assertParameter("read", 9, "id", "choosableCollectionItem2");
+		storageSpy.MCR.assertParameterAsEqual("read", 9, "types", List.of("metadata"));
 
 		List<DataGroupSpy> allItemRefs = assertCollectionItemReferences(collectionId);
 
@@ -812,7 +801,7 @@ public class RecordTypeHandlerTest {
 
 	private Collection<String> assertItemValues(List<DataGroupSpy> allItemRefs) {
 		Collection<String> possibleValues = new ArrayList<>();
-		int nextReadCallNumber = 9;
+		int nextReadCallNumber = 8;
 		for (DataGroupSpy itemRef : allItemRefs) {
 			assertItemValue(possibleValues, nextReadCallNumber, itemRef);
 			nextReadCallNumber++;
@@ -844,7 +833,7 @@ public class RecordTypeHandlerTest {
 
 		recordTypeHandler.getReadRecordPartConstraints();
 
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 16);
+		storageSpy.MCR.assertNumberOfCallsToMethod("read", 15);
 	}
 
 	@Test

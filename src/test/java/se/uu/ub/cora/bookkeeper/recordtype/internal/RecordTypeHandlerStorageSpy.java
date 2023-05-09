@@ -250,7 +250,7 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 				return collectionVar;
 			}
 
-			if ("metadataItemCollection".equals(type) && "choosableCollection".equals(id)) {
+			if (METADATA.equals(type) && "choosableCollection".equals(id)) {
 				DataGroupSpy collection = new DataGroupSpy();
 
 				DataGroupSpy collectionItemReferences = new DataGroupSpy();
