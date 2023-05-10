@@ -159,7 +159,8 @@ public class DataRedactorTest {
 	private void assertMetadataHasBeenRequestedForAllProcessedGroups() {
 		metadataHolderMCR.assertParameters("getMetadataElement", 0, metadataId);
 		metadataHolderMCR.assertParameters("getMetadataElement", 1, "childDataGroup");
-		metadataHolderMCR.assertParameters("getMetadataElement", 2, "recordInfo");
+		metadataHolderMCR.assertParameters("getMetadataElement", 2, "childDataGroup");
+		metadataHolderMCR.assertParameters("getMetadataElement", 3, "recordInfo");
 	}
 
 	private MetadataGroupSpy createAndAddChildToDataGroup(MetadataGroupSpy topGroup,
@@ -190,14 +191,10 @@ public class DataRedactorTest {
 
 		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
 		assertGroupRedactorCalledForTopLevelDataGroup();
-		assertOnlyOneCallToGroupRedactor();
-
-		assertMetadataHasBeenRequestedForTwoGroups();
-	}
-
-	private void assertOnlyOneCallToGroupRedactor() {
 		dataGroupRedactorMCR
 				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
+
+		assertMetadataHasBeenRequestedForTwoGroups();
 	}
 
 	private void assertMetadataHasBeenRequestedForTwoGroups() {
@@ -215,13 +212,10 @@ public class DataRedactorTest {
 
 		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
 		assertGroupRedactorCalledForTopLevelDataGroup();
-		assertOnlyOneCallToGroupRedactor();
+		dataGroupRedactorMCR
+				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 2);
 
-		assertOnlyMetadataForTopGroupHasBeenRequested();
-	}
-
-	private void assertOnlyMetadataForTopGroupHasBeenRequested() {
-		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 1);
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 3);
 		metadataHolderMCR.assertParameters("getMetadataElement", 0, metadataId);
 	}
 
@@ -235,9 +229,11 @@ public class DataRedactorTest {
 
 		assertReturnedDataIsFromGroupRedactor(filteredDataGroup);
 		assertGroupRedactorCalledForTopLevelDataGroup();
-		assertOnlyOneCallToGroupRedactor();
+		dataGroupRedactorMCR
+				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
 
-		assertOnlyMetadataForTopGroupHasBeenRequested();
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 2);
+		metadataHolderMCR.assertParameters("getMetadataElement", 0, metadataId);
 	}
 
 	@Test
@@ -268,7 +264,7 @@ public class DataRedactorTest {
 	private void assertMetadataHasBeenRequestedForAllProcessedGroupsForGrandChildTest() {
 		metadataHolderMCR.assertParameters("getMetadataElement", 0, metadataId);
 		metadataHolderMCR.assertParameters("getMetadataElement", 1, "recordInfo");
-		metadataHolderMCR.assertParameters("getMetadataElement", 2, "dataDivider");
+		metadataHolderMCR.assertParameters("getMetadataElement", 3, "dataDivider");
 	}
 
 	@Test
@@ -318,10 +314,6 @@ public class DataRedactorTest {
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				topDataGroupSpy, someConstraints, emptyPermissions);
 
-		assertGroupRedactorCalledWithCorrectParametersForTopGroupOnly();
-	}
-
-	private void assertGroupRedactorCalledWithCorrectParametersForTopGroupOnly() {
 		topGroupIsWrappedAndDataGroupRedactorReplaceCalledForTopLevel();
 
 		dataGroupRedactorMCR
@@ -352,7 +344,14 @@ public class DataRedactorTest {
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				topDataGroupSpy, someConstraints, emptyPermissions);
 
-		assertGroupRedactorCalledWithCorrectParametersForTopGroupOnly();
+		topGroupIsWrappedAndDataGroupRedactorReplaceCalledForTopLevel();
+
+		dataGroupRedactorMCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
+		dataGroupRedactorMCR
+				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 3);
+		wrapperFactoryMCR.assertNumberOfCallsToMethod("factor", 2);
 	}
 
 	@Test
@@ -363,7 +362,14 @@ public class DataRedactorTest {
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				topDataGroupSpy, someConstraints, emptyPermissions);
 
-		assertGroupRedactorCalledWithCorrectParametersForTopGroupOnly();
+		topGroupIsWrappedAndDataGroupRedactorReplaceCalledForTopLevel();
+
+		dataGroupRedactorMCR
+				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
+		dataGroupRedactorMCR
+				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 2);
+		wrapperFactoryMCR.assertNumberOfCallsToMethod("factor", 1);
 	}
 
 	@Test
@@ -410,7 +416,7 @@ public class DataRedactorTest {
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 		dataGroupRedactorMCR
 				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
-		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 2);
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 3);
 		wrapperFactoryMCR.assertNumberOfCallsToMethod("factor", 1);
 		matcherFactoryMCR.assertNumberOfCallsToMethod("factor", 1);
 	}
@@ -515,7 +521,7 @@ public class DataRedactorTest {
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 2);
 		dataGroupRedactorMCR
 				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
-		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 2);
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 3);
 		matcherFactoryMCR.assertNumberOfCallsToMethod("factor", 2);
 		wrapperFactoryMCR.assertNumberOfCallsToMethod("factor", 2);
 	}
@@ -577,7 +583,7 @@ public class DataRedactorTest {
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 1);
 		dataGroupRedactorMCR
 				.assertNumberOfCallsToMethod("removeChildrenForConstraintsWithoutPermissions", 1);
-		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 2);
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 3);
 		matcherFactoryMCR.assertNumberOfCallsToMethod("factor", 2);
 		wrapperFactoryMCR.assertNumberOfCallsToMethod("factor", 1);
 	}
@@ -593,7 +599,7 @@ public class DataRedactorTest {
 				.assertNumberOfCallsToMethod("replaceChildrenForConstraintsWithoutPermissions", 3);
 		dataGroupRedactorMCR
 				.assertMethodNotCalled("removeChildrenForConstraintsWithoutPermissions");
-		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 3);
+		metadataHolderMCR.assertNumberOfCallsToMethod("getMetadataElement", 5);
 		matcherFactoryMCR.assertNumberOfCallsToMethod("factor", 4);
 		wrapperFactoryMCR.assertNumberOfCallsToMethod("factor", 3);
 	}
