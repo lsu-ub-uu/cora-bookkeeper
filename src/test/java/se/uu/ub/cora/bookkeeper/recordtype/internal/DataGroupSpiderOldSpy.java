@@ -126,8 +126,10 @@ public class DataGroupSpiderOldSpy implements DataGroup {
 
 	@Override
 	public void addAttributeByIdWithValue(String id, String value) {
-		// attributes.add(new DataAttributeSpy(id, value));
-		attributes.add(new DataAttributeSpy());
+		DataAttributeSpy dataAttributeSpy = new DataAttributeSpy();
+		attributes.add(dataAttributeSpy);
+		dataAttributeSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> id);
+		dataAttributeSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
 
 	}
 

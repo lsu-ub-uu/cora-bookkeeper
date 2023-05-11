@@ -23,6 +23,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataGroup;
@@ -91,10 +92,6 @@ public class DataRedactorImp implements DataRedactor {
 		return metadataChildReference.getRepeatMax() == 1;
 	}
 
-	private boolean isMetadataGroup(MetadataChildReference metadataChildReference) {
-		return "metadataGroup".equals(metadataChildReference.getLinkedRecordType());
-	}
-
 	private MetadataGroup getMetadataChildFromMetadataHolder(
 			MetadataChildReference metadataChildReference) {
 		String childMetadataId = metadataChildReference.getLinkedRecordId();
@@ -145,6 +142,12 @@ public class DataRedactorImp implements DataRedactor {
 	private boolean childReferenceRepresentsGroupWithRepeatMaxOne(
 			MetadataChildReference metadataChildReference) {
 		return isMetadataGroup(metadataChildReference) && repeatMaxIsOne(metadataChildReference);
+	}
+
+	private boolean isMetadataGroup(MetadataChildReference metadataChildReference) {
+		String childMetadataId = metadataChildReference.getLinkedRecordId();
+		MetadataElement metadataElement = metadataHolder.getMetadataElement(childMetadataId);
+		return metadataElement instanceof MetadataGroup;
 	}
 
 	private void possiblyReplaceGroupChildWithRepeatMaxOne(DataGroup originalDataGroup,
