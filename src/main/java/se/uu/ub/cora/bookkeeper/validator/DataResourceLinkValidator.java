@@ -20,15 +20,12 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 class DataResourceLinkValidator implements DataElementValidator {
 
-	private static final String STREAM_ID = "streamId";
 	private ValidationAnswer validationAnswer;
 	private MetadataHolder metadataHolder;
 	private DataGroup dataForResourceLink;
@@ -42,10 +39,6 @@ class DataResourceLinkValidator implements DataElementValidator {
 		validationAnswer = new ValidationAnswer();
 		dataForResourceLink = (DataGroup) dataElement;
 		validateNameInData();
-		validateStreamId();
-		validateFileName();
-		validateFileSize();
-		validateMimeType();
 		return validationAnswer;
 	}
 
@@ -57,64 +50,6 @@ class DataResourceLinkValidator implements DataElementValidator {
 
 	private boolean nameInDataIsEmpty() {
 		return dataForResourceLink.getNameInData().isEmpty();
-	}
-
-	private void validateStreamId() {
-		validateChild("streamIdTextVar", STREAM_ID);
-	}
-
-	private void validateChild(String metadataId, String nameInData) {
-		if (childIsMissing(nameInData)) {
-			validationAnswer.addErrorMessage(createNameInDataMessagePart()
-					+ " must have an nonempty " + nameInData + " as child.");
-		} else {
-			validateChildValue(metadataId, nameInData);
-		}
-	}
-
-	private boolean childIsMissing(String nameInData) {
-		return !dataForResourceLink.containsChildWithNameInData(nameInData);
-	}
-
-	private void validateChildValue(String metdataId, String nameInData) {
-		validateTextVariableValueByMetadataIdAndNameInData(metdataId, nameInData);
-	}
-
-	private void validateTextVariableValueByMetadataIdAndNameInData(String metadataId,
-			String nameInData) {
-		DataTextVariableValidator dataValidator = createDataValidator(metadataId);
-		DataChild linkedRecordIdData = dataForResourceLink.getFirstChildWithNameInData(nameInData);
-		validateTextVariableData(dataValidator, linkedRecordIdData);
-	}
-
-	private void validateTextVariableData(DataTextVariableValidator dataValidator,
-			DataChild textVariableData) {
-		ValidationAnswer va = dataValidator.validateData(textVariableData);
-
-		if (va.dataIsInvalid()) {
-			validationAnswer.addErrorMessages(va.getErrorMessages());
-		}
-	}
-
-	private DataTextVariableValidator createDataValidator(String metadataId) {
-		MetadataElement metadataElement = metadataHolder.getMetadataElement(metadataId);
-		return new DataTextVariableValidator((TextVariable) metadataElement);
-	}
-
-	private String createNameInDataMessagePart() {
-		return "DataRecordLink with nameInData:" + dataForResourceLink.getNameInData();
-	}
-
-	private void validateFileName() {
-		validateChild("filenameTextVar", "filename");
-	}
-
-	private void validateFileSize() {
-		validateChild("filesizeTextVar", "filesize");
-	}
-
-	private void validateMimeType() {
-		validateChild("mimeTypeTextVar", "mimeType");
 	}
 
 	MetadataHolder onlyForTestGetMetadataHolder() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2023 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -25,8 +25,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
@@ -73,7 +71,6 @@ public class DataResourceLinkValidatorTest {
 						"imageBinary:123456", "adele.png", "123456", "application/png");
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
-		System.out.println(validationAnswer.getErrorMessages());
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
@@ -89,116 +86,6 @@ public class DataResourceLinkValidatorTest {
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
 		assertTrue(validationAnswer.dataIsInvalid());
-	}
-
-	@Test
-	public void testValidateInvalidStreamId() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456ÖÅÖ", "adele.png", "123456", "application/png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateEmptyStreamId() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData", "",
-						"adele.png", "123456", "application/png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateMissingStreamId() {
-		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
-
-		// dataResourceLink
-		// .addChild(new DataAtomicSpy("streamId", "imageBinary:123456"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("filename", "adele.png"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", "123456"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", "application/png"));
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateInvalidFileName() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", "adeleÄÖLÄÖLL(/(%.png", "123456", "application/png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateEmptyFileName() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", "", "123456", "application/png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateMissingFilename() {
-		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
-
-		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", "imageBinary:123456"));
-		// dataResourceLink.addChild(new DataAtomicSpy("filename", "adele.png"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", "123456"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", "application/png"));
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateInvalidFileSize() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", "adele.png", "/)=(&/(123456", "application/png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateEmptyFileSize() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", "adele.png", "", "application/png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateMissingFilesize() {
-		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
-
-		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", "imageBinary:123456"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("filename", "adele.png"));
-		// dataResourceLink.addChild(new DataAtomicSpy("filesize", "123456"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("mimeType", "application/png"));
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateInvalidMimeType() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", "adele.png", "123456", "application/)(/(&png");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateEmptyMimeType() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("nameInData",
-						"imageBinary:123456", "adele.png", "123456", "");
-		validateAndAssertDataIsInvalid(dataResourceLink);
-	}
-
-	@Test
-	public void testValidateMissingMimeType() {
-		DataGroup dataResourceLink = new DataGroupOldSpy("nameInData");
-
-		dataResourceLink.addChild(new DataAtomicOldSpy("streamId", "imageBinary:123456"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("filename", "adele.png"));
-		dataResourceLink.addChild(new DataAtomicOldSpy("filesize", "123456"));
-		// dataResourceLink.addChild(new DataAtomicSpy("mimeType",
-		// "application/png"));
-		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
 }
