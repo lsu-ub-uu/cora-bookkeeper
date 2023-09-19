@@ -27,62 +27,42 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
-import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.data.spies.DataResourceLinkSpy;
 
 public class DataResourceLinkValidatorTest {
+	private static final String EMPTY_NAME_IN_DATA = "";
+	private static final String SOME_NAME_IN_DATA = "someNameInData";
 	private DataResourceLinkValidator dataResourceLinkValidator;
 	private MetadataHolder metadataHolder = new MetadataHolderImp();
+	private DataResourceLinkSpy dataResourceLink;
 
 	@BeforeMethod
 	public void setUp() {
-		TextVariable streamIdTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("streamIdTextVar",
-						"streamId", "streamIdTextVarText", "streamIdTextVarDefText",
-						"(^[0-9A-Za-z:-_]{2,50}$)");
-		metadataHolder.addMetadataElement(streamIdTextVar);
-
-		TextVariable filenameTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("filenameTextVar",
-						"filename", "filenameTextVarText", "filenameTextVarDefText",
-						"(^[0-9A-Za-z:-_.]{2,50}$)");
-		metadataHolder.addMetadataElement(filenameTextVar);
-
-		TextVariable filesizeTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("filesizeTextVar",
-						"filesize", "filesizeTextVarText", "filesizeTextVarDefText",
-						"(^[0-9]{2,50}$)");
-		metadataHolder.addMetadataElement(filesizeTextVar);
-
-		TextVariable mimeTypeTextVar = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("mimeTypeTextVar",
-						"mimeType", "mimeTypeTextVarText", "mimeTypeTextVarDefText",
-						"(^[0-9A-Za-z:-_/]{2,50}$)");
-		metadataHolder.addMetadataElement(mimeTypeTextVar);
-
+		dataResourceLink = new DataResourceLinkSpy();
 		dataResourceLinkValidator = new DataResourceLinkValidator(metadataHolder);
 	}
 
 	@Test
 	public void testValidate() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("master",
-						"imageBinary:123456", "adele.png", "123456", "application/png");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getNameInData",
+				() -> SOME_NAME_IN_DATA);
+
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
+
 		assertTrue(validationAnswer.dataIsValid());
 	}
 
 	@Test
 	public void testValidateEmptyNameInData() {
-		DataGroup dataResourceLink = DataCreator
-				.createResourceLinkGroupWithNameInDataAndStreamIdNameSizeType("",
-						"imageBinary:123456ÖÅÖ", "adele.png", "123456", "application/png");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getNameInData",
+				() -> EMPTY_NAME_IN_DATA);
+
 		validateAndAssertDataIsInvalid(dataResourceLink);
 	}
 
-	private void validateAndAssertDataIsInvalid(DataGroup dataResourceLink) {
+	private void validateAndAssertDataIsInvalid(DataResourceLink dataResourceLink) {
 		ValidationAnswer validationAnswer = dataResourceLinkValidator
 				.validateData(dataResourceLink);
 		assertTrue(validationAnswer.dataIsInvalid());

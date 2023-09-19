@@ -36,7 +36,9 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.spies.DataAtomicSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
+import se.uu.ub.cora.data.spies.DataResourceLinkSpy;
 
 public class MetadataMatchDataTest {
 	private static final String NAME_IN_DATA = "nameInData";
@@ -77,7 +79,7 @@ public class MetadataMatchDataTest {
 
 	@Test
 	public void testMatchingAttributeOnGroup() {
-		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue",
 				() -> "collectionItem2NameInData");
 		dataFactorySpy.MRV.setDefaultReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
@@ -204,13 +206,13 @@ public class MetadataMatchDataTest {
 
 	@Test
 	public void testMatchingTwoAttributeOnGroup() {
-		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue",
 				() -> "collectionItem2NameInData");
 		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy, "collectionVariableNameInData", "collectionItem2NameInData");
 
-		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy2 = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		DataAtomicSpy dataAtomicSpy2 = new DataAtomicSpy();
 		dataAtomicSpy2.MRV.setDefaultReturnValuesSupplier("getValue",
 				() -> "collectionItem3NameInData");
 		dataFactorySpy.MRV.setSpecificReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
@@ -250,5 +252,16 @@ public class MetadataMatchDataTest {
 		metadataHolder.addMetadataElement(collectionVariableChild);
 		collectionVariableChild.setRefParentId("collectionVariable3Id");
 		collectionVariableChild.setFinalValue("collectionItem3NameInData");
+	}
+
+	@Test
+	public void testValidateResourceLinkSkipAttributesValidation() throws Exception {
+		MetadataElement metadataElement = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(
+				"id", NAME_IN_DATA, "textId", "defTextId");
+
+		DataResourceLinkSpy dataResourceLinkSpy = new DataResourceLinkSpy();
+
+		metadataMatch.metadataSpecifiesData(metadataElement, dataResourceLinkSpy);
+		dataResourceLinkSpy.MCR.assertMethodNotCalled("getAttributes");
 	}
 }

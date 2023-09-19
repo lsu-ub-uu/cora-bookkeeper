@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2023 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -22,22 +22,22 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataChild;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataResourceLink;
 
 class DataResourceLinkValidator implements DataElementValidator {
 
 	private ValidationAnswer validationAnswer;
 	private MetadataHolder metadataHolder;
-	private DataGroup dataForResourceLink;
+	private DataResourceLink dataForResourceLink;
 
 	public DataResourceLinkValidator(MetadataHolder metadataHolder) {
 		this.metadataHolder = metadataHolder;
 	}
 
 	@Override
-	public ValidationAnswer validateData(DataChild dataElement) {
+	public ValidationAnswer validateData(DataChild dataChild) {
 		validationAnswer = new ValidationAnswer();
-		dataForResourceLink = (DataGroup) dataElement;
+		dataForResourceLink = (DataResourceLink) dataChild;
 		validateNameInData();
 		return validationAnswer;
 	}
