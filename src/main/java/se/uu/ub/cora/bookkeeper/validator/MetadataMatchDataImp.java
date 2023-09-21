@@ -28,12 +28,13 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataResourceLink;
 
 public final class MetadataMatchDataImp implements MetadataMatchData {
 
 	private MetadataHolder metadataHolder;
 	private MetadataElement metadataElement;
-	private DataChild dataElement;
+	private DataChild dataChild;
 	private ValidationAnswer validationAnswer;
 
 	public static MetadataMatchData withMetadataHolder(MetadataHolder metadataHolder) {
@@ -46,18 +47,20 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 
 	@Override
 	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
-			DataChild dataElement) {
+			DataChild dataChild) {
 		this.metadataElement = metadataElement;
-		this.dataElement = dataElement;
+		this.dataChild = dataChild;
 		validationAnswer = new ValidationAnswer();
 		validateNameInData();
-		validateAttributes();
+		if (!(dataChild instanceof DataResourceLink)) {
+			validateAttributes();
+		}
 		return validationAnswer;
 	}
 
 	private void validateNameInData() {
 		String metadataNameInData = metadataElement.getNameInData();
-		String dataNameInData = dataElement.getNameInData();
+		String dataNameInData = dataChild.getNameInData();
 		if (!metadataNameInData.equals(dataNameInData)) {
 			validationAnswer.addErrorMessage("DataGroup should have name(nameInData): "
 					+ metadataElement.getNameInData() + " it does not.");
@@ -92,7 +95,7 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 	}
 
 	private DataAttribute getDataAttributeUsingAttributeName(String nameInData) {
-		for (DataAttribute dataAttribute : dataElement.getAttributes()) {
+		for (DataAttribute dataAttribute : dataChild.getAttributes()) {
 			if (dataAttribute.getNameInData().equals(nameInData)) {
 				return dataAttribute;
 			}
@@ -129,7 +132,7 @@ public final class MetadataMatchDataImp implements MetadataMatchData {
 	}
 
 	private void validateDataContainsNoUnspecifiedAttributes() {
-		Collection<DataAttribute> dAttributes = dataElement.getAttributes();
+		Collection<DataAttribute> dAttributes = dataChild.getAttributes();
 		for (DataAttribute attribute : dAttributes) {
 			String nameInDataFromDataAttribute = attribute.getNameInData();
 			validateNameInDataFromDataAttributeIsSpecifiedInMetadata(nameInDataFromDataAttribute);
