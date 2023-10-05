@@ -161,10 +161,12 @@ public class DataGroupOldSpy implements DataGroup {
 
 	private void possiblyAddChildren(String nameInData, DataGroupOldSpy dataGroupSpy) {
 		if ("childRefCollectTerm".equals(nameInData)) {
-			dataGroupSpy.addChild(new DataAtomicOldSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
+			dataGroupSpy
+					.addChild(new DataAtomicOldSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 			dataGroupSpy.addAttributeByIdWithValue("type", "someAttributeTypeFromSpy");
 		} else if ("ref".equals(nameInData)) {
-			dataGroupSpy.addChild(new DataAtomicOldSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
+			dataGroupSpy
+					.addChild(new DataAtomicOldSpy("linkedRecordId", "someLinkedRecordIdFromSpy"));
 		}
 
 	}
@@ -317,6 +319,12 @@ public class DataGroupOldSpy implements DataGroup {
 	public Optional<String> getAttributeValue(String nameInData) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
+	}
+
+	@Override
+	public boolean hasRepeatId() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

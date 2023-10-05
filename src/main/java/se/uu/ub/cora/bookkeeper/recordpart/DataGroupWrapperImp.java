@@ -345,4 +345,9 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 	record TypeName(Class<? extends DataChild> type, String name) {
 	}
 
+	@Override
+	public boolean hasRepeatId() {
+		return dataGroup.hasRepeatId();
+	}
+
 }

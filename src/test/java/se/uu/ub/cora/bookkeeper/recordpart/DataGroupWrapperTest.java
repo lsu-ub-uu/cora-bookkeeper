@@ -781,4 +781,12 @@ public class DataGroupWrapperTest {
 		dataGroup.MCR.assertParameters(methodName, 0, name);
 		dataGroup.MCR.assertReturn(methodName, 0, answer);
 	}
+
+	@Test
+	public void testHasRepeatId() throws Exception {
+
+		wrapperAsDG.hasRepeatId();
+
+		dataGroup.MCR.assertParameters("hasRepeatId", 0);
+	}
 }
