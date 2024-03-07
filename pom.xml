@@ -28,14 +28,14 @@
 		<storage.version>9.0.0</storage.version>
 		<storagespies.version>1.6.0</storagespies.version>
 		
-		<initialize.version>1.5.0</initialize.version>
-		<coradata.version>8.0.0</coradata.version>
+		<initialize.version>1.6.0</initialize.version>
+		<coradata.version>9.0.0</coradata.version>
 		<logger.version>2.10.0</logger.version>
-		<json.version>3.9.0</json.version>
+		<json.version>3.10.0</json.version>
 		<testutils.version>1.11.0</testutils.version>
 		<logger-spies.version>1.5.0</logger-spies.version>
-		<initialize-spies.version>1.5.0</initialize-spies.version>
-		<coradata-spies.version>1.6.0</coradata-spies.version>
+		<initialize-spies.version>1.6.0</initialize-spies.version>
+		<coradata-spies.version>1.7.0</coradata-spies.version>
 	</properties>
 
 	<scm>
