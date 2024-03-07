@@ -18,7 +18,7 @@
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
-	<version>9.3.0</version>
+	<version>9.3.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Bookkeeper</name>
@@ -42,7 +42,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-bookkeeper.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-bookkeeper.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-bookkeeper.git</url>
-		<tag>bookkeeper-9.3.0</tag>
+		<tag>release/9.3</tag>
 	</scm>
 
 	<dependencies>
