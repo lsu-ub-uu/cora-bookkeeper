@@ -35,14 +35,19 @@ public interface RecordTypeHandler {
 	 * isAbstract checks if the recordType is abstract.
 	 * 
 	 * @return A boolean, true if the recordType is abstract
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated(forRemoval = true)
 	boolean isAbstract();
 
 	/**
 	 * hasParent returns if the recordType has a parent recordType or not.
 	 * 
 	 * @return A boolean, true if the recordType has a parent
+	 * @deprecated removed, when validationTypes where added
+	 * 
 	 */
+	@Deprecated(forRemoval = true)
 	public boolean hasParent();
 
 	/**
@@ -50,7 +55,9 @@ public interface RecordTypeHandler {
 	 * binary data).
 	 * 
 	 * @return A boolean, true if the recordType has binary as parentRecordType
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated(forRemoval = true)
 	public boolean isChildOfBinary();
 
 	/**
@@ -90,7 +97,9 @@ public interface RecordTypeHandler {
 	 * not have a parent should an exception be thrown indicating that no parentId can be found.
 	 * 
 	 * @return A String with this recordTypes parentId, if it has one
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated(forRemoval = true)
 	public String getParentId();
 
 	/**
@@ -149,7 +158,9 @@ public interface RecordTypeHandler {
 	 * @param recordId
 	 *            A String with the recordId to get a list of combined ids for
 	 * @return A List of combined recordIds using the format recordTypeId_recordId
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated(forRemoval = true)
 	List<String> getCombinedIdsUsingRecordId(String recordId);
 
 	/**
@@ -245,7 +256,9 @@ public interface RecordTypeHandler {
 	 * 
 	 * @return a list with RecordTypeHandlers representing recordTypes that implements the current
 	 *         abstract recordType or its descendents
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated
 	List<RecordTypeHandler> getImplementingRecordTypeHandlers();
 
 	/**
@@ -260,7 +273,9 @@ public interface RecordTypeHandler {
 	 * 
 	 * @return a list with recordTypeIds representing recordTypes that implements the current
 	 *         abstract recordType or its descendents
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated
 	List<String> getListOfImplementingRecordTypeIds();
 
 	/**
@@ -279,7 +294,9 @@ public interface RecordTypeHandler {
 	 * 
 	 * @return a list with recordTypeIds to use when reading information from storage for the
 	 *         current recordType
+	 * @deprecated removed, when validationTypes where added
 	 */
+	@Deprecated
 	List<String> getListOfRecordTypeIdsToReadFromStorage();
 
 	/**
