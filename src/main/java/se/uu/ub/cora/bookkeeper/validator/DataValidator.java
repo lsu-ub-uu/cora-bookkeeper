@@ -75,4 +75,14 @@ public interface DataValidator {
 	 */
 	ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings);
 
+	/**
+	 * ValidateUnique verify the unique constrains set in the recordType.
+	 * 
+	 * 
+	 * @param dataGroup
+	 *            Incomming data as dataGroup. The unique constraints will be match to the variables
+	 *            that matches the storageTerms
+	 * @return A ValidationAnswer with the result of the validation
+	 */
+	ValidationAnswer validateUnique(String definitionId, DataGroup dataGroup);
 }

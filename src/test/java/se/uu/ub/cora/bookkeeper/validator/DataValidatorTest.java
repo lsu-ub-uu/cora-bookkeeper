@@ -292,4 +292,9 @@ public class DataValidatorTest {
 						+ "someValueForlinkedRecordId with error: Error from validatorFactorySpy");
 	}
 
+	@Test
+	public void testValidateUnique_whenNoUniqueIsSetInRecordType() throws Exception {
+
+	}
+
 }

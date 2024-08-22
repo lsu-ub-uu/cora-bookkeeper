@@ -114,4 +114,17 @@ class DataValidatorImp implements DataValidator {
 	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
 		return recordTypeHolder;
 	}
+
+	@Override
+	public ValidationAnswer validateUnique(String definitionId, DataGroup dataGroup) {
+		// private void createRecordTypeHandler() {
+		// DataRecordGroup dataGroupAsRecordGroup = DataProvider
+		// .createRecordGroupFromDataGroup(recordGroup);
+		// recordTypeHandler = dependencyProvider
+		// .getRecordTypeHandlerUsingDataRecordGroup(dataGroupAsRecordGroup);
+		// }
+
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
