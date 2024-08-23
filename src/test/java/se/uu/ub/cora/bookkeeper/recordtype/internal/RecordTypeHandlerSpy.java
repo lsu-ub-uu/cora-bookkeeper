@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
@@ -70,13 +69,14 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getImplementingRecordTypeHandlers", ArrayList::new);
 		MRV.setDefaultReturnValuesSupplier("getCombinedIdsUsingRecordId",
-				(Supplier<List<String>>) () -> List.of("fakeCombinedIdFromRecordTypeHandlerSpy"));
+				() -> List.of("fakeCombinedIdFromRecordTypeHandlerSpy"));
 		MRV.setDefaultReturnValuesSupplier("getListOfRecordTypeIdsToReadFromStorage",
-				(Supplier<List<String>>) () -> List.of("oneImplementingTypeId"));
+				() -> List.of("oneImplementingTypeId"));
 		MRV.setDefaultReturnValuesSupplier("getNewMetadataId",
-				(Supplier<String>) () -> "fakeMetadataIdFromRecordTypeHandlerSpy");
+				() -> "fakeMetadataIdFromRecordTypeHandlerSpy");
 		MRV.setDefaultReturnValuesSupplier("getMetadataId",
-				(Supplier<String>) () -> "fakeMetadataIdFromRecordTypeHandlerSpy");
+				() -> "fakeMetadataIdFromRecordTypeHandlerSpy");
+		MRV.setDefaultReturnValuesSupplier("getMetadataId", () -> false);
 	}
 
 	@Override
@@ -293,6 +293,11 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	public String getUpdateDefinitionId() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean hasUniqueDefinitions() {
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 
 }

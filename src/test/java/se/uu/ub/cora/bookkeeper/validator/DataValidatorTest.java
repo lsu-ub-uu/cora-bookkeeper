@@ -34,6 +34,8 @@ import java.util.function.Supplier;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
+import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerSpy;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 
@@ -294,7 +296,12 @@ public class DataValidatorTest {
 
 	@Test
 	public void testValidateUnique_whenNoUniqueIsSetInRecordType() throws Exception {
+		RecordTypeHandler recordTypeHandler = new RecordTypeHandlerSpy();
 
+		ValidationAnswer answer = dataValidator.validateUnique(recordTypeHandler,
+				dataGroupToValidate);
+
+		assertTrue(answer.dataIsValid());
 	}
 
 }

@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
+import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -84,5 +85,5 @@ public interface DataValidator {
 	 *            that matches the storageTerms
 	 * @return A ValidationAnswer with the result of the validation
 	 */
-	ValidationAnswer validateUnique(String definitionId, DataGroup dataGroup);
+	ValidationAnswer validateUnique(RecordTypeHandler recordTypeHandler, DataGroup dataGroup);
 }

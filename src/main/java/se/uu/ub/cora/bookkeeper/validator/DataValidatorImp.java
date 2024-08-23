@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Map;
 
+import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -116,15 +117,15 @@ class DataValidatorImp implements DataValidator {
 	}
 
 	@Override
-	public ValidationAnswer validateUnique(String definitionId, DataGroup dataGroup) {
+	public ValidationAnswer validateUnique(RecordTypeHandler recordTypeHandler,
+			DataGroup dataGroup) {
 		// private void createRecordTypeHandler() {
 		// DataRecordGroup dataGroupAsRecordGroup = DataProvider
 		// .createRecordGroupFromDataGroup(recordGroup);
 		// recordTypeHandler = dependencyProvider
 		// .getRecordTypeHandlerUsingDataRecordGroup(dataGroupAsRecordGroup);
 		// }
-
-		// TODO Auto-generated method stub
-		return null;
+		ValidationAnswer validationAnswer = new ValidationAnswer();
+		return validationAnswer;
 	}
 }

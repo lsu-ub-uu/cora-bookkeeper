@@ -312,4 +312,11 @@ public interface RecordTypeHandler {
 	 */
 	boolean storeInArchive();
 
+	/**
+	 * hasUniqueDefinitions is a method to find oud if the record has unique detinions set up.
+	 * 
+	 * @return A boolean indicating wether the record type has unique definitions set or not.
+	 */
+	boolean hasUniqueDefinitions();
+
 }
