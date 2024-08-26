@@ -16,12 +16,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -114,18 +112,5 @@ class DataValidatorImp implements DataValidator {
 
 	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
 		return recordTypeHolder;
-	}
-
-	@Override
-	public ValidationAnswer validateUnique(RecordTypeHandler recordTypeHandler,
-			DataGroup dataGroup) {
-		// private void createRecordTypeHandler() {
-		// DataRecordGroup dataGroupAsRecordGroup = DataProvider
-		// .createRecordGroupFromDataGroup(recordGroup);
-		// recordTypeHandler = dependencyProvider
-		// .getRecordTypeHandlerUsingDataRecordGroup(dataGroupAsRecordGroup);
-		// }
-		ValidationAnswer validationAnswer = new ValidationAnswer();
-		return validationAnswer;
 	}
 }

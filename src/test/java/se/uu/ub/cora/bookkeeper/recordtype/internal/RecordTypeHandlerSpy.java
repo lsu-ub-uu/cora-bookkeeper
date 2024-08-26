@@ -1,5 +1,21 @@
-/**Copyright 2020 Uppsala University Library**This file is part of Cora.**Cora is free software:you can redistribute it and/or modify*it under the terms of the GNU General Public License as published by*the Free Software Foundation,either version 3 of the License,or*(at your option)any later version.**Cora is distributed in the hope that it will be useful,*but WITHOUT ANY WARRANTY;without even the implied warranty of*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the*GNU General Public License for more details.**You should have received a copy of the GNU General Public License*along with Cora.If not,see<http://www.gnu.org/licenses/>.
-*/
+/*
+ * Copyright 2020 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
 import java.util.ArrayList;
@@ -9,8 +25,6 @@ import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.spies.DataAtomicSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
@@ -67,23 +81,11 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	public RecordTypeHandlerSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getImplementingRecordTypeHandlers", ArrayList::new);
-		MRV.setDefaultReturnValuesSupplier("getCombinedIdsUsingRecordId",
-				() -> List.of("fakeCombinedIdFromRecordTypeHandlerSpy"));
-		MRV.setDefaultReturnValuesSupplier("getListOfRecordTypeIdsToReadFromStorage",
-				() -> List.of("oneImplementingTypeId"));
 		MRV.setDefaultReturnValuesSupplier("getNewMetadataId",
 				() -> "fakeMetadataIdFromRecordTypeHandlerSpy");
 		MRV.setDefaultReturnValuesSupplier("getMetadataId",
 				() -> "fakeMetadataIdFromRecordTypeHandlerSpy");
 		MRV.setDefaultReturnValuesSupplier("getMetadataId", () -> false);
-	}
-
-	@Override
-	public boolean isAbstract() {
-		MCR.addCall();
-		MCR.addReturned(isAbstract);
-		return isAbstract;
 	}
 
 	@Override
@@ -95,25 +97,12 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	@Override
 	public String getCreateDefinitionId() {
-		// MCR.addCall();
-		// String returnValue = "fakeMetadataIdFromRecordTypeHandlerSpy";
-		// MCR.addReturned(returnValue);
-		// return returnValue;
 		return (String) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public String getDefinitionId() {
-		// MCR.addCall();
-		// String returnValue = "fakeMetadataIdFromRecordTypeHandlerSpy";
-		// MCR.addReturned(returnValue);
-		// return returnValue;
 		return (String) MCR.addCallAndReturnFromMRV();
-	}
-
-	@Override
-	public List<String> getCombinedIdsUsingRecordId(String recordId) {
-		return (List<String>) MCR.addCallAndReturnFromMRV("recordId", recordId);
 	}
 
 	@Override
@@ -136,25 +125,6 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		}
 		MCR.addReturned(answer);
 		return answer;
-	}
-
-	@Override
-	public DataGroup getMetadataGroup() {
-		MCR.addCall();
-		DataGroup metadataDataGroup = new DataGroupSpiderOldSpy("organisationGroup");
-		// metadataDataGroup.addChild(new DataAtomicSpy("nameInData", "organisation"));
-		metadataDataGroup
-				.addChild(createDataAtomicSpyUsingNameAndValue("nameInData", "organisation"));
-
-		MCR.addReturned(metadataDataGroup);
-		return metadataDataGroup;
-	}
-
-	private DataAtomicSpy createDataAtomicSpyUsingNameAndValue(String name, String value) {
-		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
-		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> name);
-		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
-		return dataAtomicSpy;
 	}
 
 	@Override
@@ -184,27 +154,6 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		MCR.addCall();
 		MCR.addReturned(writeConstraints);
 		return writeConstraints;
-	}
-
-	@Override
-	public boolean hasParent() {
-		MCR.addCall();
-		MCR.addReturned(hasParent);
-		return hasParent;
-	}
-
-	@Override
-	public String getParentId() {
-		MCR.addCall();
-		MCR.addReturned(parentId);
-		return parentId;
-	}
-
-	@Override
-	public boolean isChildOfBinary() {
-		MCR.addCall();
-		MCR.addReturned(isChildOfBinary);
-		return isChildOfBinary;
 	}
 
 	@Override
@@ -256,11 +205,6 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	}
 
 	@Override
-	public List<RecordTypeHandler> getImplementingRecordTypeHandlers() {
-		return (List<RecordTypeHandler>) MCR.addCallAndReturnFromMRV();
-	}
-
-	@Override
 	public String getRecordTypeId() {
 		MCR.addCall();
 		String returnValue = "fakeRecordTypeIdFromRecordTypeHandlerSpy";
@@ -269,24 +213,11 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	}
 
 	@Override
-	public List<String> getListOfImplementingRecordTypeIds() {
-		MCR.addCall();
-
-		MCR.addReturned(listOfimplementingTypesIds);
-		return listOfimplementingTypesIds;
-	}
-
-	@Override
 	public boolean storeInArchive() {
 		MCR.addCall();
 
 		MCR.addReturned(storeInArchive);
 		return storeInArchive;
-	}
-
-	@Override
-	public List<String> getListOfRecordTypeIdsToReadFromStorage() {
-		return (List<String>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
@@ -299,5 +230,4 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	public boolean hasUniqueDefinitions() {
 		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
-
 }

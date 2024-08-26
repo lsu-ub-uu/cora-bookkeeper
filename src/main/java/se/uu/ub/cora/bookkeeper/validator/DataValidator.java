@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.data.DataGroup;
 
 /**
@@ -76,14 +75,4 @@ public interface DataValidator {
 	 */
 	ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings);
 
-	/**
-	 * ValidateUnique verify the unique constrains set in the recordType.
-	 * 
-	 * 
-	 * @param dataGroup
-	 *            Incomming data as dataGroup. The unique constraints will be match to the variables
-	 *            that matches the storageTerms
-	 * @return A ValidationAnswer with the result of the validation
-	 */
-	ValidationAnswer validateUnique(RecordTypeHandler recordTypeHandler, DataGroup dataGroup);
 }

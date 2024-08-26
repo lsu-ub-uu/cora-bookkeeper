@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -38,9 +37,7 @@ import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.storage.Filter;
 import se.uu.ub.cora.storage.RecordStorage;
-import se.uu.ub.cora.storage.StorageReadResult;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String METADATA = "metadata";
@@ -94,7 +91,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
 			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
 			MetadataStorageView metadataStorageView, String validationTypeId) {
-
 		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage,
 				metadataStorageView, validationTypeId);
 	}
@@ -133,17 +129,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		recordType = recordStorage.read(List.of(RECORD_TYPE),
 				validationType.validatesRecordTypeId());
 		recordTypeId = getIdFromMetadatagGroup(recordType);
-
-	}
-
-	@Override
-	public boolean isAbstract() {
-		String abstractInRecordTypeDefinition = getAbstractFromRecordTypeDefinition();
-		return "true".equals(abstractInRecordTypeDefinition);
-	}
-
-	private String getAbstractFromRecordTypeDefinition() {
-		return recordType.getFirstAtomicValueWithNameInData("abstract");
 	}
 
 	@Override
@@ -184,47 +169,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
-	public List<String> getCombinedIdsUsingRecordId(String recordId) {
-		List<String> ids = new ArrayList<>();
-		ids.add(recordTypeId + "_" + recordId);
-		possiblyCreateIdForAbstractType(recordId, recordType, ids);
-		return ids;
-	}
-
-	private void possiblyCreateIdForAbstractType(String recordId, DataGroup recordTypeDefinition,
-			List<String> ids) {
-		if (hasParent()) {
-			createIdAsAbstractType(recordId, recordTypeDefinition, ids);
-		}
-	}
-
-	private void createIdAsAbstractType(String recordId, DataGroup recordTypeDefinition,
-			List<String> ids) {
-		String abstractParentType = getParentRecordType(recordTypeDefinition);
-		DataGroup parentGroup = recordStorage.read(List.of(RECORD_TYPE), abstractParentType);
-		RecordTypeHandler recordTypeHandlerParent = recordTypeHandlerFactory
-				.factorUsingDataGroup(parentGroup);
-		ids.addAll(recordTypeHandlerParent.getCombinedIdsUsingRecordId(recordId));
-	}
-
-	private String getParentRecordType(DataGroup recordTypeDefinition) {
-		DataRecordLink metadataLink = (DataRecordLink) recordTypeDefinition
-				.getFirstChildWithNameInData(PARENT_ID);
-		return metadataLink.getLinkedRecordId();
-	}
-
-	@Override
 	public boolean isPublicForRead() {
 		String isPublic = recordType.getFirstAtomicValueWithNameInData("public");
 		return "true".equals(isPublic);
-	}
-
-	@Override
-	public DataGroup getMetadataGroup() {
-		if (metadataGroup == null) {
-			metadataGroup = recordStorage.read(List.of(METADATA), getDefinitionId());
-		}
-		return metadataGroup;
 	}
 
 	@Override
@@ -248,6 +195,13 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 			writeConstraints.add(constraint);
 			possiblyAddReadWriteConstraint(constraint);
 		}
+	}
+
+	private DataGroup getMetadataGroup() {
+		if (metadataGroup == null) {
+			metadataGroup = recordStorage.read(List.of(METADATA), getDefinitionId());
+		}
+		return metadataGroup;
 	}
 
 	private void collectConstraintsForChildReferences(List<DataGroup> allChildReferences,
@@ -443,39 +397,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
-	public boolean hasParent() {
-		return recordType.containsChildWithNameInData(PARENT_ID);
-	}
-
-	@Override
-	public String getParentId() {
-		throwErrorIfNoParent();
-		return extractParentId();
-	}
-
-	private String extractParentId() {
-		DataRecordLink parentLink = (DataRecordLink) recordType
-				.getFirstChildWithNameInData(PARENT_ID);
-		return parentLink.getLinkedRecordId();
-	}
-
-	private void throwErrorIfNoParent() {
-		if (!hasParent()) {
-			throw new DataMissingException("Unable to get parentId, no parents exists");
-		}
-	}
-
-	@Override
-	public boolean isChildOfBinary() {
-		return hasParent() && parentIsBinary();
-	}
-
-	private boolean parentIsBinary() {
-		String parentId = extractParentId();
-		return "binary".equals(parentId);
-	}
-
-	@Override
 	public boolean representsTheRecordTypeDefiningSearches() {
 		String id = extractIdFromRecordInfo();
 		return SEARCH.equals(id);
@@ -547,66 +468,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return !getCreateWriteRecordPartConstraints().isEmpty();
 	}
 
-	@Override
-	public List<RecordTypeHandler> getImplementingRecordTypeHandlers() {
-		if (isAbstract()) {
-			return createListOfImplementingRecordTypeHandlers();
-		}
-		return Collections.emptyList();
-	}
-
-	private List<RecordTypeHandler> createListOfImplementingRecordTypeHandlers() {
-		List<RecordTypeHandler> list = new ArrayList<>();
-		StorageReadResult recordTypeList = getRecordTypeListFromStorage();
-		for (DataGroup dataGroup : recordTypeList.listOfDataGroups) {
-			addIfChildToCurrent(list, dataGroup);
-		}
-		return list;
-	}
-
-	private StorageReadResult getRecordTypeListFromStorage() {
-		return recordStorage.readList(List.of(RECORD_TYPE), new Filter());
-	}
-
-	private void addIfChildToCurrent(List<RecordTypeHandler> list, DataGroup dataGroup) {
-		RecordTypeHandler recordTypeHandler = recordTypeHandlerFactory
-				.factorUsingDataGroup(dataGroup);
-		if (currentRecordTypeIsParentTo(recordTypeHandler)) {
-			if (recordTypeHandler.isAbstract()) {
-				list.addAll(recordTypeHandler.getImplementingRecordTypeHandlers());
-			} else {
-				list.add(recordTypeHandler);
-			}
-		}
-	}
-
-	private boolean currentRecordTypeIsParentTo(RecordTypeHandler recordTypeHandler) {
-		return recordTypeHandler.hasParent()
-				&& recordTypeHandler.getParentId().equals(recordTypeId);
-	}
-
-	@Override
-	public List<String> getListOfImplementingRecordTypeIds() {
-		// int aSlightlyLargerNumberThanHowManyRecordTypesExist = 60;
-		// List<String> ids = new ArrayList<>(aSlightlyLargerNumberThanHowManyRecordTypesExist);
-		// List<RecordTypeHandler> implementingHandlers = getImplementingRecordTypeHandlers();
-		// for (RecordTypeHandler recordTypeHandler : implementingHandlers) {
-		// ids.add(recordTypeHandler.getRecordTypeId());
-		// }
-		// return ids;
-		return List.of(recordTypeId);
-	}
-
 	public RecordTypeHandlerFactory getRecordTypeHandlerFactory() {
 		return recordTypeHandlerFactory;
-	}
-
-	@Override
-	public List<String> getListOfRecordTypeIdsToReadFromStorage() {
-		// if (isAbstract()) {
-		// return getListOfImplementingRecordTypeIds();
-		// }
-		return List.of(recordTypeId);
 	}
 
 	@Override
@@ -629,6 +492,12 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	public String onlyForTestGetValidationTypeId() {
 		return validationTypeId;
+	}
+
+	@Override
+	public boolean hasUniqueDefinitions() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
