@@ -1143,4 +1143,17 @@ public class RecordTypeHandlerTest {
 
 		assertShouldStoreInArchive(dataGroup, false);
 	}
+
+	@Test
+	public void testGetCombinedIdsUsingRecordIdNoParent() {
+		DataGroupSpy dataGroup = createTopDataGroupWithId("someRecordType");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
+				(Supplier<DataGroup>) () -> dataGroup);
+		setUpHandlerUsingTypeId("someRecordType");
+
+		List<String> ids = recordTypeHandler.getCombinedIdForIndex("someRecordTypeId");
+
+		assertEquals(ids.size(), 1);
+		assertEquals(ids.get(0), "someRecordType_someRecordTypeId");
+	}
 }

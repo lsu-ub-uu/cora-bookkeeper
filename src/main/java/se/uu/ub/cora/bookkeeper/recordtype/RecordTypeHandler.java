@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.recordtype;
 
+import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
@@ -195,5 +196,21 @@ public interface RecordTypeHandler {
 	 * @return A boolean indicating wether the record type has unique definitions set or not.
 	 */
 	boolean hasUniqueDefinitions();
+
+	/**
+	 * getCombinedIdForIndex returns a list of one element. The element is the combined id for a
+	 * specified recordId based on the recordType the recordTypeHandler currently handles. <br>
+	 * The id is a combination of the current recordType id and the entered recordId, for
+	 * example:<br>
+	 * the recordTypeHandler is currently used to handle the recordType metadataGroup and an id
+	 * "someGroupId" is entered, the generated id will be:<br>
+	 * metadataGroup_someGroupId<br>
+	 * <br>
+	 * 
+	 * @param recordId
+	 *            A String with the recordId to get a list of combined id for
+	 * @return A List of combined recordId using the format recordTypeId_recordId
+	 */
+	List<String> getCombinedIdForIndex(String recordId);
 
 }

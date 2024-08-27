@@ -230,4 +230,10 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	public boolean hasUniqueDefinitions() {
 		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
+
+	@Override
+	public List<String> getCombinedIdForIndex(String recordId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

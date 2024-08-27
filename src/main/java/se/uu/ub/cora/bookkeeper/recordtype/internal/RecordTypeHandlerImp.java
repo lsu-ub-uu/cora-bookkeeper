@@ -478,6 +478,11 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return "true".equals(storeInArchive);
 	}
 
+	@Override
+	public List<String> getCombinedIdForIndex(String recordId) {
+		return List.of(recordTypeId + "_" + recordId);
+	}
+
 	public RecordStorage onlyForTestGetRecordStorage() {
 		return recordStorage;
 	}
