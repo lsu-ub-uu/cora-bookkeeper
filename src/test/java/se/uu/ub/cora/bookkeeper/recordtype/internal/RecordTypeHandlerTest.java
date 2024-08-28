@@ -26,6 +26,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +38,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
+import se.uu.ub.cora.bookkeeper.recordtype.Unique;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
@@ -1156,4 +1158,12 @@ public class RecordTypeHandlerTest {
 		assertEquals(ids.size(), 1);
 		assertEquals(ids.get(0), "someRecordType_someRecordTypeId");
 	}
+
+	@Test
+	public void testGetUniqueDefinitions_NoDefinitionsExists() throws Exception {
+		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
+
+		assertEquals(uniqueDefinitions, Collections.emptyList());
+	}
+
 }

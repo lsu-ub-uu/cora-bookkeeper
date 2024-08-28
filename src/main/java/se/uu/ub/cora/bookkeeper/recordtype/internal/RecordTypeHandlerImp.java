@@ -31,6 +31,7 @@ import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
+import se.uu.ub.cora.bookkeeper.recordtype.Unique;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
@@ -44,7 +45,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
 	private static final String NAME_IN_DATA = "nameInData";
 	private static final String SEARCH = "search";
-	private static final String PARENT_ID = "parentId";
 	private static final String RECORD_PART_CONSTRAINT = "recordPartConstraint";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
@@ -500,9 +500,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
-	public boolean hasUniqueDefinitions() {
-		// TODO Auto-generated method stub
-		return false;
+	public List<Unique> getUniqueDefinitions() {
+		return Collections.emptyList();
 	}
-
 }

@@ -191,13 +191,6 @@ public interface RecordTypeHandler {
 	boolean storeInArchive();
 
 	/**
-	 * hasUniqueDefinitions is a method to find oud if the record has unique detinions set up.
-	 * 
-	 * @return A boolean indicating wether the record type has unique definitions set or not.
-	 */
-	boolean hasUniqueDefinitions();
-
-	/**
 	 * getCombinedIdForIndex returns a list of one element. The element is the combined id for a
 	 * specified recordId based on the recordType the recordTypeHandler currently handles. <br>
 	 * The id is a combination of the current recordType id and the entered recordId, for
@@ -212,5 +205,13 @@ public interface RecordTypeHandler {
 	 * @return A List of combined recordId using the format recordTypeId_recordId
 	 */
 	List<String> getCombinedIdForIndex(String recordId);
+
+	/**
+	 * getUniqueDefinitions returns a List of all unique definitions for the recordType. If no
+	 * unique definitions exsists is an empty list returned.
+	 * 
+	 * @return A List of {@link Unique} as set up in the recordType.
+	 */
+	List<Unique> getUniqueDefinitions();
 
 }
