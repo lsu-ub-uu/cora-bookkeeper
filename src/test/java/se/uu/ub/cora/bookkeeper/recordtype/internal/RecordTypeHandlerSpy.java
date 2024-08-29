@@ -19,12 +19,14 @@
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
+import se.uu.ub.cora.bookkeeper.recordtype.Unique;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
@@ -86,6 +88,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		MRV.setDefaultReturnValuesSupplier("getMetadataId",
 				() -> "fakeMetadataIdFromRecordTypeHandlerSpy");
 		MRV.setDefaultReturnValuesSupplier("getMetadataId", () -> false);
+		MRV.setDefaultReturnValuesSupplier("getUniqueDefinitions", () -> Collections.emptyList());
 	}
 
 	@Override
@@ -227,13 +230,13 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	}
 
 	@Override
-	public boolean hasUniqueDefinitions() {
-		return (boolean) MCR.addCallAndReturnFromMRV();
-	}
-
-	@Override
 	public List<String> getCombinedIdForIndex(String recordId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<Unique> getUniqueDefinitions() {
+		return (List<Unique>) MCR.addCallAndReturnFromMRV();
 	}
 }
