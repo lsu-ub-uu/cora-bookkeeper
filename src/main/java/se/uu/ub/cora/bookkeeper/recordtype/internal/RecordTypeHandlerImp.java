@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -78,6 +79,14 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
 	}
 
+	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
+			RecordStorage recordStorage, String recordTypeId) {
+		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+		this.recordStorage = recordStorage;
+		this.recordTypeId = recordTypeId;
+		recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
+	}
+
 	/**
 	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
 	 */
@@ -88,27 +97,19 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
 	}
 
-	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			MetadataStorageView metadataStorageView, String validationTypeId) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage,
-				metadataStorageView, validationTypeId);
-	}
-
-	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, String recordTypeId) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-		this.recordStorage = recordStorage;
-		this.recordTypeId = recordTypeId;
-		recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
-	}
-
 	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
 			RecordStorage recordStorage, DataGroup dataGroup) {
 		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
 		this.recordStorage = recordStorage;
 		recordType = dataGroup;
 		recordTypeId = getIdFromMetadatagGroup(dataGroup);
+	}
+
+	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
+			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+			MetadataStorageView metadataStorageView, String validationTypeId) {
+		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage,
+				metadataStorageView, validationTypeId);
 	}
 
 	public RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
@@ -501,6 +502,29 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public List<Unique> getUniqueDefinitions() {
+		if (uniqueDefinedInRecordType()) {
+			DataGroup uniqueDG = recordType.getFirstGroupWithNameInData("unique");
+			DataRecordLink uniqueTermLink = uniqueDG
+					.getFirstChildOfTypeAndName(DataRecordLink.class, "uniqueTerm");
+			String uniqueTermStorageKey = getStorageKeyUsingCollectTermId(
+					uniqueTermLink.getLinkedRecordId());
+			return List.of(new Unique(uniqueTermStorageKey, readChildren));
+		}
 		return Collections.emptyList();
+	}
+
+	private String getStorageKeyUsingCollectTermId(String collectTermId) {
+		Collection<DataGroup> collectTermsAsDG = metadataStorageView.getCollectTerms();
+		for (DataGroup collectTermAsDG : collectTermsAsDG) {
+			if (collectTermId.equals(collectTermAsDG.getNameInData())) {
+				DataGroup extraData = collectTermAsDG.getFirstGroupWithNameInData("extraData");
+				return extraData.getFirstAtomicValueWithNameInData("storageKey");
+			}
+		}
+		return "IT MUST EXIST SO WE SHOULD NOT END UP HERE!!!!!! FIX, REFACTOR";
+	}
+
+	private boolean uniqueDefinedInRecordType() {
+		return recordType.containsChildWithNameInData("unique");
 	}
 }

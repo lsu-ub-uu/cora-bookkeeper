@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2019, 2020, 2021, 2022 Uppsala University Library
+ * Copyright 2016, 2019, 2020, 2021, 2022, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -44,6 +44,7 @@ import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.data.spies.DataChildFilterSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
@@ -68,6 +69,7 @@ public class RecordTypeHandlerTest {
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 
 		recordStorage = new RecordStorageSpy();
+
 		recordTypeHandlerFactory = new RecordTypeHandlerFactorySpy();
 		metadataStorageViewSpy = new MetadataStorageViewSpy();
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
@@ -118,7 +120,7 @@ public class RecordTypeHandlerTest {
 		return dataGroup;
 	}
 
-	private void setUpHandlerUsingTypeId(String recordTypeId) {
+	private void setUpRecordTypeHandlerUsingTypeId(String recordTypeId) {
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
 				() -> Optional.of(new ValidationType(recordTypeId, "someCreateDefinitionId",
 						"someUpdateDefinitionId")));
@@ -151,7 +153,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testShouldAutoGenerateId() {
 		setupForStorageAtomicValue("userSuppliedId", "false");
-		setUpHandlerUsingTypeId(SOME_ID);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertShouldAutoGenerateId(dataGroup, true);
@@ -165,7 +167,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testShouldAutoGenerateIdFalse() {
 		setupForStorageAtomicValue("userSuppliedId", "true");
-		setUpHandlerUsingTypeId(SOME_ID);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertShouldAutoGenerateId(dataGroup, false);
@@ -192,7 +194,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testGetDefinitionId() {
 		setupForLinkForStorageWithNameInDataAndRecordId("metadataId", "someMetadataId");
-		setUpHandlerUsingTypeId("someRecordId");
+		setUpRecordTypeHandlerUsingTypeId("someRecordId");
 
 		String metadataId = recordTypeHandler.getDefinitionId();
 
@@ -254,7 +256,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testPublic() {
 		setupForStorageAtomicValue("public", "true");
-		setUpHandlerUsingTypeId(SOME_ID);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertIsPublicForRead(dataGroup, true);
@@ -268,7 +270,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testPublicFalse() {
 		setupForStorageAtomicValue("public", "false");
-		setUpHandlerUsingTypeId(SOME_ID);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertIsPublicForRead(dataGroup, false);
@@ -1014,7 +1016,7 @@ public class RecordTypeHandlerTest {
 		DataGroupSpy dataGroup = createTopDataGroupWithId(recordId);
 		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
 				(Supplier<DataGroup>) () -> dataGroup);
-		setUpHandlerUsingTypeId("recordType");
+		setUpRecordTypeHandlerUsingTypeId("recordType");
 	}
 
 	@Test
@@ -1061,7 +1063,7 @@ public class RecordTypeHandlerTest {
 			String recordTypeId) {
 		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
 				(Supplier<DataGroup>) () -> dataGroup);
-		setUpHandlerUsingTypeId(recordTypeId);
+		setUpRecordTypeHandlerUsingTypeId(recordTypeId);
 	}
 
 	@Test
@@ -1110,7 +1112,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testShouldStoreInArchive() {
 		setupForStorageAtomicValue("storeInArchive", "false");
-		setUpHandlerUsingTypeId(SOME_ID);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertShouldStoreInArchive(dataGroup, false);
@@ -1132,7 +1134,7 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testStoreInArchiveTrue() {
 		setupForStorageAtomicValue("storeInArchive", "true");
-		setUpHandlerUsingTypeId(SOME_ID);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertShouldStoreInArchive(dataGroup, true);
@@ -1151,7 +1153,7 @@ public class RecordTypeHandlerTest {
 		DataGroupSpy dataGroup = createTopDataGroupWithId("someRecordType");
 		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
 				(Supplier<DataGroup>) () -> dataGroup);
-		setUpHandlerUsingTypeId("someRecordType");
+		setUpRecordTypeHandlerUsingTypeId("someRecordType");
 
 		List<String> ids = recordTypeHandler.getCombinedIdForIndex("someRecordTypeId");
 
@@ -1161,9 +1163,94 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetUniqueDefinitions_NoDefinitionsExists() throws Exception {
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
 		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
 
 		assertEquals(uniqueDefinitions, Collections.emptyList());
+		metadataStorageViewSpy.MCR.assertMethodNotCalled("getCollectTerms");
+	}
+
+	@Test
+	public void testGetUniqueDefinitions_GetCollectTermsIfUniqueExists() throws Exception {
+		DataGroupSpy recordType = createRecorTypeWithUnique(0);
+
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		recordTypeHandler.getUniqueDefinitions();
+
+		recordType.MCR.assertCalledParameters("containsChildWithNameInData", "unique");
+		metadataStorageViewSpy.MCR.assertMethodWasCalled("getCollectTerms");
+	}
+
+	@Test
+	public void testGetUniqueDefinitions_OneDefinitionWithOutCombinesExists() throws Exception {
+		DataGroupSpy recordType = createRecorTypeWithUnique(0);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+		setUpMetadataStorageViewWithCollectTermsList("uniqueTermLinkId");
+
+		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
+
+		DataGroupSpy uniqueDG = (DataGroupSpy) recordType.MCR
+				.assertCalledParametersReturn("getFirstGroupWithNameInData", "unique");
+		DataRecordLinkSpy uniqueTermLink = (DataRecordLinkSpy) uniqueDG.MCR
+				.assertCalledParametersReturn("getFirstChildOfTypeAndName", DataRecordLink.class,
+						"uniqueTerm");
+
+		uniqueTermLink.MCR.assertMethodWasCalled("getLinkedRecordId");
+
+		assertEquals(uniqueDefinitions.size(), 1);
+		assertEquals(uniqueDefinitions.get(0).uniqueTermStorageKey(), "uniqueTermLinkIdStorageKey");
+		assertEquals(uniqueDefinitions.get(0).combineTermStorageKeys(), Collections.emptySet());
+
+	}
+
+	private DataGroupSpy createRecorTypeWithUnique(int numberOfCombinedLinks) {
+		DataRecordLinkSpy uniqueTermLink = new DataRecordLinkSpy();
+		uniqueTermLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
+				() -> "uniqueTermLinkId");
+
+		DataGroupSpy uniqueDG = new DataGroupSpy();
+		uniqueDG.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
+				() -> uniqueTermLink, DataRecordLink.class, "uniqueTerm");
+
+		DataGroupSpy recordType = new DataGroupSpy();
+		recordType.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"unique");
+		recordType.MRV.setDefaultReturnValuesSupplier("getFirstGroupWithNameInData",
+				() -> uniqueDG);
+		return recordType;
+	}
+
+	private void setUpMetadataStorageViewWithCollectTermsList(String... collectTermIds) {
+		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getCollectTerms",
+				() -> createCollecTermsAsDataGroup(collectTermIds));
+
+	}
+
+	private List<DataGroup> createCollecTermsAsDataGroup(String... collectTermIds) {
+		List<DataGroup> collectTermsFromMetadataStorage = new ArrayList<>();
+
+		for (String collectTermId : collectTermIds) {
+			DataGroupSpy collectTerm = createCollectTerm(collectTermId);
+			collectTermsFromMetadataStorage.add(collectTerm);
+		}
+
+		return collectTermsFromMetadataStorage;
+	}
+
+	private DataGroupSpy createCollectTerm(String collectTermId) {
+		DataGroupSpy extraData = new DataGroupSpy();
+		extraData.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				() -> collectTermId + "StorageKey", "storageKey");
+
+		DataGroupSpy collectTerm = new DataGroupSpy();
+		collectTerm.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				() -> extraData, "extraData");
+		collectTerm.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> collectTermId);
+		return collectTerm;
 	}
 
 }
