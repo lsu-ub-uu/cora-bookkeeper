@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019, 2024 Uppsala University Library
+ * Copyright 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,31 +21,29 @@ package se.uu.ub.cora.bookkeeper.metadata;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import org.testng.annotations.Test;
 
-public class CollectTermTest {
+public class StorageTermTest {
 
 	@Test
-	public void testCollectTermIsAbstractClass() throws Exception {
-		Class<CollectTerm> clazz = CollectTerm.class;
-
-		assertTrue(Modifier.isAbstract(clazz.getModifiers()));
+	public void testStorageTermExtendsCollectTerm() throws Exception {
+		Class<CollectTerm> collectTermClass = CollectTerm.class;
+		assertTrue(collectTermClass.isAssignableFrom(StorageTerm.class));
+		Field storageKey = StorageTerm.class.getDeclaredField("storageKey");
+		Modifier.isFinal(storageKey.getModifiers());
 	}
 
 	@Test
-	public void testCollectedTerm() {
-		CollectTerm collectTerm = new OnlyForTestCollectTerm("someType", "someId",
-				"someNameInData");
-		assertEquals(collectTerm.type, "someType");
-		assertEquals(collectTerm.id, "someId");
-		assertEquals(collectTerm.nameInData, "someNameInData");
-	}
+	public void testCreateStorageTerm() throws Exception {
+		StorageTerm storageTerm = StorageTerm.usingIdAndNameInDataAndStorageKey("someId",
+				"someNameInData", "someStorageKey");
 
-	class OnlyForTestCollectTerm extends CollectTerm {
-		public OnlyForTestCollectTerm(String type, String id, String nameInData) {
-			super(type, id, nameInData);
-		}
+		assertEquals(storageTerm.type, "storage");
+		assertEquals(storageTerm.id, "someId");
+		assertEquals(storageTerm.nameInData, "someNameInData");
+		assertEquals(storageTerm.storageKey, "someStorageKey");
 	}
 }

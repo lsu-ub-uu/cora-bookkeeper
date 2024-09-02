@@ -18,19 +18,17 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-/**
- * CollectTermHolder is a data holder that holds CollectTerms.
- */
-public interface CollectTermHolder {
+public class PermissionTerm extends CollectTerm {
+	public final String permissionKey;
 
-	/**
-	 * getCollectTerm returns the desired collect term, as {@link CollectTerm}, held in the holder.
-	 * 
-	 * @param collectTermId
-	 *            a String identifying the collect term that we would like to get from the
-	 *            CollectTermHolder.
-	 * @return the requested collect term as {@link CollectTerm}.
-	 */
-	CollectTerm getCollectTermById(String collectTermId);
+	public static PermissionTerm usingIdAndNameInDataAndPermissionKey(String id, String nameInData,
+			String permissionKey) {
+		return new PermissionTerm("permission", id, nameInData, permissionKey);
+	}
+
+	private PermissionTerm(String type, String id, String nameInData, String permissionKey) {
+		super(type, id, nameInData);
+		this.permissionKey = permissionKey;
+	}
 
 }

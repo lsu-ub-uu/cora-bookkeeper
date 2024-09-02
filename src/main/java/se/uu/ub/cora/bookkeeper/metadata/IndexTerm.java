@@ -18,19 +18,19 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-/**
- * CollectTermHolder is a data holder that holds CollectTerms.
- */
-public interface CollectTermHolder {
+public class IndexTerm extends CollectTerm {
+	public final String indexFieldName;
+	public final String indexType;
 
-	/**
-	 * getCollectTerm returns the desired collect term, as {@link CollectTerm}, held in the holder.
-	 * 
-	 * @param collectTermId
-	 *            a String identifying the collect term that we would like to get from the
-	 *            CollectTermHolder.
-	 * @return the requested collect term as {@link CollectTerm}.
-	 */
-	CollectTerm getCollectTermById(String collectTermId);
+	public static IndexTerm usingIdAndNameInDataAndIndexFieldNameAndIndexType(String id,
+			String nameInData, String indexFieldName, String indexType) {
+		return new IndexTerm("index", id, nameInData, indexFieldName, indexType);
+	}
 
+	private IndexTerm(String type, String id, String nameInData, String indexFieldNameKey,
+			String indexType) {
+		super(type, id, nameInData);
+		this.indexFieldName = indexFieldNameKey;
+		this.indexType = indexType;
+	}
 }

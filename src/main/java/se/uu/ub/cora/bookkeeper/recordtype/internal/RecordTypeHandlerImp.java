@@ -514,7 +514,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private String getStorageKeyUsingCollectTermId(String collectTermId) {
-		Collection<DataGroup> collectTermsAsDG = metadataStorageView.getCollectTerms();
+		Collection<DataGroup> collectTermsAsDG = metadataStorageView.getCollectTermsAsDataGroup();
 		for (DataGroup collectTermAsDG : collectTermsAsDG) {
 			if (collectTermId.equals(collectTermAsDG.getNameInData())) {
 				DataGroup extraData = collectTermAsDG.getFirstGroupWithNameInData("extraData");

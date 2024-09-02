@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
@@ -71,7 +72,6 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	}
 
 	private DataGroup createBookMetadataGroup() {
-
 		DataGroup book = new DataGroupOldSpy("metadata");
 		book.addAttributeByIdWithValue("type", "group");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("bookGroup", "metadataGroup");
@@ -120,7 +120,6 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	}
 
 	private DataGroup createBookWithMoreCollectTermsMetadataGroup() {
-
 		DataGroup book = new DataGroupOldSpy("metadata");
 		book.addAttributeByIdWithValue("type", "group");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("bookWithMoreCollectTermsGroup",
@@ -176,7 +175,6 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	}
 
 	private DataGroup createBookWithStorageCollectTermsMetadataGroup() {
-
 		DataGroup book = new DataGroupOldSpy("metadata");
 		book.addAttributeByIdWithValue("type", "group");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("bookWithStorageCollectTermsGroup",
@@ -374,7 +372,7 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	}
 
 	@Override
-	public Collection<DataGroup> getCollectTerms() {
+	public Collection<DataGroup> getCollectTermsAsDataGroup() {
 		List<DataGroup> collectTerms = new ArrayList<>();
 
 		DataGroup titleIndexTerm = createIndexTermMetadataWithIdAndIndexTypeAndNameInData(
@@ -504,6 +502,12 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 	public Optional<ValidationType> getValidationType(String validationId) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
+	}
+
+	@Override
+	public Collection<CollectTerm> getCollectTerms() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

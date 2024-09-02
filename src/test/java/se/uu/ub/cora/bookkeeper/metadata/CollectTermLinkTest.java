@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019 Uppsala University Library
+ * Copyright 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,25 +18,16 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import se.uu.ub.cora.data.DataGroup;
+import static org.testng.Assert.assertEquals;
 
-public final class CollectedTerm {
+import org.testng.annotations.Test;
 
-	public final String type;
-	public final String id;
-	public final String nameInData;
-	public final DataGroup extraData;
-
-	private CollectedTerm(String type, String id, String nameInData, DataGroup extraData) {
-		this.type = type;
-		this.id = id;
-		this.nameInData = nameInData;
-		this.extraData = extraData;
-	}
-
-	public static CollectedTerm createCollectedTermWithTypeAndIdAndNameInDataAndExtraData(
-			String type, String id, String nameInData, DataGroup extraData) {
-		return new CollectedTerm(type, id, nameInData, extraData);
+public class CollectTermLinkTest {
+	@Test
+	public void testCollectedTerm() {
+		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId("someType", "someId");
+		assertEquals(collectTerm.type, "someType");
+		assertEquals(collectTerm.id, "someId");
 	}
 
 }

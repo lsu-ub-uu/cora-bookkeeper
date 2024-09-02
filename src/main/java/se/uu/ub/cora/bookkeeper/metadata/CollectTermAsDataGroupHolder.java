@@ -18,24 +18,21 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import static org.testng.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 
-public class CollectedTermTest {
-	@Test
-	public void testCollectedTerm() {
-		DataGroup extraData = new DataGroupOldSpy("extraData");
-		CollectedTerm collectedTerm = CollectedTerm
-				.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData("someType", "someId",
-						"someNameInData", extraData);
-		assertEquals(collectedTerm.type, "someType");
-		assertEquals(collectedTerm.id, "someId");
-		assertEquals(collectedTerm.nameInData, "someNameInData");
-		assertEquals(collectedTerm.extraData, extraData);
+public final class CollectTermAsDataGroupHolder {
+	private Map<String, DataGroup> collectTerms = new HashMap<>();
+
+	public void addCollectTerm(DataGroup collectTerm) {
+		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		collectTerms.put(id, collectTerm);
 	}
 
+	public DataGroup getCollectTerm(String id) {
+		return collectTerms.get(id);
+	}
 }

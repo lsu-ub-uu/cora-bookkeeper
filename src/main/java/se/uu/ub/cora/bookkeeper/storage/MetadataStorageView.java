@@ -22,8 +22,11 @@ package se.uu.ub.cora.bookkeeper.storage;
 import java.util.Collection;
 import java.util.Optional;
 
+import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collected.CollectTerms;
 
 /**
  * MetadataStorageView is the gateway interface from the metadata system to the storage system. This
@@ -119,8 +122,8 @@ public interface MetadataStorageView {
 	Collection<ValidationType> getValidationTypes();
 
 	/**
-	 * getCollectTerms returns a Collection of {@link DataGroup} with all collectTerm elements that
-	 * exists in storage.
+	 * getCollectTermsAsDataGroup returns a Collection of {@link DataGroup} with all collectTerm
+	 * elements that exists in storage.
 	 * </p>
 	 * If no elements exist SHOULD an empty collection be returned.
 	 * <p>
@@ -130,6 +133,20 @@ public interface MetadataStorageView {
 	 * 
 	 * @return
 	 */
-	Collection<DataGroup> getCollectTerms();
+	Collection<DataGroup> getCollectTermsAsDataGroup();
+
+	/**
+	 * getCollectTermHolder returns a {@link CollectTermHolder} with all {@link CollectTerm}
+	 * definitions that exists in storage.
+	 * </p>
+	 * If no elements exist SHOULD an empty {@link CollectTermHolder} be returned.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 *
+	 * @return A {@link CollectTermHolder} populated with {@link CollectTerms}
+	 */
+	CollectTermHolder getCollectTermHolder();
 
 }

@@ -21,8 +21,8 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 import java.util.List;
 import java.util.Optional;
 
-import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
-import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermAsDataGroupHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -48,7 +48,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private static final String RECORD_INFO = "recordInfo";
 	// private MetadataStorageView metadataStorage;
 	private MetadataHolder metadataHolder;
-	private CollectTermHolder collectTermHolder;
+	private CollectTermAsDataGroupHolder collectTermHolder;
 
 	private CollectTerms collectTerms;
 
@@ -103,9 +103,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void populateCollectTermHolderFromMetadataStorage() {
-		collectTermHolder = new CollectTermHolder();
+		collectTermHolder = new CollectTermAsDataGroupHolder();
 		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
-		for (DataGroup collectTerm : metadataStorage.getCollectTerms()) {
+		for (DataGroup collectTerm : metadataStorage.getCollectTermsAsDataGroup()) {
 			collectTermHolder.addCollectTerm(collectTerm);
 		}
 	}
@@ -179,7 +179,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
-			List<CollectTerm> collectTermsForChildReference, DataGroup dataGroup) {
+			List<CollectTermLink> collectTermsForChildReference, DataGroup dataGroup) {
 		for (DataChild childDataElement : dataGroup.getChildren()) {
 			collectTermsFromDataGroupChild(childMetadataElement, childDataElement,
 					collectTermsForChildReference);
@@ -187,7 +187,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataChild childDataElement, List<CollectTerm> collectTermsForChildReference) {
+			DataChild childDataElement, List<CollectTermLink> collectTermsForChildReference) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
 			collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, childDataElement,
 					collectTermsForChildReference);
@@ -196,7 +196,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private void collectTermsFromDataGroupChildMatchingMetadata(
 			MetadataElement childMetadataElement, DataChild childDataElement,
-			List<CollectTerm> collectTermsForChildReference) {
+			List<CollectTermLink> collectTermsForChildReference) {
 		if (childMetadataElement instanceof RecordLink) {
 			createCollectTermsForRecordLink((DataRecordLink) childDataElement,
 					collectTermsForChildReference);
@@ -215,9 +215,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void createCollectTermsForRecordLink(DataRecordLink childDataElement,
-			List<CollectTerm> collectTerms) {
+			List<CollectTermLink> collectTerms) {
 		String value = createValueForLinkedData(childDataElement);
-		for (CollectTerm collectTerm : collectTerms) {
+		for (CollectTermLink collectTerm : collectTerms) {
 			createAndAddCollectedTermUsingIdAndValue(collectTerm.id, value);
 		}
 	}
@@ -227,14 +227,14 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void possiblyCreateCollectedTerms(DataChild childDataElement,
-			List<CollectTerm> collectTerms) {
+			List<CollectTermLink> collectTerms) {
 		if (childDataElement instanceof DataAtomic) {
 			createCollectTerms(childDataElement, collectTerms);
 		}
 	}
 
-	private void createCollectTerms(DataChild childDataElement, List<CollectTerm> collectTerms) {
-		for (CollectTerm collectTerm : collectTerms) {
+	private void createCollectTerms(DataChild childDataElement, List<CollectTermLink> collectTerms) {
+		for (CollectTermLink collectTerm : collectTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
 			createAndAddCollectedTermUsingIdAndValue(collectTerm.id, childDataElementValue);
 		}

@@ -18,19 +18,17 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-/**
- * CollectTermHolder is a data holder that holds CollectTerms.
- */
-public interface CollectTermHolder {
+public class StorageTerm extends CollectTerm {
+	public final String storageKey;
 
-	/**
-	 * getCollectTerm returns the desired collect term, as {@link CollectTerm}, held in the holder.
-	 * 
-	 * @param collectTermId
-	 *            a String identifying the collect term that we would like to get from the
-	 *            CollectTermHolder.
-	 * @return the requested collect term as {@link CollectTerm}.
-	 */
-	CollectTerm getCollectTermById(String collectTermId);
+	public static StorageTerm usingIdAndNameInDataAndStorageKey(String id, String nameInData,
+			String storageKey) {
+		return new StorageTerm("storage", id, nameInData, storageKey);
+	}
+
+	private StorageTerm(String type, String id, String nameInData, String storageKey) {
+		super(type, id, nameInData);
+		this.storageKey = storageKey;
+	}
 
 }

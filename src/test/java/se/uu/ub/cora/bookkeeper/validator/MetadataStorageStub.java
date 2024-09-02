@@ -28,6 +28,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -421,42 +422,6 @@ public class MetadataStorageStub implements MetadataStorageView {
 		return recordTypes;
 	}
 
-	@Override
-	public Collection<DataGroup> getCollectTerms() {
-		// List<DataGroup> searchTerms = new ArrayList<>();
-		//
-		// DataGroup searchTerm = new DataGroupSpy("searchTerm");
-		// DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
-		// searchTerm.addChild(recordInfo);
-		// searchTerm.addChild(new DataAtomicSpy("searchTermType", "final"));
-		// DataGroup searchFieldRef = new DataGroupSpy("searchFieldRef");
-		// searchFieldRef.addChild(new DataAtomicSpy("linkedRecordType",
-		// "metadata"));
-		// searchFieldRef.addChild(
-		// new DataAtomicSpy("linkedRecordId", "searchTitleTextVar"));
-		//
-		// searchTerm.addChild(searchFieldRef);
-		//
-		// searchTerms.add(searchTerm);
-		//
-		// DataGroup searchTerm2 = new DataGroupSpy("searchTerm");
-		// DataGroup recordInfo2 = createRecordInfoWithIdAndType("someNameSearchTerm",
-		// "searchTerm");
-		// searchTerm2.addChild(recordInfo2);
-		// searchTerm2.addChild(new DataAtomicSpy("searchTermType", "final"));
-		// DataGroup searchFieldRef2 = new DataGroupSpy("searchFieldRef");
-		// searchFieldRef2.addChild(new DataAtomicSpy("linkedRecordType",
-		// "metadata"));
-		// searchFieldRef2.addChild(
-		// new DataAtomicSpy("linkedRecordId", "searchTitleTextVar"));
-		//
-		// searchTerm2.addChild(searchFieldRef2);
-		//
-		// searchTerms.add(searchTerm2);
-		// return searchTerms;
-		return null;
-	}
-
 	private DataGroup createRecordInfoWithIdAndType(String id, String typeString) {
 		DataGroup recordInfo = new DataGroupOldSpy("recordInfo");
 		recordInfo.addChild(new DataAtomicOldSpy("id", id));
@@ -477,6 +442,18 @@ public class MetadataStorageStub implements MetadataStorageView {
 	public Optional<ValidationType> getValidationType(String validationId) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
+	}
+
+	@Override
+	public Collection<DataGroup> getCollectTermsAsDataGroup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<CollectTerm> getCollectTerms() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Uppsala University Library
+ * Copyright 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,18 +19,18 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 /**
- * CollectTermHolder is a data holder that holds CollectTerms.
+ * CollectTermLink holds information about a link to a collect term in metadata.
  */
-public interface CollectTermHolder {
+public final class CollectTermLink {
+	public final String type;
+	public final String id;
 
-	/**
-	 * getCollectTerm returns the desired collect term, as {@link CollectTerm}, held in the holder.
-	 * 
-	 * @param collectTermId
-	 *            a String identifying the collect term that we would like to get from the
-	 *            CollectTermHolder.
-	 * @return the requested collect term as {@link CollectTerm}.
-	 */
-	CollectTerm getCollectTermById(String collectTermId);
+	private CollectTermLink(String type, String id) {
+		this.type = type;
+		this.id = id;
+	}
 
+	public static CollectTermLink createCollectTermWithTypeAndId(String type, String id) {
+		return new CollectTermLink(type, id);
+	}
 }

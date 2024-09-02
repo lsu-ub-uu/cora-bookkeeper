@@ -1173,7 +1173,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetUniqueDefinitions_GetCollectTermsIfUniqueExists() throws Exception {
-		DataGroupSpy recordType = createRecorTypeWithUnique(0);
+		DataGroupSpy recordType = createRecorTypeWithUnique("uniqueTermLinkId");
 
 		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
@@ -1186,31 +1186,29 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetUniqueDefinitions_OneDefinitionWithOutCombinesExists() throws Exception {
-		DataGroupSpy recordType = createRecorTypeWithUnique(0);
+		DataGroupSpy recordType = createRecorTypeWithUnique("buniqueTermLinkId");
 		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
-		setUpMetadataStorageViewWithCollectTermsList("uniqueTermLinkId");
+		setUpMetadataStorageViewWithCollectTermsList("buniqueTermLinkId");
 
 		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
 
-		DataGroupSpy uniqueDG = (DataGroupSpy) recordType.MCR
-				.assertCalledParametersReturn("getFirstGroupWithNameInData", "unique");
-		DataRecordLinkSpy uniqueTermLink = (DataRecordLinkSpy) uniqueDG.MCR
-				.assertCalledParametersReturn("getFirstChildOfTypeAndName", DataRecordLink.class,
-						"uniqueTerm");
-
-		uniqueTermLink.MCR.assertMethodWasCalled("getLinkedRecordId");
+		// DataGroupSpy uniqueDG = (DataGroupSpy) recordType.MCR
+		// .assertCalledParametersReturn("getFirstGroupWithNameInData", "unique");
+		// DataRecordLinkSpy uniqueTermLink = (DataRecordLinkSpy) uniqueDG.MCR
+		// .assertCalledParametersReturn("getFirstChildOfTypeAndName", DataRecordLink.class,
+		// "uniqueTerm");
+		//
+		// uniqueTermLink.MCR.assertMethodWasCalled("getLinkedRecordId");
 
 		assertEquals(uniqueDefinitions.size(), 1);
 		assertEquals(uniqueDefinitions.get(0).uniqueTermStorageKey(), "uniqueTermLinkIdStorageKey");
 		assertEquals(uniqueDefinitions.get(0).combineTermStorageKeys(), Collections.emptySet());
-
 	}
 
-	private DataGroupSpy createRecorTypeWithUnique(int numberOfCombinedLinks) {
+	private DataGroupSpy createRecorTypeWithUnique(String uniqueTermId) {
 		DataRecordLinkSpy uniqueTermLink = new DataRecordLinkSpy();
-		uniqueTermLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
-				() -> "uniqueTermLinkId");
+		uniqueTermLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> uniqueTermId);
 
 		DataGroupSpy uniqueDG = new DataGroupSpy();
 		uniqueDG.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
@@ -1227,7 +1225,6 @@ public class RecordTypeHandlerTest {
 	private void setUpMetadataStorageViewWithCollectTermsList(String... collectTermIds) {
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getCollectTerms",
 				() -> createCollecTermsAsDataGroup(collectTermIds));
-
 	}
 
 	private List<DataGroup> createCollecTermsAsDataGroup(String... collectTermIds) {

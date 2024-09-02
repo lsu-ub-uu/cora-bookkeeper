@@ -26,10 +26,10 @@ import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.data.DataGroup;
 
-public class CollectTermHolderTest {
+public class CollectTermAsDataGroupHolderTest {
 	@Test
 	public void testInit() {
-		CollectTermHolder collectTermHolder = new CollectTermHolder();
+		CollectTermAsDataGroupHolder collectTermHolder = new CollectTermAsDataGroupHolder();
 		DataGroup searchTerm = new DataGroupOldSpy("searchTerm");
 		DataGroup recordInfo = createRecordInfoWithIdAndType("titleSearchTerm", "searchTerm");
 		searchTerm.addChild(recordInfo);
