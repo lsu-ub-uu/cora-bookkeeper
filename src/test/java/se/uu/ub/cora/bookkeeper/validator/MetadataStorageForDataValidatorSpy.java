@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -84,7 +84,7 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 	}
 
 	@Override
-	public Collection<CollectTerm> getCollectTerms() {
+	public CollectTermHolder getCollectTermHolder() {
 		// TODO Auto-generated method stub
 		return null;
 	}

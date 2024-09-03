@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -27,9 +27,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
+import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.Unique;
@@ -502,29 +504,66 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public List<Unique> getUniqueDefinitions() {
-		if (uniqueDefinedInRecordType()) {
-			DataGroup uniqueDG = recordType.getFirstGroupWithNameInData("unique");
-			DataRecordLink uniqueTermLink = uniqueDG
-					.getFirstChildOfTypeAndName(DataRecordLink.class, "uniqueTerm");
-			String uniqueTermStorageKey = getStorageKeyUsingCollectTermId(
-					uniqueTermLink.getLinkedRecordId());
-			return List.of(new Unique(uniqueTermStorageKey, readChildren));
+		if (uniqueDefinitionDoNotExistsInRecordType()) {
+			return Collections.emptyList();
 		}
-		return Collections.emptyList();
+		return getUniquesFromRecordType();
+	}
+
+	private boolean uniqueDefinitionDoNotExistsInRecordType() {
+		return !recordType.containsChildWithNameInData("unique");
+	}
+
+	private List<Unique> getUniquesFromRecordType() {
+		List<DataGroup> allUniqueDefinitions = recordType.getChildrenOfTypeAndName(DataGroup.class,
+				"unique");
+		return convertUniqueDataGroupsToUniques(allUniqueDefinitions);
+	}
+
+	private List<Unique> convertUniqueDataGroupsToUniques(List<DataGroup> allUniqueDefinitions) {
+		List<Unique> list = new ArrayList<>();
+		for (DataGroup uniqueDG : allUniqueDefinitions) {
+			list.add(convertDataGroupToUnique(uniqueDG));
+		}
+		return list;
+	}
+
+	private Unique convertDataGroupToUnique(DataGroup uniqueDG) {
+		String uniqueTermStorageKey = getUniqueTermStorageKey(uniqueDG);
+		Set<String> combineStorageKeys = getCombineTermStorageKeys(uniqueDG);
+		return new Unique(uniqueTermStorageKey, combineStorageKeys);
+	}
+
+	private String getUniqueTermStorageKey(DataGroup uniqueDG) {
+		DataRecordLink uniqueTermLink = uniqueDG.getFirstChildOfTypeAndName(DataRecordLink.class,
+				"uniqueTerm");
+		return getStorageKeyForLink(uniqueTermLink);
+	}
+
+	private String getStorageKeyForLink(DataRecordLink collectTermLink) {
+		String collectTermLinkId = collectTermLink.getLinkedRecordId();
+		return getStorageKeyUsingCollectTermId(collectTermLinkId);
 	}
 
 	private String getStorageKeyUsingCollectTermId(String collectTermId) {
-		Collection<DataGroup> collectTermsAsDG = metadataStorageView.getCollectTermsAsDataGroup();
-		for (DataGroup collectTermAsDG : collectTermsAsDG) {
-			if (collectTermId.equals(collectTermAsDG.getNameInData())) {
-				DataGroup extraData = collectTermAsDG.getFirstGroupWithNameInData("extraData");
-				return extraData.getFirstAtomicValueWithNameInData("storageKey");
-			}
-		}
-		return "IT MUST EXIST SO WE SHOULD NOT END UP HERE!!!!!! FIX, REFACTOR";
+		CollectTermHolder holder = metadataStorageView.getCollectTermHolder();
+		StorageTerm storageTerm = (StorageTerm) holder.getCollectTermById(collectTermId);
+		return storageTerm.storageKey;
 	}
 
-	private boolean uniqueDefinedInRecordType() {
-		return recordType.containsChildWithNameInData("unique");
+	private Set<String> getCombineTermStorageKeys(DataGroup uniqueDG) {
+		List<DataRecordLink> combineTermLinks = uniqueDG
+				.getChildrenOfTypeAndName(DataRecordLink.class, "combineTerm");
+		return getCombineStorageKeysFromLinks(combineTermLinks);
 	}
+
+	private Set<String> getCombineStorageKeysFromLinks(List<DataRecordLink> combineTermLinks) {
+		Set<String> combineStorageKeys = new LinkedHashSet<>();
+		for (DataRecordLink dataRecordLink : combineTermLinks) {
+			String storageKeyForLink = getStorageKeyForLink(dataRecordLink);
+			combineStorageKeys.add(storageKeyForLink);
+		}
+		return combineStorageKeys;
+	}
+
 }

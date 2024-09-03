@@ -37,6 +37,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
+import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
 import se.uu.ub.cora.bookkeeper.recordtype.Unique;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
@@ -1168,86 +1169,138 @@ public class RecordTypeHandlerTest {
 		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
 
 		assertEquals(uniqueDefinitions, Collections.emptyList());
-		metadataStorageViewSpy.MCR.assertMethodNotCalled("getCollectTerms");
+		metadataStorageViewSpy.MCR.assertMethodNotCalled("getCollectTermHolder");
 	}
 
 	@Test
 	public void testGetUniqueDefinitions_GetCollectTermsIfUniqueExists() throws Exception {
-		DataGroupSpy recordType = createRecorTypeWithUnique("uniqueTermLinkId");
-
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
+		UniqueStorageTermIds uniqueStorageTermIds = new UniqueStorageTermIds("uniqueTermLinkId",
+				Collections.emptySet());
+		DataGroupSpy recordType = setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIds);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		recordTypeHandler.getUniqueDefinitions();
 
 		recordType.MCR.assertCalledParameters("containsChildWithNameInData", "unique");
-		metadataStorageViewSpy.MCR.assertMethodWasCalled("getCollectTerms");
+		metadataStorageViewSpy.MCR.assertMethodWasCalled("getCollectTermHolder");
+	}
+
+	private DataGroupSpy setUpRecordStorageWithUniqueDefinition(
+			UniqueStorageTermIds... uniqueStorageTermIds) {
+		DataGroupSpy recordType = createRecorTypeWithUnique(uniqueStorageTermIds);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
+		return recordType;
 	}
 
 	@Test
 	public void testGetUniqueDefinitions_OneDefinitionWithOutCombinesExists() throws Exception {
-		DataGroupSpy recordType = createRecorTypeWithUnique("buniqueTermLinkId");
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordType);
+		UniqueStorageTermIds uniqueStorageTermIds = new UniqueStorageTermIds("uniqueTermLinkId",
+				Collections.emptySet());
+		setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIds);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
-		setUpMetadataStorageViewWithCollectTermsList("buniqueTermLinkId");
+		setUpMetadataStorageViewWithCollectTermsList("uniqueTermLinkId");
 
 		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
-
-		// DataGroupSpy uniqueDG = (DataGroupSpy) recordType.MCR
-		// .assertCalledParametersReturn("getFirstGroupWithNameInData", "unique");
-		// DataRecordLinkSpy uniqueTermLink = (DataRecordLinkSpy) uniqueDG.MCR
-		// .assertCalledParametersReturn("getFirstChildOfTypeAndName", DataRecordLink.class,
-		// "uniqueTerm");
-		//
-		// uniqueTermLink.MCR.assertMethodWasCalled("getLinkedRecordId");
 
 		assertEquals(uniqueDefinitions.size(), 1);
 		assertEquals(uniqueDefinitions.get(0).uniqueTermStorageKey(), "uniqueTermLinkIdStorageKey");
 		assertEquals(uniqueDefinitions.get(0).combineTermStorageKeys(), Collections.emptySet());
 	}
 
-	private DataGroupSpy createRecorTypeWithUnique(String uniqueTermId) {
-		DataRecordLinkSpy uniqueTermLink = new DataRecordLinkSpy();
-		uniqueTermLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> uniqueTermId);
+	@Test
+	public void testGetUniqueDefinitions_OneDefinitionWithTwoCombinesExists() throws Exception {
+		UniqueStorageTermIds uniqueStorageTermIds = new UniqueStorageTermIds("uniqueTermLinkId",
+				Set.of("combineTermId1", "combineTermId2"));
+		setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIds);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+		setUpMetadataStorageViewWithCollectTermsList("uniqueTermLinkId", "combineTermId1",
+				"combineTermId2");
 
-		DataGroupSpy uniqueDG = new DataGroupSpy();
-		uniqueDG.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
-				() -> uniqueTermLink, DataRecordLink.class, "uniqueTerm");
+		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
 
+		assertEquals(uniqueDefinitions.size(), 1);
+		assertEquals(uniqueDefinitions.get(0).uniqueTermStorageKey(), "uniqueTermLinkIdStorageKey");
+		assertEquals(uniqueDefinitions.get(0).combineTermStorageKeys(),
+				Set.of("combineTermId1StorageKey", "combineTermId2StorageKey"));
+	}
+
+	@Test
+	public void testGetUniqueDefinitions_TwoDefinitionWithTwoCombinesExists() throws Exception {
+		UniqueStorageTermIds uniqueStorageTermIdsA = new UniqueStorageTermIds("uniqueTermIdA",
+				Set.of("combineTermIdA1", "combineTermIdA2"));
+		UniqueStorageTermIds uniqueStorageTermIdsB = new UniqueStorageTermIds("uniqueTermIdB",
+				Set.of("combineTermIdB1", "combineTermIdB2"));
+		setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIdsA, uniqueStorageTermIdsB);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+		setUpMetadataStorageViewWithCollectTermsList("uniqueTermIdA", "combineTermIdA1",
+				"combineTermIdA2", "uniqueTermIdB", "combineTermIdB1", "combineTermIdB2");
+
+		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
+
+		assertEquals(uniqueDefinitions.size(), 2);
+		assertEquals(uniqueDefinitions.get(0).uniqueTermStorageKey(), "uniqueTermIdAStorageKey");
+		assertEquals(uniqueDefinitions.get(0).combineTermStorageKeys(),
+				Set.of("combineTermIdA1StorageKey", "combineTermIdA2StorageKey"));
+		assertEquals(uniqueDefinitions.get(1).uniqueTermStorageKey(), "uniqueTermIdBStorageKey");
+		assertEquals(uniqueDefinitions.get(1).combineTermStorageKeys(),
+				Set.of("combineTermIdB1StorageKey", "combineTermIdB2StorageKey"));
+	}
+
+	record UniqueStorageTermIds(String uniqueTermId, Set<String> combineTermIds) {
+	}
+
+	private DataGroupSpy createRecorTypeWithUnique(UniqueStorageTermIds... uniqueStorageTermIdss) {
 		DataGroupSpy recordType = new DataGroupSpy();
 		recordType.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
 				"unique");
-		recordType.MRV.setDefaultReturnValuesSupplier("getFirstGroupWithNameInData",
-				() -> uniqueDG);
+
+		Collection<DataGroupSpy> uniques = new ArrayList<>();
+		for (UniqueStorageTermIds uniqueStorageTermIds : uniqueStorageTermIdss) {
+			DataGroupSpy uniqueDG = createUniqueDefinition(uniqueStorageTermIds);
+			uniques.add(uniqueDG);
+		}
+
+		recordType.MRV.setSpecificReturnValuesSupplier("getChildrenOfTypeAndName", () -> uniques,
+				DataGroup.class, "unique");
 		return recordType;
 	}
 
-	private void setUpMetadataStorageViewWithCollectTermsList(String... collectTermIds) {
-		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getCollectTerms",
-				() -> createCollecTermsAsDataGroup(collectTermIds));
+	private DataGroupSpy createUniqueDefinition(UniqueStorageTermIds uniqueStorageTermIds) {
+		DataGroupSpy uniqueDG = new DataGroupSpy();
+
+		DataRecordLinkSpy uniqueTermLink = new DataRecordLinkSpy();
+		uniqueDG.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
+				() -> uniqueTermLink, DataRecordLink.class, "uniqueTerm");
+		uniqueTermLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
+				() -> uniqueStorageTermIds.uniqueTermId);
+
+		Collection<DataRecordLinkSpy> combineLinks = new ArrayList<>();
+		for (String combineTermId : uniqueStorageTermIds.combineTermIds) {
+			DataRecordLinkSpy combineTermLink = new DataRecordLinkSpy();
+			combineTermLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
+					() -> combineTermId);
+			combineLinks.add(combineTermLink);
+		}
+		uniqueDG.MRV.setSpecificReturnValuesSupplier("getChildrenOfTypeAndName", () -> combineLinks,
+				DataRecordLink.class, "combineTerm");
+		return uniqueDG;
 	}
 
-	private List<DataGroup> createCollecTermsAsDataGroup(String... collectTermIds) {
-		List<DataGroup> collectTermsFromMetadataStorage = new ArrayList<>();
+	private void setUpMetadataStorageViewWithCollectTermsList(String... collectTermIds) {
+		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getCollectTermHolder",
+				() -> createCollecTermsAsTermCollectHolder(collectTermIds));
+	}
+
+	private CollectTermHolderSpy createCollecTermsAsTermCollectHolder(String... collectTermIds) {
+		CollectTermHolderSpy holder = new CollectTermHolderSpy();
 
 		for (String collectTermId : collectTermIds) {
-			DataGroupSpy collectTerm = createCollectTerm(collectTermId);
-			collectTermsFromMetadataStorage.add(collectTerm);
+			StorageTerm storageTerm = StorageTerm.usingIdAndNameInDataAndStorageKey("someId",
+					"someNameInData", collectTermId + "StorageKey");
+			holder.MRV.setSpecificReturnValuesSupplier("getCollectTermById", () -> storageTerm,
+					collectTermId);
 		}
-
-		return collectTermsFromMetadataStorage;
-	}
-
-	private DataGroupSpy createCollectTerm(String collectTermId) {
-		DataGroupSpy extraData = new DataGroupSpy();
-		extraData.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
-				() -> collectTermId + "StorageKey", "storageKey");
-
-		DataGroupSpy collectTerm = new DataGroupSpy();
-		collectTerm.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
-				() -> extraData, "extraData");
-		collectTerm.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> collectTermId);
-		return collectTerm;
+		return holder;
 	}
 
 }
