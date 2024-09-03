@@ -66,6 +66,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private MetadataStorageView metadataStorageView;
 	private String validationTypeId;
 	private ValidationType validationType;
+	private CollectTermHolder holder;
 
 	RecordTypeHandlerImp() {
 		// only for test
@@ -515,9 +516,16 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private List<Unique> getUniquesFromRecordType() {
+		ensureCollectTermHolderIsPopulatedFromStorage();
 		List<DataGroup> allUniqueDefinitions = recordType.getChildrenOfTypeAndName(DataGroup.class,
 				"unique");
 		return convertUniqueDataGroupsToUniques(allUniqueDefinitions);
+	}
+
+	private void ensureCollectTermHolderIsPopulatedFromStorage() {
+		if (holder == null) {
+			holder = metadataStorageView.getCollectTermHolder();
+		}
 	}
 
 	private List<Unique> convertUniqueDataGroupsToUniques(List<DataGroup> allUniqueDefinitions) {
@@ -546,7 +554,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private String getStorageKeyUsingCollectTermId(String collectTermId) {
-		CollectTermHolder holder = metadataStorageView.getCollectTermHolder();
 		StorageTerm storageTerm = (StorageTerm) holder.getCollectTermById(collectTermId);
 		return storageTerm.storageKey;
 	}

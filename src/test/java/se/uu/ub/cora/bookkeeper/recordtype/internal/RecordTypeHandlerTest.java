@@ -1244,6 +1244,8 @@ public class RecordTypeHandlerTest {
 		assertEquals(uniqueDefinitions.get(1).uniqueTermStorageKey(), "uniqueTermIdBStorageKey");
 		assertEquals(uniqueDefinitions.get(1).combineTermStorageKeys(),
 				Set.of("combineTermIdB1StorageKey", "combineTermIdB2StorageKey"));
+
+		metadataStorageViewSpy.MCR.assertNumberOfCallsToMethod("getCollectTermHolder", 1);
 	}
 
 	record UniqueStorageTermIds(String uniqueTermId, Set<String> combineTermIds) {
