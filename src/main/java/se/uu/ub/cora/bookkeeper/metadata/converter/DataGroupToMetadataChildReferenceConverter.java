@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import java.util.List;
 
-import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.data.DataGroup;
@@ -86,7 +86,7 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		String collectTermId = collectIndexTermGroup
 				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		String type = collectIndexTermGroup.getAttribute("type").getValue();
-		CollectTerm collectTerm = CollectTerm.createCollectTermWithTypeAndId(type, collectTermId);
+		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId(type, collectTermId);
 
 		childReference.addCollectIndexTerm(collectTerm);
 	}

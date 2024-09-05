@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019, 2024 Uppsala University Library
+ * Copyright 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,14 +19,18 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 /**
- * CollectTerm is the object representation of a collectTerm definition as stored in metadata
+ * CollectTermLink holds information about a link to a collect term in metadata.
  */
-public abstract class CollectTerm {
+public final class CollectTermLink {
 	public final String type;
 	public final String id;
 
-	protected CollectTerm(String type, String id) {
+	private CollectTermLink(String type, String id) {
 		this.type = type;
 		this.id = id;
+	}
+
+	public static CollectTermLink createCollectTermWithTypeAndId(String type, String id) {
+		return new CollectTermLink(type, id);
 	}
 }

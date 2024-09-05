@@ -45,7 +45,7 @@ public class MetadataChildReferenceTest {
 
 	@Test
 	public void testCollectIndexTerms() {
-		CollectTerm collectTerm = CollectTerm.createCollectTermWithTypeAndId("index",
+		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId("index",
 				"someIndexTerm");
 		metadataChildReference.addCollectIndexTerm(collectTerm);
 		assertEquals(metadataChildReference.getCollectTerms().get(0).id, "someIndexTerm");
@@ -54,7 +54,7 @@ public class MetadataChildReferenceTest {
 
 	@Test
 	public void testCollectPermissionTerm() {
-		CollectTerm collectTerm = CollectTerm.createCollectTermWithTypeAndId("permission",
+		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId("permission",
 				"somePermissionTerm");
 		metadataChildReference.addCollectIndexTerm(collectTerm);
 		assertEquals(metadataChildReference.getCollectTerms().get(0).id, "somePermissionTerm");

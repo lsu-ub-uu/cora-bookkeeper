@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -33,12 +34,6 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 
 	public List<DataGroup> recordTypes = new ArrayList<>();
 	public boolean getMetadataElementsWasCalled = false;
-
-	@Override
-	public Collection<DataGroup> getCollectTerms() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
@@ -80,6 +75,18 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 	public Optional<ValidationType> getValidationType(String validationId) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
+	}
+
+	@Override
+	public Collection<DataGroup> getCollectTermsAsDataGroup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CollectTermHolder getCollectTermHolder() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

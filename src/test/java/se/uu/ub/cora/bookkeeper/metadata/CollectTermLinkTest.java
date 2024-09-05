@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019, 2024 Uppsala University Library
+ * Copyright 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,15 +18,16 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-/**
- * CollectTerm is the object representation of a collectTerm definition as stored in metadata
- */
-public abstract class CollectTerm {
-	public final String type;
-	public final String id;
+import static org.testng.Assert.assertEquals;
 
-	protected CollectTerm(String type, String id) {
-		this.type = type;
-		this.id = id;
+import org.testng.annotations.Test;
+
+public class CollectTermLinkTest {
+	@Test
+	public void testCollectedTerm() {
+		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId("someType", "someId");
+		assertEquals(collectTerm.type, "someType");
+		assertEquals(collectTerm.id, "someId");
 	}
+
 }

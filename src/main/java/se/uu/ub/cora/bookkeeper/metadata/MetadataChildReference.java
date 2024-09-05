@@ -35,7 +35,7 @@ public final class MetadataChildReference {
 	private final int repeatMin;
 	private final int repeatMax;
 
-	private List<CollectTerm> collectTerms = new ArrayList<>();
+	private List<CollectTermLink> collectTerms = new ArrayList<>();
 
 	private ConstraintType recordPartConstraint;
 
@@ -68,11 +68,11 @@ public final class MetadataChildReference {
 		return linkedRecordId;
 	}
 
-	public List<CollectTerm> getCollectTerms() {
+	public List<CollectTermLink> getCollectTerms() {
 		return collectTerms;
 	}
 
-	public void addCollectIndexTerm(CollectTerm collectTerm) {
+	public void addCollectIndexTerm(CollectTermLink collectTerm) {
 		collectTerms.add(collectTerm);
 
 	}

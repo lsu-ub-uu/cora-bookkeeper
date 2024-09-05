@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019, 2024 Uppsala University Library
+ * Copyright 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,15 +18,21 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-/**
- * CollectTerm is the object representation of a collectTerm definition as stored in metadata
- */
-public abstract class CollectTerm {
-	public final String type;
-	public final String id;
+import java.util.HashMap;
+import java.util.Map;
 
-	protected CollectTerm(String type, String id) {
-		this.type = type;
-		this.id = id;
+import se.uu.ub.cora.data.DataGroup;
+
+public final class CollectTermAsDataGroupHolder {
+	private Map<String, DataGroup> collectTerms = new HashMap<>();
+
+	public void addCollectTerm(DataGroup collectTerm) {
+		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
+		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
+		collectTerms.put(id, collectTerm);
+	}
+
+	public DataGroup getCollectTerm(String id) {
+		return collectTerms.get(id);
 	}
 }

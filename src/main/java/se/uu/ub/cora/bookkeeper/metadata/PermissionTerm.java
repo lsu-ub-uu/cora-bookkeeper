@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019 Uppsala University Library
+ * Copyright 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,24 +18,19 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import static org.testng.Assert.assertEquals;
+public class PermissionTerm extends CollectTerm {
+	public final String nameInData;
+	public final String permissionKey;
 
-import org.testng.annotations.Test;
+	public static PermissionTerm usingIdAndNameInDataAndPermissionKey(String id, String nameInData,
+			String permissionKey) {
+		return new PermissionTerm("permission", id, nameInData, permissionKey);
+	}
 
-import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.data.DataGroup;
-
-public class CollectedTermTest {
-	@Test
-	public void testCollectedTerm() {
-		DataGroup extraData = new DataGroupOldSpy("extraData");
-		CollectedTerm collectedTerm = CollectedTerm
-				.createCollectedTermWithTypeAndIdAndNameInDataAndExtraData("someType", "someId",
-						"someNameInData", extraData);
-		assertEquals(collectedTerm.type, "someType");
-		assertEquals(collectedTerm.id, "someId");
-		assertEquals(collectedTerm.nameInData, "someNameInData");
-		assertEquals(collectedTerm.extraData, extraData);
+	private PermissionTerm(String type, String id, String nameInData, String permissionKey) {
+		super(type, id);
+		this.nameInData = nameInData;
+		this.permissionKey = permissionKey;
 	}
 
 }

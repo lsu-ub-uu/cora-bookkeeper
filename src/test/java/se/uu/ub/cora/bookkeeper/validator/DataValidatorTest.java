@@ -85,7 +85,6 @@ public class DataValidatorTest {
 		ValidationAnswer validationAnswer = dataValidator.validateData("someMetadataId",
 				dataGroupToValidate);
 		assertValidationAnswerIsInvalid(validationAnswer);
-
 	}
 
 	private List<String> getErrorMessagesAsList(ValidationAnswer validationAnswer) {
@@ -151,12 +150,10 @@ public class DataValidatorTest {
 				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, filterDataGroup);
 
 		assertValidationOfRecordTypeWithLinks(FILTER, validationAnswer, filterDataGroup);
-
 	}
 
 	private void assertValidationOfRecordTypeWithLinks(String nameInData,
 			ValidationAnswer validationAnswer, DataGroupSpy filterDataGroup) {
-
 		String extractedLinkID = assertExtractionOfLinkFromRecordTypeInRecordTypeHolder(nameInData);
 
 		asssertValidationAnswerIsFromValidator(validationAnswer, filterDataGroup, extractedLinkID);
@@ -198,7 +195,6 @@ public class DataValidatorTest {
 				.validateListFilter(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupSpy());
 
 		assertValidationAnswerIsInvalid(validationAnswer);
-
 	}
 
 	@Test
@@ -225,7 +221,6 @@ public class DataValidatorTest {
 
 		DataGroupSpy filterDataGroup = new DataGroupSpy();
 		dataValidator.validateListFilter(SOME_RECORD_TYPE_WITHOUT_LINKS, filterDataGroup);
-
 	}
 
 	@Test
@@ -247,7 +242,6 @@ public class DataValidatorTest {
 
 	@Test
 	public void testValidateIndexFilterExtractIndexSettingsFactorValidator() throws Exception {
-
 		DataGroupSpy filterDataGroup = new DataGroupSpy();
 
 		ValidationAnswer validationAnswer = dataValidator
@@ -263,7 +257,6 @@ public class DataValidatorTest {
 				.validateIndexSettings(SOME_RECORD_TYPE_WITH_LINKS, new DataGroupSpy());
 
 		assertValidationAnswerIsInvalid(validationAnswer);
-
 	}
 
 	private void assertValidationAnswerIsInvalid(ValidationAnswer validationAnswer) {
@@ -291,5 +284,4 @@ public class DataValidatorTest {
 				"DataElementValidator not created for the requested metadataId: "
 						+ "someValueForlinkedRecordId with error: Error from validatorFactorySpy");
 	}
-
 }

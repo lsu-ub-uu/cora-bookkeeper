@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019 Uppsala University Library
+ * Copyright 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,21 +18,19 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * CollectTermHolder is a data holder that holds CollectTerms.
+ */
+public interface CollectTermHolder {
 
-import se.uu.ub.cora.data.DataGroup;
+	/**
+	 * getCollectTerm returns the desired collect term, as {@link CollectTerm}, held in the holder.
+	 * 
+	 * @param collectTermId
+	 *            a String identifying the collect term that we would like to get from the
+	 *            CollectTermHolder.
+	 * @return the requested collect term as {@link CollectTerm}.
+	 */
+	CollectTerm getCollectTermById(String collectTermId);
 
-public final class CollectTermHolder {
-	private Map<String, DataGroup> collectTerms = new HashMap<>();
-
-	public void addCollectTerm(DataGroup collectTerm) {
-		DataGroup recordInfo = collectTerm.getFirstGroupWithNameInData("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
-		collectTerms.put(id, collectTerm);
-	}
-
-	public DataGroup getCollectTerm(String id) {
-		return collectTerms.get(id);
-	}
 }

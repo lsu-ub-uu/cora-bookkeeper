@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2019 Uppsala University Library
+ * Copyright 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,25 +18,21 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import se.uu.ub.cora.data.DataGroup;
-
-public final class CollectedTerm {
-
-	public final String type;
-	public final String id;
+public class IndexTerm extends CollectTerm {
 	public final String nameInData;
-	public final DataGroup extraData;
+	public final String indexFieldName;
+	public final String indexType;
 
-	private CollectedTerm(String type, String id, String nameInData, DataGroup extraData) {
-		this.type = type;
-		this.id = id;
+	public static IndexTerm usingIdAndNameInDataAndIndexFieldNameAndIndexType(String id,
+			String nameInData, String indexFieldName, String indexType) {
+		return new IndexTerm("index", id, nameInData, indexFieldName, indexType);
+	}
+
+	private IndexTerm(String type, String id, String nameInData, String indexFieldNameKey,
+			String indexType) {
+		super(type, id);
 		this.nameInData = nameInData;
-		this.extraData = extraData;
+		this.indexFieldName = indexFieldNameKey;
+		this.indexType = indexType;
 	}
-
-	public static CollectedTerm createCollectedTermWithTypeAndIdAndNameInDataAndExtraData(
-			String type, String id, String nameInData, DataGroup extraData) {
-		return new CollectedTerm(type, id, nameInData, extraData);
-	}
-
 }
