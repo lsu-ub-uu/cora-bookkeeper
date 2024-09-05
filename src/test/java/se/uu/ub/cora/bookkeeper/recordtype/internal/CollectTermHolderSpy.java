@@ -13,7 +13,7 @@ public class CollectTermHolderSpy implements CollectTermHolder {
 	public CollectTermHolderSpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getCollectTermById", () -> StorageTerm
-				.usingIdAndNameInDataAndStorageKey("someId", "someNameInData", "someStorageKey"));
+				.usingIdAndStorageKey("someId", "someStorageKey"));
 	}
 
 	@Override

@@ -21,14 +21,12 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public class StorageTerm extends CollectTerm {
 	public final String storageKey;
 
-	public static StorageTerm usingIdAndNameInDataAndStorageKey(String id, String nameInData,
-			String storageKey) {
-		return new StorageTerm("storage", id, nameInData, storageKey);
+	public static StorageTerm usingIdAndStorageKey(String id, String storageKey) {
+		return new StorageTerm("storage", id, storageKey);
 	}
 
-	private StorageTerm(String type, String id, String nameInData, String storageKey) {
-		super(type, id, nameInData);
+	private StorageTerm(String type, String id, String storageKey) {
+		super(type, id);
 		this.storageKey = storageKey;
 	}
-
 }

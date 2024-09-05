@@ -1297,8 +1297,8 @@ public class RecordTypeHandlerTest {
 		CollectTermHolderSpy holder = new CollectTermHolderSpy();
 
 		for (String collectTermId : collectTermIds) {
-			StorageTerm storageTerm = StorageTerm.usingIdAndNameInDataAndStorageKey("someId",
-					"someNameInData", collectTermId + "StorageKey");
+			StorageTerm storageTerm = StorageTerm.usingIdAndStorageKey("someId",
+					collectTermId + "StorageKey");
 			holder.MRV.setSpecificReturnValuesSupplier("getCollectTermById", () -> storageTerm,
 					collectTermId);
 		}

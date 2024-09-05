@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 public class PermissionTerm extends CollectTerm {
+	public final String nameInData;
 	public final String permissionKey;
 
 	public static PermissionTerm usingIdAndNameInDataAndPermissionKey(String id, String nameInData,
@@ -27,7 +28,8 @@ public class PermissionTerm extends CollectTerm {
 	}
 
 	private PermissionTerm(String type, String id, String nameInData, String permissionKey) {
-		super(type, id, nameInData);
+		super(type, id);
+		this.nameInData = nameInData;
 		this.permissionKey = permissionKey;
 	}
 

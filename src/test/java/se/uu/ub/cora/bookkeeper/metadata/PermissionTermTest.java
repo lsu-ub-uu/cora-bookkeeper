@@ -38,8 +38,8 @@ public class PermissionTermTest {
 
 	@Test
 	public void testCreatePermissionTerm() throws Exception {
-		PermissionTerm storageTerm = PermissionTerm.usingIdAndNameInDataAndPermissionKey(
-				"someId", "someNameInData", "somePermissionKey");
+		PermissionTerm storageTerm = PermissionTerm.usingIdAndNameInDataAndPermissionKey("someId",
+				"someNameInData", "somePermissionKey");
 
 		assertEquals(storageTerm.type, "permission");
 		assertEquals(storageTerm.id, "someId");

@@ -24,11 +24,9 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public abstract class CollectTerm {
 	public final String type;
 	public final String id;
-	public final String nameInData;
 
-	protected CollectTerm(String type, String id, String nameInData) {
+	protected CollectTerm(String type, String id) {
 		this.type = type;
 		this.id = id;
-		this.nameInData = nameInData;
 	}
 }

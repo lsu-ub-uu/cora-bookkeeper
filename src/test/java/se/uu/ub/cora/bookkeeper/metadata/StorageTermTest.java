@@ -38,12 +38,11 @@ public class StorageTermTest {
 
 	@Test
 	public void testCreateStorageTerm() throws Exception {
-		StorageTerm storageTerm = StorageTerm.usingIdAndNameInDataAndStorageKey("someId",
-				"someNameInData", "someStorageKey");
+		StorageTerm storageTerm = StorageTerm.usingIdAndStorageKey("someId",
+				"someStorageKey");
 
 		assertEquals(storageTerm.type, "storage");
 		assertEquals(storageTerm.id, "someId");
-		assertEquals(storageTerm.nameInData, "someNameInData");
 		assertEquals(storageTerm.storageKey, "someStorageKey");
 	}
 }

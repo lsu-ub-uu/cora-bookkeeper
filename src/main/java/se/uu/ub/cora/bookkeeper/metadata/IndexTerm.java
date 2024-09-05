@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 public class IndexTerm extends CollectTerm {
+	public final String nameInData;
 	public final String indexFieldName;
 	public final String indexType;
 
@@ -29,7 +30,8 @@ public class IndexTerm extends CollectTerm {
 
 	private IndexTerm(String type, String id, String nameInData, String indexFieldNameKey,
 			String indexType) {
-		super(type, id, nameInData);
+		super(type, id);
+		this.nameInData = nameInData;
 		this.indexFieldName = indexFieldNameKey;
 		this.indexType = indexType;
 	}

@@ -36,16 +36,14 @@ public class CollectTermTest {
 
 	@Test
 	public void testCollectedTerm() {
-		CollectTerm collectTerm = new OnlyForTestCollectTerm("someType", "someId",
-				"someNameInData");
+		CollectTerm collectTerm = new OnlyForTestCollectTerm("someType", "someId");
 		assertEquals(collectTerm.type, "someType");
 		assertEquals(collectTerm.id, "someId");
-		assertEquals(collectTerm.nameInData, "someNameInData");
 	}
 
 	class OnlyForTestCollectTerm extends CollectTerm {
-		public OnlyForTestCollectTerm(String type, String id, String nameInData) {
-			super(type, id, nameInData);
+		public OnlyForTestCollectTerm(String type, String id) {
+			super(type, id);
 		}
 	}
 }
