@@ -18,7 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.termcollector;
 
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
 
 /**
@@ -28,16 +28,16 @@ import se.uu.ub.cora.data.collected.CollectTerms;
  */
 public interface DataGroupTermCollector {
 	/**
-	 * collectTerms is used to extract collect terms from a dataGroup based on the meta information
-	 * found in the metadataGroup identified by the provided metadataGroupId.
+	 * collectTerms is used to extract collect terms from a dataRecordGroup based on the meta
+	 * information found in the metadataGroup identified by the provided metadataGroupId.
 	 * 
 	 * @param metadataGroupId
 	 *            A String with the id of the metadataGroup that describes the metadata for the
 	 *            entered DataGroup
-	 * @param dataGroup
-	 *            A DataGroup to extract collect terms from
+	 * @param dataRecordGroup
+	 *            A DataRecordGroup to extract collect terms from
 	 * @return A {@link CollectTerms} with the extracted collect terms and their values.
 	 */
-	CollectTerms collectTerms(String metadataGroupId, DataGroup dataGroup);
+	CollectTerms collectTerms(String metadataGroupId, DataRecordGroup dataRecordGroup);
 
 }

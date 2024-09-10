@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018, 2019, 2022 Uppsala University Library
+ * Copyright 2017, 2018, 2019, 2022, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,8 +21,8 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 import java.util.List;
 import java.util.Optional;
 
-import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermAsDataGroupHolder;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -37,6 +37,8 @@ import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.data.collected.CollectTerms;
 import se.uu.ub.cora.data.collected.IndexTerm;
@@ -45,55 +47,49 @@ import se.uu.ub.cora.data.collected.StorageTerm;
 
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
-	private static final String RECORD_INFO = "recordInfo";
-	// private MetadataStorageView metadataStorage;
 	private MetadataHolder metadataHolder;
 	private CollectTermAsDataGroupHolder collectTermHolder;
 
 	private CollectTerms collectTerms;
 
-	// public DataGroupTermCollectorImp(MetadataStorageView metadataStorage) {
-	// this.metadataStorage = metadataStorage;
-	// }
-
 	@Override
-	public CollectTerms collectTerms(String metadataGroupId, DataGroup dataGroup) {
-		initializeCollectTerms(dataGroup);
-		prepareAndCollectTermsFromData(metadataGroupId, dataGroup);
+	public CollectTerms collectTerms(String metadataGroupId, DataRecordGroup dataRecordGroup) {
+		initializeCollectTerms(dataRecordGroup);
+		prepareAndCollectTermsFromData(metadataGroupId, dataRecordGroup);
 
 		return collectTerms;
 	}
 
-	private void initializeCollectTerms(DataGroup dataGroup) {
+	private void initializeCollectTerms(DataRecordGroup dataRecordGroup) {
 		collectTerms = new CollectTerms();
-		collectTerms.recordType = extractTypeFromRecord(dataGroup);
-		collectTerms.recordId = extractIdFromDataRecord(dataGroup);
+		collectTerms.recordType = extractTypeFromRecord(dataRecordGroup);
+		collectTerms.recordId = extractIdFromDataRecord(dataRecordGroup);
+
 	}
 
-	private Optional<String> extractTypeFromRecord(DataGroup dataGroup) {
+	private Optional<String> extractTypeFromRecord(DataRecordGroup dataRecordGroup) {
 		try {
-			DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData(RECORD_INFO);
-			DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
-			return Optional.of(typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId"));
+			return Optional.of(dataRecordGroup.getType());
 		} catch (Exception e) {
 			return Optional.empty();
 		}
 	}
 
-	private Optional<String> extractIdFromDataRecord(DataGroup dataGroup) {
+	private Optional<String> extractIdFromDataRecord(DataRecordGroup dataRecordGroup) {
 		try {
-			DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData(RECORD_INFO);
-			return Optional.of(recordInfo.getFirstAtomicValueWithNameInData("id"));
+			return Optional.of(dataRecordGroup.getId());
 		} catch (Exception e) {
 			return Optional.empty();
 		}
 	}
 
-	private void prepareAndCollectTermsFromData(String metadataGroupId, DataGroup dataGroup) {
+	private void prepareAndCollectTermsFromData(String metadataGroupId,
+			DataRecordGroup dataRecordGroup) {
 		if (metadataHolder == null) {
 			metadataHolder = populateMetadataHolderFromMetadataStorage();
 			populateCollectTermHolderFromMetadataStorage();
 		}
+		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
 	}
 
@@ -233,7 +229,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		}
 	}
 
-	private void createCollectTerms(DataChild childDataElement, List<CollectTermLink> collectTerms) {
+	private void createCollectTerms(DataChild childDataElement,
+			List<CollectTermLink> collectTerms) {
 		for (CollectTermLink collectTerm : collectTerms) {
 			String childDataElementValue = ((DataAtomic) childDataElement).getValue();
 			createAndAddCollectedTermUsingIdAndValue(collectTerm.id, childDataElementValue);
