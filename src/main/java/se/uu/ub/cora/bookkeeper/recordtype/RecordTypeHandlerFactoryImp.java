@@ -46,9 +46,7 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	/**
 	 * 
 	 * @param dataGroup
-	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
 	 */
-	@Deprecated(forRemoval = true)
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
 		ensureRecordStorageIsFetched();

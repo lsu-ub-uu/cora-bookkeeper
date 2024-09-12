@@ -38,9 +38,7 @@ public interface RecordTypeHandlerFactory {
 	 * 
 	 * @param recordTypeId
 	 *            is an String with the id of the recordtype that the handler is created with
-	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
 	 */
-	@Deprecated(forRemoval = true)
 	RecordTypeHandler factorUsingRecordTypeId(String recordTypeId);
 
 	/**

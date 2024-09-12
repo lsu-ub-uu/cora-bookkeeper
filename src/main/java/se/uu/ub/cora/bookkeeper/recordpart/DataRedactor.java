@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,7 +22,7 @@ package se.uu.ub.cora.bookkeeper.recordpart;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 
 /**
  * DataRedactor defines methods needed to hide or remove confidential parts of a DataGroup before
@@ -38,16 +38,17 @@ public interface DataRedactor {
 	 * 
 	 * @param metadataId
 	 * 
-	 * @param dataGroup
-	 *            DataGroup to remove children from
+	 * @param dataRecordGroup
+	 *            DataRecordGroup to remove children from
 	 * @param recordPartConstraints
 	 *            Set of constraints, containing nameInData, to restrict access to
 	 * @param recordPartPermissions
 	 *            Set of permissions for the dataGroup.
 	 * @return DataGroup which might have had children removed
 	 */
-	DataGroup removeChildrenForConstraintsWithoutPermissions(String metadataId, DataGroup dataGroup,
-			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions);
+	DataRecordGroup removeChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataRecordGroup dataRecordGroup, Set<Constraint> recordPartConstraints,
+			Set<String> recordPartPermissions);
 
 	/**
 	 * replaceChildrenForConstraintsWithoutPermissions is used to replace children with the original
@@ -58,18 +59,18 @@ public interface DataRedactor {
 	 * 
 	 * @param metadataId
 	 * 
-	 * @param originalDataGroup
+	 * @param originalDataRecordGroup
 	 *            Is the current version of the datagroup, replaced data is copied from this group.
-	 * @param changedDataGroup
+	 * @param changedDataRecordGroup
 	 *            Is the datagGroup that might be changed by this method.
 	 * @param recordPartConstraints
 	 *            Set of constraints valid for the dataGroupType.
 	 * @param recordPartPermissions
 	 *            Set of permissions for the dataGroupType.
-	 * @return DataGroup which might have had children replaced
+	 * @return DataRecordGroup which might have had children replaced
 	 */
-	DataGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
-			DataGroup originalDataGroup, DataGroup changedDataGroup,
+	DataRecordGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataRecordGroup originalDataRecordGroup, DataRecordGroup changedDataRecordGroup,
 			Set<Constraint> recordPartConstraints, Set<String> recordPartPermissions);
 
 }

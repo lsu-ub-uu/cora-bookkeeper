@@ -204,6 +204,7 @@ public interface RecordTypeHandler {
 	 *            A String with the recordId to get a list of combined id for
 	 * @return A List of combined recordId using the format recordTypeId_recordId
 	 */
+	@Deprecated(forRemoval = true)
 	List<String> getCombinedIdForIndex(String recordId);
 
 	/**
