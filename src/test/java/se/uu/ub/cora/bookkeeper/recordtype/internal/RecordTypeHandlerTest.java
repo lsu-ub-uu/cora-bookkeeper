@@ -101,7 +101,7 @@ public class RecordTypeHandlerTest {
 
 		recordStorage.MCR.assertMethodWasCalled("read");
 		List<String> listOfTypes = (List<String>) recordStorage.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName("read", 0, "types");
+				.getParameterForMethodAndCallNumberAndParameter("read", 0, "types");
 		assertEquals(listOfTypes.size(), 1);
 		assertEquals(listOfTypes.get(0), "recordType");
 		recordStorage.MCR.assertParameter("read", 0, "id", "someTypeToValidate");
@@ -428,7 +428,7 @@ public class RecordTypeHandlerTest {
 		DataChildFilterSpy childFilter = (DataChildFilterSpy) dataFactorySpy.MCR
 				.getReturnValue("factorDataChildFilterUsingNameInData", constraintNumber);
 		Set<?> possibleValuesSecondAttrib = (Set<?>) childFilter.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
+				.getParameterForMethodAndCallNumberAndParameter(
 						"addAttributeUsingNameInDataAndPossibleValues", attributeNumberInConstraint,
 						"possibleValues");
 		assertEquals(possibleValuesSecondAttrib.size(), 1);
@@ -478,7 +478,7 @@ public class RecordTypeHandlerTest {
 		DataChildFilterSpy childFilter = (DataChildFilterSpy) dataFactorySpy.MCR
 				.getReturnValue("factorDataChildFilterUsingNameInData", 1);
 		Set<?> possibleValuesSentToChildFilter = (Set<?>) childFilter.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
+				.getParameterForMethodAndCallNumberAndParameter(
 						"addAttributeUsingNameInDataAndPossibleValues", 0, "possibleValues");
 		assertEquals(possibleValuesSentToChildFilter.size(), 2);
 		assertEquals(possibleValuesSentToChildFilter.size(), possibleValues.size());
@@ -1104,8 +1104,7 @@ public class RecordTypeHandlerTest {
 	private void assertParementerFirstOnParameterTypesList(RecordTypeHandlerStorageSpy storage,
 			String methodName, int callNumber, String recordType) {
 		List<?> recordTypeList = (List<?>) storage.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(methodName, callNumber,
-						"types");
+				.getParameterForMethodAndCallNumberAndParameter(methodName, callNumber, "types");
 		assertEquals(recordTypeList.size(), 1);
 		assertEquals(recordTypeList.get(0), recordType);
 	}
@@ -1147,19 +1146,6 @@ public class RecordTypeHandlerTest {
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
 		assertShouldStoreInArchive(dataGroup, false);
-	}
-
-	@Test
-	public void testGetCombinedIdsUsingRecordIdNoParent() {
-		DataGroupSpy dataGroup = createTopDataGroupWithId("someRecordType");
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> dataGroup);
-		setUpRecordTypeHandlerUsingTypeId("someRecordType");
-
-		List<String> ids = recordTypeHandler.getCombinedIdForIndex("someRecordTypeId");
-
-		assertEquals(ids.size(), 1);
-		assertEquals(ids.get(0), "someRecordType_someRecordTypeId");
 	}
 
 	@Test

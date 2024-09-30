@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype;
 
+import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
@@ -63,6 +64,16 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 
 	@Override
 	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		try {
+			return tryToFactorUsingDataRecordGroup(dataRecordGroup);
+		} catch (se.uu.ub.cora.data.DataMissingException e) {
+			throw new DataMissingException(
+					"RecordTypeHandler could not be created because of missing data: "
+							+ e.getMessage());
+		}
+	}
+
+	private RecordTypeHandler tryToFactorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
 		ensureRecordStorageIsFetched();
 		ensureMetadataStorageIsFetched();
 

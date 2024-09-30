@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype;
 
+import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordGroup;
 
@@ -43,7 +44,12 @@ public interface RecordTypeHandlerFactory {
 
 	/**
 	 * factorUsingDataRecordGroup creates a recordTypeHandler based on the information in the
-	 * provided DataRecordGroup, that holds data about the record currently beeing handled.
+	 * provided DataRecordGroup, that holds data about the record currently beeing handled. The
+	 * validation type is used to derrive which RecordType the dataRecordGroup belongs to.
+	 * </p>
+	 * If it is impossible to factor a correct recordTypeHandler for the provided dataRecordGroup,
+	 * because it contains to little information SHOULD a {@link DataMissingException} be thrown
+	 * explaining why the recordTypeHandler could not be created.
 	 * 
 	 * @param dataRecordGroup
 	 *            is a DataRecordGroup that holds information about the record currently beeing
