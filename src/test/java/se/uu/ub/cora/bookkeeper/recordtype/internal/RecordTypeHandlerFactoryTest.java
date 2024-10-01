@@ -18,13 +18,17 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.util.Optional;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactoryImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
@@ -106,7 +110,6 @@ public class RecordTypeHandlerFactoryTest {
 
 	@Test
 	public void testFactorUsingRecordTypeId() throws Exception {
-
 		String recordTypeId = "someRecordTypeId";
 		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factory
 				.factorUsingRecordTypeId(recordTypeId);
@@ -131,7 +134,24 @@ public class RecordTypeHandlerFactoryTest {
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
 		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorageViewSpy);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
+	}
 
+	@Test
+	public void testFactorUsingDataRecordGroupWithoutValidationTypeSholdThrowError()
+			throws Exception {
+		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
+		dataRecordGroup.MRV.setAlwaysThrowException("getValidationType",
+				new se.uu.ub.cora.data.DataMissingException("someMessage"));
+
+		RecordTypeHandlerFactory factoryInterface = factory;
+		try {
+			factoryInterface.factorUsingDataRecordGroup(dataRecordGroup);
+			fail("an exception should have been thrown");
+		} catch (Exception e) {
+			assertTrue(e instanceof DataMissingException);
+			assertEquals(e.getMessage(),
+					"RecordTypeHandler could not be created because of missing data: someMessage");
+		}
 	}
 
 	@Test
@@ -143,5 +163,4 @@ public class RecordTypeHandlerFactoryTest {
 
 		metaStorageInstProviderSpy.MCR.assertNumberOfCallsToMethod("getStorageView", 1);
 	}
-
 }

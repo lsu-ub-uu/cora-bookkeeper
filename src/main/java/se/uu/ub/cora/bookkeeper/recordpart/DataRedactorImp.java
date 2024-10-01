@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -27,6 +27,8 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecordGroup;
 
 public class DataRedactorImp implements DataRedactor {
 
@@ -46,16 +48,18 @@ public class DataRedactorImp implements DataRedactor {
 	}
 
 	@Override
-	public DataGroup removeChildrenForConstraintsWithoutPermissions(String metadataId,
-			DataGroup dataGroup, Set<Constraint> constraints, Set<String> permissions) {
+	public DataRecordGroup removeChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataRecordGroup dataRecordGroup, Set<Constraint> constraints, Set<String> permissions) {
 		if (constraints.isEmpty()) {
-			return dataGroup;
+			return dataRecordGroup;
 		}
 		this.constraints = constraints;
 		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		return possiblyRemoveChildren(dataGroup, metadataGroup);
+		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
+		DataGroup redactedGroup = possiblyRemoveChildren(dataGroup, metadataGroup);
+		return DataProvider.createRecordGroupFromDataGroup(redactedGroup);
 	}
 
 	private DataGroup possiblyRemoveChildren(DataGroup dataGroup, MetadataGroup metadataGroup) {
@@ -100,19 +104,23 @@ public class DataRedactorImp implements DataRedactor {
 	}
 
 	@Override
-	public DataGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
-			DataGroup originalDataGroup, DataGroup updatedDataGroup, Set<Constraint> constraints,
-			Set<String> permissions) {
+	public DataRecordGroup replaceChildrenForConstraintsWithoutPermissions(String metadataId,
+			DataRecordGroup originalDataRecordGroup, DataRecordGroup updatedDataRecordGroup,
+			Set<Constraint> constraints, Set<String> permissions) {
 		if (constraints.isEmpty()) {
-			return originalDataGroup;
+			return originalDataRecordGroup;
 		}
 
 		this.constraints = constraints;
 		this.permissions = permissions;
 
 		MetadataGroup metadataGroup = (MetadataGroup) metadataHolder.getMetadataElement(metadataId);
-		possiblyReplaceChildren(originalDataGroup, updatedDataGroup, metadataGroup);
-		return updatedDataGroup;
+		DataGroup originalAsDataGroup = DataProvider
+				.createGroupFromRecordGroup(originalDataRecordGroup);
+		DataGroup updatedAsDataGroup = DataProvider
+				.createGroupFromRecordGroup(updatedDataRecordGroup);
+		possiblyReplaceChildren(originalAsDataGroup, updatedAsDataGroup, metadataGroup);
+		return DataProvider.createRecordGroupFromDataGroup(updatedAsDataGroup);
 	}
 
 	private void possiblyReplaceChildren(DataGroup originalDataGroup, DataGroup updatedDataGroup,
