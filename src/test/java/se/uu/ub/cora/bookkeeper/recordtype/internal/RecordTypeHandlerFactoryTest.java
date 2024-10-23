@@ -39,14 +39,13 @@ import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
-import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.spies.RecordStorageInstanceProviderSpy;
 import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
 public class RecordTypeHandlerFactoryTest {
 
-	private RecordStorage recordStorage;
+	private RecordStorageSpy recordStorage;
 	private RecordTypeHandlerFactoryImp factory;
 	private RecordStorageInstanceProviderSpy instanceProvider;
 	private MetadataStorageViewSpy metadataStorageViewSpy;
@@ -61,6 +60,7 @@ public class RecordTypeHandlerFactoryTest {
 		RecordStorageProvider.onlyForTestSetRecordStorageInstanceProvider(instanceProvider);
 
 		recordStorage = new RecordStorageSpy();
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", DataGroupSpy::new);
 		instanceProvider.MRV.setDefaultReturnValuesSupplier("getRecordStorage",
 				() -> recordStorage);
 

@@ -70,6 +70,7 @@ public class RecordTypeHandlerTest {
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 
 		recordStorage = new RecordStorageSpy();
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", DataGroupSpy::new);
 
 		recordTypeHandlerFactory = new RecordTypeHandlerFactorySpy();
 		metadataStorageViewSpy = new MetadataStorageViewSpy();
