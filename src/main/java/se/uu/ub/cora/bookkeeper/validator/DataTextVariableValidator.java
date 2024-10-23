@@ -73,7 +73,19 @@ class DataTextVariableValidator implements DataElementValidator {
 	}
 
 	private boolean dataIsInvalidAccordingToRegEx() {
-		return !dataValue.matches(textVariable.getRegularExpression());
+		String regularExpression = textVariable.getRegularExpression();
+		try {
+			return !dataValue.matches(regularExpression);
+		} catch (StackOverflowError e) {
+			throw ConfigurationException
+					.withMessage("Error while validating data. The regular expression "
+							+ regularExpression + " caused a stack overflow.");
+		} catch (Exception e) {
+			throw ConfigurationException.withMessageAndException(
+					"Error while validating data using regular expression: " + regularExpression
+							+ " . " + e.getMessage(),
+					e);
+		}
 	}
 
 	private ValidationAnswer createValidationAnswerWithError() {
