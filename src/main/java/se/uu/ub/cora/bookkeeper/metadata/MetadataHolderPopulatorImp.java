@@ -34,12 +34,16 @@ public final class MetadataHolderPopulatorImp implements MetadataHolderPopulator
 
 	@Override
 	public MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage() {
+		long start = System.currentTimeMillis();
 		MetadataStorageView metadataStorageView = MetadataStorageProvider.getStorageView();
 		MetadataHolder mh = new MetadataHolderImp();
-
 		Collection<DataGroup> metadataElementDataGroups = metadataStorageView.getMetadataElements();
 		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups,
 				mh);
+
+		long end = System.currentTimeMillis();
+		long difference = end - start;
+		System.out.println("READ METADATA!!!, Total time (reading and converting): " + difference);
 		return mh;
 	}
 
