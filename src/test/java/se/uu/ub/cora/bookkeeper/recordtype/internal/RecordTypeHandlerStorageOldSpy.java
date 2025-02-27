@@ -19,7 +19,6 @@
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -36,12 +35,13 @@ import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.StorageReadResult;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class RecordTypeHandlerStorageSpy implements RecordStorage {
+public class RecordTypeHandlerStorageOldSpy implements RecordStorage {
 	private static final String METADATA = "metadata";
 	public List<String> type;
-	public Collection<List<String>> types = new ArrayList<>();
+	// public Collection<List<String>> types = new ArrayList<>();
+
 	public List<String> ids = new ArrayList<>();
-	public String id;
+	// public String id;
 	public int numberOfChildrenWithReadWriteConstraint = 0;
 	public int numberOfChildrenWithWriteConstraint = 0;
 	public int numberOfGrandChildrenWithReadWriteConstraint = 0;
@@ -55,241 +55,245 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 
 	@Override
 	public DataGroup read(List<String> types, String id) {
-		MCR.addCall("types", types, "id", id);
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataRecordGroup read(String type, String id) {
+		MCR.addCall("type", type, "id", id);
+
 		// this.type = type;
-		this.types.add(types);
+		// this.types.add(types);
 		ids.add(id);
-		this.id = id;
-		for (String type : types) {
+		// this.id = id;
+		// for (String type : types) {
 
-			if ("recordType".equals(type)) {
-				if ("organisation".equals(id) || "organisationChildWithAttribute".equals(id)
-						|| "organisationRecursiveChild".equals(id)) {
-					DataGroup returnedValue = DataCreatorSpider
-							.createRecordTypeWithIdAndUserSuppliedId(id, "true");
-					MCR.addReturned(returnedValue);
-					return returnedValue;
-
-				}
-			}
-			if (METADATA.equals(type) && "organisation".equals(id)) {
-				// return createMetadataGroupForOrganisation();
-				DataGroup metadata = createMetadataGroupForOrganisation();
-				MCR.addReturned(metadata);
-				return metadata;
-
-			}
-
-			if (METADATA.equals(type) && "organisationChildWithAttribute".equals(id)) {
-				DataGroup metadata = createMetadataGroupForOrganisationWithChildWithAttribute();
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "organisationChildWithAttributeNew".equals(id)) {
-				if (useStandardMetadataGroupForNew) {
-					DataGroup metadata = createMetadataGroupForOrganisationWithChildWithAttribute();
-					MCR.addReturned(metadata);
-					return metadata;
-				}
-				DataGroup metadata = createMetadataGroupForOrganisationNewWithChildWithAttribute();
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-
-			if (METADATA.equals(type) && "organisationRecursiveChild".equals(id)) {
-				DataGroup returnedValue = createMetadataGroupForOrganisationRecursiveChild();
+		if ("recordType".equals(type)) {
+			if ("organisation".equals(id) || "organisationChildWithAttribute".equals(id)
+					|| "organisationRecursiveChild".equals(id)) {
+				DataGroup returnedValue = DataCreatorSpider
+						.createRecordTypeWithIdAndUserSuppliedId(id, "true");
 				MCR.addReturned(returnedValue);
 				return returnedValue;
 
 			}
-			if (METADATA.equals(type) && "organisationNew".equals(id)) {
-				if (useStandardMetadataGroupForNew) {
-					DataGroup metadata = createMetadataGroupForOrganisation();
-					MCR.addReturned(metadata);
-					return metadata;
-				}
-				DataGroup metadata = createMetadataGroupForOrganisationNew();
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "divaOrganisationRoot".equals(id)) {
-				DataGroup metadata = createMetadataTextVariableUsingNameInData("organisationRoot");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "showInPortalTextVar".equals(id)) {
-				DataGroup metadata = createMetadataTextVariableUsingNameInData("showInPortal");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "showInDefenceTextVar".equals(id)) {
-				DataGroup metadata = createMetadataTextVariableUsingNameInData("showInDefence");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "divaOrganisationRoot2".equals(id)) {
-				DataGroup metadata = createMetadataTextVariableUsingNameInData("organisationRoot2");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "showInPortalTextVar2".equals(id)) {
-				DataGroup metadata = createMetadataTextVariableUsingNameInData("showInPortal2");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "showInDefenceTextVar2".equals(id)) {
-				DataGroup metadata = createMetadataTextVariableUsingNameInData("showInDefence2");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "greatGrandChildTextVar".equals(id)) {
-				DataGroupSpiderOldSpy metadata = createMetadataTextVariableUsingNameInData(
-						"greatGrandChild");
-				MCR.addReturned(metadata);
-				return metadata;
-			}
-			if (METADATA.equals(type) && "organisationAlternativeNameGroup".equals(id)) {
-				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(
-						"organisationAlternativeName", "organisationAlternativeNameGroup");
-				DataGroup childReferences = metadataGroup
-						.getFirstGroupWithNameInData("childReferences");
-				if (!attributesIdsToAddToConstraint.isEmpty()) {
-					DataGroupSpiderOldSpy attributeReferences = new DataGroupSpiderOldSpy(
-							"attributeReferences");
-					for (String attributeId : attributesIdsToAddToConstraint) {
-						DataGroupSpiderOldSpy ref = createAttributeReference(attributeId, "0");
-						attributeReferences.addChild(ref);
-					}
-					metadataGroup.addChild(attributeReferences);
-				}
-
-				if (numberOfGrandChildrenWithReadWriteConstraint > 0) {
-					DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReferenceWithConstraint(
-							METADATA, "showInPortalTextVar", "readWrite", "0", "1");
-					childReferences.addChild(grandChildWithReadConstraint);
-				}
-				if (numberOfGrandChildrenWithReadWriteConstraint > 1) {
-					DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(
-							METADATA, "grandChildGroup", "0", maxNoOfGrandChildren);
-					childReferences.addChild(grandChildWithReadConstraint);
-				}
-
-				MCR.addReturned(metadataGroup);
-				return metadataGroup;
-			}
-			if (METADATA.equals(type) && "grandChildGroup".equals(id)) {
-				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(id,
-						"grandChildGroup");
-
-				DataGroupSpiderOldSpy greatGrandChildWithReadConstraint = createChildReferenceWithConstraint(
-						METADATA, "greatGrandChildTextVar", "readWrite", "0", "1");
-				DataGroup childReferences = metadataGroup
-						.getFirstGroupWithNameInData("childReferences");
-				childReferences.addChild(greatGrandChildWithReadConstraint);
-				MCR.addReturned(metadataGroup);
-				return metadataGroup;
-			}
-			if (METADATA.equals(type) && "divaOrganisationNameGroup".equals(id)) {
-				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(
-						"organisationName", "divaOrganisationNameGroup");
-
-				DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(METADATA,
-						"showInPortalTextVar", "0", "1");
-				DataGroup childReferences = metadataGroup
-						.getFirstGroupWithNameInData("childReferences");
-				childReferences.addChild(grandChildWithReadConstraint);
-				MCR.addReturned(metadataGroup);
-				return metadataGroup;
-			}
-			if (METADATA.equals(type) && "divaOrganisationRecursiveNameGroup".equals(id)) {
-				// DataGroupSpy metadataGroup =
-				// createMetadataGroupWithChildReferences("organisationName",
-				// "divaOrganisationRecursiveNameGroup");
-
-				DataGroupSpiderOldSpy metadataGroup = createBasicMetadataGroup(
-						"divaOrganisationRecursiveNameGroup", "group");
-				metadataGroup.addChild(
-						createDataAtomicSpyUsingNameAndValue("nameInData", "organisationName"));
-				DataGroupSpiderOldSpy childReferences = new DataGroupSpiderOldSpy(
-						"childReferences");
-				metadataGroup.addChild(childReferences);
-
-				DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(METADATA,
-						"showInPortalTextVar", "0", "1");
-				childReferences.addChild(grandChildWithReadConstraint);
-
-				DataGroupSpiderOldSpy recursiveChild = createChildReference(METADATA,
-						"divaOrganisationRecursiveNameGroup", "0", "1");
-				childReferences.addChild(recursiveChild);
-
-				MCR.addReturned(metadataGroup);
-				return metadataGroup;
-			}
-			if ("metadataCollectionVariable".equals(type)
-					&& "textPartTypeCollectionVar".equals(id)) {
-				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithNameInDataAndFinalValue(
-						"type", "default");
-				MCR.addReturned(metadataGroup);
-				return metadataGroup;
-			}
-			// TODO: if ("metadataCollectionVariable".equals(type) &&
-			// "choosableAttributesCollectionVar".equals(id))
-			// if ("metadataCollectionVariable".equals(type) &&
-			// "choosableAttributesCollectionVar".equals(id)) {
-			//
-			// DataGroupSpy metadataGroup = new DataGroupSpy();
-			// metadataGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
-			// Supplier, "bla");
-			// return metadataGroup;
-			// }
-			if ("metadataCollectionVariable".equals(type)
-					&& "textPartLangCollectionVar".equals(id)) {
-				DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithNameInDataAndFinalValue(
-						"lang", "sv");
-				MCR.addReturned(metadataGroup);
-				return metadataGroup;
-			}
-			if ("metadataCollectionVariable".equals(type)
-					&& "choosableAttributeCollectionVar".equals(id)) {
-				DataGroupSpy collectionVar = new DataGroupSpy();
-
-				DataGroupSpy refCollection = new DataGroupSpy();
-
-				collectionVar.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
-						(Supplier<Boolean>) () -> false, "finalValue");
-
-				collectionVar.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
-						(Supplier<DataGroupSpy>) () -> refCollection, "refCollection");
-				String collectionId = "choosableCollection";
-				refCollection.MRV.setSpecificReturnValuesSupplier(
-						"getFirstAtomicValueWithNameInData", (Supplier<String>) () -> collectionId,
-						"linkedRecordId");
-
-				MCR.addReturned(collectionVar);
-				return collectionVar;
-			}
-
-			if (METADATA.equals(type) && "choosableCollection".equals(id)) {
-				DataGroupSpy collection = new DataGroupSpy();
-
-				DataGroupSpy collectionItemReferences = new DataGroupSpy();
-				collection.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
-						(Supplier<DataGroupSpy>) () -> collectionItemReferences,
-						"collectionItemReferences");
-
-				List<DataGroupSpy> refs = new ArrayList<>();
-				refs.add(createCollectionItemWithId("choosableCollectionItem1"));
-				refs.add(createCollectionItemWithId("choosableCollectionItem2"));
-				collectionItemReferences.MRV.setSpecificReturnValuesSupplier(
-						"getAllGroupsWithNameInData", (Supplier<List<DataGroupSpy>>) () -> refs,
-						"ref");
-
-				MCR.addReturned(collection);
-				return collection;
-			}
 		}
+		if (METADATA.equals(type) && "organisation".equals(id)) {
+			// return createMetadataGroupForOrganisation();
+			DataGroup metadata = createMetadataGroupForOrganisation();
+			MCR.addReturned(metadata);
+			return metadata;
+
+		}
+
+		if (METADATA.equals(type) && "organisationChildWithAttribute".equals(id)) {
+			DataGroup metadata = createMetadataGroupForOrganisationWithChildWithAttribute();
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "organisationChildWithAttributeNew".equals(id)) {
+			if (useStandardMetadataGroupForNew) {
+				DataGroup metadata = createMetadataGroupForOrganisationWithChildWithAttribute();
+				MCR.addReturned(metadata);
+				return metadata;
+			}
+			DataGroup metadata = createMetadataGroupForOrganisationNewWithChildWithAttribute();
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+
+		if (METADATA.equals(type) && "organisationRecursiveChild".equals(id)) {
+			DataGroup returnedValue = createMetadataGroupForOrganisationRecursiveChild();
+			MCR.addReturned(returnedValue);
+			return returnedValue;
+
+		}
+		if (METADATA.equals(type) && "organisationNew".equals(id)) {
+			if (useStandardMetadataGroupForNew) {
+				DataGroup metadata = createMetadataGroupForOrganisation();
+				MCR.addReturned(metadata);
+				return metadata;
+			}
+			DataGroup metadata = createMetadataGroupForOrganisationNew();
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "divaOrganisationRoot".equals(id)) {
+			DataGroup metadata = createMetadataTextVariableUsingNameInData("organisationRoot");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "showInPortalTextVar".equals(id)) {
+			DataGroup metadata = createMetadataTextVariableUsingNameInData("showInPortal");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "showInDefenceTextVar".equals(id)) {
+			DataGroup metadata = createMetadataTextVariableUsingNameInData("showInDefence");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "divaOrganisationRoot2".equals(id)) {
+			DataGroup metadata = createMetadataTextVariableUsingNameInData("organisationRoot2");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "showInPortalTextVar2".equals(id)) {
+			DataGroup metadata = createMetadataTextVariableUsingNameInData("showInPortal2");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "showInDefenceTextVar2".equals(id)) {
+			DataGroup metadata = createMetadataTextVariableUsingNameInData("showInDefence2");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "greatGrandChildTextVar".equals(id)) {
+			DataGroupSpiderOldSpy metadata = createMetadataTextVariableUsingNameInData(
+					"greatGrandChild");
+			MCR.addReturned(metadata);
+			return metadata;
+		}
+		if (METADATA.equals(type) && "organisationAlternativeNameGroup".equals(id)) {
+			DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(
+					"organisationAlternativeName", "organisationAlternativeNameGroup");
+			DataGroup childReferences = metadataGroup
+					.getFirstGroupWithNameInData("childReferences");
+			if (!attributesIdsToAddToConstraint.isEmpty()) {
+				DataGroupSpiderOldSpy attributeReferences = new DataGroupSpiderOldSpy(
+						"attributeReferences");
+				for (String attributeId : attributesIdsToAddToConstraint) {
+					DataGroupSpiderOldSpy ref = createAttributeReference(attributeId, "0");
+					attributeReferences.addChild(ref);
+				}
+				metadataGroup.addChild(attributeReferences);
+			}
+
+			if (numberOfGrandChildrenWithReadWriteConstraint > 0) {
+				DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReferenceWithConstraint(
+						METADATA, "showInPortalTextVar", "readWrite", "0", "1");
+				childReferences.addChild(grandChildWithReadConstraint);
+			}
+			if (numberOfGrandChildrenWithReadWriteConstraint > 1) {
+				DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(METADATA,
+						"grandChildGroup", "0", maxNoOfGrandChildren);
+				childReferences.addChild(grandChildWithReadConstraint);
+			}
+
+			MCR.addReturned(metadataGroup);
+			return metadataGroup;
+		}
+		if (METADATA.equals(type) && "grandChildGroup".equals(id)) {
+			DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(id,
+					"grandChildGroup");
+
+			DataGroupSpiderOldSpy greatGrandChildWithReadConstraint = createChildReferenceWithConstraint(
+					METADATA, "greatGrandChildTextVar", "readWrite", "0", "1");
+			DataGroup childReferences = metadataGroup
+					.getFirstGroupWithNameInData("childReferences");
+			childReferences.addChild(greatGrandChildWithReadConstraint);
+			MCR.addReturned(metadataGroup);
+			return metadataGroup;
+		}
+		if (METADATA.equals(type) && "divaOrganisationNameGroup".equals(id)) {
+			DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithChildReferences(
+					"organisationName", "divaOrganisationNameGroup");
+
+			DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(METADATA,
+					"showInPortalTextVar", "0", "1");
+			DataGroup childReferences = metadataGroup
+					.getFirstGroupWithNameInData("childReferences");
+			childReferences.addChild(grandChildWithReadConstraint);
+			MCR.addReturned(metadataGroup);
+			return metadataGroup;
+		}
+		if (METADATA.equals(type) && "divaOrganisationRecursiveNameGroup".equals(id)) {
+			// DataGroupSpy metadataGroup =
+			// createMetadataGroupWithChildReferences("organisationName",
+			// "divaOrganisationRecursiveNameGroup");
+
+			DataGroupSpiderOldSpy metadataGroup = createBasicMetadataGroup(
+					"divaOrganisationRecursiveNameGroup", "group");
+			metadataGroup.addChild(
+					createDataAtomicSpyUsingNameAndValue("nameInData", "organisationName"));
+			DataGroupSpiderOldSpy childReferences = new DataGroupSpiderOldSpy("childReferences");
+			metadataGroup.addChild(childReferences);
+
+			DataGroupSpiderOldSpy grandChildWithReadConstraint = createChildReference(METADATA,
+					"showInPortalTextVar", "0", "1");
+			childReferences.addChild(grandChildWithReadConstraint);
+
+			DataGroupSpiderOldSpy recursiveChild = createChildReference(METADATA,
+					"divaOrganisationRecursiveNameGroup", "0", "1");
+			childReferences.addChild(recursiveChild);
+
+			MCR.addReturned(metadataGroup);
+			return metadataGroup;
+		}
+		if ("metadataCollectionVariable".equals(type) && "textPartTypeCollectionVar".equals(id)) {
+			DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithNameInDataAndFinalValue(
+					"type", "default");
+			MCR.addReturned(metadataGroup);
+			return metadataGroup;
+		}
+		// TODO: if ("metadataCollectionVariable".equals(type) &&
+		// "choosableAttributesCollectionVar".equals(id))
+		// if ("metadataCollectionVariable".equals(type) &&
+		// "choosableAttributesCollectionVar".equals(id)) {
+		//
+		// DataGroupSpy metadataGroup = new DataGroupSpy();
+		// metadataGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+		// Supplier, "bla");
+		// return metadataGroup;
+		// }
+		if ("metadataCollectionVariable".equals(type) && "textPartLangCollectionVar".equals(id)) {
+			DataGroupSpiderOldSpy metadataGroup = createMetadataGroupWithNameInDataAndFinalValue(
+					"lang", "sv");
+			MCR.addReturned(metadataGroup);
+			return metadataGroup;
+		}
+		if ("metadataCollectionVariable".equals(type)
+				&& "choosableAttributeCollectionVar".equals(id)) {
+			DataGroupSpy collectionVar = new DataGroupSpy();
+
+			DataGroupSpy refCollection = new DataGroupSpy();
+
+			collectionVar.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
+					(Supplier<Boolean>) () -> false, "finalValue");
+
+			collectionVar.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+					(Supplier<DataGroupSpy>) () -> refCollection, "refCollection");
+			String collectionId = "choosableCollection";
+			refCollection.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+					(Supplier<String>) () -> collectionId, "linkedRecordId");
+
+			MCR.addReturned(collectionVar);
+			return collectionVar;
+		}
+
+		if (METADATA.equals(type) && "choosableCollection".equals(id)) {
+			DataGroupSpy collection = new DataGroupSpy();
+
+			DataGroupSpy collectionItemReferences = new DataGroupSpy();
+			collection.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+					(Supplier<DataGroupSpy>) () -> collectionItemReferences,
+					"collectionItemReferences");
+
+			List<DataGroupSpy> refs = new ArrayList<>();
+			refs.add(createCollectionItemWithId("choosableCollectionItem1"));
+			refs.add(createCollectionItemWithId("choosableCollectionItem2"));
+			collectionItemReferences.MRV.setSpecificReturnValuesSupplier(
+					"getAllGroupsWithNameInData", (Supplier<List<DataGroupSpy>>) () -> refs, "ref");
+
+			MCR.addReturned(collection);
+			return collection;
+		}
+		// }
 		// if ("metadataCollectionItem".equals(type) && "choosableCollectionItem1".equals(id)) {
-		if ("choosableCollectionItem1".equals(id)) {
+		if ("choosableCollectionItem1".equals(id))
+
+		{
 			DataGroupSpy collectionItem = createCollectionItemWithValue("choosableItemValue1");
 			MCR.addReturned(collectionItem);
 			return collectionItem;
@@ -545,12 +549,6 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 	public long getTotalNumberOfRecordsForTypes(List<String> types, Filter filter) {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-
-	@Override
-	public DataRecordGroup read(String type, String id) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

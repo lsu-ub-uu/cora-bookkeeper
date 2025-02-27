@@ -19,20 +19,12 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordGroup;
 
 /**
  * RecordTypeHandlerFactory is a factor class that creates new RecordTypeHandlers.
  */
 public interface RecordTypeHandlerFactory {
-	/**
-	 * 
-	 * @param dataGroup
-	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
-	 */
-	@Deprecated(forRemoval = true)
-	RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup);
 
 	/**
 	 * factorUsingRecordTypeId method factors a RecordTypeHandler using recordTypeId.

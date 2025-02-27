@@ -40,6 +40,7 @@ import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.RecordStorage;
 
@@ -49,13 +50,11 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String NAME_IN_DATA = "nameInData";
 	private static final String SEARCH = "search";
 	private static final String RECORD_PART_CONSTRAINT = "recordPartConstraint";
-	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
-	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String RECORD_TYPE = "recordType";
-	private DataGroup recordType;
+	private DataRecordGroup recordType;
 	private String recordTypeId;
 	private RecordStorage recordStorage;
-	private DataGroup metadataGroup;
+	private DataRecordGroup metadataGroup;
 	private Set<Constraint> readWriteConstraints = new LinkedHashSet<>();
 	private Set<Constraint> createConstraints = new LinkedHashSet<>();
 	private Set<Constraint> writeConstraints = new LinkedHashSet<>();
@@ -72,10 +71,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		// only for test
 	}
 
-	/**
-	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
-	 */
-	@Deprecated(forRemoval = true)
 	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(
 			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
 			String recordTypeId) {
@@ -87,25 +82,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
 		this.recordStorage = recordStorage;
 		this.recordTypeId = recordTypeId;
-		recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
-	}
-
-	/**
-	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
-	 */
-	@Deprecated(forRemoval = true)
-	public static RecordTypeHandler usingRecordStorageAndDataGroup(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			DataGroup dataGroup) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
-	}
-
-	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, DataGroup dataGroup) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-		this.recordStorage = recordStorage;
-		recordType = dataGroup;
-		recordTypeId = getIdFromMetadatagGroup(dataGroup);
+		recordType = recordStorage.read(RECORD_TYPE, recordTypeId);
 	}
 
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
@@ -130,9 +107,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		}
 
 		validationType = oValidationType.get();
-		recordType = recordStorage.read(List.of(RECORD_TYPE),
-				validationType.validatesRecordTypeId());
-		recordTypeId = getIdFromMetadatagGroup(recordType);
+		recordType = recordStorage.read(RECORD_TYPE, validationType.validatesRecordTypeId());
+		recordTypeId = recordType.getId();
 	}
 
 	@Override
@@ -167,8 +143,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public String getDefinitionId() {
-		DataRecordLink metadataLink = (DataRecordLink) recordType
-				.getFirstChildWithNameInData("metadataId");
+		DataRecordLink metadataLink = recordType.getFirstChildOfTypeAndName(DataRecordLink.class,
+				"metadataId");
 		return metadataLink.getLinkedRecordId();
 	}
 
@@ -192,7 +168,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	private void collectAllConstraintsForUpdate() {
 		constraintsForUpdateLoaded = true;
-		List<DataGroup> allChildReferences = getAllChildReferences(getMetadataGroup());
+		List<DataGroup> allChildReferences = getAllChildReferences(readDefinition());
 		Set<Constraint> collectedConstraints = new LinkedHashSet<>();
 		collectConstraintsForChildReferences(allChildReferences, collectedConstraints);
 		for (Constraint constraint : collectedConstraints) {
@@ -201,9 +177,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		}
 	}
 
-	private DataGroup getMetadataGroup() {
+	private DataRecordGroup readDefinition() {
 		if (metadataGroup == null) {
-			metadataGroup = recordStorage.read(List.of(METADATA), getDefinitionId());
+			metadataGroup = recordStorage.read(METADATA, getDefinitionId());
 		}
 		return metadataGroup;
 	}
@@ -217,8 +193,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	private void collectConstraintForChildReference(DataGroup childReference,
 			Set<Constraint> tempSet) {
-		DataGroup child = null;
-		child = readChildRefFromStorage(childReference);
+		DataRecordGroup child = readChildRefFromStorage(childReference);
 		if (hasConstraints(childReference)) {
 			addWriteAndReadWriteConstraints(childReference, child, tempSet);
 		}
@@ -226,14 +201,14 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private void possiblyCollectConstraintsFromChildrenToChildReference(DataGroup childReference,
-			DataGroup child, Set<Constraint> tempSet) {
+			DataRecordGroup child, Set<Constraint> tempSet) {
 		if (isGroup(child) && notRepetable(childReference)) {
 			List<DataGroup> allChildReferences = getAllChildReferences(child);
 			collectConstraintsForChildReferences(allChildReferences, tempSet);
 		}
 	}
 
-	private boolean isGroup(DataGroup child) {
+	private boolean isGroup(DataRecordGroup child) {
 		DataAttribute type = child.getAttribute("type");
 		return "group".equals(type.getValue());
 	}
@@ -243,8 +218,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return REPEAT_MAX_WHEN_NOT_REPEATABLE.equals(repeatMax);
 	}
 
-	private List<DataGroup> getAllChildReferences(DataGroup metadataGroupForMetadata) {
-		String id = getIdFromMetadatagGroup(metadataGroupForMetadata);
+	private List<DataGroup> getAllChildReferences(DataRecordGroup metadataGroupForMetadata) {
+		String id = metadataGroupForMetadata.getId();
+
 		if (childrenToGroupHasAlreadyBeenChecked(id)) {
 			return Collections.emptyList();
 		}
@@ -256,23 +232,18 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private List<DataGroup> addGroupToCheckedAndGetChildReferences(
-			DataGroup metadataGroupForMetadata, String id) {
+			DataRecordGroup metadataGroupForMetadata, String id) {
 		readChildren.add(id);
 		DataGroup childReferences = metadataGroupForMetadata
 				.getFirstGroupWithNameInData("childReferences");
 		return childReferences.getAllGroupsWithNameInData("childReference");
 	}
 
-	private String getIdFromMetadatagGroup(DataGroup metadataGroupForMetadata) {
-		DataGroup recordInfo = metadataGroupForMetadata.getFirstGroupWithNameInData("recordInfo");
-		return recordInfo.getFirstAtomicValueWithNameInData("id");
-	}
-
 	private boolean hasConstraints(DataGroup childReference) {
 		return childReference.containsChildWithNameInData(RECORD_PART_CONSTRAINT);
 	}
 
-	private void addWriteAndReadWriteConstraints(DataGroup childReference, DataGroup child,
+	private void addWriteAndReadWriteConstraints(DataGroup childReference, DataRecordGroup child,
 			Set<Constraint> constraints) {
 		String constraintType = getRecordPartConstraintType(childReference);
 
@@ -285,42 +256,42 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return childReference.getFirstAtomicValueWithNameInData(RECORD_PART_CONSTRAINT);
 	}
 
-	private Constraint createConstraintPossibyAddAttributes(DataGroup child) {
+	private Constraint createConstraintPossibyAddAttributes(DataRecordGroup child) {
 		Constraint constraint = createConstraint(child);
 		possiblyAddAttributes(child, constraint);
 		return constraint;
 	}
 
-	private DataGroup readChildRefFromStorage(DataGroup childReference) {
-		DataGroup ref = childReference.getFirstGroupWithNameInData("ref");
-		String linkedRecordType = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
-		String linkedRecordId = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		return recordStorage.read(List.of(linkedRecordType), linkedRecordId);
+	private DataRecordGroup readChildRefFromStorage(DataGroup childReference) {
+		DataRecordLink refLink = childReference.getFirstChildOfTypeAndName(DataRecordLink.class,
+				"ref");
+		return recordStorage.read(METADATA, refLink.getLinkedRecordId());
 	}
 
-	private Constraint createConstraint(DataGroup child) {
+	private Constraint createConstraint(DataRecordGroup child) {
 		String refNameInData = child.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
 		return new Constraint(refNameInData);
 	}
 
-	private void possiblyAddAttributes(DataGroup child, Constraint constraint) {
+	private void possiblyAddAttributes(DataRecordGroup child, Constraint constraint) {
 		if (child.containsChildWithNameInData("attributeReferences")) {
 			addAttributes(child, constraint);
 		}
 	}
 
-	private void addAttributes(DataGroup child, Constraint constraint) {
+	private void addAttributes(DataRecordGroup child, Constraint constraint) {
 		DataGroup attributeReferences = child.getFirstGroupWithNameInData("attributeReferences");
-		List<DataGroup> attributeRefs = attributeReferences.getAllGroupsWithNameInData("ref");
+		List<DataRecordLink> attributeRefs = attributeReferences
+				.getChildrenOfTypeAndName(DataRecordLink.class, "ref");
 
-		for (DataGroup attributeRef : attributeRefs) {
+		for (DataRecordLink attributeRef : attributeRefs) {
 			addAttributeToConstraintForAttributeRef(constraint, attributeRef);
 		}
 	}
 
 	private void addAttributeToConstraintForAttributeRef(Constraint constraint,
-			DataGroup attributeRef) {
-		DataGroup collectionVar = getCollectionVarFromStorageForAttributeRef(attributeRef);
+			DataRecordLink attributeRef) {
+		DataRecordGroup collectionVar = getCollectionVarFromStorageForAttributeRef(attributeRef);
 		if (collectionVar.containsChildWithNameInData("finalValue")) {
 			addFinalValueAttribute(constraint, collectionVar);
 		} else {
@@ -328,39 +299,39 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		}
 	}
 
-	private DataGroup getCollectionVarFromStorageForAttributeRef(DataGroup attribute) {
-		return recordStorage.read(
-				List.of(attribute.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE)),
-				attribute.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID));
+	private DataRecordGroup getCollectionVarFromStorageForAttributeRef(
+			DataRecordLink attributeRef) {
+		return recordStorage.read(METADATA, attributeRef.getLinkedRecordId());
 	}
 
-	private void addFinalValueAttribute(Constraint constraint, DataGroup collectionVar) {
+	private void addFinalValueAttribute(Constraint constraint, DataRecordGroup collectionVar) {
 		String attributeName = collectionVar.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
 		String attributeValue = collectionVar.getFirstAtomicValueWithNameInData("finalValue");
 		constraint.addAttributeUsingNameInDataAndPossibleValues(attributeName,
 				Set.of(attributeValue));
 	}
 
-	private void addMultivalueAttribute(Constraint constraint, DataGroup collectionVar) {
+	private void addMultivalueAttribute(Constraint constraint, DataRecordGroup collectionVar) {
 		String attributeName = collectionVar.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
 		Set<String> possibleAttributeValues = getPossibleAttributeValues(collectionVar);
 		constraint.addAttributeUsingNameInDataAndPossibleValues(attributeName,
 				possibleAttributeValues);
 	}
 
-	private Set<String> getPossibleAttributeValues(DataGroup collectionVar) {
-		DataGroup refCollectionLink = collectionVar.getFirstGroupWithNameInData("refCollection");
-		String collectionId = refCollectionLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		DataGroup possibleAttributesCollection = recordStorage.read(List.of(METADATA),
-				collectionId);
+	private Set<String> getPossibleAttributeValues(DataRecordGroup collectionVar) {
+		DataRecordLink refCollectionLink = collectionVar
+				.getFirstChildOfTypeAndName(DataRecordLink.class, "refCollection");
+		String collectionId = refCollectionLink.getLinkedRecordId();
+		DataRecordGroup possibleAttributesCollection = recordStorage.read(METADATA, collectionId);
 		DataGroup collectionItemReferences = possibleAttributesCollection
 				.getFirstGroupWithNameInData("collectionItemReferences");
-		List<DataGroup> allItemRefs = collectionItemReferences.getAllGroupsWithNameInData("ref");
+		List<DataRecordLink> allItemRefs = collectionItemReferences
+				.getChildrenOfTypeAndName(DataRecordLink.class, "ref");
 
 		Set<String> possibleValues = new LinkedHashSet<>();
-		for (DataGroup itemRef : allItemRefs) {
-			String itemId = itemRef.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-			DataGroup itemGroup = recordStorage.read(List.of(METADATA), itemId);
+		for (DataRecordLink itemRef : allItemRefs) {
+			String itemId = itemRef.getLinkedRecordId();
+			DataRecordGroup itemGroup = recordStorage.read(METADATA, itemId);
 			String itemValue = itemGroup.getFirstAtomicValueWithNameInData(NAME_IN_DATA);
 			possibleValues.add(itemValue);
 		}
@@ -402,18 +373,13 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean representsTheRecordTypeDefiningSearches() {
-		String id = extractIdFromRecordInfo();
+		String id = recordType.getId();
 		return SEARCH.equals(id);
-	}
-
-	private String extractIdFromRecordInfo() {
-		DataGroup recordInfo = recordType.getFirstGroupWithNameInData("recordInfo");
-		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
 	@Override
 	public boolean representsTheRecordTypeDefiningRecordTypes() {
-		String id = extractIdFromRecordInfo();
+		String id = recordType.getId();
 		return RECORD_TYPE.equals(id);
 	}
 
@@ -425,7 +391,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public String getSearchId() {
 		throwErrorIfNoSearch();
-		DataRecordLink searchLink = (DataRecordLink) recordType.getFirstChildWithNameInData(SEARCH);
+		DataRecordLink searchLink = recordType.getFirstChildOfTypeAndName(DataRecordLink.class,
+				SEARCH);
 		return searchLink.getLinkedRecordId();
 	}
 
@@ -457,14 +424,14 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private List<DataGroup> getAllChildReferencesForCreate() {
-		DataGroup metadataGroupForMetadata = getCreateDefinitionGroup();
+		DataRecordGroup metadataGroupForMetadata = getCreateDefinitionGroup();
 		DataGroup childReferences = metadataGroupForMetadata
 				.getFirstGroupWithNameInData("childReferences");
 		return childReferences.getAllGroupsWithNameInData("childReference");
 	}
 
-	private DataGroup getCreateDefinitionGroup() {
-		return recordStorage.read(List.of(METADATA), getCreateDefinitionId());
+	private DataRecordGroup getCreateDefinitionGroup() {
+		return recordStorage.read(METADATA, getCreateDefinitionId());
 	}
 
 	@Override
@@ -480,22 +447,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	public boolean storeInArchive() {
 		String storeInArchive = recordType.getFirstAtomicValueWithNameInData("storeInArchive");
 		return "true".equals(storeInArchive);
-	}
-
-	public RecordStorage onlyForTestGetRecordStorage() {
-		return recordStorage;
-	}
-
-	public String onlyForTestGetRecordTypeId() {
-		return recordTypeId;
-	}
-
-	public MetadataStorageView onlyForTestGetMetadataStorage() {
-		return metadataStorageView;
-	}
-
-	public String onlyForTestGetValidationTypeId() {
-		return validationTypeId;
 	}
 
 	@Override
@@ -566,6 +517,22 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 			combineStorageKeys.add(storageKeyForLink);
 		}
 		return combineStorageKeys;
+	}
+
+	public RecordStorage onlyForTestGetRecordStorage() {
+		return recordStorage;
+	}
+
+	public String onlyForTestGetRecordTypeId() {
+		return recordTypeId;
+	}
+
+	public MetadataStorageView onlyForTestGetMetadataStorage() {
+		return metadataStorageView;
+	}
+
+	public String onlyForTestGetValidationTypeId() {
+		return validationTypeId;
 	}
 
 }

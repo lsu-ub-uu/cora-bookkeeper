@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2019, 2020, 2021, 2022, 2024 Uppsala University Library
+ * Copyright 2016, 2019, 2020, 2021, 2022, 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -45,10 +44,12 @@ import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.data.spies.DataChildFilterSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
 import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
@@ -61,8 +62,9 @@ public class RecordTypeHandlerTest {
 	private RecordTypeHandler recordTypeHandler;
 	private RecordStorageSpy recordStorage;
 	private RecordTypeHandlerFactorySpy recordTypeHandlerFactory;
-	private RecordTypeHandlerStorageSpy storageSpy;
+	// private RecordTypeHandlerStorageOldSpy recordStorage;
 	private MetadataStorageViewSpy metadataStorageViewSpy;
+	private DataRecordGroupSpy recordTypeAsDataRecordGroup;
 
 	@BeforeMethod
 	public void setUp() {
@@ -70,7 +72,13 @@ public class RecordTypeHandlerTest {
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 
 		recordStorage = new RecordStorageSpy();
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read", DataGroupSpy::new);
+		recordTypeAsDataRecordGroup = new DataRecordGroupSpy();
+		recordTypeAsDataRecordGroup.MRV.setDefaultReturnValuesSupplier("getId", () -> SOME_ID);
+		recordTypeAsDataRecordGroup.MRV.setDefaultReturnValuesSupplier("getFirstChildOfTypeAndName",
+				DataRecordLinkSpy::new);
+		recordTypeAsDataRecordGroup.MRV.setDefaultReturnValuesSupplier("getChildrenOfTypeAndName",
+				() -> List.of(new DataRecordLinkSpy()));
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> recordTypeAsDataRecordGroup);
 
 		recordTypeHandlerFactory = new RecordTypeHandlerFactorySpy();
 		metadataStorageViewSpy = new MetadataStorageViewSpy();
@@ -81,9 +89,9 @@ public class RecordTypeHandlerTest {
 
 	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""
 			+ "ValidationType with id: someValidationTypeId, does not exist.")
-	public void testInitWithValidationTypeNotFoundThrowsValidationException() throws Exception {
+	public void testInitWithValidationTypeNotFoundThrowsValidationException() {
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
-				() -> Optional.empty());
+				Optional::empty);
 
 		setUpRecordTypeHandlerWithMetadataStorage(metadataStorageViewSpy);
 	}
@@ -97,29 +105,16 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testInitWithValidationTypeFoundReadsRecordTypeFromStorage() throws Exception {
+	public void testInitWithValidationTypeFoundReadsRecordTypeFromStorage() {
 		setUpRecordTypeHandlerWithMetadataStorage(metadataStorageViewSpy);
 
-		recordStorage.MCR.assertMethodWasCalled("read");
-		List<String> listOfTypes = (List<String>) recordStorage.MCR
-				.getParameterForMethodAndCallNumberAndParameter("read", 0, "types");
-		assertEquals(listOfTypes.size(), 1);
-		assertEquals(listOfTypes.get(0), "recordType");
-		recordStorage.MCR.assertParameter("read", 0, "id", "someTypeToValidate");
+		recordStorage.MCR.assertParameters("read", 0, "recordType", "someTypeToValidate");
 	}
 
-	private DataGroupSpy createTopDataGroup() {
-		return createTopDataGroupWithId("");
-	}
-
-	private DataGroupSpy createTopDataGroupWithId(String id) {
-		DataGroupSpy dataGroup = new DataGroupSpy();
-		DataGroupSpy recordInfoGroup = new DataGroupSpy();
-		recordInfoGroup.MRV.setDefaultReturnValuesSupplier("getFirstAtomicValueWithNameInData",
-				(Supplier<String>) () -> id);
-		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
-				(Supplier<DataGroupSpy>) () -> recordInfoGroup, "recordInfo");
-		return dataGroup;
+	private DataRecordGroupSpy createDataRecordGroupWithId(String id) {
+		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
+		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getId", () -> id);
+		return dataRecordGroup;
 	}
 
 	private void setUpRecordTypeHandlerUsingTypeId(String recordTypeId) {
@@ -132,21 +127,19 @@ public class RecordTypeHandlerTest {
 						"someValidationTypeId");
 	}
 
-	private DataGroupSpy getRecordTypeDataGroupReadFromStorage() {
-		DataGroupSpy dataGroup = (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
-		return dataGroup;
+	private DataRecordGroupSpy getRecordTypeDataRecordGroupReadFromStorage() {
+		return (DataRecordGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
 	}
 
 	private void setupForStorageAtomicValue(String nameInData, String value) {
-		DataGroupSpy DataGroupSpy = new DataGroupSpy();
-		DataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(value),
+		DataRecordGroupSpy dataRecordGroupSpy = new DataRecordGroupSpy();
+		dataRecordGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(value),
 				nameInData);
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> DataGroupSpy);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataRecordGroupSpy);
 	}
 
-	private DataGroupSpy setupDataGroupWithAtomicValue(String nameInData, String value) {
-		DataGroupSpy topDataGroup = createTopDataGroup();
+	private DataRecordGroupSpy setupDataGroupWithAtomicValue(String nameInData, String value) {
+		DataRecordGroupSpy topDataGroup = createDataRecordGroupWithId("someId");
 		topDataGroup.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(value),
 				nameInData);
 		return topDataGroup;
@@ -157,13 +150,14 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("userSuppliedId", "false");
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldAutoGenerateId(dataGroup, true);
+		DataRecordGroupSpy dataRecordGroup = getRecordTypeDataRecordGroupReadFromStorage();
+		assertShouldAutoGenerateId(dataRecordGroup, true);
 	}
 
-	private void assertShouldAutoGenerateId(DataGroupSpy dataGroupMCR, boolean expected) {
+	private void assertShouldAutoGenerateId(DataRecordGroupSpy dataRecordGroup, boolean expected) {
 		assertEquals(recordTypeHandler.shouldAutoGenerateId(), expected);
-		dataGroupMCR.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "userSuppliedId");
+		dataRecordGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0,
+				"userSuppliedId");
 	}
 
 	@Test
@@ -171,8 +165,8 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("userSuppliedId", "true");
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldAutoGenerateId(dataGroup, false);
+		DataRecordGroupSpy dataRecordGroup = getRecordTypeDataRecordGroupReadFromStorage();
+		assertShouldAutoGenerateId(dataRecordGroup, false);
 	}
 
 	@Test
@@ -185,7 +179,7 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testGetUpdateDefinitionId() throws Exception {
+	public void testGetUpdateDefinitionId() {
 		setUpRecordTypeHandlerWithMetadataStorage(metadataStorageViewSpy);
 
 		String definitionId = recordTypeHandler.getUpdateDefinitionId();
@@ -200,22 +194,16 @@ public class RecordTypeHandlerTest {
 
 		String metadataId = recordTypeHandler.getDefinitionId();
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertUsedLink(dataGroup, "metadataId", metadataId);
+		DataRecordGroupSpy dataRecordGroup = getRecordTypeDataRecordGroupReadFromStorage();
+		assertUsedLink(dataRecordGroup, "metadataId", metadataId);
 	}
 
-	private void assertUsedLink(DataGroupSpy topGroup, String linkNameInData,
+	private void assertUsedLink(DataRecordGroupSpy dataRecordGroup, String linkNameInData,
 			String returnedLinkedRecordId) {
-		int callNumber = 0;
-		assertUsedLinkCallNo(topGroup, linkNameInData, returnedLinkedRecordId, callNumber);
-	}
 
-	private void assertUsedLinkCallNo(DataGroupSpy topGroup, String linkNameInData,
-			String returnedLinkedRecordId, int callNumber) {
-		topGroup.MCR.assertParameters("getFirstChildWithNameInData", callNumber, linkNameInData);
-
-		DataRecordLinkSpy linkGroup = (DataRecordLinkSpy) topGroup.MCR
-				.getReturnValue("getFirstChildWithNameInData", callNumber);
+		DataRecordLinkSpy linkGroup = (DataRecordLinkSpy) dataRecordGroup.MCR
+				.assertCalledParametersReturn("getFirstChildOfTypeAndName", DataRecordLink.class,
+						linkNameInData);
 		String linkedRecordIdFromSpy = (String) linkGroup.MCR.getReturnValue("getLinkedRecordId",
 				0);
 		assertEquals(returnedLinkedRecordId, linkedRecordIdFromSpy);
@@ -223,18 +211,18 @@ public class RecordTypeHandlerTest {
 
 	private void setupForLinkForStorageWithNameInDataAndRecordId(String linkNameInData,
 			String linkedRecordId) {
-		DataGroupSpy dataGroup = setupForLinkWithNameInDataAndRecordId(linkNameInData,
+		DataRecordGroupSpy dataGroup = setupForLinkWithNameInDataAndRecordId(linkNameInData,
 				linkedRecordId);
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> dataGroup);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroup);
 	}
 
-	private DataGroupSpy setupForLinkWithNameInDataAndRecordId(String linkNameInData,
+	private DataRecordGroupSpy setupForLinkWithNameInDataAndRecordId(String linkNameInData,
 			String linkedRecordId) {
-		DataGroupSpy dataGroup = createTopDataGroupWithId("someRecordType");
+		DataRecordGroupSpy dataGroup = createDataRecordGroupWithId("someRecordType");
 		DataRecordLinkSpy link = createLink(linkedRecordId);
-		dataGroup.MRV.setReturnValues("containsChildWithNameInData", List.of(true), linkNameInData);
-		dataGroup.MRV.setReturnValues("getFirstChildWithNameInData", List.of(link), linkNameInData);
+		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName", () -> link,
+				DataRecordLink.class, linkNameInData);
+
 		return dataGroup;
 	}
 
@@ -244,14 +232,17 @@ public class RecordTypeHandlerTest {
 		return recordLink;
 	}
 
-	private DataGroupSpy setupDataGroupWithLinkUsingNameInDataAndRecordId(String linkNameInData,
-			String linkedRecordId) {
-		DataGroupSpy topDataGroup = createTopDataGroup();
+	private DataRecordGroupSpy setupDataGroupWithLinkUsingNameInDataAndRecordId(
+			String linkNameInData, String linkedRecordId) {
+		DataRecordGroupSpy topDataGroup = createDataRecordGroupWithId("someId");
 		DataRecordLinkSpy link = createLink(linkedRecordId);
 		topDataGroup.MRV.setReturnValues("containsChildWithNameInData", List.of(true),
 				linkNameInData);
 		topDataGroup.MRV.setReturnValues("getFirstChildWithNameInData", List.of(link),
 				linkNameInData);
+
+		topDataGroup.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName", () -> link,
+				DataRecordLink.class, linkNameInData);
 		return topDataGroup;
 	}
 
@@ -260,13 +251,13 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("public", "true");
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertIsPublicForRead(dataGroup, true);
+		DataRecordGroupSpy dataRecordGroup = getRecordTypeDataRecordGroupReadFromStorage();
+		assertIsPublicForRead(dataRecordGroup, true);
 	}
 
-	private void assertIsPublicForRead(DataGroupSpy dataGroupMCR, boolean expected) {
+	private void assertIsPublicForRead(DataRecordGroupSpy dataRecordGroup, boolean expected) {
 		assertEquals(recordTypeHandler.isPublicForRead(), expected);
-		dataGroupMCR.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "public");
+		dataRecordGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "public");
 	}
 
 	@Test
@@ -274,25 +265,24 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("public", "false");
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertIsPublicForRead(dataGroup, false);
+		DataRecordGroupSpy dataRecordGroup = getRecordTypeDataRecordGroupReadFromStorage();
+		assertIsPublicForRead(dataRecordGroup, false);
 	}
 
 	@Test
 	public void testGetRecordPartReadConstraintsNOReadConstraint() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
 
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 4);
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 0, RECORD_TYPE);
-		storageSpy.MCR.assertParameter("read", 0, "id", "organisation");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 1, METADATA);
-		storageSpy.MCR.assertParameter("read", 1, "id", "organisation");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 2, METADATA);
-		storageSpy.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
+		recordStorage.MCR.assertNumberOfCallsToMethod("read", 4);
+		assertParementerFirstOnParameterTypesList("read", 0, RECORD_TYPE);
+		recordStorage.MCR.assertParameter("read", 0, "id", "organisation");
+		assertParementerFirstOnParameterTypesList("read", 1, METADATA);
+		recordStorage.MCR.assertParameter("read", 1, "id", "organisation");
+		assertParementerFirstOnParameterTypesList("read", 2, METADATA);
+		recordStorage.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
 
 		assertTrue(recordPartReadConstraints.isEmpty());
 		Set<Constraint> recordPartWriteConstraints = recordTypeHandler
@@ -304,23 +294,21 @@ public class RecordTypeHandlerTest {
 		assertTrue(recordPartCreateWriteConstraints.isEmpty());
 	}
 
-	private RecordTypeHandlerStorageSpy setUpHandlerWithStorageSpyUsingTypeId(String recordTypeId) {
-		storageSpy = new RecordTypeHandlerStorageSpy();
+	private void setUpHandlerWithrecordStorageUsingTypeId(String recordTypeId) {
+		// recordStorage = new RecordTypeHandlerStorageOldSpy();
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
 				() -> Optional
 						.of(new ValidationType(recordTypeId, recordTypeId + "New", recordTypeId)));
 		recordTypeHandler = RecordTypeHandlerImp
 				.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-						recordTypeHandlerFactory, storageSpy, metadataStorageViewSpy,
+						recordTypeHandlerFactory, recordStorage, metadataStorageViewSpy,
 						"someValidationTypeId");
-		return storageSpy;
 	}
 
 	@Test
 	public void testGetRecordPartReadConstraintsOneReadConstraint() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -368,15 +356,15 @@ public class RecordTypeHandlerTest {
 	public void testGetRecordPartReadConstraintsTwoReadConstraintsOneWithAttributes() {
 		// - Two read constraints organisationRoot, organisationAlternativeName
 		// organisationAlternativeName constraint exists dependning on
-		// storageSpy.numberOfChildrenWithReadWriteConstraint
+		// recordStorage.numberOfChildrenWithReadWriteConstraint
 		// - OrganisationRoot has no attributes
 		// - OrganisationAlternativeName has 0 to 2 attributes depending on
-		// storageSpy.numberOfAttributes
+		// recordStorage.numberOfAttributes
 
-		storageSpy = setUpHandlerWithStorageSpyUsingTypeId("organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.attributesIdsToAddToConstraint.add("textPartTypeCollectionVar");
-		storageSpy.attributesIdsToAddToConstraint.add("textPartLangCollectionVar");
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.attributesIdsToAddToConstraint.add("textPartTypeCollectionVar");
+		recordStorage.attributesIdsToAddToConstraint.add("textPartLangCollectionVar");
 
 		Set<Constraint> constraints = recordTypeHandler.getReadRecordPartConstraints();
 
@@ -415,11 +403,12 @@ public class RecordTypeHandlerTest {
 	private void assertConstraintAttribute(int constraintNumber, String constraintNameInData,
 			String metadataIdForAttribute, int attributeReadNumber,
 			String possibleValuesForAttribute, int attributeNumberInConstraint) {
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", attributeReadNumber,
+		assertParementerFirstOnParameterTypesList("read", attributeReadNumber,
 				"metadataCollectionVariable");
-		storageSpy.MCR.assertParameter("read", attributeReadNumber, "id", metadataIdForAttribute);
+		recordStorage.MCR.assertParameter("read", attributeReadNumber, "id",
+				metadataIdForAttribute);
 
-		DataGroupSpiderOldSpy secondAttributecollectionVarSpy = (DataGroupSpiderOldSpy) storageSpy.MCR
+		DataGroupSpiderOldSpy secondAttributecollectionVarSpy = (DataGroupSpiderOldSpy) recordStorage.MCR
 				.getReturnValue("read", attributeReadNumber);
 		secondAttributecollectionVarSpy.MCR.assertParameters("containsChildWithNameInData", 0,
 				"finalValue");
@@ -437,40 +426,39 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testConstraintWithAnAttributeWithSeveralPossibleValues() throws Exception {
-		storageSpy = setUpHandlerWithStorageSpyUsingTypeId("organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.attributesIdsToAddToConstraint.add("choosableAttributeCollectionVar");
+	public void testConstraintWithAnAttributeWithSeveralPossibleValues() {
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.attributesIdsToAddToConstraint.add("choosableAttributeCollectionVar");
 
 		Set<Constraint> constraints = recordTypeHandler.getReadRecordPartConstraints();
 
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 10);
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 0, RECORD_TYPE);
-		storageSpy.MCR.assertParameter("read", 0, "id", "organisationChildWithAttribute");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 1, METADATA);
-		storageSpy.MCR.assertParameter("read", 1, "id", "organisationChildWithAttribute");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 2, METADATA);
-		storageSpy.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
+		recordStorage.MCR.assertNumberOfCallsToMethod("read", 10);
+		assertParementerFirstOnParameterTypesList("read", 0, RECORD_TYPE);
+		recordStorage.MCR.assertParameter("read", 0, "id", "organisationChildWithAttribute");
+		assertParementerFirstOnParameterTypesList("read", 1, METADATA);
+		recordStorage.MCR.assertParameter("read", 1, "id", "organisationChildWithAttribute");
+		assertParementerFirstOnParameterTypesList("read", 2, METADATA);
+		recordStorage.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
 
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 3, METADATA);
-		storageSpy.MCR.assertParameter("read", 3, "id", "showInPortalTextVar");
+		assertParementerFirstOnParameterTypesList("read", 3, METADATA);
+		recordStorage.MCR.assertParameter("read", 3, "id", "showInPortalTextVar");
 
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 4, METADATA);
-		storageSpy.MCR.assertParameter("read", 4, "id", "divaOrganisationRoot");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 5, METADATA);
-		storageSpy.MCR.assertParameter("read", 5, "id", "organisationAlternativeNameGroup");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 6,
-				"metadataCollectionVariable");
-		storageSpy.MCR.assertParameter("read", 6, "id", "choosableAttributeCollectionVar");
+		assertParementerFirstOnParameterTypesList("read", 4, METADATA);
+		recordStorage.MCR.assertParameter("read", 4, "id", "divaOrganisationRoot");
+		assertParementerFirstOnParameterTypesList("read", 5, METADATA);
+		recordStorage.MCR.assertParameter("read", 5, "id", "organisationAlternativeNameGroup");
+		assertParementerFirstOnParameterTypesList("read", 6, "metadataCollectionVariable");
+		recordStorage.MCR.assertParameter("read", 6, "id", "choosableAttributeCollectionVar");
 
 		String collectionId = assertChossableAttributeCollectionVar();
 
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 7, METADATA);
-		storageSpy.MCR.assertParameter("read", 7, "id", "choosableCollection");
-		storageSpy.MCR.assertParameter("read", 8, "id", "choosableCollectionItem1");
-		storageSpy.MCR.assertParameterAsEqual("read", 8, "types", List.of("metadata"));
-		storageSpy.MCR.assertParameter("read", 9, "id", "choosableCollectionItem2");
-		storageSpy.MCR.assertParameterAsEqual("read", 9, "types", List.of("metadata"));
+		assertParementerFirstOnParameterTypesList("read", 7, METADATA);
+		recordStorage.MCR.assertParameter("read", 7, "id", "choosableCollection");
+		recordStorage.MCR.assertParameter("read", 8, "id", "choosableCollectionItem1");
+		recordStorage.MCR.assertParameterAsEqual("read", 8, "types", List.of("metadata"));
+		recordStorage.MCR.assertParameter("read", 9, "id", "choosableCollectionItem2");
+		recordStorage.MCR.assertParameterAsEqual("read", 9, "types", List.of("metadata"));
 
 		List<DataGroupSpy> allItemRefs = assertCollectionItemReferences(collectionId);
 
@@ -490,7 +478,7 @@ public class RecordTypeHandlerTest {
 	}
 
 	private List<DataGroupSpy> assertCollectionItemReferences(String collectionId) {
-		DataGroupSpy possibleAttributesCollection = (DataGroupSpy) storageSpy.MCR
+		DataGroupSpy possibleAttributesCollection = (DataGroupSpy) recordStorage.MCR
 				.getReturnValue("read", 7);
 		possibleAttributesCollection.MCR.assertParameters("getFirstGroupWithNameInData", 0,
 				"collectionItemReferences");
@@ -503,16 +491,14 @@ public class RecordTypeHandlerTest {
 	}
 
 	private String assertChossableAttributeCollectionVar() {
-		DataGroupSpy collectionVar = (DataGroupSpy) storageSpy.MCR.getReturnValue("read", 6);
+		DataGroupSpy collectionVar = (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 6);
 		collectionVar.MCR.assertParameters("containsChildWithNameInData", 0, "finalValue");
 		collectionVar.MCR.assertParameters("getFirstGroupWithNameInData", 0, "refCollection");
 		DataGroupSpy refCollection = (DataGroupSpy) collectionVar.MCR
 				.getReturnValue("getFirstGroupWithNameInData", 0);
 		refCollection.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0,
 				LINKED_RECORD_ID);
-		String collectionId = (String) refCollection.MCR
-				.getReturnValue("getFirstAtomicValueWithNameInData", 0);
-		return collectionId;
+		return (String) refCollection.MCR.getReturnValue("getFirstAtomicValueWithNameInData", 0);
 	}
 
 	private Collection<String> assertItemValuesAndGetAllPossibleValues(
@@ -536,9 +522,9 @@ public class RecordTypeHandlerTest {
 		itemRef.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, LINKED_RECORD_ID);
 		String itemId = (String) itemRef.MCR.getReturnValue("getFirstAtomicValueWithNameInData", 0);
 
-		storageSpy.MCR.assertParameter("read", nextReadCallNumber, "id", itemId);
+		recordStorage.MCR.assertParameter("read", nextReadCallNumber, "id", itemId);
 
-		DataGroupSpy itemGroup = (DataGroupSpy) storageSpy.MCR.getReturnValue("read",
+		DataGroupSpy itemGroup = (DataGroupSpy) recordStorage.MCR.getReturnValue("read",
 				nextReadCallNumber);
 		itemGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "nameInData");
 		String itemValue = (String) itemGroup.MCR
@@ -548,22 +534,21 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadConstraintsWithAttributesListOfMetadataCollectionItemOnlyBuiltOnce() {
-		storageSpy = setUpHandlerWithStorageSpyUsingTypeId("organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 2;
-		storageSpy.attributesIdsToAddToConstraint.add("choosableAttributeCollectionVar");
-		storageSpy.attributesIdsToAddToConstraint.add("choosableAttributeCollectionVar");
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 2;
+		recordStorage.attributesIdsToAddToConstraint.add("choosableAttributeCollectionVar");
+		recordStorage.attributesIdsToAddToConstraint.add("choosableAttributeCollectionVar");
 
 		recordTypeHandler.getReadRecordPartConstraints();
 
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 15);
+		recordStorage.MCR.assertNumberOfCallsToMethod("read", 15);
 	}
 
 	@Test
 	public void testGetRecordPartReadConstraintsOneReadConstraintWithAttributeOLD() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.attributesIdsToAddToConstraint.add("textPartTypeCollectionVar");
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.attributesIdsToAddToConstraint.add("textPartTypeCollectionVar");
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -606,12 +591,11 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadConstraintsOneReadConstraintWithTwoAttributes() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		// storageSpy.numberOfAttributes = 2;
-		storageSpy.attributesIdsToAddToConstraint.add("textPartTypeCollectionVar");
-		storageSpy.attributesIdsToAddToConstraint.add("textPartLangCollectionVar");
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		// recordStorage.numberOfAttributes = 2;
+		recordStorage.attributesIdsToAddToConstraint.add("textPartTypeCollectionVar");
+		recordStorage.attributesIdsToAddToConstraint.add("textPartLangCollectionVar");
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -626,10 +610,9 @@ public class RecordTypeHandlerTest {
 	// new stuff here, for children to max 1
 	@Test
 	public void testGetRecordPartReadConstraintsWithGrandChild() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 1;
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -649,10 +632,9 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadConstraintsWithGreatGrandChild() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 2;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 2;
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -665,11 +647,10 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadConstraintsWithGreatGrandChildNOTMax1() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 2;
-		storageSpy.maxNoOfGrandChildren = "3";
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 2;
+		recordStorage.maxNoOfGrandChildren = "3";
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -683,26 +664,25 @@ public class RecordTypeHandlerTest {
 		DataGroupSpiderOldSpy dataGroup = new DataGroupSpiderOldSpy("dataGroupNameInData");
 		dataGroup.addChild(dataGroup);
 
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationRecursiveChild");
+		setUpHandlerWithrecordStorageUsingTypeId("organisationRecursiveChild");
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
-		assertEquals(storageSpy.types.size(), 5);
-		assertEquals(storageSpy.ids.size(), 5);
-		assertEquals(storageSpy.ids.get(0), "organisationRecursiveChild");
-		assertEquals(storageSpy.ids.get(1), "organisationRecursiveChild");
-		assertEquals(storageSpy.ids.get(2), "divaOrganisationRecursiveNameGroup");
-		assertEquals(storageSpy.ids.get(3), "showInPortalTextVar");
-		assertEquals(storageSpy.ids.get(4), "divaOrganisationRecursiveNameGroup");
+		assertEquals(recordStorage.types.size(), 5);
+		assertEquals(recordStorage.ids.size(), 5);
+		assertEquals(recordStorage.ids.get(0), "organisationRecursiveChild");
+		assertEquals(recordStorage.ids.get(1), "organisationRecursiveChild");
+		assertEquals(recordStorage.ids.get(2), "divaOrganisationRecursiveNameGroup");
+		assertEquals(recordStorage.ids.get(3), "showInPortalTextVar");
+		assertEquals(recordStorage.ids.get(4), "divaOrganisationRecursiveNameGroup");
 
-		DataGroupSpiderOldSpy returnValueNameGroup = (DataGroupSpiderOldSpy) storageSpy.MCR
+		DataGroupSpiderOldSpy returnValueNameGroup = (DataGroupSpiderOldSpy) recordStorage.MCR
 				.getReturnValue("read", 2);
 		int recordInfoAndChildRefsRequested = 2;
 		assertEquals(returnValueNameGroup.requestedDataGroups.size(),
 				recordInfoAndChildRefsRequested);
 
-		DataGroupSpiderOldSpy returnValueNameGroup2 = (DataGroupSpiderOldSpy) storageSpy.MCR
+		DataGroupSpiderOldSpy returnValueNameGroup2 = (DataGroupSpiderOldSpy) recordStorage.MCR
 				.getReturnValue("read", 4);
 		int onlyRecordInfoRequested = 1;
 		assertEquals(returnValueNameGroup2.requestedDataGroups.size(), onlyRecordInfoRequested);
@@ -711,10 +691,9 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadWriteConstraintsWithGrandChild() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 1;
 
 		Set<Constraint> recordPartWriteConstraints = recordTypeHandler
 				.getUpdateWriteRecordPartConstraints();
@@ -725,10 +704,9 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadWriteConstraintsWithGreatGrandChild() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 2;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 2;
 
 		Set<Constraint> recordPartWriteConstraints = recordTypeHandler
 				.getUpdateWriteRecordPartConstraints();
@@ -741,11 +719,10 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadWriteConstraintsWithGreatGrandChildNOTMax1() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 2;
-		storageSpy.maxNoOfGrandChildren = "3";
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 2;
+		recordStorage.maxNoOfGrandChildren = "3";
 
 		Set<Constraint> recordPartWriteConstraints = recordTypeHandler
 				.getUpdateWriteRecordPartConstraints();
@@ -756,11 +733,10 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartCreateWriteConstraintsWithGrandChild() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 1;
-		storageSpy.useStandardMetadataGroupForNew = true;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 1;
+		recordStorage.useStandardMetadataGroupForNew = true;
 
 		Set<Constraint> recordPartCreateConstraints = recordTypeHandler
 				.getCreateWriteRecordPartConstraints();
@@ -771,11 +747,10 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartCreateWriteConstraintsWithGreatGrandChild() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 2;
-		storageSpy.useStandardMetadataGroupForNew = true;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 2;
+		recordStorage.useStandardMetadataGroupForNew = true;
 
 		Set<Constraint> recordPartCreateConstraints = recordTypeHandler
 				.getCreateWriteRecordPartConstraints();
@@ -788,12 +763,11 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartCreateWriteConstraintsWithGreatGrandChildNOTMax1() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisationChildWithAttribute");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfGrandChildrenWithReadWriteConstraint = 2;
-		storageSpy.maxNoOfGrandChildren = "3";
-		storageSpy.useStandardMetadataGroupForNew = true;
+		setUpHandlerWithrecordStorageUsingTypeId("organisationChildWithAttribute");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfGrandChildrenWithReadWriteConstraint = 2;
+		recordStorage.maxNoOfGrandChildren = "3";
+		recordStorage.useStandardMetadataGroupForNew = true;
 
 		Set<Constraint> recordPartCreateConstraints = recordTypeHandler
 				.getCreateWriteRecordPartConstraints();
@@ -804,74 +778,70 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadConstraintsReturnsSameInstance() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
 
 		recordTypeHandler.getReadRecordPartConstraints();
 		recordTypeHandler.getReadRecordPartConstraints();
 		recordTypeHandler.getUpdateWriteRecordPartConstraints();
 		recordTypeHandler.getUpdateWriteRecordPartConstraints();
 
-		assertReadStorageOnlyOnce(storageSpy);
+		assertReadStorageOnlyOnce(recordStorage);
 	}
 
-	private void assertReadStorageOnlyOnce(RecordTypeHandlerStorageSpy storageSpy) {
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 5);
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 0, RECORD_TYPE);
-		storageSpy.MCR.assertParameter("read", 0, "id", "organisation");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 1, METADATA);
-		storageSpy.MCR.assertParameter("read", 1, "id", "organisation");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 2, METADATA);
-		storageSpy.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 3, METADATA);
-		storageSpy.MCR.assertParameter("read", 3, "id", "showInPortalTextVar");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 4, METADATA);
-		storageSpy.MCR.assertParameter("read", 4, "id", "divaOrganisationRoot");
+	private void assertReadStorageOnlyOnce(RecordTypeHandlerStorageOldSpy recordStorage) {
+		recordStorage.MCR.assertNumberOfCallsToMethod("read", 5);
+		assertParementerFirstOnParameterTypesList("read", 0, RECORD_TYPE);
+		recordStorage.MCR.assertParameter("read", 0, "id", "organisation");
+		assertParementerFirstOnParameterTypesList("read", 1, METADATA);
+		recordStorage.MCR.assertParameter("read", 1, "id", "organisation");
+		assertParementerFirstOnParameterTypesList("read", 2, METADATA);
+		recordStorage.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
+		assertParementerFirstOnParameterTypesList("read", 3, METADATA);
+		recordStorage.MCR.assertParameter("read", 3, "id", "showInPortalTextVar");
+		assertParementerFirstOnParameterTypesList("read", 4, METADATA);
+		recordStorage.MCR.assertParameter("read", 4, "id", "divaOrganisationRoot");
 	}
 
 	@Test
 	public void testGetRecordPartWriteConstraintsReturnsSameInstance() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
 
 		recordTypeHandler.getUpdateWriteRecordPartConstraints();
 		recordTypeHandler.getUpdateWriteRecordPartConstraints();
 
-		assertReadStorageOnlyOnce(storageSpy);
+		assertReadStorageOnlyOnce(recordStorage);
 	}
 
 	@Test
 	public void testGetRecordPartCreateConstraintsReturnsSameInstance() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
 
 		var constraints1 = recordTypeHandler.getCreateWriteRecordPartConstraints();
 		var constraints2 = recordTypeHandler.getCreateWriteRecordPartConstraints();
 
 		assertSame(constraints1, constraints2);
 
-		storageSpy.MCR.assertNumberOfCallsToMethod("read", 5);
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 0, RECORD_TYPE);
-		storageSpy.MCR.assertParameter("read", 0, "id", "organisation");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 1, METADATA);
-		storageSpy.MCR.assertParameter("read", 1, "id", "organisationNew");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 2, METADATA);
-		storageSpy.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 3, METADATA);
-		storageSpy.MCR.assertParameter("read", 3, "id", "showInPortalTextVar");
-		assertParementerFirstOnParameterTypesList(storageSpy, "read", 4, METADATA);
-		storageSpy.MCR.assertParameter("read", 4, "id", "divaOrganisationRoot2");
+		recordStorage.MCR.assertNumberOfCallsToMethod("read", 5);
+		assertParementerFirstOnParameterTypesList("read", 0, RECORD_TYPE);
+		recordStorage.MCR.assertParameter("read", 0, "id", "organisation");
+		assertParementerFirstOnParameterTypesList("read", 1, METADATA);
+		recordStorage.MCR.assertParameter("read", 1, "id", "organisationNew");
+		assertParementerFirstOnParameterTypesList("read", 2, METADATA);
+		recordStorage.MCR.assertParameter("read", 2, "id", "divaOrganisationNameGroup");
+		assertParementerFirstOnParameterTypesList("read", 3, METADATA);
+		recordStorage.MCR.assertParameter("read", 3, "id", "showInPortalTextVar");
+		assertParementerFirstOnParameterTypesList("read", 4, METADATA);
+		recordStorage.MCR.assertParameter("read", 4, "id", "divaOrganisationRoot2");
 	}
 
 	@Test
 	public void testGetRecordPartReadConstraintsTwoReadConstraint() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
 
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 2;
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 2;
 		Set<Constraint> recordPartReadForUpdateConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
 		assertEquals(recordPartReadForUpdateConstraints.size(), 2);
@@ -900,10 +870,9 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testGetRecordPartReadConstraintsOnlyReadWriteConstraintsAreAdded() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 2;
-		storageSpy.numberOfChildrenWithWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 2;
+		recordStorage.numberOfChildrenWithWriteConstraint = 1;
 
 		Set<Constraint> recordPartReadConstraints = recordTypeHandler
 				.getReadRecordPartConstraints();
@@ -944,63 +913,62 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testHasRecordPartReadConstraintsNoConstraints() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
 		assertFalse(recordTypeHandler.hasRecordPartReadConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartReadConstraintsOneConstraints() {
-		RecordTypeHandlerStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId(
-				"organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
 		assertTrue(recordTypeHandler.hasRecordPartReadConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartWriteConstraintsNoConstraints() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
 		assertFalse(recordTypeHandler.hasRecordPartWriteConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartWriteConstraintsOneReadConstraint() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfChildrenWithWriteConstraint = 0;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfChildrenWithWriteConstraint = 0;
 
 		assertTrue(recordTypeHandler.hasRecordPartWriteConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartWriteConstraintsOneWriteConstraints() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 0;
-		storageSpy.numberOfChildrenWithWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 0;
+		recordStorage.numberOfChildrenWithWriteConstraint = 1;
 
 		assertTrue(recordTypeHandler.hasRecordPartWriteConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartCreateConstraintsNoConstraints() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
 
 		assertFalse(recordTypeHandler.hasRecordPartCreateConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartCreateConstraintsOneReadConstraint() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 1;
-		storageSpy.numberOfChildrenWithWriteConstraint = 0;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 1;
+		recordStorage.numberOfChildrenWithWriteConstraint = 0;
 
 		assertTrue(recordTypeHandler.hasRecordPartCreateConstraint());
 	}
 
 	@Test
 	public void testHasRecordPartCreateConstraintsOneWriteConstraints() {
-		setUpHandlerWithStorageSpyUsingTypeId("organisation");
-		storageSpy.numberOfChildrenWithReadWriteConstraint = 0;
-		storageSpy.numberOfChildrenWithWriteConstraint = 1;
+		setUpHandlerWithrecordStorageUsingTypeId("organisation");
+		recordStorage.numberOfChildrenWithReadWriteConstraint = 0;
+		recordStorage.numberOfChildrenWithWriteConstraint = 1;
 
 		assertTrue(recordTypeHandler.hasRecordPartCreateConstraint());
 	}
@@ -1015,9 +983,8 @@ public class RecordTypeHandlerTest {
 	}
 
 	private void setUpHandlerForRecordTypeUsingId(String recordId) {
-		DataGroupSpy dataGroup = createTopDataGroupWithId(recordId);
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> dataGroup);
+		DataRecordGroupSpy dataGroup = createDataRecordGroupWithId(recordId);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroup);
 		setUpRecordTypeHandlerUsingTypeId("recordType");
 	}
 
@@ -1050,7 +1017,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testHasSearch() {
-		DataGroupSpy dataGroup = setupDataGroupWithLinkUsingNameInDataAndRecordId("search",
+		DataRecordGroupSpy dataGroup = setupDataGroupWithLinkUsingNameInDataAndRecordId("search",
 				"someSearchId");
 
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
@@ -1061,50 +1028,49 @@ public class RecordTypeHandlerTest {
 		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
 	}
 
-	private void setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(DataGroup dataGroup,
+	private void setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(DataRecordGroup dataGroup,
 			String recordTypeId) {
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> dataGroup);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroup);
 		setUpRecordTypeHandlerUsingTypeId(recordTypeId);
 	}
 
 	@Test
 	public void testHasNoSearch() {
-		DataGroupSpy dataGroup = createTopDataGroup();
+		DataRecordGroupSpy dataRecordGroup = createDataRecordGroupWithId("someId");
 
-		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataRecordGroup, "recordType");
 
 		boolean hasSearch = recordTypeHandler.hasLinkedSearch();
 		assertFalse(hasSearch);
 
-		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
+		dataRecordGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
 	}
 
 	@Test
 	public void testGetSearchId() {
-		DataGroupSpy dataGroup = setupDataGroupWithLinkUsingNameInDataAndRecordId("search",
-				"someSearchId");
+		DataRecordGroupSpy dataRecordGroup = setupDataGroupWithLinkUsingNameInDataAndRecordId(
+				"search", "someSearchId");
 
-		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataRecordGroup, "recordType");
 
 		String searchId = recordTypeHandler.getSearchId();
 
-		assertUsedLinkCallNo(dataGroup, "search", searchId, 0);
+		assertUsedLink(dataRecordGroup, "search", searchId);
 	}
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Unable to get searchId, no search exists")
 	public void testGetSearchIdThrowsExceptionWhenMissing() {
-		DataGroupSpy dataGroup = createTopDataGroup();
+		DataRecordGroupSpy dataGroup = createDataRecordGroupWithId("someId");
 
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
 		recordTypeHandler.getSearchId();
 	}
 
-	private void assertParementerFirstOnParameterTypesList(RecordTypeHandlerStorageSpy storage,
-			String methodName, int callNumber, String recordType) {
-		List<?> recordTypeList = (List<?>) storage.MCR
+	private void assertParementerFirstOnParameterTypesList(String methodName, int callNumber,
+			String recordType) {
+		List<?> recordTypeList = (List<?>) recordStorage.MCR
 				.getParameterForMethodAndCallNumberAndParameter(methodName, callNumber, "types");
 		assertEquals(recordTypeList.size(), 1);
 		assertEquals(recordTypeList.get(0), recordType);
@@ -1115,21 +1081,23 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("storeInArchive", "false");
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		DataRecordGroupSpy dataGroup = getRecordTypeDataRecordGroupReadFromStorage();
 		assertShouldStoreInArchive(dataGroup, false);
 	}
 
-	private void assertShouldStoreInArchive(DataGroupSpy dataGroupMCR, boolean expected) {
+	private void assertShouldStoreInArchive(DataRecordGroupSpy dataRecordGroup, boolean expected) {
 		assertEquals(recordTypeHandler.storeInArchive(), expected);
-		dataGroupMCR.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "storeInArchive");
+		dataRecordGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0,
+				"storeInArchive");
 	}
 
 	@Test
 	public void testStoreInArchiveFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("storeInArchive", "true");
-		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+		DataRecordGroupSpy dataRecordGroup = setupDataGroupWithAtomicValue("storeInArchive",
+				"true");
+		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataRecordGroup, "recordType");
 
-		assertShouldStoreInArchive(dataGroup, true);
+		assertShouldStoreInArchive(dataRecordGroup, true);
 	}
 
 	@Test
@@ -1137,20 +1105,20 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("storeInArchive", "true");
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldStoreInArchive(dataGroup, true);
+		DataRecordGroupSpy dataRecordGroup = getRecordTypeDataRecordGroupReadFromStorage();
+		assertShouldStoreInArchive(dataRecordGroup, true);
 	}
 
 	@Test
 	public void testShouldStoreInArchiveFalseFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("userSuppliedId", "false");
+		DataRecordGroupSpy dataGroup = setupDataGroupWithAtomicValue("userSuppliedId", "false");
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
 		assertShouldStoreInArchive(dataGroup, false);
 	}
 
 	@Test
-	public void testGetUniqueDefinitions_NoDefinitionsExists() throws Exception {
+	public void testGetUniqueDefinitions_NoDefinitionsExists() {
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		List<Unique> uniqueDefinitions = recordTypeHandler.getUniqueDefinitions();
@@ -1160,7 +1128,7 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testGetUniqueDefinitions_GetCollectTermsIfUniqueExists() throws Exception {
+	public void testGetUniqueDefinitions_GetCollectTermsIfUniqueExists() {
 		UniqueStorageTermIds uniqueStorageTermIds = new UniqueStorageTermIds("uniqueTermLinkId",
 				Collections.emptySet());
 		DataGroupSpy recordType = setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIds);
@@ -1180,7 +1148,7 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testGetUniqueDefinitions_OneDefinitionWithOutCombinesExists() throws Exception {
+	public void testGetUniqueDefinitions_OneDefinitionWithOutCombinesExists() {
 		UniqueStorageTermIds uniqueStorageTermIds = new UniqueStorageTermIds("uniqueTermLinkId",
 				Collections.emptySet());
 		setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIds);
@@ -1195,7 +1163,7 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testGetUniqueDefinitions_OneDefinitionWithTwoCombinesExists() throws Exception {
+	public void testGetUniqueDefinitions_OneDefinitionWithTwoCombinesExists() {
 		UniqueStorageTermIds uniqueStorageTermIds = new UniqueStorageTermIds("uniqueTermLinkId",
 				Set.of("combineTermId1", "combineTermId2"));
 		setUpRecordStorageWithUniqueDefinition(uniqueStorageTermIds);
@@ -1212,7 +1180,7 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testGetUniqueDefinitions_TwoDefinitionWithTwoCombinesExists() throws Exception {
+	public void testGetUniqueDefinitions_TwoDefinitionWithTwoCombinesExists() {
 		UniqueStorageTermIds uniqueStorageTermIdsA = new UniqueStorageTermIds("uniqueTermIdA",
 				Set.of("combineTermIdA1", "combineTermIdA2"));
 		UniqueStorageTermIds uniqueStorageTermIdsB = new UniqueStorageTermIds("uniqueTermIdB",

@@ -52,6 +52,8 @@ public interface MetadataStorageView {
 	 */
 	Collection<DataGroup> getMetadataElements();
 
+	Metadata getMetadata(String metadataId);
+
 	/**
 	 * getPresentationElements returns a Collection of {@link DataGroup} with all presentation
 	 * elements that exists in storage.
