@@ -151,7 +151,9 @@ public class DataElementValidatorFactoryTest {
 
 	private void addMetadataElementSpyToMetadataHolderSpy(String elementId,
 			MetadataElement resourceLink) {
-		metadataHolderDefault.elementsToReturn.put(elementId, resourceLink);
+		metadataHolderDefault.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				() -> resourceLink, elementId);
+
 	}
 
 	@Test(expectedExceptions = DataValidationException.class)

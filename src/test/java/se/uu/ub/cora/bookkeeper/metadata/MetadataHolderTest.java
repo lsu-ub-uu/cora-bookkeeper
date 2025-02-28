@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,18 +21,47 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class MetadataHolderTest {
+	private static final String SOME_ID = "someId";
+	private MetadataHolder metadataHolder;
+	private MetadataElement element;
+
+	@BeforeMethod
+	public void beforeMethod() {
+		metadataHolder = new MetadataHolderImp();
+
+		element = TextVariable.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(SOME_ID,
+				"nameInData", "textId", "defTextId", "someRegularExpression");
+	}
+
 	@Test
-	public void testInit() {
-		MetadataHolder metadataHolder = new MetadataHolderImp();
-		String regularExpression = "((^(([0-1][0-9])|([2][0-3])):[0-5][0-9]$|^$){1}";
-		MetadataElement textElement = TextVariable
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression("id", "nameInData",
-						"textId", "defTextId", regularExpression);
-		metadataHolder.addMetadataElement(textElement);
-		assertEquals(metadataHolder.getMetadataElement("id"), textElement,
+	public void testAddMetadataElement() {
+		metadataHolder.addMetadataElement(element);
+
+		assertEquals(metadataHolder.getMetadataElement(SOME_ID), element,
 				"textElement should be the same one that was entered");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "MetadataElement with id " + SOME_ID + " is missing")
+	public void testDeleteMetadataElement() {
+		metadataHolder.addMetadataElement(element);
+
+		metadataHolder.deleteMetadataElement(SOME_ID);
+
+		metadataHolder.getMetadataElement(SOME_ID);
+	}
+
+	@Test
+	public void testContainsElement() {
+		assertEquals(metadataHolder.containsElement(SOME_ID), false);
+
+		metadataHolder.addMetadataElement(element);
+
+		assertEquals(metadataHolder.containsElement(SOME_ID), true);
+
 	}
 }

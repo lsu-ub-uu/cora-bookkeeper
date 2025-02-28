@@ -30,7 +30,7 @@ import java.util.List;
  * @since 0.1
  *
  */
-public class TextVariable extends MetadataElement {
+public class TextVariable extends MetadataElementAbstract {
 
 	private final String regularExpression;
 	private String refParentId;

@@ -28,7 +28,7 @@ import java.util.List;
  * @author olov
  * @since 7.0.0
  */
-public class ItemCollection extends MetadataElement {
+public class ItemCollection extends MetadataElementAbstract {
 
 	private final List<String> collectionItemReferences = new ArrayList<>();
 
@@ -38,8 +38,7 @@ public class ItemCollection extends MetadataElement {
 	 * @param id
 	 * @param nameInData
 	 */
-	public ItemCollection(String id, String nameInData, String textId,
-			String defTextId) {
+	public ItemCollection(String id, String nameInData, String textId, String defTextId) {
 		super(id, nameInData, textId, defTextId);
 	}
 

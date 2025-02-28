@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uppsala University Library
+ * Copyright 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -60,16 +60,19 @@ public class MetadataHolderPopulatorTest {
 		populator = new MetadataHolderPopulatorImp();
 		factory = new DataGroupToMetadataConverterFactorySpy();
 		factory.MRV.setDefaultReturnValuesSupplier("factorForDataGroupContainingMetadata",
-				() -> sup());
+				this::createDataGroupToMetadataConverter);
 	}
 
 	int noSups = 0;
 
-	private DataGroupToMetadataConverter sup() {
+	private DataGroupToMetadataConverter createDataGroupToMetadataConverter() {
 		noSups++;
 		DataGroupToMetadataConverterSpy dataGroupToMetadataConverterSpy = new DataGroupToMetadataConverterSpy();
+		MetadataElementSpy metadataElementSpy = new MetadataElementSpy();
+		String elementId = "someId" + noSups;
+		metadataElementSpy.MRV.setDefaultReturnValuesSupplier("getId", () -> elementId);
 		dataGroupToMetadataConverterSpy.MRV.setDefaultReturnValuesSupplier("toMetadata",
-				() -> new MetadataElementSpy("someId" + noSups, null, null, null));
+				() -> metadataElementSpy);
 		return dataGroupToMetadataConverterSpy;
 	}
 
@@ -88,20 +91,20 @@ public class MetadataHolderPopulatorTest {
 	}
 
 	@Test
-	public void testDefaultDataGroupToMetadataConverter() throws Exception {
+	public void testDefaultDataGroupToMetadataConverter() {
 		DataGroupToMetadataConverterFactory factory = populator
 				.onlyForTestGetDataGroupToMetadataConverterFactory();
 		assertTrue(factory instanceof DataGroupToMetadataConverterFactoryImp);
 	}
 
 	@Test
-	public void testOnlyForTestSetDataGroupToMetadataConverter() throws Exception {
+	public void testOnlyForTestSetDataGroupToMetadataConverter() {
 		populator.onlyForTestSetDataGroupToMetadataConverter(factory);
 		assertSame(populator.onlyForTestGetDataGroupToMetadataConverterFactory(), factory);
 	}
 
 	@Test
-	public void testLazyInit() throws Exception {
+	public void testLazyInit() {
 		assertNothingIsInitialized();
 	}
 
@@ -110,7 +113,7 @@ public class MetadataHolderPopulatorTest {
 	}
 
 	@Test
-	public void testCreateLoadsAndUsesMetadataStorage() throws Exception {
+	public void testCreateLoadsAndUsesMetadataStorage() {
 		populator.onlyForTestSetDataGroupToMetadataConverter(factory);
 
 		MetadataHolder mh = populator.createAndPopulateMetadataHolderFromMetadataStorage();
@@ -124,12 +127,14 @@ public class MetadataHolderPopulatorTest {
 		metadataStorageView.MCR.assertMethodWasCalled("getMetadataElements");
 		int no = 0;
 		for (DataGroup dataGroup : metadataElementsAsDataGroup) {
-			assertMetadataElementIsFactoredFromDataGroupAndAddedToReturnedMetadataHolder(mh, no, dataGroup);
+			assertMetadataElementIsFactoredFromDataGroupAndAddedToReturnedMetadataHolder(mh, no,
+					dataGroup);
 			no++;
 		}
 	}
 
-	private void assertMetadataElementIsFactoredFromDataGroupAndAddedToReturnedMetadataHolder(MetadataHolder mh, int no, DataGroup dataGroup) {
+	private void assertMetadataElementIsFactoredFromDataGroupAndAddedToReturnedMetadataHolder(
+			MetadataHolder mh, int no, DataGroup dataGroup) {
 		factory.MCR.assertParameters("factorForDataGroupContainingMetadata", no, dataGroup);
 		DataGroupToMetadataConverterSpy converterSpy = (DataGroupToMetadataConverterSpy) factory.MCR
 				.getReturnValue("factorForDataGroupContainingMetadata", no);

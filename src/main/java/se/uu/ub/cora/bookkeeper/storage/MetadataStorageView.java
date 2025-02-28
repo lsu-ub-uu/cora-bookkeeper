@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
@@ -51,6 +52,20 @@ public interface MetadataStorageView {
 	 * @return
 	 */
 	Collection<DataGroup> getMetadataElements();
+
+	/**
+	 * getMetadataElement returns a {@link MetadataElement} with the metadata element for the
+	 * specified elementId record that exists in storage.
+	 * </p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested element can not be read.
+	 * </p>
+	 * 
+	 * @param elementId
+	 *            A String with the id of the metadata element to get from storage
+	 * @return A metadata element from storage
+	 */
+	MetadataElement getMetadataElement(String elementId);
 
 	/**
 	 * getPresentationElements returns a Collection of {@link DataGroup} with all presentation

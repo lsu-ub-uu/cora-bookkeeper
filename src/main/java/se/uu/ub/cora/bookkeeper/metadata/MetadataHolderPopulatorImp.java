@@ -54,7 +54,8 @@ public final class MetadataHolderPopulatorImp implements MetadataHolderPopulator
 			DataGroup metadataElement, MetadataHolder mh) {
 		DataGroupToMetadataConverter converter = factory
 				.factorForDataGroupContainingMetadata(metadataElement);
-		mh.addMetadataElement(converter.toMetadata());
+		MetadataElement metadata = converter.toMetadata();
+		mh.addMetadataElement(metadata);
 	}
 
 	DataGroupToMetadataConverterFactory onlyForTestGetDataGroupToMetadataConverterFactory() {

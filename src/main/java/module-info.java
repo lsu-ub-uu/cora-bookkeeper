@@ -21,6 +21,8 @@ module se.uu.ub.cora.bookkeeper {
 	exports se.uu.ub.cora.bookkeeper.validator;
 	exports se.uu.ub.cora.bookkeeper.recordtype;
 
+	exports se.uu.ub.cora.bookkeeper.metadata.converter;
+
 	// TODO: might be needed as an intermediate step, copied from spider
 	// exports se.uu.ub.cora.bookkeeper.recordtype.internal
 	// to se.uu.ub.cora.userstorage, se.uu.ub.cora.metadatastorage;

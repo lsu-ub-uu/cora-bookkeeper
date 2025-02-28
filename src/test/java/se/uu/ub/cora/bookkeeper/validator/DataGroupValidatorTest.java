@@ -65,6 +65,7 @@ public class DataGroupValidatorTest {
 		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
 		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
 		recordTypeHolder.put("image", image);
+
 		metadataHolderPopulator = new MetadataHolderPopulatorSpy();
 
 	}

@@ -29,6 +29,7 @@ import java.util.Set;
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -452,6 +453,12 @@ public class MetadataStorageStub implements MetadataStorageView {
 
 	@Override
 	public CollectTermHolder getCollectTermHolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MetadataElement getMetadataElement(String elementId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
@@ -30,7 +31,9 @@ import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class MetadataStorageViewSpy implements MetadataStorageView {
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	@SuppressWarnings("exports")
 	public MethodReturnValues MRV = new MethodReturnValues();
 
 	public MetadataStorageViewSpy() {
@@ -48,6 +51,11 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 	@Override
 	public Collection<DataGroup> getMetadataElements() {
 		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public MetadataElement getMetadataElement(String elementId) {
+		return (MetadataElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
 	}
 
 	@Override
