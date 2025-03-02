@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -30,6 +31,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 
 public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 
@@ -37,7 +39,7 @@ public class MetadataStorageForDataValidatorSpy implements MetadataStorageView {
 	public boolean getMetadataElementsWasCalled = false;
 
 	@Override
-	public Collection<DataGroup> getMetadataElements() {
+	public Collection<DataRecordGroup> getMetadataElements() {
 		getMetadataElementsWasCalled = true;
 		return Collections.emptyList();
 	}

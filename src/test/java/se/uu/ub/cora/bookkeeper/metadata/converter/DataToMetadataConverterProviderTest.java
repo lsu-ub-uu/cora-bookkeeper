@@ -1,5 +1,6 @@
 /*
  * Copyright 2025 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -28,41 +29,20 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.metadata.spy.DataGroupToMetadataConverterFactorySpy;
-import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.spies.DataAttributeSpy;
-import se.uu.ub.cora.data.spies.DataFactorySpy;
-import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.bookkeeper.metadata.spy.DataToMetadataConverterFactorySpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 
 public class DataToMetadataConverterProviderTest {
 
-	private DataFactorySpy dataFactory;
 	private DataRecordGroupSpy dataRecordGroup;
-	private DataGroupToMetadataConverterFactorySpy dataGroupToMetadataConverterFactory;
+	private DataToMetadataConverterFactorySpy dataGroupToMetadataConverterFactory;
 
 	@BeforeMethod
 	private void beforeMetohd() {
-		setUpDataFactory();
-		DataProvider.onlyForTestSetDataFactory(dataFactory);
-
 		dataRecordGroup = new DataRecordGroupSpy();
-		dataGroupToMetadataConverterFactory = new DataGroupToMetadataConverterFactorySpy();
-	}
-
-	private void setUpDataFactory() {
-		dataFactory = new DataFactorySpy();
-		dataFactory.MRV.setDefaultReturnValuesSupplier("factorGroupFromDataRecordGroup",
-				this::createDataGroupForConverter);
-	}
-
-	private DataGroupSpy createDataGroupForConverter() {
-		DataGroupSpy dataGroupSpy = new DataGroupSpy();
-		dataGroupSpy.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "metadata");
-		DataAttributeSpy dataAttributeSpy = new DataAttributeSpy();
-		dataAttributeSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "group");
-		dataGroupSpy.MRV.setDefaultReturnValuesSupplier("getAttribute", () -> dataAttributeSpy);
-		return dataGroupSpy;
+		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "metadata");
+		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getType", () -> "group");
+		dataGroupToMetadataConverterFactory = new DataToMetadataConverterFactorySpy();
 	}
 
 	@AfterMethod
@@ -87,35 +67,33 @@ public class DataToMetadataConverterProviderTest {
 
 	@Test
 	public void testInit() {
-		DataGroupToMetadataConverter converter = DataToMetadataConverterProvider
+		DataToMetadataConverter converter = DataToMetadataConverterProvider
 				.getConverter(dataRecordGroup);
 
-		assertTrue(converter instanceof DataGroupToMetadataConverter);
+		assertTrue(converter instanceof DataToMetadataConverter);
 	}
 
 	@Test
 	public void testConvertDataGroupToDataRecordGroup() {
 		DataToMetadataConverterProvider.onlyForTestSetDataGroupToMetadataConverterFactory(
 				dataGroupToMetadataConverterFactory);
-		DataGroupToMetadataConverter converterReturned = DataToMetadataConverterProvider
+		DataToMetadataConverter converterReturned = DataToMetadataConverterProvider
 				.getConverter(dataRecordGroup);
 
-		var dataGroup = dataFactory.MCR
-				.assertCalledParametersReturn("factorGroupFromDataRecordGroup", dataRecordGroup);
 		dataGroupToMetadataConverterFactory.MCR
-				.assertCalledParameters("factorForDataGroupContainingMetadata", dataGroup);
-		dataGroupToMetadataConverterFactory.MCR.assertReturn("factorForDataGroupContainingMetadata",
-				0, converterReturned);
+				.assertCalledParameters("factorForDataContainingMetadata", dataRecordGroup);
+		dataGroupToMetadataConverterFactory.MCR.assertReturn("factorForDataContainingMetadata", 0,
+				converterReturned);
 	}
 
 	@Test
-	public void testDataGroupToMetadataConverterFactory() throws Exception {
+	public void testDataGroupToMetadataConverterFactory() {
 		DataToMetadataConverterProvider.getConverter(dataRecordGroup);
 
 		var factory = DataToMetadataConverterProvider
 				.onlyForTestGetDataGroupToMetadataConverterFactory();
 
-		assertTrue(factory instanceof DataGroupToMetadataConverterFactoryImp);
+		assertTrue(factory instanceof DataToMetadataConverterFactoryImp);
 
 	}
 }

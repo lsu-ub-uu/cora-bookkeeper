@@ -1,5 +1,6 @@
 /*
  * Copyright 2023, 2025 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,26 +20,24 @@
 package se.uu.ub.cora.bookkeeper.metadata;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
-import se.uu.ub.cora.bookkeeper.metadata.spy.DataGroupToMetadataConverterFactorySpy;
-import se.uu.ub.cora.bookkeeper.metadata.spy.DataGroupToMetadataConverterSpy;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataToMetadataConverter;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataToMetadataConverterProvider;
+import se.uu.ub.cora.bookkeeper.metadata.spy.DataToMetadataConverterFactorySpy;
+import se.uu.ub.cora.bookkeeper.metadata.spy.DataToMetadataConverterSpy;
 import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.logger.LoggerFactory;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
@@ -47,8 +46,8 @@ public class MetadataHolderPopulatorTest {
 	private MetadataHolderPopulatorImp populator;
 	private MetadataStorageViewInstanceProviderSpy instanceProvider;
 	private MetadataStorageViewSpy metadataStorageView;
-	private List<DataGroup> metadataElementsAsDataGroup;
-	private DataGroupToMetadataConverterFactorySpy factory;
+	private List<DataRecordGroup> metadataElementsAsDataRecordGroup;
+	private DataToMetadataConverterFactorySpy factory;
 
 	@BeforeMethod
 	private void beforeMethod() {
@@ -58,16 +57,23 @@ public class MetadataHolderPopulatorTest {
 		setUpMetadataStorageProviderToReturnStorageViewSpy();
 
 		populator = new MetadataHolderPopulatorImp();
-		factory = new DataGroupToMetadataConverterFactorySpy();
-		factory.MRV.setDefaultReturnValuesSupplier("factorForDataGroupContainingMetadata",
+		factory = new DataToMetadataConverterFactorySpy();
+		factory.MRV.setDefaultReturnValuesSupplier("factorForDataContainingMetadata",
 				this::createDataGroupToMetadataConverter);
+
+		DataToMetadataConverterProvider.onlyForTestSetDataGroupToMetadataConverterFactory(factory);
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		DataToMetadataConverterProvider.onlyForTestSetDataGroupToMetadataConverterFactory(null);
 	}
 
 	int noSups = 0;
 
-	private DataGroupToMetadataConverter createDataGroupToMetadataConverter() {
+	private DataToMetadataConverter createDataGroupToMetadataConverter() {
 		noSups++;
-		DataGroupToMetadataConverterSpy dataGroupToMetadataConverterSpy = new DataGroupToMetadataConverterSpy();
+		DataToMetadataConverterSpy dataGroupToMetadataConverterSpy = new DataToMetadataConverterSpy();
 		MetadataElementSpy metadataElementSpy = new MetadataElementSpy();
 		String elementId = "someId" + noSups;
 		metadataElementSpy.MRV.setDefaultReturnValuesSupplier("getId", () -> elementId);
@@ -83,24 +89,11 @@ public class MetadataHolderPopulatorTest {
 		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
 				() -> metadataStorageView);
 
-		metadataElementsAsDataGroup = new ArrayList<>();
+		metadataElementsAsDataRecordGroup = new ArrayList<>();
 		metadataStorageView.MRV.setDefaultReturnValuesSupplier("getMetadataElements",
-				() -> metadataElementsAsDataGroup);
-		metadataElementsAsDataGroup.add(new DataGroupSpy());
-		metadataElementsAsDataGroup.add(new DataGroupSpy());
-	}
-
-	@Test
-	public void testDefaultDataGroupToMetadataConverter() {
-		DataGroupToMetadataConverterFactory factory = populator
-				.onlyForTestGetDataGroupToMetadataConverterFactory();
-		assertTrue(factory instanceof DataGroupToMetadataConverterFactoryImp);
-	}
-
-	@Test
-	public void testOnlyForTestSetDataGroupToMetadataConverter() {
-		populator.onlyForTestSetDataGroupToMetadataConverter(factory);
-		assertSame(populator.onlyForTestGetDataGroupToMetadataConverterFactory(), factory);
+				() -> metadataElementsAsDataRecordGroup);
+		metadataElementsAsDataRecordGroup.add(new DataRecordGroupSpy());
+		metadataElementsAsDataRecordGroup.add(new DataRecordGroupSpy());
 	}
 
 	@Test
@@ -114,8 +107,6 @@ public class MetadataHolderPopulatorTest {
 
 	@Test
 	public void testCreateLoadsAndUsesMetadataStorage() {
-		populator.onlyForTestSetDataGroupToMetadataConverter(factory);
-
 		MetadataHolder mh = populator.createAndPopulateMetadataHolderFromMetadataStorage();
 
 		assertMetadataStorageCreatedAndUsed(mh);
@@ -126,18 +117,18 @@ public class MetadataHolderPopulatorTest {
 
 		metadataStorageView.MCR.assertMethodWasCalled("getMetadataElements");
 		int no = 0;
-		for (DataGroup dataGroup : metadataElementsAsDataGroup) {
+		for (DataRecordGroup dataRecordGroup : metadataElementsAsDataRecordGroup) {
 			assertMetadataElementIsFactoredFromDataGroupAndAddedToReturnedMetadataHolder(mh, no,
-					dataGroup);
+					dataRecordGroup);
 			no++;
 		}
 	}
 
 	private void assertMetadataElementIsFactoredFromDataGroupAndAddedToReturnedMetadataHolder(
-			MetadataHolder mh, int no, DataGroup dataGroup) {
-		factory.MCR.assertParameters("factorForDataGroupContainingMetadata", no, dataGroup);
-		DataGroupToMetadataConverterSpy converterSpy = (DataGroupToMetadataConverterSpy) factory.MCR
-				.getReturnValue("factorForDataGroupContainingMetadata", no);
+			MetadataHolder mh, int no, DataRecordGroup dataRecordGroup) {
+		factory.MCR.assertParameters("factorForDataContainingMetadata", no, dataRecordGroup);
+		DataToMetadataConverterSpy converterSpy = (DataToMetadataConverterSpy) factory.MCR
+				.getReturnValue("factorForDataContainingMetadata", no);
 
 		converterSpy.MCR.assertMethodWasCalled("toMetadata");
 		MetadataElementSpy elementSpy = (MetadataElementSpy) converterSpy.MCR

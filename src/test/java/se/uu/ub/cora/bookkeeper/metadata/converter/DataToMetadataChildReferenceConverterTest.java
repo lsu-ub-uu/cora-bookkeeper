@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2017, 2019, 2020 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -29,7 +30,7 @@ import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.data.DataGroup;
 
-public class DataGroupToMetadataChildReferenceConverterTest {
+public class DataToMetadataChildReferenceConverterTest {
 	@Test
 	public void testToMetadata() {
 		DataGroup dataGroup = createChildRefOtherMetadata();
@@ -37,7 +38,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		dataGroup.addChild(new DataAtomicOldSpy("repeatMin", "0"));
 		dataGroup.addChild(new DataAtomicOldSpy("repeatMax", "16"));
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -62,7 +63,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 	public void testToMetadataNoNonMandatoryInfo() {
 		DataGroup dataGroup = createDataGroup();
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -78,7 +79,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		dataGroup.addChild(new DataAtomicOldSpy("repeatMin", "0"));
 		dataGroup.addChild(new DataAtomicOldSpy("repeatMax", "X"));
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -96,7 +97,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				"collectIndexTerm", "titleCollectIndexTerm", "index");
 		dataGroup.addChild(childRefCollectIndexTerm);
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -130,7 +131,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		childRefCollectIndexTerm2.setRepeatId("1");
 		dataGroup.addChild(childRefCollectIndexTerm2);
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -161,7 +162,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				"collectPermissionTerm", "titleCollectPermissionTerm", "permission");
 		dataGroup.addChild(childRefCollectPermissionTerm);
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -186,7 +187,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 				"collectPermissionTerm", "titleCollectPermissionTerm", "permission");
 		dataGroup.addChild(childRefCollectPermissionTerm);
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -214,7 +215,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		DataGroup dataGroup = createDataGroup();
 		dataGroup.addChild(new DataAtomicOldSpy("recordPartConstraint", "readWrite"));
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 
@@ -226,7 +227,7 @@ public class DataGroupToMetadataChildReferenceConverterTest {
 		DataGroup dataGroup = createDataGroup();
 		dataGroup.addChild(new DataAtomicOldSpy("recordPartConstraint", "write"));
 
-		DataGroupToMetadataChildReferenceConverter converter = DataGroupToMetadataChildReferenceConverter
+		DataToMetadataChildReferenceConverter converter = DataToMetadataChildReferenceConverter
 				.fromDataGroup(dataGroup);
 		MetadataChildReference metadataChildReference = converter.toMetadata();
 

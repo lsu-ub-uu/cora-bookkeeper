@@ -1,5 +1,6 @@
 /*
  * Copyright 2018, 2019 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -18,57 +19,52 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
+import java.util.List;
+
 import se.uu.ub.cora.bookkeeper.metadata.LimitsContainer;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.StandardMetadataParameters;
 import se.uu.ub.cora.bookkeeper.metadata.TextContainer;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.DataRecordLink;
 
-public class DataGroupToNumberVariableConverter implements DataGroupToMetadataConverter {
+public class DataToNumberVariableConverter implements DataToMetadataConverter {
 
-	private DataGroup dataGroup;
+	private DataRecordGroup dataRecordGroup;
 
-	private DataGroupToNumberVariableConverter(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
+	private DataToNumberVariableConverter(DataRecordGroup dataRecordGroup) {
+		this.dataRecordGroup = dataRecordGroup;
 	}
 
-	public static DataGroupToNumberVariableConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToNumberVariableConverter(dataGroup);
+	public static DataToNumberVariableConverter fromDataRecordGroup(
+			DataRecordGroup dataRecordGroup) {
+		return new DataToNumberVariableConverter(dataRecordGroup);
 	}
 
 	@Override
-	public MetadataElement toMetadata() {
-		StandardMetadataParameters standardParams = extractStandardParameters();
+	public NumberVariable toMetadata() {
+		String id = dataRecordGroup.getId();
+		String nameInData = dataRecordGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = extractLinkedRecordIdByNameInData("textId");
+		String defTextId = extractLinkedRecordIdByNameInData("defTextId");
+		StandardMetadataParameters standardParams = StandardMetadataParameters
+				.usingIdNameInDataAndTextContainer(id, nameInData,
+						TextContainer.usingTextIdAndDefTextId(textId, defTextId));
 		LimitsContainer minMax = createMinAndMaxLimits();
 		LimitsContainer warnMinMax = createWarningMinAndMaxLimits();
 		int numOfDecimals = extractNumberOfDecimalsAsInt();
 		NumberVariable numberVariable = NumberVariable
 				.usingStandardParamsLimitsWarnLimitsAndNumOfDecimals(standardParams, minMax,
 						warnMinMax, numOfDecimals);
-		convertAttributeReferences(numberVariable);
+		possiblyConvertAttributeReferences(numberVariable);
 		return numberVariable;
 	}
 
-	private StandardMetadataParameters extractStandardParameters() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
-		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-
-		TextContainer textContainer = createTextContainer();
-		return StandardMetadataParameters.usingIdNameInDataAndTextContainer(id, nameInData,
-				textContainer);
-	}
-
-	private TextContainer createTextContainer() {
-		String textId = extractTextUsingNameInData("textId");
-		String defTextId = extractTextUsingNameInData("defTextId");
-		return TextContainer.usingTextIdAndDefTextId(textId, defTextId);
-	}
-
-	private String extractTextUsingNameInData(String textNameInData) {
-		DataGroup textIdGroup = dataGroup.getFirstGroupWithNameInData(textNameInData);
-		return textIdGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+	private String extractLinkedRecordIdByNameInData(String nameInData) {
+		DataRecordLink textLink = dataRecordGroup.getFirstChildOfTypeAndName(DataRecordLink.class,
+				nameInData);
+		return textLink.getLinkedRecordId();
 	}
 
 	private LimitsContainer createMinAndMaxLimits() {
@@ -78,7 +74,7 @@ public class DataGroupToNumberVariableConverter implements DataGroupToMetadataCo
 	}
 
 	private double extractLimitAsDoubleUsingNameInData(String limitNameInData) {
-		String minString = dataGroup.getFirstAtomicValueWithNameInData(limitNameInData);
+		String minString = dataRecordGroup.getFirstAtomicValueWithNameInData(limitNameInData);
 		return Double.parseDouble(minString);
 	}
 
@@ -89,19 +85,26 @@ public class DataGroupToNumberVariableConverter implements DataGroupToMetadataCo
 	}
 
 	private int extractNumberOfDecimalsAsInt() {
-		String numOfDecimalsString = dataGroup
+		String numOfDecimalsString = dataRecordGroup
 				.getFirstAtomicValueWithNameInData("numberOfDecimals");
 		return Integer.parseInt(numOfDecimalsString);
 	}
 
-	private void convertAttributeReferences(NumberVariable numberVariable) {
-		if (dataGroup.containsChildWithNameInData("attributeReferences")) {
-			DataGroup attributeReferences = dataGroup
-					.getFirstGroupWithNameInData("attributeReferences");
-			for (DataGroup ref : attributeReferences.getAllGroupsWithNameInData("ref")) {
-				String refValue = ref.getFirstAtomicValueWithNameInData("linkedRecordId");
-				numberVariable.addAttributeReference(refValue);
-			}
+	private void possiblyConvertAttributeReferences(NumberVariable numberVariable) {
+		if (dataRecordGroup.containsChildWithNameInData("attributeReferences")) {
+			convertAndAddAttributeReferences(numberVariable);
 		}
+	}
+
+	private void convertAndAddAttributeReferences(NumberVariable numberVariable) {
+		DataGroup attributeReferences = dataRecordGroup
+				.getFirstGroupWithNameInData("attributeReferences");
+
+		List<DataRecordLink> attributeRefs = attributeReferences
+				.getChildrenOfTypeAndName(DataRecordLink.class, "ref");
+		attributeRefs.forEach(ref -> {
+			String refValue = ref.getLinkedRecordId();
+			numberVariable.addAttributeReference(refValue);
+		});
 	}
 }

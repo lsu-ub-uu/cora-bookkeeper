@@ -1,5 +1,6 @@
 /*
  * Copyright 2017, 2022 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -27,6 +28,7 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
 
 /**
@@ -40,8 +42,8 @@ import se.uu.ub.cora.data.collected.CollectTerms;
 public interface MetadataStorageView {
 
 	/**
-	 * getMetadataElements returns a Collection of {@link DataGroup} with all metadata elements that
-	 * exists in storage.
+	 * getMetadataElements returns a Collection of {@link DataRecordGroup} with all metadata
+	 * elements that exists in storage.
 	 * </p>
 	 * If no elements exist SHOULD an empty collection be returned.
 	 * <p>
@@ -49,9 +51,9 @@ public interface MetadataStorageView {
 	 * thrown, indicating that the requested elements can not be read.
 	 * </p>
 	 * 
-	 * @return
+	 * @return A Collection of DataRecordGroups with all metadata elements that exists in storage
 	 */
-	Collection<DataGroup> getMetadataElements();
+	Collection<DataRecordGroup> getMetadataElements();
 
 	/**
 	 * getMetadataElement returns a {@link MetadataElement} with the metadata element for the

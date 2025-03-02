@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -46,7 +47,7 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 
 	/**
 	 * 
-	 * @param dataGroup
+	 * @param dataRecordGroup
 	 */
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {

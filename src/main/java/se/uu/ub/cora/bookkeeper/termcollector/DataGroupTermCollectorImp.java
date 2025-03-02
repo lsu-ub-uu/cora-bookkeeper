@@ -1,5 +1,6 @@
 /*
  * Copyright 2017, 2018, 2019, 2022, 2024 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -91,6 +92,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		}
 		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
+		// TODO:use MetadataHolderProvider instead of MetadataStorageProvider
+		// MetadataHolderProvider.getHolder();
 	}
 
 	private MetadataHolder populateMetadataHolderFromMetadataStorage() {

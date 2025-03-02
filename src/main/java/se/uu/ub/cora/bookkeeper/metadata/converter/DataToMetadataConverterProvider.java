@@ -1,5 +1,6 @@
 /*
  * Copyright 2025 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -18,34 +19,41 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecordGroup;
 
 public class DataToMetadataConverterProvider {
 
-	private static DataGroupToMetadataConverterFactory dataGroupToMetadataConverterFactory;
+	private static DataToMetadataConverterFactory dataGroupToMetadataConverterFactory;
 
 	private DataToMetadataConverterProvider() {
 		// not called
 		throw new UnsupportedOperationException();
 	}
 
-	public static DataGroupToMetadataConverter getConverter(DataRecordGroup dataRecordGroup) {
-		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
+	public static DataToMetadataConverter getConverter(DataRecordGroup dataRecordGroup) {
 		if (dataGroupToMetadataConverterFactory == null) {
-			dataGroupToMetadataConverterFactory = DataGroupToMetadataConverterFactoryImp
-					.forDataGroups();
+			dataGroupToMetadataConverterFactory = DataToMetadataConverterFactoryImp.forDataGroups();
 		}
-		return dataGroupToMetadataConverterFactory.factorForDataGroupContainingMetadata(dataGroup);
+		return dataGroupToMetadataConverterFactory.factorForDataContainingMetadata(dataRecordGroup);
 	}
 
-	static void onlyForTestSetDataGroupToMetadataConverterFactory(
-			DataGroupToMetadataConverterFactory dataGroupToMetadataConverterFactoryIn) {
+	/**
+	 * onlyForTestSetDataGroupToMetadataConverterFactory sets a DataGroupToMetadataConverterFactory
+	 * that will be used to return instances for the {@link #DataGroupToMetadataConverter()} method.
+	 * This possibility to set a DataGroupToMetadataConverterFactory is provided to enable testing
+	 * of getting a converter in other classes and is not intented to be used in production.
+	 * <p>
+	 * 
+	 * @param dataGroupToMetadataConverterFactoryIn
+	 *            A DataGroupToMetadataConverterFactory to use to return
+	 *            DataGroupToMetadataConverter instances for testing
+	 */
+	public static void onlyForTestSetDataGroupToMetadataConverterFactory(
+			DataToMetadataConverterFactory dataGroupToMetadataConverterFactoryIn) {
 		dataGroupToMetadataConverterFactory = dataGroupToMetadataConverterFactoryIn;
 	}
 
-	static DataGroupToMetadataConverterFactory onlyForTestGetDataGroupToMetadataConverterFactory() {
+	static DataToMetadataConverterFactory onlyForTestGetDataGroupToMetadataConverterFactory() {
 		return dataGroupToMetadataConverterFactory;
 	}
 
