@@ -1,5 +1,6 @@
 /*
  * Copyright 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,8 +20,7 @@
 package se.uu.ub.cora.bookkeeper.recordpart;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulator;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
 
@@ -36,11 +36,7 @@ public class DataRedactorFactoryImp implements DataRedactorFactory {
 	}
 
 	private MetadataHolder createMetadataHolder() {
-		return createMetadataHolderPopulator().createAndPopulateMetadataHolderFromMetadataStorage();
-	}
-
-	MetadataHolderPopulator createMetadataHolderPopulator() {
-		return new MetadataHolderPopulatorImp();
+		return MetadataHolderProvider.getHolder();
 	}
 
 	private DataGroupRedactorImp createDataGroupRedactor() {

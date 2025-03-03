@@ -39,7 +39,15 @@ public class MetadataHolderProvider {
 		return metadataHolder;
 	}
 
-	static void onlyForTestSetHolder(MetadataHolder metadataHolderIn) {
+	/**
+	 * Sets a MetadataHolder that will be returned. This possibility to set a MetadataHolder is
+	 * provided to enable testing of using the MetadataHolder in other classes and is not intented
+	 * to be used in production.
+	 * 
+	 * @param metadataHolder
+	 *            A MetadataHolder to use return to the caller of getHolder
+	 */
+	public static void onlyForTestSetHolder(MetadataHolder metadataHolderIn) {
 		metadataHolder = metadataHolderIn;
 	}
 

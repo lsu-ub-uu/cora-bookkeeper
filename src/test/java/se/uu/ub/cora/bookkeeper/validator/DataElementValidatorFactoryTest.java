@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2017, 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -23,7 +24,6 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.fail;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
@@ -31,31 +31,20 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
-import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataHolderPopulatorSpy;
 import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataElementValidatorFactoryTest {
 
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
-	private MetadataHolderSpy metadataHolderDefault;
+	private MetadataHolderSpy metadataHolder;
 	private DataElementValidatorFactoryImp dataValidatorFactory;
-	private MetadataHolderPopulatorSpy metadataHolderPopulator;
-	private MetadataHolderSpy metadataHolderShouldNotBeUsed;
 
 	@BeforeMethod
 	public void setup() {
 		recordTypeHolder = new HashMap<String, DataGroup>();
-
-		metadataHolderDefault = new MetadataHolderSpy();
-		metadataHolderShouldNotBeUsed = new MetadataHolderSpy();
-		metadataHolderPopulator = new MetadataHolderPopulatorSpy();
-		metadataHolderPopulator.MRV.setReturnValues(
-				"createAndPopulateMetadataHolderFromMetadataStorage",
-				List.of(metadataHolderDefault, metadataHolderShouldNotBeUsed));
-
-		dataValidatorFactory = new DataElementValidatorFactoryImp(recordTypeHolder,
-				metadataHolderPopulator);
+		metadataHolder = new MetadataHolderSpy();
+		dataValidatorFactory = new DataElementValidatorFactoryImp(recordTypeHolder, metadataHolder);
 	}
 
 	@Test
@@ -66,20 +55,9 @@ public class DataElementValidatorFactoryTest {
 
 		DataGroupValidator validator = (DataGroupValidator) dataValidatorFactory.factor(elementId);
 
-		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
-
 		assertSame(validator.onlyForTestGetDataElementValidatorFactory(), dataValidatorFactory);
-		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolderDefault);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
 		assertSame(validator.onlyForTestGetMetadataElement(), metadataGroup);
-
-	}
-
-	private void assertCallToMetadataHolderPopulatorAndGetMetadataElements(String elementId) {
-		metadataHolderPopulator.MCR
-				.assertParameters("createAndPopulateMetadataHolderFromMetadataStorage", 0);
-		MetadataHolderSpy metadataHolder = (MetadataHolderSpy) metadataHolderPopulator.MCR
-				.getReturnValue("createAndPopulateMetadataHolderFromMetadataStorage", 0);
-		metadataHolder.MCR.assertParameters("getMetadataElement", 0, elementId);
 	}
 
 	@Test
@@ -91,10 +69,7 @@ public class DataElementValidatorFactoryTest {
 		DataTextVariableValidator validator = (DataTextVariableValidator) dataValidatorFactory
 				.factor(elementId);
 
-		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
-
 		assertSame(validator.onlyForTestGetMetadataElement(), textVariable);
-
 	}
 
 	@Test
@@ -106,7 +81,6 @@ public class DataElementValidatorFactoryTest {
 		DataNumberVariableValidator validator = (DataNumberVariableValidator) dataValidatorFactory
 				.factor(elementId);
 
-		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
 		assertSame(validator.onlyForTestGetMetadataElement(), numberVariable);
 	}
 
@@ -119,8 +93,8 @@ public class DataElementValidatorFactoryTest {
 		DataCollectionVariableValidator validator = (DataCollectionVariableValidator) dataValidatorFactory
 				.factor(elementId);
 
-		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
 		assertSame(validator.onlyForTestGetMetadataElement(), collectionVariable);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
 	}
 
 	@Test
@@ -132,8 +106,9 @@ public class DataElementValidatorFactoryTest {
 		DataRecordLinkValidator validator = (DataRecordLinkValidator) dataValidatorFactory
 				.factor(elementId);
 
-		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
 		assertSame(validator.onlyForTestGetMetadataElement(), recordLink);
+		assertSame(validator.onlyForTestGetRecordTypeHolder(), recordTypeHolder);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
 	}
 
 	@Test
@@ -145,14 +120,13 @@ public class DataElementValidatorFactoryTest {
 		DataResourceLinkValidator validator = (DataResourceLinkValidator) dataValidatorFactory
 				.factor(elementId);
 
-		assertCallToMetadataHolderPopulatorAndGetMetadataElements(elementId);
-		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolderDefault);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
 	}
 
 	private void addMetadataElementSpyToMetadataHolderSpy(String elementId,
 			MetadataElement resourceLink) {
-		metadataHolderDefault.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
-				() -> resourceLink, elementId);
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> resourceLink,
+				elementId);
 
 	}
 
@@ -168,30 +142,12 @@ public class DataElementValidatorFactoryTest {
 
 			fail();
 		} catch (Exception e) {
-			assertSame(dataValidatorFactory.onlyForTestGetMetadataHolder(), metadataHolderDefault);
+			assertSame(dataValidatorFactory.onlyForTestGetMetadataHolder(), metadataHolder);
 		}
 	}
 
 	@Test
 	public void testGetRecordTypeHolder() {
 		assertSame(dataValidatorFactory.onlyForTestGetRecordTypeHolder(), recordTypeHolder);
-	}
-
-	@Test
-	public void testMakeSureOnlyOneMetadataHolderIsCreated() throws Exception {
-		String elementId = "resourceLink";
-
-		addMetadataElementSpyToMetadataHolderSpy(elementId, new ResourceLinkSpy());
-
-		dataValidatorFactory.factor(elementId);
-		var metadataHolderCall1 = dataValidatorFactory.onlyForTestGetMetadataHolder();
-
-		dataValidatorFactory.factor(elementId);
-		var metadataHolderCall2 = dataValidatorFactory.onlyForTestGetMetadataHolder();
-
-		assertSame(metadataHolderCall1, metadataHolderCall2);
-		assertSame(metadataHolderCall1, metadataHolderDefault);
-		assertSame(metadataHolderCall2, metadataHolderDefault);
-
 	}
 }

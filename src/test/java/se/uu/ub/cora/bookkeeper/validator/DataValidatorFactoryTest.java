@@ -1,5 +1,6 @@
 /*
  * Copyright 2021, 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -29,7 +30,9 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
@@ -43,6 +46,7 @@ public class DataValidatorFactoryTest {
 
 	private MetadataStorageViewSpy metadataStorageView;
 	private MetadataStorageViewInstanceProviderSpy metaStorageInstanceProviderSpy;
+	private MetadataHolder metadataHolder;
 
 	private DataGroupSpy recordTypeGroup1;
 	private DataGroupSpy recordTypeGroup2;
@@ -51,6 +55,9 @@ public class DataValidatorFactoryTest {
 	private void beforeMethod() {
 		LoggerFactorySpy loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+
+		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
 
 		metadataStorageView = new MetadataStorageViewSpy();
 		metaStorageInstanceProviderSpy = new MetadataStorageViewInstanceProviderSpy();
@@ -63,7 +70,7 @@ public class DataValidatorFactoryTest {
 	}
 
 	@Test
-	public void testFactorNoRecordTypes() throws Exception {
+	public void testFactorNoRecordTypes() {
 
 		DataValidatorImp dataValidator = (DataValidatorImp) factory.factor();
 
@@ -89,12 +96,11 @@ public class DataValidatorFactoryTest {
 		assertTrue(recordTypeHolder instanceof HashMap<String, DataGroup>);
 		assertEquals(recordTypeHolder.size(), 0);
 
-		assertTrue(dataElementValidatorFactory
-				.onlyForTestGetMetadataHolderPopulator() instanceof MetadataHolderPopulatorImp);
+		assertSame(dataElementValidatorFactory.onlyForTestGetMetadataHolder(), metadataHolder);
 	}
 
 	@Test
-	public void testCreateRecordTypeHolder() throws Exception {
+	public void testCreateRecordTypeHolder() {
 
 		prepareTestAddRecordTypesForCreationOfRecordTypeHolder();
 

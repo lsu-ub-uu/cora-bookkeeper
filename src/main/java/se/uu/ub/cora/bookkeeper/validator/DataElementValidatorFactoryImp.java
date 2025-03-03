@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -25,7 +26,6 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulator;
 import se.uu.ub.cora.bookkeeper.metadata.NumberVariable;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
@@ -35,40 +35,34 @@ import se.uu.ub.cora.data.DataGroup;
 class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 
 	private Map<String, DataGroup> recordTypeHolder;
-	private MetadataHolderPopulator metadataHolderPopulator;
 	private MetadataHolder metadataHolder;
 
 	public DataElementValidatorFactoryImp(Map<String, DataGroup> recordTypeHolder,
-			MetadataHolderPopulator metadataHolderPopulator) {
+			MetadataHolder metadataHolder) {
 		this.recordTypeHolder = recordTypeHolder;
-		this.metadataHolderPopulator = metadataHolderPopulator;
+		this.metadataHolder = metadataHolder;
 	}
 
 	@Override
 	public DataElementValidator factor(String elementId) {
-		if (metadataHolder == null) {
-			metadataHolder = metadataHolderPopulator
-					.createAndPopulateMetadataHolderFromMetadataStorage();
-		}
-
 		MetadataElement metadataElement = metadataHolder.getMetadataElement(elementId);
 
-		if (metadataElement instanceof MetadataGroup) {
-			return new DataGroupValidator(this, metadataHolder, (MetadataGroup) metadataElement);
+		if (metadataElement instanceof MetadataGroup metadataElementGroup) {
+			return new DataGroupValidator(this, metadataHolder, metadataElementGroup);
 		}
-		if (metadataElement instanceof TextVariable) {
-			return new DataTextVariableValidator((TextVariable) metadataElement);
+		if (metadataElement instanceof TextVariable metadataElementTextVariable) {
+			return new DataTextVariableValidator(metadataElementTextVariable);
 		}
-		if (metadataElement instanceof NumberVariable) {
-			return new DataNumberVariableValidator((NumberVariable) metadataElement);
+		if (metadataElement instanceof NumberVariable metadataElementNumberVariable) {
+			return new DataNumberVariableValidator(metadataElementNumberVariable);
 		}
-		if (metadataElement instanceof CollectionVariable) {
+		if (metadataElement instanceof CollectionVariable metadataElementCollectionVariable) {
 			return new DataCollectionVariableValidator(metadataHolder,
-					(CollectionVariable) metadataElement);
+					metadataElementCollectionVariable);
 		}
-		if (metadataElement instanceof RecordLink) {
+		if (metadataElement instanceof RecordLink metadataElementRecordLink) {
 			return new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-					(RecordLink) metadataElement);
+					metadataElementRecordLink);
 		}
 		if (metadataElement instanceof ResourceLink) {
 			return new DataResourceLinkValidator(metadataHolder);
@@ -83,9 +77,5 @@ class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 
 	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
 		return recordTypeHolder;
-	}
-
-	public MetadataHolderPopulator onlyForTestGetMetadataHolderPopulator() {
-		return metadataHolderPopulator;
 	}
 }

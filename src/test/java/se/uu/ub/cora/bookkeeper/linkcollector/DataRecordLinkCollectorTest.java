@@ -28,6 +28,9 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
@@ -46,6 +49,7 @@ public class DataRecordLinkCollectorTest {
 	private DataRecordLinkCollector linkCollector;
 	private MetadataStorageView metadataStorage;
 	private LoggerFactorySpy loggerFactory;
+	private MetadataHolder metadataHolder;
 
 	@BeforeMethod
 	public void setUp() {
@@ -61,6 +65,9 @@ public class DataRecordLinkCollectorTest {
 		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
 				() -> metadataStorage);
 		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+
+		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
 
 		linkCollector = new DataRecordLinkCollectorImp();
 	}

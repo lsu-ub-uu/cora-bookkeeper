@@ -22,7 +22,6 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.collected.Link;
 
@@ -45,6 +44,7 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	private void getMetadataFromStorage() {
 		metadataHolder = new MetadataHolderPopulatorImp()
 				.createAndPopulateMetadataHolderFromMetadataStorage();
+		// metadataHolder =MetadataHolderProvider.getHolder();
 	}
 
 }
