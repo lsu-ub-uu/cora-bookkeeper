@@ -87,20 +87,12 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void prepareAndCollectTermsFromData(String metadataGroupId,
 			DataRecordGroup dataRecordGroup) {
 		if (metadataHolder == null) {
-			// metadataHolder = populateMetadataHolderFromMetadataStorage();
 			metadataHolder = MetadataHolderProvider.getHolder();
 			populateCollectTermHolderFromMetadataStorage();
 		}
 		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
 		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
-		// TODO:use MetadataHolderProvider instead of MetadataStorageProvider
-		// MetadataHolderProvider.getHolder();
 	}
-
-	// private MetadataHolder populateMetadataHolderFromMetadataStorage() {
-	// return new MetadataHolderPopulatorImp()
-	// .createAndPopulateMetadataHolderFromMetadataStorage();
-	// }
 
 	private void populateCollectTermHolderFromMetadataStorage() {
 		collectTermHolder = new CollectTermAsDataGroupHolder();
@@ -207,7 +199,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
 			DataChild dataElement) {
-		// TODO:spy!
 		MetadataMatchData metadataMatchData = MetadataMatchDataImp
 				.withMetadataHolder(metadataHolder);
 		ValidationAnswer validationAnswer = metadataMatchData
