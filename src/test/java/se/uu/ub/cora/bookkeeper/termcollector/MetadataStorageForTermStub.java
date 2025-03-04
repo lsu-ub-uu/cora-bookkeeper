@@ -44,37 +44,38 @@ public class MetadataStorageForTermStub implements MetadataStorageView {
 
 	@Override
 	public Collection<DataRecordGroup> getMetadataElements() {
-		MCR.addCall();
-
-		dataRecordGroups = new ArrayList<>();
-
-		DataRecordGroup book = createBookMetadataGroup();
-		dataRecordGroups.add(book);
-
-		DataGroup bookWithMoreCollectTerms = createBookWithMoreCollectTermsMetadataGroup();
-		dataRecordGroups.add(bookWithMoreCollectTerms);
-
-		DataGroup bookWithStorageCollectTerms = createBookWithStorageCollectTermsMetadataGroup();
-		dataRecordGroups.add(bookWithStorageCollectTerms);
-
-		DataGroup personRoleGroup = createPersonRoleGroup();
-		dataRecordGroups.add(personRoleGroup);
-
-		DataGroup bookTitleTextVar = createBookTitleTextVar();
-		dataRecordGroups.add(bookTitleTextVar);
-		DataGroup bookSubTitleTextVar = createSubBookTitleTextVar();
-		dataRecordGroups.add(bookSubTitleTextVar);
-		DataGroup nameTextVar = createTextVariableWithIdAndNameInData("nameTextVar", "name");
-		dataRecordGroups.add(nameTextVar);
-		DataGroup addressTextVar = createTextVariableWithIdAndNameInData("addressTextVar",
-				"address");
-		dataRecordGroups.add(addressTextVar);
-
-		DataGroup otherBookLink = createOtherBookLink();
-		dataRecordGroups.add(otherBookLink);
-
-		MCR.addReturned(dataRecordGroups);
-		return dataRecordGroups;
+		// MCR.addCall();
+		//
+		// dataRecordGroups = new ArrayList<>();
+		//
+		// DataRecordGroup book = createBookMetadataGroup();
+		// dataRecordGroups.add(book);
+		//
+		// DataGroup bookWithMoreCollectTerms = createBookWithMoreCollectTermsMetadataGroup();
+		// dataRecordGroups.add(bookWithMoreCollectTerms);
+		//
+		// DataGroup bookWithStorageCollectTerms = createBookWithStorageCollectTermsMetadataGroup();
+		// dataRecordGroups.add(bookWithStorageCollectTerms);
+		//
+		// DataGroup personRoleGroup = createPersonRoleGroup();
+		// dataRecordGroups.add(personRoleGroup);
+		//
+		// DataGroup bookTitleTextVar = createBookTitleTextVar();
+		// dataRecordGroups.add(bookTitleTextVar);
+		// DataGroup bookSubTitleTextVar = createSubBookTitleTextVar();
+		// dataRecordGroups.add(bookSubTitleTextVar);
+		// DataGroup nameTextVar = createTextVariableWithIdAndNameInData("nameTextVar", "name");
+		// dataRecordGroups.add(nameTextVar);
+		// DataGroup addressTextVar = createTextVariableWithIdAndNameInData("addressTextVar",
+		// "address");
+		// dataRecordGroups.add(addressTextVar);
+		//
+		// DataGroup otherBookLink = createOtherBookLink();
+		// dataRecordGroups.add(otherBookLink);
+		//
+		// MCR.addReturned(dataRecordGroups);
+		// return dataRecordGroups;
+		return (Collection<DataRecordGroup>) MCR.addCallAndReturnFromMRV();
 	}
 
 	private DataRecordGroup createBookMetadataGroup() {

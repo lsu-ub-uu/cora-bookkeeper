@@ -59,6 +59,12 @@ public class DataToMetadataElementTestHelper {
 				() -> true, nameInData);
 	}
 
+	public static DataRecordLinkSpy createLink(String nameInData, String linkedRecordId) {
+		DataRecordLinkSpy linkSpy = new DataRecordLinkSpy();
+		linkSpy.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> linkedRecordId);
+		return linkSpy;
+	}
+
 	private static void addTexts(DataRecordGroupSpy dataRecordGroup, String textId,
 			String defTextId) {
 		addLink(dataRecordGroup, "textId", textId);
@@ -103,10 +109,11 @@ public class DataToMetadataElementTestHelper {
 				nameInData);
 	}
 
-	public static DataGroupSpy createChildReference(String ref, String repeatMin,
+	public static DataGroupSpy createChildReference(String linkedRecordId, String repeatMin,
 			String repeatMax) {
 		DataGroupSpy childReferenceGroup = new DataGroupSpy();
-		DataToMetadataElementTestHelper.addLink(childReferenceGroup, "ref", "metadata", ref);
+		DataToMetadataElementTestHelper.addLink(childReferenceGroup, "ref", "metadata",
+				linkedRecordId);
 		DataToMetadataElementTestHelper.addAtomic(childReferenceGroup, "repeatMin", repeatMin);
 		DataToMetadataElementTestHelper.addAtomic(childReferenceGroup, "repeatMax", repeatMax);
 		return childReferenceGroup;

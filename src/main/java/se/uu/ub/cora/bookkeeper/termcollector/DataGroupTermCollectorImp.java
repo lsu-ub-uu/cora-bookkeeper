@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018, 2019, 2022, 2024 Uppsala University Library
+ * Copyright 2017, 2018, 2019, 2022, 2024, 2025 Uppsala University Library
  * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
@@ -28,7 +28,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
@@ -87,7 +87,8 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void prepareAndCollectTermsFromData(String metadataGroupId,
 			DataRecordGroup dataRecordGroup) {
 		if (metadataHolder == null) {
-			metadataHolder = populateMetadataHolderFromMetadataStorage();
+			// metadataHolder = populateMetadataHolderFromMetadataStorage();
+			metadataHolder = MetadataHolderProvider.getHolder();
 			populateCollectTermHolderFromMetadataStorage();
 		}
 		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
@@ -96,10 +97,10 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		// MetadataHolderProvider.getHolder();
 	}
 
-	private MetadataHolder populateMetadataHolderFromMetadataStorage() {
-		return new MetadataHolderPopulatorImp()
-				.createAndPopulateMetadataHolderFromMetadataStorage();
-	}
+	// private MetadataHolder populateMetadataHolderFromMetadataStorage() {
+	// return new MetadataHolderPopulatorImp()
+	// .createAndPopulateMetadataHolderFromMetadataStorage();
+	// }
 
 	private void populateCollectTermHolderFromMetadataStorage() {
 		collectTermHolder = new CollectTermAsDataGroupHolder();
@@ -206,6 +207,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
 			DataChild dataElement) {
+		// TODO:spy!
 		MetadataMatchData metadataMatchData = MetadataMatchDataImp
 				.withMetadataHolder(metadataHolder);
 		ValidationAnswer validationAnswer = metadataMatchData

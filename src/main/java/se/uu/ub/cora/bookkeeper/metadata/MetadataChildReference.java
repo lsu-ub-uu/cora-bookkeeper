@@ -72,7 +72,7 @@ public final class MetadataChildReference {
 		return collectTerms;
 	}
 
-	public void addCollectIndexTerm(CollectTermLink collectTerm) {
+	public void addCollectTerm(CollectTermLink collectTerm) {
 		collectTerms.add(collectTerm);
 
 	}

@@ -41,6 +41,7 @@ public class MetadataHolderSpy implements MetadataHolder {
 
 	@Override
 	public MetadataElement getMetadataElement(String elementId) {
+		System.err.println("elementId: " + elementId);
 		return (MetadataElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
 	}
 

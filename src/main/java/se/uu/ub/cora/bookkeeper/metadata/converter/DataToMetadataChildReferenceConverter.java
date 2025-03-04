@@ -30,7 +30,6 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public final class DataToMetadataChildReferenceConverter {
 
-	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 	private MetadataChildReference childReference;
 
@@ -53,9 +52,6 @@ public final class DataToMetadataChildReferenceConverter {
 		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithNameInData("repeatMin"));
 		int repeatMax = getRepeatMax();
 
-		// DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
-		// String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
-		// String linkedRecordId = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 		DataRecordLink ref = dataGroup.getFirstChildOfTypeAndName(DataRecordLink.class, "ref");
 		String linkedRecordType = ref.getLinkedRecordType();
 		String linkedRecordId = ref.getLinkedRecordId();
@@ -80,21 +76,19 @@ public final class DataToMetadataChildReferenceConverter {
 	}
 
 	private void convertCollectTerms() {
-		List<DataGroup> childRefCollectIndexTerms = dataGroup
-				.getAllGroupsWithNameInData("childRefCollectTerm");
-		for (DataGroup collectIndexTermGroup : childRefCollectIndexTerms) {
-			addCollectIndexTermToChildReference(collectIndexTermGroup);
+		List<DataRecordLink> childRefCollectIndexTerms = dataGroup
+				.getChildrenOfTypeAndName(DataRecordLink.class, "childRefCollectTerm");
+		for (DataRecordLink collectIndexTermLink : childRefCollectIndexTerms) {
+			addCollectIndexTermToChildReference(collectIndexTermLink);
 		}
 	}
 
-	private void addCollectIndexTermToChildReference(DataGroup collectIndexTermGroup) {
-		String collectTermId = collectIndexTermGroup
-				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		String type = collectIndexTermGroup.getAttribute("type").getValue();
+	private void addCollectIndexTermToChildReference(DataRecordLink collectIndexTermLink) {
+		String type = collectIndexTermLink.getAttribute("type").getValue();
 		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId(type,
-				collectTermId);
+				collectIndexTermLink.getLinkedRecordId());
 
-		childReference.addCollectIndexTerm(collectTerm);
+		childReference.addCollectTerm(collectTerm);
 	}
 
 	private void possiblyAddRecordPartConstraint() {

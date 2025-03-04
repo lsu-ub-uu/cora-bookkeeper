@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018, 2019, 2022 Uppsala University Library
+ * Copyright 2017, 2018, 2019, 2022, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -25,11 +25,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
+import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.data.DataChild;
@@ -55,20 +63,20 @@ public class DataGroupTermCollectorTest {
 	private static final String INDEX_FIELD_NAME = "indexFieldNameForId:";
 	private LoggerFactorySpy loggerFactory;
 	private DataFactorySpy dataFactorySpy;
+	private MetadataHolderSpy metadataHolder;
 
 	@BeforeMethod
 	public void setUp() {
 		setUpProviders();
 
-		metadataStorage = new MetadataStorageForTermStub();
-
-		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
-		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
-				() -> metadataStorage);
-		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+		setUpMetadataStorageForTest();
 
 		collector = new DataGroupTermCollectorImp();
 		basicDataRecordGroup = createBookWithNoTitle();
+
+		createBookMetadata();
+		createBookWithMoreCollectTermsGroupMetadata();
+		createCommonsBookMetadata();
 	}
 
 	private void setUpProviders() {
@@ -76,6 +84,24 @@ public class DataGroupTermCollectorTest {
 		LoggerProvider.setLoggerFactory(loggerFactory);
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
+	}
+
+	private void setUpMetadataStorageForTest() {
+		metadataStorage = new MetadataStorageForTermStub();
+		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
+		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
+				() -> metadataStorage);
+		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		LoggerProvider.setLoggerFactory(null);
+		DataProvider.onlyForTestSetDataFactory(null);
+		MetadataHolderProvider.onlyForTestSetHolder(null);
+		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(null);
 	}
 
 	@Test
@@ -331,10 +357,83 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testMetadataHolderLoadOnlyOnce() throws Exception {
+	public void testMetadataHolderLoadOnlyOnce() {
 		collector.collectTerms("bookGroup", basicDataRecordGroup);
 		collector.collectTerms("bookGroup", basicDataRecordGroup);
 		collector.collectTerms("bookGroup", basicDataRecordGroup);
 		metadataStorage.MCR.assertNumberOfCallsToMethod("getMetadataElements", 1);
+	}
+
+	private void createCommonsBookMetadata() {
+		createTextVariable("bookTitleTextVar", "bookTitle");
+		createTextVariable("bookSubTitleTextVar", "bookSubTitle");
+		createRecordLink("otherBookLink", "otherBook", "book");
+		MetadataGroup personRoleGroup = createMetadataGroup("personRoleGroup", "personRole");
+		createTextVariable("nameTextVar", "name");
+		var personChildReference = addChildReference(personRoleGroup, "nameTextVar");
+		addPermissionTermToChildReference(personChildReference, "subTitleIndexTerm");
+	}
+
+	private void addPermissionTermToChildReference(MetadataChildReference childReference,
+			String id) {
+		CollectTermLink permissionTerm = CollectTermLink.createCollectTermWithTypeAndId("permission",
+				id);
+		childReference.addCollectTerm(permissionTerm);
+
+	}
+
+	private void createBookMetadata() {
+		MetadataGroup bookMetadataGroup = createMetadataGroup("bookGroup", "book");
+
+		var titleChildReference = addChildReference(bookMetadataGroup, "bookTitleTextVar");
+		addIndexTermToChildReference(titleChildReference, "titleIndexTerm");
+		var subTitleChildReference = addChildReference(bookMetadataGroup, "bookSubTitleTextVar");
+		addIndexTermToChildReference(subTitleChildReference, "subTitleIndexTerm");
+	}
+
+	private void createBookWithMoreCollectTermsGroupMetadata() {
+		MetadataGroup bookWithMoreCollectTermsGroup = createMetadataGroup(
+				"bookWithMoreCollectTermsGroup", "book");
+
+		MetadataChildReference childReference = addChildReference(bookWithMoreCollectTermsGroup,
+				"bookTitleTextVar");
+		addIndexTermToChildReference(childReference, "titleIndexTerm");
+		addIndexTermToChildReference(childReference, "titleSecondIndexTerm");
+	}
+
+	private void addIndexTermToChildReference(MetadataChildReference childReference, String id) {
+		CollectTermLink indexTerm = CollectTermLink.createCollectTermWithTypeAndId("index", id);
+		childReference.addCollectTerm(indexTerm);
+	}
+
+	private MetadataChildReference addChildReference(MetadataGroup bookWithMoreCollectTermsGroup,
+			String linkedRecordId) {
+		MetadataChildReference childReference = MetadataChildReference
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadata",
+						linkedRecordId, 0, 1);
+		bookWithMoreCollectTermsGroup.addChildReference(childReference);
+		return childReference;
+	}
+
+	private void createRecordLink(String id, String nameInData, String linkedRecordType) {
+		RecordLink link = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id,
+				nameInData, "text", "defText", linkedRecordType);
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> link, id);
+	}
+
+	private MetadataGroup createMetadataGroup(String id, String nameInData) {
+		MetadataGroup bookMetadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id,
+				nameInData, "bookText", "bookDefText");
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				() -> bookMetadataGroup, id);
+		return bookMetadataGroup;
+	}
+
+	private void createTextVariable(String id, String nameInData) {
+		TextVariable titleTextVar = TextVariable
+				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(id, nameInData,
+						"titleText", "titleDefText", ".+");
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> titleTextVar,
+				id);
 	}
 }
