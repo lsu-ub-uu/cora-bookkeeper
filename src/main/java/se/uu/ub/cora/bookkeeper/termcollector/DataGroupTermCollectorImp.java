@@ -22,7 +22,8 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 import java.util.List;
 import java.util.Optional;
 
-import se.uu.ub.cora.bookkeeper.metadata.CollectTermAsDataGroupHolder;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
+import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
@@ -49,7 +50,7 @@ import se.uu.ub.cora.data.collected.StorageTerm;
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private MetadataHolder metadataHolder;
-	private CollectTermAsDataGroupHolder collectTermHolder;
+	private CollectTermHolder collectTermHolder;
 
 	private CollectTerms collectTerms;
 
@@ -95,11 +96,9 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void populateCollectTermHolderFromMetadataStorage() {
-		collectTermHolder = new CollectTermAsDataGroupHolder();
+		// TODO: possibly create provider for collectTermHolder
 		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
-		for (DataGroup collectTerm : metadataStorage.getCollectTermsAsDataGroup()) {
-			collectTermHolder.addCollectTerm(collectTerm);
-		}
+		collectTermHolder = metadataStorage.getCollectTermHolder();
 	}
 
 	private void collectTermsFromDataUsingMetadata(String metadataGroupId, DataGroup dataGroup) {
@@ -234,48 +233,45 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	}
 
 	private void createAndAddCollectedTermUsingIdAndValue(String collectTermId, String value) {
-		DataGroup collectTerm = collectTermHolder.getCollectTerm(collectTermId);
-		String collectTermType = collectTerm.getAttribute("type").getValue();
-		DataGroup extraData = collectTerm.getFirstGroupWithNameInData("extraData");
-		buildCollectTerm(collectTermId, value, collectTermType, extraData);
+		CollectTerm collectTerm = collectTermHolder.getCollectTermById(collectTermId);
+		buildCollectTerm(collectTerm, value);
 	}
 
-	private void buildCollectTerm(String collectTermId, String value, String collectTermType,
-			DataGroup extraData) {
-		switch (collectTermType) {
-		case "permission": {
-			PermissionTerm permissionTerm = buildPermissionTerm(collectTermId, value, extraData);
+	private void buildCollectTerm(CollectTerm collectTerm, String value) {
+		switch (collectTerm) {
+		case se.uu.ub.cora.bookkeeper.metadata.PermissionTerm term: {
+			PermissionTerm permissionTerm = buildPermissionTerm(term, value);
 			collectTerms.addPermissionTerm(permissionTerm);
 			break;
 		}
-		case "storage": {
-			StorageTerm storageTerm = buildStorageTerm(collectTermId, value, extraData);
+		case se.uu.ub.cora.bookkeeper.metadata.StorageTerm term: {
+			StorageTerm storageTerm = buildStorageTerm(term, value);
 			collectTerms.addStorageTerm(storageTerm);
 			break;
 		}
-		case "index": {
-			IndexTerm indexTerm = buildIndexTerm(collectTermId, value, extraData);
+		case se.uu.ub.cora.bookkeeper.metadata.IndexTerm term: {
+			IndexTerm indexTerm = buildIndexTerm(term, value);
 			collectTerms.addIndexTerm(indexTerm);
 			break;
 		}
+		default:
+			break;
 		}
 	}
 
-	private IndexTerm buildIndexTerm(String collectTermId, String value, DataGroup extraData) {
-		String indexFieldName = extraData.getFirstAtomicValueWithNameInData("indexFieldName");
-		String indexType = extraData.getFirstAtomicValueWithNameInData("indexType");
-		return new IndexTerm(collectTermId, value, indexFieldName, indexType);
+	private PermissionTerm buildPermissionTerm(
+			se.uu.ub.cora.bookkeeper.metadata.PermissionTerm term, String value) {
+		return new PermissionTerm(term.id, value, term.permissionKey);
 	}
 
-	private StorageTerm buildStorageTerm(String collectTermId, String value, DataGroup extraData) {
-		String storageKey = extraData.getFirstAtomicValueWithNameInData("storageKey");
-		return new StorageTerm(collectTermId, storageKey, value);
+	private StorageTerm buildStorageTerm(se.uu.ub.cora.bookkeeper.metadata.StorageTerm term,
+			String value) {
+		return new StorageTerm(term.id, term.storageKey, value);
 	}
 
-	private PermissionTerm buildPermissionTerm(String collectTermId, String value,
-			DataGroup extraData) {
-		String permissionKey = extraData.getFirstAtomicValueWithNameInData("permissionKey");
-		return new PermissionTerm(collectTermId, value, permissionKey);
+	private IndexTerm buildIndexTerm(se.uu.ub.cora.bookkeeper.metadata.IndexTerm term,
+			String value) {
+		return new IndexTerm(term.id, value, term.indexFieldName, term.indexType);
 	}
 
 }

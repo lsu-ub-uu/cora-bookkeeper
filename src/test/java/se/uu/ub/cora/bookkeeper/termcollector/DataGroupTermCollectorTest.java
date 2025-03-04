@@ -39,8 +39,10 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
+import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
@@ -57,13 +59,14 @@ import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataGroupTermCollectorTest {
-	private MetadataStorageForTermStub metadataStorage;
+	private MetadataStorageViewSpy metadataStorage;
 	private DataGroupTermCollectorImp collector;
 	private DataRecordGroupSpy basicDataRecordGroup;
 	private static final String INDEX_FIELD_NAME = "indexFieldNameForId:";
 	private LoggerFactorySpy loggerFactory;
 	private DataFactorySpy dataFactorySpy;
 	private MetadataHolderSpy metadataHolder;
+	private CollectTermHolderSpy collectTermHolder;
 
 	@BeforeMethod
 	public void setUp() {
@@ -74,6 +77,7 @@ public class DataGroupTermCollectorTest {
 		collector = new DataGroupTermCollectorImp();
 		basicDataRecordGroup = createBookWithNoTitle();
 
+		createCollectTerms();
 		createCommonsBookMetadata();
 		createBookMetadata();
 		createBookWithMoreCollectTerms();
@@ -90,11 +94,16 @@ public class DataGroupTermCollectorTest {
 	}
 
 	private void setUpMetadataStorageForTest() {
-		metadataStorage = new MetadataStorageForTermStub();
+		metadataStorage = new MetadataStorageViewSpy();
+		collectTermHolder = new CollectTermHolderSpy();
+		metadataStorage.MRV.setDefaultReturnValuesSupplier("getCollectTermHolder",
+				() -> collectTermHolder);
+
 		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
 		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
 				() -> metadataStorage);
 		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+
 	}
 
 	@AfterMethod
@@ -353,7 +362,49 @@ public class DataGroupTermCollectorTest {
 				() -> "someOtherBookId");
 
 		addChildrenToDataRecordGroup(otherBookLink);
+	}
 
+	private void createCollectTerms() {
+		createMetadataPermissionTerm("namePermissionTerm", "name", "PERMISSIONFORNAME");
+
+		createMetadataStorageTerm("titleStorageTerm", "STORAGEKEY_titleStorageTerm");
+		createMetadataStorageTerm("titleSecondStorageTerm", "STORAGEKEY_titleSecondStorageTerm");
+		createMetadataStorageTerm("nameStorageTerm", "STORAGEKEY_nameStorageTerm");
+		createMetadataStorageTerm("subTitleStorageTerm", "STORAGEKEY_subTitleStorageTerm");
+		createMetadataStorageTerm("textStorageTerm", "STORAGEKEY_textStorageTerm");
+		createMetadataStorageTerm("otherBookStorageTerm", "STORAGEKEY_otherBookStorageTerm");
+		createMetadataStorageTerm("otherBookSecondStorageTerm",
+				"STORAGEKEY_otherBookSecondStorageTerm");
+
+		createMetadataIndexTerm("titleIndexTerm", "title", "indexTypeString");
+		createMetadataIndexTerm("titleSecondIndexTerm", "title", "indexTypeString");
+		createMetadataIndexTerm("nameIndexTerm", "name", "indexTypeString");
+		createMetadataIndexTerm("subTitleIndexTerm", "subTitle", "indexTypeString");
+		createMetadataIndexTerm("textIndexTerm", "text", "indexTypeString");
+		createMetadataIndexTerm("otherBookIndexTerm", "otherBook", "indexTypeId");
+		createMetadataIndexTerm("otherBookSecondIndexTerm", "otherBook", "indexTypeId");
+	}
+
+	private void createMetadataPermissionTerm(String id, String nameInData, String permissionKey) {
+		var permissionTerm = se.uu.ub.cora.bookkeeper.metadata.PermissionTerm
+				.usingIdAndNameInDataAndPermissionKey(id, nameInData, permissionKey);
+		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
+				() -> permissionTerm, id);
+	}
+
+	private void createMetadataStorageTerm(String id, String storageKey) {
+		var storageTerm = se.uu.ub.cora.bookkeeper.metadata.StorageTerm.usingIdAndStorageKey(id,
+				storageKey);
+		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
+				() -> storageTerm, id);
+	}
+
+	private void createMetadataIndexTerm(String id, String nameInData, String indexType) {
+		var indexTerm = se.uu.ub.cora.bookkeeper.metadata.IndexTerm
+				.usingIdAndNameInDataAndIndexFieldNameAndIndexType(id, nameInData,
+						"indexFieldNameForId:" + id, indexType);
+		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById", () -> indexTerm,
+				id);
 	}
 
 	private void createCommonsBookMetadata() {
