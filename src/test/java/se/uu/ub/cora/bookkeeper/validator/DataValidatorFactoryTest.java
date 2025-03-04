@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -67,6 +68,15 @@ public class DataValidatorFactoryTest {
 		MetadataStorageProvider
 				.onlyForTestSetMetadataStorageViewInstanceProvider(metaStorageInstanceProviderSpy);
 		factory = new DataValidatorFactoryImp();
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		resetMetadataHolderProviderToDefaultState();
+	}
+
+	private void resetMetadataHolderProviderToDefaultState() {
+		MetadataHolderProvider.onlyForTestSetHolder(null);
 	}
 
 	@Test

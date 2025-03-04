@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.util.Set;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -70,6 +71,15 @@ public class DataRecordLinkCollectorTest {
 		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
 
 		linkCollector = new DataRecordLinkCollectorImp();
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		resetMetadataHolderProviderToDefaultState();
+	}
+
+	private void resetMetadataHolderProviderToDefaultState() {
+		MetadataHolderProvider.onlyForTestSetHolder(null);
 	}
 
 	@Test

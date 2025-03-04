@@ -49,6 +49,10 @@ public class MetadataHolderProviderTest {
 
 	@AfterMethod
 	public void afterMethod() {
+		resetMetadataHolderProviderToDefaultState();
+	}
+
+	private void resetMetadataHolderProviderToDefaultState() {
 		MetadataHolderProvider.onlyForTestSetHolder(null);
 		MetadataHolderProvider.onlyForTestSetMetadataHolderPopulator(null);
 	}
