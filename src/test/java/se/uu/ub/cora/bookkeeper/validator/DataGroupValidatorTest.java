@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2017, 2019, 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -42,7 +43,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
 import se.uu.ub.cora.bookkeeper.metadata.TextVariable;
-import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataHolderPopulatorSpy;
 import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
@@ -52,7 +52,6 @@ import se.uu.ub.cora.data.spies.DataFactorySpy;
 public class DataGroupValidatorTest {
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 	private DataFactorySpy dataFactorySpy;
-	private MetadataHolderPopulatorSpy metadataHolderPopulator;
 
 	@BeforeMethod
 	public void setUp() {
@@ -65,9 +64,6 @@ public class DataGroupValidatorTest {
 		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
 		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
 		recordTypeHolder.put("image", image);
-
-		metadataHolderPopulator = new MetadataHolderPopulatorSpy();
-
 	}
 
 	@Test
@@ -95,11 +91,7 @@ public class DataGroupValidatorTest {
 
 	private DataElementValidatorFactory setUpDataElementValidatorFactoryWithMetadataHolder(
 			MetadataHolderImp metadataHolder) {
-		metadataHolderPopulator.MRV.setDefaultReturnValuesSupplier(
-				"createAndPopulateMetadataHolderFromMetadataStorage", () -> metadataHolder);
-		DataElementValidatorFactory dataValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, metadataHolderPopulator);
-		return dataValidatorFactory;
+		return new DataElementValidatorFactoryImp(recordTypeHolder, metadataHolder);
 	}
 
 	private MetadataHolderImp createOneGroupNoAttributesOneTextChild() {
@@ -455,11 +447,9 @@ public class DataGroupValidatorTest {
 		MetadataHolderImp metadataHolder = createMetadataForOneSimpleGroup();
 		DataElementValidatorFactory dataValidatorFactory = setUpDataElementValidatorFactoryWithMetadataHolder(
 				metadataHolder);
-		// return dataValidatorFactory.factor("testGroupId");
 		MetadataGroup metadataElement = (MetadataGroup) metadataHolder
 				.getMetadataElement("testGroupId");
 		return new DataGroupValidator(dataValidatorFactory, metadataHolder, metadataElement);
-		// return new DataGroupValidator(dataElementFactory, metadataHolder, metadataElement);
 	}
 
 	private MetadataHolderImp createMetadataForOneSimpleGroup() {
@@ -498,8 +488,6 @@ public class DataGroupValidatorTest {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
-		// dataGroup.addAttributeByIdWithValue("col1NameInData",
-		// "choice1NameInData");
 		dataGroup.addChild(new DataAtomicOldSpy("text1NameInData", "10:10", "0"));
 
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(dataGroup);
@@ -540,7 +528,7 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testValidateTwoRightDataChildElements() throws Exception {
+	public void testValidateTwoRightDataChildElements() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -553,7 +541,7 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testValidateWithOneRightAndOneWrongAttributeName() throws Exception {
+	public void testValidateWithOneRightAndOneWrongAttributeName() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -568,7 +556,7 @@ public class DataGroupValidatorTest {
 	}
 
 	@Test
-	public void testValidateWithOneWrongAttributeValue() throws Exception {
+	public void testValidateWithOneWrongAttributeValue() {
 		DataElementValidator dataElementValidator = createMetadataForOneSimpleGroupReturnDataElementValidator();
 
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
@@ -670,7 +658,6 @@ public class DataGroupValidatorTest {
 		DataGroup dataGroup = new DataGroupOldSpy("testGroupNameInData");
 
 		DataAtomic dataAtomic = new DataAtomicOldSpy("text1NameInData", "10:10", "3");
-		// dataAtomic.setRepeatId("3");
 		dataGroup.addChild(dataAtomic);
 
 		assertTrue(dataElementValidator.validateData(dataGroup).dataIsValid());
@@ -929,7 +916,6 @@ public class DataGroupValidatorTest {
 				"Should not be valid, since we have an extra attribute in group 2");
 
 		Iterator<String> iterator = errorMessages.iterator();
-		// iterator.next();
 		assertEquals(iterator.next(), "Did not find enough data children with "
 				+ "referenceId: test2(with nameInData:testGroup and attributes: dateType:null).");
 		assertEquals(iterator.next(),
