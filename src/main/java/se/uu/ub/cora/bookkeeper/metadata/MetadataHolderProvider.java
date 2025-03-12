@@ -18,6 +18,9 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+
 public class MetadataHolderProvider {
 
 	private MetadataHolderProvider() {
@@ -29,6 +32,13 @@ public class MetadataHolderProvider {
 	private static MetadataHolderPopulator metadataHolderPopulator;
 
 	public static MetadataHolder getHolder() {
+		synchronized (MetadataHolderProvider.class) {
+			startMetadtaHolderIfNotStarted();
+			return metadataHolder;
+		}
+	}
+
+	private static void startMetadtaHolderIfNotStarted() {
 		if (metadataHolder == null) {
 			if (metadataHolderPopulator == null) {
 				metadataHolderPopulator = new MetadataHolderPopulatorImp();
@@ -36,7 +46,49 @@ public class MetadataHolderProvider {
 			metadataHolder = metadataHolderPopulator
 					.createAndPopulateMetadataHolderFromMetadataStorage();
 		}
-		return metadataHolder;
+	}
+
+	/**
+	 * dataChanged method is intended to inform the instance provider about data that is changed in
+	 * storage. This is to make it possible to implement a cached storage and update relevant
+	 * records when data is changed. This change can be done by processes running in the same system
+	 * or by processes running on other servers.
+	 * 
+	 * @param id
+	 *            A String with the records id
+	 * @param action
+	 *            A String with the action of how the data was changed ("create", "update" or
+	 *            "delete").
+	 */
+	public static void dataChanged(String id, String action) {
+		dataChangedSynchonizedWithGetHolder(id, action);
+	}
+
+	private static void dataChangedSynchonizedWithGetHolder(String id, String action) {
+		synchronized (MetadataHolderProvider.class) {
+			possiblyUpdateMetadataHolderWithLatestDataChanges(id, action);
+		}
+	}
+
+	private static void possiblyUpdateMetadataHolderWithLatestDataChanges(String id,
+			String action) {
+		if (null != metadataHolder) {
+			updateMetadataHolderWithLatestDataChanges(id, action);
+		}
+	}
+
+	private static void updateMetadataHolderWithLatestDataChanges(String id, String action) {
+		if ("delete".equals(action)) {
+			metadataHolder.deleteMetadataElement(id);
+		} else {
+			updateMetadataHolderWithLatestDataFromStorage(id);
+		}
+	}
+
+	private static void updateMetadataHolderWithLatestDataFromStorage(String id) {
+		MetadataStorageView storageView = MetadataStorageProvider.getStorageView();
+		MetadataElement metadataElement = storageView.getMetadataElement(id);
+		metadataHolder.addMetadataElement(metadataElement);
 	}
 
 	/**
