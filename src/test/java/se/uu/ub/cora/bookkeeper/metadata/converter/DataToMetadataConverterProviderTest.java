@@ -24,6 +24,7 @@ import static org.testng.Assert.assertTrue;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -41,7 +42,9 @@ public class DataToMetadataConverterProviderTest {
 	private void beforeMetohd() {
 		dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "metadata");
-		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getType", () -> "group");
+		// dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getType", () -> "group");
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("getAttributeValue",
+				() -> Optional.of("group"), "type");
 		dataGroupToMetadataConverterFactory = new DataToMetadataConverterFactorySpy();
 	}
 

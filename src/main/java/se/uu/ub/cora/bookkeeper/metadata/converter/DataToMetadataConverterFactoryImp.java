@@ -39,7 +39,8 @@ public final class DataToMetadataConverterFactoryImp implements DataToMetadataCo
 	}
 
 	private DataToMetadataConverter createConverterBasedOnMetadataType(DataRecordGroup data) {
-		String type = data.getType();
+		String type = data.getAttributeValue("type").get();
+
 		if ("group".equals(type)) {
 			return DataToMetadataGroupConverter.fromDataRecordGroup(data);
 		}

@@ -22,6 +22,8 @@ package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import static org.testng.Assert.assertTrue;
 
+import java.util.Optional;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -56,8 +58,8 @@ public class DataToMetadataConverterFactoryTest {
 	private DataToMetadataConverter createConverterForType(String type) {
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> METADATA);
-		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getType", () -> type);
-
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("getAttributeValue",
+				() -> Optional.of(type), "type");
 		return converterFactory.factorForDataContainingMetadata(dataRecordGroup);
 	}
 
