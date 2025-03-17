@@ -198,4 +198,10 @@ public interface RecordTypeHandler {
 	 */
 	List<Unique> getUniqueDefinitions();
 
+	/**
+	 * usesVisibility returns a boolean indicating if a record type is set to use the visibility
+	 * functionality or not
+	 */
+	boolean useVisibility();
+
 }

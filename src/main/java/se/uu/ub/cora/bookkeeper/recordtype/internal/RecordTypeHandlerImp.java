@@ -44,6 +44,7 @@ import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.RecordStorage;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
+	private static final String TRUE = "true";
 	private static final String METADATA = "metadata";
 	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
 	private static final String NAME_IN_DATA = "nameInData";
@@ -175,7 +176,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public boolean isPublicForRead() {
 		String isPublic = recordType.getFirstAtomicValueWithNameInData("public");
-		return "true".equals(isPublic);
+		return TRUE.equals(isPublic);
 	}
 
 	@Override
@@ -479,7 +480,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public boolean storeInArchive() {
 		String storeInArchive = recordType.getFirstAtomicValueWithNameInData("storeInArchive");
-		return "true".equals(storeInArchive);
+		return TRUE.equals(storeInArchive);
 	}
 
 	public RecordStorage onlyForTestGetRecordStorage() {
@@ -568,4 +569,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return combineStorageKeys;
 	}
 
+	@Override
+	public boolean useVisibility() {
+		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData("useVisibility"));
+	}
 }

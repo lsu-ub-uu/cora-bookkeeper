@@ -53,6 +53,8 @@ import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
 import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
 public class RecordTypeHandlerTest {
+	private static final String FALSE = "false";
+	private static final String TRUE = "true";
 	private static final String METADATA = "metadata";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String RECORD_TYPE = "recordType";
@@ -154,7 +156,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testShouldAutoGenerateId() {
-		setupForStorageAtomicValue("userSuppliedId", "false");
+		setupForStorageAtomicValue("userSuppliedId", FALSE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
@@ -168,7 +170,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testShouldAutoGenerateIdFalse() {
-		setupForStorageAtomicValue("userSuppliedId", "true");
+		setupForStorageAtomicValue("userSuppliedId", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
@@ -257,7 +259,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testPublic() {
-		setupForStorageAtomicValue("public", "true");
+		setupForStorageAtomicValue("public", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
@@ -271,7 +273,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testPublicFalse() {
-		setupForStorageAtomicValue("public", "false");
+		setupForStorageAtomicValue("public", FALSE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
@@ -1112,7 +1114,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testShouldStoreInArchive() {
-		setupForStorageAtomicValue("storeInArchive", "false");
+		setupForStorageAtomicValue("storeInArchive", FALSE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
@@ -1126,7 +1128,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testStoreInArchiveFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("storeInArchive", "true");
+		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("storeInArchive", TRUE);
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
 		assertShouldStoreInArchive(dataGroup, true);
@@ -1134,7 +1136,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testStoreInArchiveTrue() {
-		setupForStorageAtomicValue("storeInArchive", "true");
+		setupForStorageAtomicValue("storeInArchive", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
@@ -1143,7 +1145,7 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testShouldStoreInArchiveFalseFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("userSuppliedId", "false");
+		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("userSuppliedId", FALSE);
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
 		assertShouldStoreInArchive(dataGroup, false);
@@ -1290,6 +1292,46 @@ public class RecordTypeHandlerTest {
 					collectTermId);
 		}
 		return holder;
+	}
+
+	@Test
+	public void testUseVisibilityTrueFromDataGroup() {
+		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", TRUE);
+		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+
+		assertEquals(recordTypeHandler.useVisibility(), true);
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+	}
+
+	@Test
+	public void testUseVisibilityFalseFromDataGroup() {
+		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", FALSE);
+		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+
+		assertEquals(recordTypeHandler.useVisibility(), false);
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+	}
+
+	@Test
+	public void testUseVisibilityTrue() {
+		setupForStorageAtomicValue("useVisibility", TRUE);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		assertEquals(recordTypeHandler.useVisibility(), true);
+
+		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+	}
+
+	@Test
+	public void testUseVisibilityFalse() {
+		setupForStorageAtomicValue("useVisibility", FALSE);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		assertEquals(recordTypeHandler.useVisibility(), false);
+
+		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
 	}
 
 }
