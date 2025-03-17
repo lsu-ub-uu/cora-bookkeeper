@@ -1299,8 +1299,7 @@ public class RecordTypeHandlerTest {
 		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", TRUE);
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
-		assertEquals(recordTypeHandler.useVisibility(), true);
-		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+		assertUseVisibility(dataGroup, true);
 	}
 
 	@Test
@@ -1308,8 +1307,7 @@ public class RecordTypeHandlerTest {
 		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", FALSE);
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
-		assertEquals(recordTypeHandler.useVisibility(), false);
-		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+		assertUseVisibility(dataGroup, false);
 	}
 
 	@Test
@@ -1317,9 +1315,12 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("useVisibility", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		assertEquals(recordTypeHandler.useVisibility(), true);
-
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		assertUseVisibility(dataGroup, true);
+	}
+
+	private void assertUseVisibility(DataGroupSpy dataGroup, boolean expectedBoolean) {
+		assertEquals(recordTypeHandler.useVisibility(), expectedBoolean);
 		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
 	}
 
@@ -1328,10 +1329,8 @@ public class RecordTypeHandlerTest {
 		setupForStorageAtomicValue("useVisibility", FALSE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		assertEquals(recordTypeHandler.useVisibility(), false);
-
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+		assertUseVisibility(dataGroup, false);
 	}
 
 }
