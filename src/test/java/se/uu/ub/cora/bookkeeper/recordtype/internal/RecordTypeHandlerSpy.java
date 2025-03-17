@@ -36,6 +36,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	public MethodReturnValues MRV = new MethodReturnValues();
 
 	public boolean storeInArchive = false;
+	public boolean useVisibility = false;
 
 	/**
 	 * isPublicForRead is default false, if set to true, the recordType is considered totaly public
@@ -232,5 +233,13 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	@Override
 	public List<Unique> getUniqueDefinitions() {
 		return (List<Unique>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public boolean useVisibility() {
+		MCR.addCall();
+
+		MCR.addReturned(useVisibility);
+		return useVisibility;
 	}
 }
