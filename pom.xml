@@ -27,15 +27,14 @@
 		<!--dependency on storage should be removed when recordTypeHandler no longer needs it-->
 		<storage.version>9.5.0</storage.version>
 		<storagespies.version>1.11.0</storagespies.version>
-		
 		<initialize.version>1.6.0</initialize.version>
-		<coradata.version>10.0.0</coradata.version>
+		<coradata.version>10.1-SNAPSHOT</coradata.version>
+		<coradata-spies.version>2.1-SNAPSHOT</coradata-spies.version>
 		<logger.version>2.10.0</logger.version>
 		<json.version>3.10.0</json.version>
 		<testutils.version>1.14.0</testutils.version>
 		<logger-spies.version>1.5.0</logger-spies.version>
 		<initialize-spies.version>1.6.0</initialize-spies.version>
-		<coradata-spies.version>2.0.0</coradata-spies.version>
 	</properties>
 
 	<scm>

@@ -1297,25 +1297,10 @@ public class RecordTypeHandlerTest {
 	@Test
 	public void testUseVisibilityTrueFromDataGroup() {
 		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", TRUE);
+		dataGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"useVisibility");
 		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
 
-		assertUseVisibility(dataGroup, true);
-	}
-
-	@Test
-	public void testUseVisibilityFalseFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", FALSE);
-		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
-
-		assertUseVisibility(dataGroup, false);
-	}
-
-	@Test
-	public void testUseVisibilityTrue() {
-		setupForStorageAtomicValue("useVisibility", TRUE);
-		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
-
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertUseVisibility(dataGroup, true);
 	}
 
@@ -1325,12 +1310,58 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
+	public void testUseVisibilityFalseFromDataGroup() {
+		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("useVisibility", FALSE);
+		dataGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"useVisibility");
+
+		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+		assertUseVisibility(dataGroup, false);
+	}
+
+	@Test
+	public void testUseVisibilityTrue() {
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(TRUE),
+				"useVisibility");
+		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"useVisibility");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
+				(Supplier<DataGroup>) () -> dataGroupSpy);
+
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		assertUseVisibility(dataGroup, true);
+	}
+
+	@Test
 	public void testUseVisibilityFalse() {
-		setupForStorageAtomicValue("useVisibility", FALSE);
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(FALSE),
+				"useVisibility");
+		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"useVisibility");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
+				(Supplier<DataGroup>) () -> dataGroupSpy);
+
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
 		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
 		assertUseVisibility(dataGroup, false);
+	}
+
+	@Test
+	public void testUseVisibilityNotSet() {
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> false,
+				"useVisibility");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
+				(Supplier<DataGroup>) () -> dataGroupSpy);
+
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		assertEquals(recordTypeHandler.useVisibility(), false);
 	}
 
 }

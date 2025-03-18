@@ -571,6 +571,10 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean useVisibility() {
-		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData("useVisibility"));
+		if (recordType.containsChildWithNameInData("useVisibility")) {
+			return Boolean
+					.parseBoolean(recordType.getFirstAtomicValueWithNameInData("useVisibility"));
+		}
+		return false;
 	}
 }
