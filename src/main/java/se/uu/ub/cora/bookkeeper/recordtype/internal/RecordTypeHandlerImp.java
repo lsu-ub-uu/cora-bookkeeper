@@ -44,6 +44,7 @@ import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.RecordStorage;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
+	private static final String USE_VISIBILITY = "useVisibility";
 	private static final String TRUE = "true";
 	private static final String METADATA = "metadata";
 	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
@@ -571,10 +572,15 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean useVisibility() {
-		if (recordType.containsChildWithNameInData("useVisibility")) {
-			return Boolean
-					.parseBoolean(recordType.getFirstAtomicValueWithNameInData("useVisibility"));
-		}
-		return false;
+		return hasUseVisibility() && getUseVisibilityBoolean();
+
+	}
+
+	private boolean hasUseVisibility() {
+		return recordType.containsChildWithNameInData(USE_VISIBILITY);
+	}
+
+	private boolean getUseVisibilityBoolean() {
+		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData(USE_VISIBILITY));
 	}
 }
