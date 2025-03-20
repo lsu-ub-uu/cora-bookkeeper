@@ -25,8 +25,8 @@
 
 	<properties>
 		<!--dependency on storage should be removed when recordTypeHandler no longer needs it-->
-		<storage.version>9.5.0</storage.version>
-		<storagespies.version>1.12.0</storagespies.version>
+		<storage.version>9.7.0</storage.version>
+		<storagespies.version>1.14.0</storagespies.version>
 		
 		<initialize.version>1.6.0</initialize.version>
 		<coradata.version>10.0.0</coradata.version>
