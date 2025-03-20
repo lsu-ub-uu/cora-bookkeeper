@@ -1,5 +1,6 @@
 /*
  * Copyright 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -22,53 +23,59 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulator;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
-import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataHolderPopulatorSpy;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataRedactorFactoryImpTest {
-	private DataRedactorFactoryOverrideForTest factoryForTest;
-	MetadataHolderPopulatorSpy metadataHolderPopulator;
+	private LoggerFactorySpy loggerFactory;
+	private DataRedactorFactoryImp factory;
+	private MetadataHolderSpy metadataHolderSpy;
 
 	@BeforeMethod
 	private void beforeMethod() {
-		metadataHolderPopulator = new MetadataHolderPopulatorSpy();
-		factoryForTest = new DataRedactorFactoryOverrideForTest();
+		setUpProviders();
+		metadataHolderSpy = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolderSpy);
+		factory = new DataRedactorFactoryImp();
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		LoggerProvider.setLoggerFactory(null);
+		MetadataHolderProvider.onlyForTestSetHolder(null);
+	}
+
+	private void setUpProviders() {
+		loggerFactory = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactory);
 	}
 
 	@Test
-	public void testFactorCorrectMetadataHolderPopulatorCreatedByDefault() throws Exception {
-		DataRedactorFactoryOverrideForTest forTest = new DataRedactorFactoryOverrideForTest();
+	public void testFactorFetchedFromProvider() {
 
-		assertTrue(forTest
-				.useOriginalCreateMetadataHolderPopulator() instanceof MetadataHolderPopulatorImp);
+		DataRedactorImp redactor = (DataRedactorImp) factory.factor();
+
+		assertSame(redactor.onlyForTestGetMetadataHolder(), metadataHolderSpy);
 	}
 
 	@Test
-	public void testFactorCorrectMetadataHolderCreatedFromPopulator() throws Exception {
-		DataRedactorImp redactor = (DataRedactorImp) factoryForTest.factor();
-
-		var metadataHolder = metadataHolderPopulator.MCR
-				.getReturnValue("createAndPopulateMetadataHolderFromMetadataStorage", 0);
-
-		assertSame(redactor.onlyForTestGetMetadataHolder(), metadataHolder);
-	}
-
-	@Test
-	public void testFactorCorrectDataGroupRedactorCreatedForDependency() throws Exception {
-		DataRedactorImp redactor = (DataRedactorImp) factoryForTest.factor();
+	public void testFactorCorrectDataGroupRedactorCreatedForDependency() {
+		DataRedactorImp redactor = (DataRedactorImp) factory.factor();
 
 		assertTrue(redactor.onlyForTestGetDataGroupRedactor() instanceof DataGroupRedactorImp);
 	}
 
 	@Test
-	public void testFactorCorrectMetadataMatcherFactoryCreatedForDependency() throws Exception {
-		DataRedactorImp redactor = (DataRedactorImp) factoryForTest.factor();
+	public void testFactorCorrectMetadataMatcherFactoryCreatedForDependency() {
+		DataRedactorImp redactor = (DataRedactorImp) factory.factor();
 
 		MatcherFactoryImp matcherFactor = (MatcherFactoryImp) redactor
 				.onlyForTestGetMatcherFactory();
@@ -79,28 +86,14 @@ public class DataRedactorFactoryImpTest {
 		MetadataHolder createdMetadataHolder = createdMetadataMatch.onlyForTestGetMetadataHolder();
 		assertNotNull(createdMetadataHolder);
 
-		var metadataHolder = metadataHolderPopulator.MCR
-				.getReturnValue("createAndPopulateMetadataHolderFromMetadataStorage", 0);
-		assertSame(createdMetadataHolder, metadataHolder);
+		assertSame(createdMetadataHolder, metadataHolderSpy);
 	}
 
 	@Test
-	public void testFactorCorrectDataGroupWrapperFactoryCreatedForDependency() throws Exception {
-		DataRedactorImp redactor = (DataRedactorImp) factoryForTest.factor();
+	public void testFactorCorrectDataGroupWrapperFactoryCreatedForDependency() {
+		DataRedactorImp redactor = (DataRedactorImp) factory.factor();
 
 		assertTrue(redactor
 				.onlyForTestGetDataGroupWrapperFactory() instanceof DataGroupWrapperFactoryImp);
-	}
-
-	private class DataRedactorFactoryOverrideForTest extends DataRedactorFactoryImp {
-
-		MetadataHolderPopulator useOriginalCreateMetadataHolderPopulator() {
-			return super.createMetadataHolderPopulator();
-		}
-
-		@Override
-		MetadataHolderPopulator createMetadataHolderPopulator() {
-			return metadataHolderPopulator;
-		}
 	}
 }

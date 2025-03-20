@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2017, 2019, 2020 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -25,19 +26,19 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordLink;
 
-public final class DataGroupToMetadataChildReferenceConverter {
+public final class DataToMetadataChildReferenceConverter {
 
-	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private DataGroup dataGroup;
 	private MetadataChildReference childReference;
 
-	private DataGroupToMetadataChildReferenceConverter(DataGroup dataGroup) {
+	private DataToMetadataChildReferenceConverter(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
-	public static DataGroupToMetadataChildReferenceConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToMetadataChildReferenceConverter(dataGroup);
+	public static DataToMetadataChildReferenceConverter fromDataGroup(DataGroup dataGroup) {
+		return new DataToMetadataChildReferenceConverter(dataGroup);
 	}
 
 	public MetadataChildReference toMetadata() {
@@ -51,9 +52,9 @@ public final class DataGroupToMetadataChildReferenceConverter {
 		int repeatMin = Integer.parseInt(dataGroup.getFirstAtomicValueWithNameInData("repeatMin"));
 		int repeatMax = getRepeatMax();
 
-		DataGroup ref = dataGroup.getFirstGroupWithNameInData("ref");
-		String linkedRecordType = ref.getFirstAtomicValueWithNameInData("linkedRecordType");
-		String linkedRecordId = ref.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+		DataRecordLink ref = dataGroup.getFirstChildOfTypeAndName(DataRecordLink.class, "ref");
+		String linkedRecordType = ref.getLinkedRecordType();
+		String linkedRecordId = ref.getLinkedRecordId();
 		childReference = MetadataChildReference
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax(linkedRecordType,
 						linkedRecordId, repeatMin, repeatMax);
@@ -75,20 +76,19 @@ public final class DataGroupToMetadataChildReferenceConverter {
 	}
 
 	private void convertCollectTerms() {
-		List<DataGroup> childRefCollectIndexTerms = dataGroup
-				.getAllGroupsWithNameInData("childRefCollectTerm");
-		for (DataGroup collectIndexTermGroup : childRefCollectIndexTerms) {
-			addCollectIndexTermToChildReference(collectIndexTermGroup);
+		List<DataRecordLink> childRefCollectIndexTerms = dataGroup
+				.getChildrenOfTypeAndName(DataRecordLink.class, "childRefCollectTerm");
+		for (DataRecordLink collectIndexTermLink : childRefCollectIndexTerms) {
+			addCollectIndexTermToChildReference(collectIndexTermLink);
 		}
 	}
 
-	private void addCollectIndexTermToChildReference(DataGroup collectIndexTermGroup) {
-		String collectTermId = collectIndexTermGroup
-				.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
-		String type = collectIndexTermGroup.getAttribute("type").getValue();
-		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId(type, collectTermId);
+	private void addCollectIndexTermToChildReference(DataRecordLink collectIndexTermLink) {
+		String type = collectIndexTermLink.getAttribute("type").getValue();
+		CollectTermLink collectTerm = CollectTermLink.createCollectTermWithTypeAndId(type,
+				collectIndexTermLink.getLinkedRecordId());
 
-		childReference.addCollectIndexTerm(collectTerm);
+		childReference.addCollectTerm(collectTerm);
 	}
 
 	private void possiblyAddRecordPartConstraint() {

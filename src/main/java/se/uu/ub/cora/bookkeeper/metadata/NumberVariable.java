@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NumberVariable extends MetadataElement {
+public class NumberVariable extends MetadataElementAbstract {
 
 	private double min;
 	private double max;

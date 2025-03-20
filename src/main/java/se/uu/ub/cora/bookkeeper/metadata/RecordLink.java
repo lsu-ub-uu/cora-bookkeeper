@@ -24,7 +24,7 @@ import java.util.List;
 
 import se.uu.ub.cora.data.DataGroup;
 
-public class RecordLink extends MetadataElement {
+public class RecordLink extends MetadataElementAbstract {
 	private String linkedRecordType;
 	private DataGroup linkedPath;
 	private String refParentId;

@@ -30,7 +30,7 @@ import java.util.List;
  * @since 0.1
  *
  */
-public class MetadataGroup extends MetadataElement {
+public class MetadataGroup extends MetadataElementAbstract {
 
 	private final List<String> attributeReferences = new ArrayList<>();
 	private final List<MetadataChildReference> childReferences = new ArrayList<>();
@@ -45,8 +45,8 @@ public class MetadataGroup extends MetadataElement {
 		super(id, nameInData, textId, defTextId);
 	}
 
-    @Override
-    public List<String> getAttributeReferences() {
+	@Override
+	public List<String> getAttributeReferences() {
 		return attributeReferences;
 	}
 

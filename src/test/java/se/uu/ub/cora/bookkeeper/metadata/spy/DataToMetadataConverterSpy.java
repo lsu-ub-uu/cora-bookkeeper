@@ -1,5 +1,6 @@
 /*
  * Copyright 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -18,25 +19,23 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata.spy;
 
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataToMetadataConverter;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class DataGroupToMetadataConverterFactorySpy implements DataGroupToMetadataConverterFactory {
+public class DataToMetadataConverterSpy implements DataToMetadataConverter {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public DataGroupToMetadataConverterFactorySpy() {
+	public DataToMetadataConverterSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("factorForDataGroupContainingMetadata",
-				DataGroupToMetadataConverterSpy::new);
+		MRV.setDefaultReturnValuesSupplier("toMetadata", MetadataElementSpy::new);
 	}
 
 	@Override
-	public DataGroupToMetadataConverter factorForDataGroupContainingMetadata(DataGroup dataGroup) {
-		return (DataGroupToMetadataConverter) MCR.addCallAndReturnFromMRV("dataGroup", dataGroup);
+	public MetadataElement toMetadata() {
+		return (MetadataElement) MCR.addCallAndReturnFromMRV();
 	}
 
 }

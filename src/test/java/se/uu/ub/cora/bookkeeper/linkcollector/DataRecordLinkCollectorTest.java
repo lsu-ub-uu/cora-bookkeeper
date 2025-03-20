@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,17 +23,15 @@ import static org.testng.Assert.assertEquals;
 
 import java.util.Set;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
-import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
-import se.uu.ub.cora.bookkeeper.validator.MetadataStorageStub;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataFactory;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.collected.Link;
@@ -42,10 +40,11 @@ import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class DataRecordLinkCollectorTest {
-	private DataFactory dataFactory;
+	private DataFactorySpy dataFactory;
 	private DataRecordLinkCollector linkCollector;
-	private MetadataStorageView metadataStorage;
 	private LoggerFactorySpy loggerFactory;
+	private MetadataHolder metadataHolder;
+	private DataGroupRecordLinkCollectorMetadataCreator dataGroupRecordLinkCollectorMetadataCreator;
 
 	@BeforeMethod
 	public void setUp() {
@@ -55,42 +54,184 @@ public class DataRecordLinkCollectorTest {
 		dataFactory = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactory);
 
-		metadataStorage = new MetadataStorageStub();
-
-		MetadataStorageViewInstanceProviderSpy instanceProvider = new MetadataStorageViewInstanceProviderSpy();
-		instanceProvider.MRV.setDefaultReturnValuesSupplier("getStorageView",
-				() -> metadataStorage);
-		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
+		dataGroupRecordLinkCollectorMetadataCreator = new DataGroupRecordLinkCollectorMetadataCreator();
+		metadataHolder = dataGroupRecordLinkCollectorMetadataCreator.getMetadataHolder();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
 
 		linkCollector = new DataRecordLinkCollectorImp();
 	}
 
-	@Test
-	public void testCollectLinksGroupWithoutLink() {
-		DataGroup dataGroup = new DataGroupOldSpy("bush");
-		Set<Link> collectedLinks = linkCollector.collectLinks("bush", dataGroup);
-		assertEquals(collectedLinks.size(), 0);
+	@AfterMethod
+	public void afterMethod() {
+		resetMetadataHolderProviderToDefaultState();
+	}
+
+	private void resetMetadataHolderProviderToDefaultState() {
+		MetadataHolderProvider.onlyForTestSetHolder(null);
 	}
 
 	@Test
-	public void testCollectLinksGroupWithOneLink() {
-		DataGroup dataGroup = new DataGroupOldSpy("bush");
-		DataGroup dataTestLink = new DataGroupOldSpy("testLink");
+	public void testOneGroupWithNoLink() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithNoLink("test");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
 
-		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", "bush");
-		dataTestLink.addChild(linkedRecordType);
+		Set<Link> linkSet = linkCollector.collectLinks("testGroup", dataGroup);
+		assertEquals(linkSet.size(), 0);
+	}
 
-		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", "bush1");
-		dataTestLink.addChild(linkedRecordId);
-		dataGroup.addChild(dataTestLink);
+	@Test
+	public void testOneGroupWithOneLink() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
+		DataGroup dataGroup = createDataGroupWithOneLink();
 
-		Set<Link> collectedLinks = linkCollector.collectLinks("bush", dataGroup);
-		assertEquals(collectedLinks.size(), 1);
-		Object[] collectedLinksArray = collectedLinks.toArray();
-		Link link = (Link) collectedLinksArray[0];
-		assertEquals(link.type(), "bush");
-		assertEquals(link.id(), "bush1");
+		Set<Link> linkSet = linkCollector.collectLinks("testGroup", dataGroup);
 
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+	}
+
+	private DataGroup createDataGroupWithOneLink() {
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
+		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
+		dataGroup.addChild(dataRecordLink);
+		return dataGroup;
+	}
+
+	private DataGroup createTestLinkWithRecordTypeAndRecordId() {
+		DataGroup dataRecordLink = new DataGroupOldSpy("testLink");
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", "someRecordType");
+		dataRecordLink.addChild(linkedRecordType);
+		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", "someRecordId");
+		dataRecordLink.addChild(linkedRecordId);
+		return dataRecordLink;
+	}
+
+	@Test
+	public void testOneGroupWithOneLinkAndOtherChildren() {
+		dataGroupRecordLinkCollectorMetadataCreator
+				.createMetadataForOneGroupWithOneLinkAndOtherChildren();
+		DataGroup dataGroup = createDataGroupWithOneLink();
+		addOtherChild(dataGroup);
+
+		Set<Link> linkSet = linkCollector.collectLinks("testGroup", dataGroup);
+
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+	}
+
+	private void addOtherChild(DataGroup dataGroup) {
+		DataAtomic dataAtomic = new DataAtomicOldSpy("textVar", "some text");
+		dataGroup.addChild(dataAtomic);
+		DataGroup dataSubGroup = new DataGroupOldSpy("subGroup");
+		dataGroup.addChild(dataSubGroup);
+	}
+
+	@Test
+	public void testOneGroupWithOneLinkWithPathAndRepeatId() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLinkWithPath();
+		DataGroup dataGroup = createDataGroupContainingLinkWithRepeatId();
+
+		Set<Link> linkSet = linkCollector.collectLinks("testGroup", dataGroup);
+
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+	}
+
+	private DataGroup createDataGroupContainingLinkWithRepeatId() {
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
+
+		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
+		dataGroup.addChild(dataRecordLink);
+
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "e3");
+		dataRecordLink.addChild(linkedRepeatId);
+		dataRecordLink.setRepeatId("e3");
+		return dataGroup;
+	}
+
+	@Test
+	public void testOneGroupWithOneLinkWithEmptyFromLinkedRepeatId() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupWithOneLink("test");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
+
+		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
+		dataGroup.addChild(dataRecordLink);
+
+		DataAtomic linkedRepeatId = new DataAtomicOldSpy("linkedRepeatId", "someLinkedRepeatId");
+		dataRecordLink.addChild(linkedRepeatId);
+		dataRecordLink.setRepeatId("");
+
+		Set<Link> linkSet = linkCollector.collectLinks("testGroup", dataGroup);
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+
+	}
+
+	@Test
+	public void testOneGroupInGroupWithOneLink() {
+		dataGroupRecordLinkCollectorMetadataCreator.addMetadataForOneGroupInGroupWithOneLink();
+		DataGroup topDataGroup = createGroupInGroupWithOneLink();
+
+		Set<Link> linkSet = linkCollector.collectLinks("topGroup", topDataGroup);
+
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+	}
+
+	private DataGroup createGroupInGroupWithOneLink() {
+		DataGroup topDataGroup = new DataGroupOldSpy("topGroup");
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
+		topDataGroup.addChild(dataGroup);
+
+		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
+		dataGroup.addChild(dataRecordLink);
+		return topDataGroup;
+	}
+
+	@Test
+	public void testOneGroupInGroupInGroupWithOneLink() {
+		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "attrValue");
+		dataFactory.MRV.setDefaultReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
+				() -> dataAtomicSpy);
+		dataGroupRecordLinkCollectorMetadataCreator
+				.addMetadataForOneGroupInGroupInGroupWithOneLink();
+
+		DataGroup topTopDataGroup = createGroupInGroupInGroupWithOneLink();
+		Set<Link> linkSet = linkCollector.collectLinks("topTopGroup", topTopDataGroup);
+
+		dataFactory.MCR.assertNumberOfCallsToMethod("factorAtomicUsingNameInDataAndValue", 1);
+
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+	}
+
+	private DataGroup createGroupInGroupInGroupWithOneLink() {
+		DataGroup topTopDataGroup = new DataGroupOldSpy("topTopGroup");
+
+		DataGroup topDataGroup = new DataGroupOldSpy("topGroup");
+		topDataGroup.addAttributeByIdWithValue("attribute1", "attrValue");
+		topDataGroup.setRepeatId("g6");
+		topTopDataGroup.addChild(topDataGroup);
+
+		DataGroup dataGroup = new DataGroupOldSpy("testGroup");
+		topDataGroup.addChild(dataGroup);
+
+		DataGroup dataRecordLink = createTestLinkWithRecordTypeAndRecordId();
+		dataGroup.addChild(dataRecordLink);
+		return topTopDataGroup;
 	}
 
 }

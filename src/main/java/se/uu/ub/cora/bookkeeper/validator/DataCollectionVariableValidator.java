@@ -105,4 +105,9 @@ class DataCollectionVariableValidator implements DataElementValidator {
 	MetadataElement onlyForTestGetMetadataElement() {
 		return collectionVariable;
 	}
+
+	public MetadataHolder onlyForTestGetMetadataHolder() {
+		return metadataHolder;
+	}
+
 }

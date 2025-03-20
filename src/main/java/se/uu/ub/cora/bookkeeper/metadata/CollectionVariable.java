@@ -28,7 +28,7 @@ import java.util.List;
  * @author olov
  * @since 7.0.0
  */
-public class CollectionVariable extends MetadataElement {
+public class CollectionVariable extends MetadataElementAbstract {
 
 	private String refCollectionId;
 	private String refParentId;
