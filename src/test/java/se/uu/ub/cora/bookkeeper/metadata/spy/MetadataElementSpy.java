@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uppsala University Library
+ * Copyright 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,16 +18,49 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata.spy;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import java.util.List;
 
-public class MetadataElementSpy extends MetadataElement {
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+
+public class MetadataElementSpy implements MetadataElement {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
 	public MetadataElementSpy() {
-		super(null, null, null, null);
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
+		MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "someNameInData");
+		MRV.setDefaultReturnValuesSupplier("getTextId", () -> "someTextId");
+		MRV.setDefaultReturnValuesSupplier("getDefTextId", () -> "someDefTextId");
+		MRV.setDefaultReturnValuesSupplier("getAttributeReferences",
+				() -> List.of("attributeReference001"));
 	}
 
-	public MetadataElementSpy(String id, String nameInData, String textId, String defTextId) {
-		super(id, nameInData, textId, defTextId);
-		// TODO Auto-generated constructor stub
+	@Override
+	public String getId() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public String getNameInData() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public String getTextId() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public String getDefTextId() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public List<String> getAttributeReferences() {
+		return (List<String>) MCR.addCallAndReturnFromMRV();
 	}
 
 }

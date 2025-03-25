@@ -1,5 +1,6 @@
 /*
  * Copyright 2021, 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -22,13 +23,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderPopulatorImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataValidatorFactoryImp implements DataValidatorFactory {
 	private MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
+	private MetadataHolder metadataHolder = MetadataHolderProvider.getHolder();
 
 	@Override
 	public DataValidator factor() {
@@ -36,7 +39,7 @@ public class DataValidatorFactoryImp implements DataValidatorFactory {
 				metadataStorage.getRecordTypes());
 
 		DataElementValidatorFactory dataElementValidatorFactory = new DataElementValidatorFactoryImp(
-				recordTypeHolder, new MetadataHolderPopulatorImp());
+				recordTypeHolder, metadataHolder);
 		return new DataValidatorImp(dataElementValidatorFactory, recordTypeHolder);
 	}
 

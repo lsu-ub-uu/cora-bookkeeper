@@ -558,4 +558,16 @@ public class RecordTypeHandlerStorageSpy implements RecordStorage {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Set<Link> getLinksFromRecord(String type, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<StorageTerm> getStorageTermsForRecord(String type, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

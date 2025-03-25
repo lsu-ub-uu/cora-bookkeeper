@@ -1,5 +1,6 @@
 /*
  * Copyright 2022, 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -23,31 +24,42 @@ import java.util.Collection;
 import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class MetadataStorageViewSpy implements MetadataStorageView {
+	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	@SuppressWarnings("exports")
 	public MethodReturnValues MRV = new MethodReturnValues();
 
 	public MetadataStorageViewSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getMetadataElements", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getMetadataElements", ArrayList<DataRecordGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getMetadataElement", MetadataElementSpy::new);
 		MRV.setDefaultReturnValuesSupplier("getPresentationElements", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getTexts", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getRecordTypes", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getCollectTerms", ArrayList<DataGroup>::new);
-		MRV.setDefaultReturnValuesSupplier("getValidationType", () -> Optional.empty());
+		MRV.setDefaultReturnValuesSupplier("getValidationType", Optional::empty);
 		MRV.setDefaultReturnValuesSupplier("getValidationTypes", ArrayList<ValidationType>::new);
 		MRV.setDefaultReturnValuesSupplier("getCollectTermHolder", CollectTermHolderSpy::new);
 	}
 
 	@Override
-	public Collection<DataGroup> getMetadataElements() {
-		return (Collection<DataGroup>) MCR.addCallAndReturnFromMRV();
+	public Collection<DataRecordGroup> getMetadataElements() {
+		return (Collection<DataRecordGroup>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public MetadataElement getMetadataElement(String elementId) {
+		return (MetadataElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
 	}
 
 	@Override

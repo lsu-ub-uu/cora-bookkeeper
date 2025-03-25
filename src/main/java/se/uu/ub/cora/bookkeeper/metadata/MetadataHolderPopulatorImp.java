@@ -1,5 +1,6 @@
 /*
  * Copyright 2017, 2019, 2023 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -20,49 +21,37 @@ package se.uu.ub.cora.bookkeeper.metadata;
 
 import java.util.Collection;
 
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverter;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactory;
-import se.uu.ub.cora.bookkeeper.metadata.converter.DataGroupToMetadataConverterFactoryImp;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataToMetadataConverter;
+import se.uu.ub.cora.bookkeeper.metadata.converter.DataToMetadataConverterProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 
-public final class MetadataHolderPopulatorImp implements MetadataHolderPopulator {
-
-	DataGroupToMetadataConverterFactory factory = DataGroupToMetadataConverterFactoryImp
-			.forDataGroups();
+final class MetadataHolderPopulatorImp implements MetadataHolderPopulator {
 
 	@Override
 	public MetadataHolder createAndPopulateMetadataHolderFromMetadataStorage() {
 		MetadataStorageView metadataStorageView = MetadataStorageProvider.getStorageView();
 		MetadataHolder mh = new MetadataHolderImp();
 
-		Collection<DataGroup> metadataElementDataGroups = metadataStorageView.getMetadataElements();
-		convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups,
-				mh);
+		Collection<DataRecordGroup> metadataElementDataGroups = metadataStorageView
+				.getMetadataElements();
+		convertDataToMetadataElementsAndAddThemToMetadataHolder(metadataElementDataGroups, mh);
 		return mh;
 	}
 
-	private void convertDataGroupsToMetadataElementsAndAddThemToMetadataHolder(
-			Collection<DataGroup> metadataElements, MetadataHolder mh) {
-		for (DataGroup metadataElement : metadataElements) {
+	private void convertDataToMetadataElementsAndAddThemToMetadataHolder(
+			Collection<DataRecordGroup> metadataElementDataRecordGroups, MetadataHolder mh) {
+		for (DataRecordGroup metadataElement : metadataElementDataRecordGroups) {
 			convertDataGroupToMetadataElementAndAddItToMetadataHolder(metadataElement, mh);
 		}
 	}
 
 	private void convertDataGroupToMetadataElementAndAddItToMetadataHolder(
-			DataGroup metadataElement, MetadataHolder mh) {
-		DataGroupToMetadataConverter converter = factory
-				.factorForDataGroupContainingMetadata(metadataElement);
-		mh.addMetadataElement(converter.toMetadata());
-	}
-
-	DataGroupToMetadataConverterFactory onlyForTestGetDataGroupToMetadataConverterFactory() {
-		return factory;
-	}
-
-	void onlyForTestSetDataGroupToMetadataConverter(
-			DataGroupToMetadataConverterFactory factorySpy) {
-		this.factory = factorySpy;
+			DataRecordGroup metadataElement, MetadataHolder mh) {
+		DataToMetadataConverter converter = DataToMetadataConverterProvider
+				.getConverter(metadataElement);
+		MetadataElement metadata = converter.toMetadata();
+		mh.addMetadataElement(metadata);
 	}
 }

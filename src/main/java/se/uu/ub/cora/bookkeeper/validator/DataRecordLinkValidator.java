@@ -255,4 +255,12 @@ class DataRecordLinkValidator implements DataElementValidator {
 	MetadataElement onlyForTestGetMetadataElement() {
 		return recordLink;
 	}
+
+	public Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
+		return recordTypeHolder;
+	}
+
+	public MetadataHolder onlyForTestGetMetadataHolder() {
+		return metadataHolder;
+	}
 }

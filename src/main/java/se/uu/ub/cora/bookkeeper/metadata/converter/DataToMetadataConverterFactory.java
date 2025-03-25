@@ -1,5 +1,6 @@
 /*
  * Copyright 2015 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -19,10 +20,10 @@
 
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 
-public interface DataGroupToMetadataConverterFactory {
+public interface DataToMetadataConverterFactory {
 
-	DataGroupToMetadataConverter factorForDataGroupContainingMetadata(DataGroup dataGroup);
+	DataToMetadataConverter factorForDataContainingMetadata(DataRecordGroup dataRecordGroup);
 
 }

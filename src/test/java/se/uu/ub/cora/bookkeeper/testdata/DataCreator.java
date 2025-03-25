@@ -131,7 +131,7 @@ public class DataCreator {
 		metadataHolder.addMetadataElement(colVar);
 		group.addAttributeReference(id + "Id");
 
-		if (metadataHolder.getMetadataElement("choice1Id") == null) {
+		if (!metadataHolder.containsElement("choice1Id")) {
 			CollectionItem choice1 = new CollectionItem("choice1Id", "choice1NameInData",
 					"choice1TextId", "choice1DefTextId");
 			metadataHolder.addMetadataElement(choice1);
@@ -153,7 +153,8 @@ public class DataCreator {
 			String nameInData, String linkedRecordTypeString, String linkedRecordIdString) {
 		DataGroup dataRecordLink = new DataGroupOldSpy(nameInData);
 
-		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", linkedRecordTypeString);
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType",
+				linkedRecordTypeString);
 		dataRecordLink.addChild(linkedRecordType);
 
 		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", linkedRecordIdString);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2024 Uppsala University Library
+ * Copyright 2020, 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -105,7 +105,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testRemoveWhenNoConstraints() throws Exception {
+	public void testRemoveWhenNoConstraints() {
 		String metadataId = "someMetadataId";
 		DataRecordGroup filteredDataGroup = dataRedactor
 				.removeChildrenForConstraintsWithoutPermissions(metadataId, topDataGroupSpy,
@@ -152,7 +152,8 @@ public class DataRedactorTest {
 
 	private MetadataGroupSpy createAndAddTopGroup(String metadataId) {
 		MetadataGroupSpy topGroup = new MetadataGroupSpy(metadataId, "someNameInData");
-		metadataHolder.elementsToReturn.put(metadataId, topGroup);
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> topGroup,
+				metadataId);
 		return topGroup;
 	}
 
@@ -188,14 +189,14 @@ public class DataRedactorTest {
 		MetadataGroupSpy metadataChild = new MetadataGroupSpy(linkedRecordId,
 				linkedRecordId + "NameInData");
 
-		metadataHolder.elementsToReturn.put(linkedRecordId, metadataChild);
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				() -> metadataChild, linkedRecordId);
 		return metadataChild;
 	}
 
 	private DataGroupWrapperSpy getGroupReturnedFromMatcherWithCallNumber(int firstGroupNumber) {
 		MatcherSpy matcherSpy = matcherFactory.returnedMatchers.get(firstGroupNumber);
-		DataGroupWrapperSpy firstChildGroup = matcherSpy.returnedDataGroup;
-		return firstChildGroup;
+		return matcherSpy.returnedDataGroup;
 	}
 
 	@Test
@@ -314,7 +315,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceWhenNoConstraints() throws Exception {
+	public void testReplaceWhenNoConstraints() {
 		DataRecordGroup replacedDataGroup = dataRedactor
 				.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 						updatedDataGroup, emptyConstraints, emptyPermissions);
@@ -327,7 +328,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceTopLevelGroupWithoutChildren() throws Exception {
+	public void testReplaceTopLevelGroupWithoutChildren() {
 		createAndAddTopGroup(metadataId);
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
 				topDataGroupSpy, someConstraints, emptyPermissions);
@@ -360,7 +361,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildNOTGroup() throws Exception {
+	public void testReplaceOneChildNOTGroup() {
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildToDataGroup(topGroup, "metadataTextVar", "type", 0, 1);
 
@@ -378,7 +379,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildGroupRepeatMaxNOTOne() throws Exception {
+	public void testReplaceOneChildGroupRepeatMaxNOTOne() {
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildToDataGroup(topGroup, "metadataGroup", "type", 0, 2);
 
@@ -396,7 +397,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildGroupNoDataAfterTopReplace() throws Exception {
+	public void testReplaceOneChildGroupNoDataAfterTopReplace() {
 		matcherFactory.hasMatchingChildList.add(false);
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
@@ -445,10 +446,9 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildGroupReplacedDataAfterTopReplace() throws Exception {
+	public void testReplaceOneChildGroupReplacedDataAfterTopReplace() {
 		matcherFactory.hasMatchingChildList.add(true);
 		dataGroupRedactorSpy.removeHasBeenCalledList.add(true);
-		// dataGroupRedactorSpy.removeHasBeenCalledList.add(true);
 
 		MetadataGroupSpy topGroup = createAndAddTopGroup(metadataId);
 		createAndAddChildToDataGroup(topGroup, "metadataGroup", "type", 0, 1);
@@ -473,8 +473,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildGroupDataNotReplacedAfterTopReplaceWithDataInOriginal()
-			throws Exception {
+	public void testReplaceOneChildGroupDataNotReplacedAfterTopReplaceWithDataInOriginal() {
 		setupDataExistsInUpdateIsNotChangedByGroupRedactorExistsInOriginalShouldBeReplacedOnSecondLevel();
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
@@ -553,8 +552,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testReplaceOneChildGroupDataNotReplacedAfterTopReplaceWithoutDataInOriginal()
-			throws Exception {
+	public void testReplaceOneChildGroupDataNotReplacedAfterTopReplaceWithoutDataInOriginal() {
 		setupDataExistsInUpdateIsNotChangedByGroupRedactorDoesNotExistsInOriginalShouldBeRemovedOnSecondLevel();
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
@@ -619,7 +617,7 @@ public class DataRedactorTest {
 	}
 
 	@Test
-	public void testMoreThanOneChildOnTopLevelAllAreHandled() throws Exception {
+	public void testMoreThanOneChildOnTopLevelAllAreHandled() {
 		setupDataForTwoChildrenOnTopLevel();
 
 		dataRedactor.replaceChildrenForConstraintsWithoutPermissions(metadataId, originalDataGroup,
