@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,28 +18,39 @@
  */
 package se.uu.ub.cora.bookkeeper.metadata;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class MetadataHolderSpy extends MetadataHolderImp {
+public class MetadataHolderSpy implements MetadataHolder {
 	@SuppressWarnings("exports")
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	@SuppressWarnings("exports")
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public Map<String, MetadataElement> elementsToReturn = new HashMap<>();
+	public MetadataHolderSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getMetadataElement", MetadataElementSpy::new);
+		MRV.setDefaultReturnValuesSupplier("containsElement", () -> true);
+	}
 
 	@Override
 	public void addMetadataElement(MetadataElement metadataElement) {
-
+		MCR.addCall("metadataElement", metadataElement);
 	}
 
 	@Override
 	public MetadataElement getMetadataElement(String elementId) {
-		MCR.addCall("elementId", elementId);
-		MetadataElement metadataElement = elementsToReturn.get(elementId);
+		return (MetadataElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
+	}
 
-		MCR.addReturned(metadataElement);
-		return metadataElement;
+	@Override
+	public void deleteMetadataElement(String elementId) {
+		MCR.addCall("elementId", elementId);
+	}
+
+	@Override
+	public boolean containsElement(String elementId) {
+		return (boolean) MCR.addCallAndReturnFromMRV("elementId", elementId);
 	}
 }

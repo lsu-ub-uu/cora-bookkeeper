@@ -25,7 +25,7 @@ package se.uu.ub.cora.bookkeeper.metadata;
  * @author olov
  * @since 7.0.0
  */
-public class CollectionItem extends MetadataElement {
+public class CollectionItem extends MetadataElementAbstract {
 
 	/**
 	 * constructor

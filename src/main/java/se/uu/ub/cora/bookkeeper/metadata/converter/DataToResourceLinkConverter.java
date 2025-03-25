@@ -1,6 +1,6 @@
 /*
  * Copyright 2015, 2019 Uppsala University Library
- * Copyright 2016 Olov McKie
+ * Copyright 2016, 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -21,35 +21,36 @@
 package se.uu.ub.cora.bookkeeper.metadata.converter;
 
 import se.uu.ub.cora.bookkeeper.metadata.ResourceLink;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.DataRecordLink;
 
-public final class DataGroupToResourceLinkConverter implements DataGroupToMetadataConverter {
+public final class DataToResourceLinkConverter implements DataToMetadataConverter {
 
-	private DataGroup dataGroup;
+	private DataRecordGroup dataRecordGroup;
 
-	private DataGroupToResourceLinkConverter(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
+	private DataToResourceLinkConverter(DataRecordGroup dataRecordGroup) {
+		this.dataRecordGroup = dataRecordGroup;
 	}
 
-	public static DataGroupToResourceLinkConverter fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupToResourceLinkConverter(dataGroup);
+	public static DataToResourceLinkConverter fromDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		return new DataToResourceLinkConverter(dataRecordGroup);
 	}
 
 	@Override
 	public ResourceLink toMetadata() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-
-		String id = recordInfo.getFirstAtomicValueWithNameInData("id");
-		String nameInData = dataGroup.getFirstAtomicValueWithNameInData("nameInData");
-		String textId = extractTextIdByNameInData("textId");
-		String defTextId = extractTextIdByNameInData("defTextId");
+		String id = dataRecordGroup.getId();
+		String nameInData = dataRecordGroup.getFirstAtomicValueWithNameInData("nameInData");
+		String textId = extractLinkedRecordIdByNameInData("textId");
+		String defTextId = extractLinkedRecordIdByNameInData("defTextId");
 
 		return ResourceLink.withIdAndNameInDataAndTextIdAndDefTextId(id, nameInData, textId,
 				defTextId);
 	}
 
-	private String extractTextIdByNameInData(String nameInData) {
-		DataGroup text = dataGroup.getFirstGroupWithNameInData(nameInData);
-		return text.getFirstAtomicValueWithNameInData("linkedRecordId");
+	private String extractLinkedRecordIdByNameInData(String nameInData) {
+		DataRecordLink textLink = dataRecordGroup.getFirstChildOfTypeAndName(DataRecordLink.class,
+				nameInData);
+		return textLink.getLinkedRecordId();
 	}
+
 }

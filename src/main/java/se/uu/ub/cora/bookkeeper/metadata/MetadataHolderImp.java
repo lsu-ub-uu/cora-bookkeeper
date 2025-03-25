@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -33,6 +33,19 @@ public class MetadataHolderImp implements MetadataHolder {
 
 	@Override
 	public MetadataElement getMetadataElement(String elementId) {
+		if (metadata.get(elementId) == null) {
+			throw new DataMissingException("MetadataElement with id " + elementId + " is missing");
+		}
 		return metadata.get(elementId);
+	}
+
+	@Override
+	public void deleteMetadataElement(String elementId) {
+		metadata.remove(elementId);
+	}
+
+	@Override
+	public boolean containsElement(String elementId) {
+		return metadata.containsKey(elementId);
 	}
 }

@@ -184,10 +184,10 @@ class DataGroupValidator implements DataElementValidator {
 
 	private boolean isChildDataSpecifiedByChildReferenceId(DataChild childData,
 			String referenceId) {
-		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
-		if (childElement == null) {
+		if (!metadataHolder.containsElement(referenceId)) {
 			throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
 		}
+		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
 		MetadataMatchData metadataMatchData = MetadataMatchDataImp
 				.withMetadataHolder(metadataHolder);
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
