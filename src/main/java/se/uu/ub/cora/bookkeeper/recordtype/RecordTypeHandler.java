@@ -200,8 +200,18 @@ public interface RecordTypeHandler {
 
 	/**
 	 * usesVisibility returns a boolean indicating if a record type is set to use the visibility
-	 * functionality or not
+	 * functionality or not.
+	 * 
+	 * @return A boolean indicating if visibility is used or not
 	 */
 	boolean useVisibility();
+
+	/**
+	 * usePermissionUnit returns a boolean indicating if a record type is set to use the permission
+	 * unit functionality or not.
+	 * 
+	 * @return A boolean indicating if permission unit is used or not
+	 */
+	boolean usePermissionUnit();
 
 }

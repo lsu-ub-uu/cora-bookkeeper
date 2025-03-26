@@ -19,7 +19,6 @@
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,24 +33,6 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
-
-	public boolean storeInArchive = false;
-	public boolean useVisibility = false;
-
-	/**
-	 * isPublicForRead is default false, if set to true, the recordType is considered totaly public
-	 * and no security checks are supposed to be done for reading
-	 */
-	public boolean isPublicForRead = false;
-	/**
-	 * isAbstract is default false, if set to true, the recordType is considered abstract
-	 */
-	public boolean isAbstract = false;
-	/**
-	 * recordTypeHasReadPartConstraints is default false, if set to true, the recordType has read
-	 * record parts constraints.
-	 */
-	// public boolean recordTypeHasReadPartConstraints = false;
 
 	/**
 	 * recordPartConstraints is default empty, can be set to "readWrite" or "write" to change
@@ -74,12 +55,6 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	public String returnedSearchId = "someSearchId";
 
-	/**
-	 * shouldAutoGenerateId is default false, if set to true will method shouldAutoGenerateId()
-	 * return true instead of false.
-	 */
-	public boolean shouldAutoGenerateId = false;
-
 	public List<String> listOfimplementingTypesIds = new ArrayList<>();
 
 	public RecordTypeHandlerSpy() {
@@ -89,14 +64,16 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		MRV.setDefaultReturnValuesSupplier("getMetadataId",
 				() -> "fakeMetadataIdFromRecordTypeHandlerSpy");
 		MRV.setDefaultReturnValuesSupplier("getMetadataId", () -> false);
-		MRV.setDefaultReturnValuesSupplier("getUniqueDefinitions", () -> Collections.emptyList());
+		MRV.setDefaultReturnValuesSupplier("shouldAutoGenerateId", () -> false);
+		MRV.setDefaultReturnValuesSupplier("isPublicForRead", () -> false);
+		MRV.setDefaultReturnValuesSupplier("storeInArchive", () -> false);
+		MRV.setDefaultReturnValuesSupplier("useVisibility", () -> false);
+		MRV.setDefaultReturnValuesSupplier("usePermissionUnit", () -> false);
 	}
 
 	@Override
 	public boolean shouldAutoGenerateId() {
-		MCR.addCall();
-		MCR.addReturned(shouldAutoGenerateId);
-		return shouldAutoGenerateId;
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
@@ -111,9 +88,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	@Override
 	public boolean isPublicForRead() {
-		MCR.addCall();
-		MCR.addReturned(isPublicForRead);
-		return isPublicForRead;
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
@@ -218,10 +193,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	@Override
 	public boolean storeInArchive() {
-		MCR.addCall();
-
-		MCR.addReturned(storeInArchive);
-		return storeInArchive;
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
@@ -237,9 +209,11 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 
 	@Override
 	public boolean useVisibility() {
-		MCR.addCall();
+		return (boolean) MCR.addCallAndReturnFromMRV();
+	}
 
-		MCR.addReturned(useVisibility);
-		return useVisibility;
+	@Override
+	public boolean usePermissionUnit() {
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 }
