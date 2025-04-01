@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2019, 2020, 2021, 2022, 2024 Uppsala University Library
+ * Copyright 2016, 2019, 2020, 2021, 2022, 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -53,6 +53,8 @@ import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
 import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
 public class RecordTypeHandlerTest {
+	private static final String FALSE = "false";
+	private static final String TRUE = "true";
 	private static final String METADATA = "metadata";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String RECORD_TYPE = "recordType";
@@ -132,47 +134,55 @@ public class RecordTypeHandlerTest {
 						"someValidationTypeId");
 	}
 
-	private DataGroupSpy getRecordTypeDataGroupReadFromStorage() {
-		DataGroupSpy dataGroup = (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
-		return dataGroup;
-	}
+	@Test
+	public void testShouldAutoGenerateId_NotExisting() {
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-	private void setupForStorageAtomicValue(String nameInData, String value) {
-		DataGroupSpy DataGroupSpy = new DataGroupSpy();
-		DataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(value),
-				nameInData);
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> DataGroupSpy);
-	}
+		boolean shouldAutoGenerateId = recordTypeHandler.shouldAutoGenerateId();
 
-	private DataGroupSpy setupDataGroupWithAtomicValue(String nameInData, String value) {
-		DataGroupSpy topDataGroup = createTopDataGroup();
-		topDataGroup.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(value),
-				nameInData);
-		return topDataGroup;
+		assertEquals(shouldAutoGenerateId, true);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "userSuppliedId");
 	}
 
 	@Test
 	public void testShouldAutoGenerateId() {
-		setupForStorageAtomicValue("userSuppliedId", "false");
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("userSuppliedId", FALSE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldAutoGenerateId(dataGroup, true);
+		boolean shouldAutoGenerateId = recordTypeHandler.shouldAutoGenerateId();
+
+		assertEquals(shouldAutoGenerateId, true);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "userSuppliedId");
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "userSuppliedId");
 	}
 
-	private void assertShouldAutoGenerateId(DataGroupSpy dataGroupMCR, boolean expected) {
-		assertEquals(recordTypeHandler.shouldAutoGenerateId(), expected);
-		dataGroupMCR.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "userSuppliedId");
+	private void setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue(String nameInData,
+			String value) {
+		DataGroupSpy dataGroupWithAtomic = new DataGroupSpy();
+		dataGroupWithAtomic.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				() -> value, nameInData);
+		dataGroupWithAtomic.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
+				() -> true, nameInData);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroupWithAtomic);
+	}
+
+	private DataGroupSpy getDataGroupFromStorage() {
+		return (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
 	}
 
 	@Test
 	public void testShouldAutoGenerateIdFalse() {
-		setupForStorageAtomicValue("userSuppliedId", "true");
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("userSuppliedId", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldAutoGenerateId(dataGroup, false);
+		boolean shouldAutoGenerateId = recordTypeHandler.shouldAutoGenerateId();
+
+		assertEquals(shouldAutoGenerateId, false);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "userSuppliedId");
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "userSuppliedId");
 	}
 
 	@Test
@@ -199,8 +209,9 @@ public class RecordTypeHandlerTest {
 		setUpRecordTypeHandlerUsingTypeId("someRecordId");
 
 		String metadataId = recordTypeHandler.getDefinitionId();
+		DataGroupSpy dataGroup1 = (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		DataGroupSpy dataGroup = dataGroup1;
 		assertUsedLink(dataGroup, "metadataId", metadataId);
 	}
 
@@ -257,10 +268,9 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testPublic() {
-		setupForStorageAtomicValue("public", "true");
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("public", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
-
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
 		assertIsPublicForRead(dataGroup, true);
 	}
 
@@ -271,10 +281,9 @@ public class RecordTypeHandlerTest {
 
 	@Test
 	public void testPublicFalse() {
-		setupForStorageAtomicValue("public", "false");
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("public", FALSE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
-
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
 		assertIsPublicForRead(dataGroup, false);
 	}
 
@@ -1063,8 +1072,7 @@ public class RecordTypeHandlerTest {
 
 	private void setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(DataGroup dataGroup,
 			String recordTypeId) {
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read",
-				(Supplier<DataGroup>) () -> dataGroup);
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroup);
 		setUpRecordTypeHandlerUsingTypeId(recordTypeId);
 	}
 
@@ -1111,42 +1119,40 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testShouldStoreInArchive() {
-		setupForStorageAtomicValue("storeInArchive", "false");
+	public void testStoreInArchive_NotExists_False() {
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldStoreInArchive(dataGroup, false);
-	}
+		boolean storeInArchive = recordTypeHandler.storeInArchive();
 
-	private void assertShouldStoreInArchive(DataGroupSpy dataGroupMCR, boolean expected) {
-		assertEquals(recordTypeHandler.storeInArchive(), expected);
-		dataGroupMCR.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "storeInArchive");
+		assertEquals(storeInArchive, false);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "storeInArchive");
 	}
 
 	@Test
-	public void testStoreInArchiveFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("storeInArchive", "true");
-		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
+	public void testShouldStoreInArchive() {
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("storeInArchive", FALSE);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		assertShouldStoreInArchive(dataGroup, true);
+		boolean storeInArchive = recordTypeHandler.storeInArchive();
+
+		assertEquals(storeInArchive, false);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "storeInArchive");
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "storeInArchive");
 	}
 
 	@Test
 	public void testStoreInArchiveTrue() {
-		setupForStorageAtomicValue("storeInArchive", "true");
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("storeInArchive", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
 
-		DataGroupSpy dataGroup = getRecordTypeDataGroupReadFromStorage();
-		assertShouldStoreInArchive(dataGroup, true);
-	}
+		boolean storeInArchive = recordTypeHandler.storeInArchive();
 
-	@Test
-	public void testShouldStoreInArchiveFalseFromDataGroup() {
-		DataGroupSpy dataGroup = setupDataGroupWithAtomicValue("userSuppliedId", "false");
-		setUpHandlerForRecordTypeUsingGroupAndRecordTypeId(dataGroup, "recordType");
-
-		assertShouldStoreInArchive(dataGroup, false);
+		assertEquals(storeInArchive, true);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "storeInArchive");
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "storeInArchive");
 	}
 
 	@Test
@@ -1292,4 +1298,78 @@ public class RecordTypeHandlerTest {
 		return holder;
 	}
 
+	@Test
+	public void testUseVisibilityNotSet() {
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> false,
+				"useVisibility");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroupSpy);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		boolean useVisibility = recordTypeHandler.useVisibility();
+
+		assertEquals(useVisibility, false);
+	}
+
+	@Test
+	public void testUseVisibilityTrue() {
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(TRUE),
+				"useVisibility");
+		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"useVisibility");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroupSpy);
+
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+		DataGroupSpy dataGroup = (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
+
+		boolean useVisibility = recordTypeHandler.useVisibility();
+
+		assertEquals(useVisibility, true);
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+	}
+
+	@Test
+	public void testUseVisibilityFalse() {
+		DataGroupSpy dataGroupSpy = new DataGroupSpy();
+		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(FALSE),
+				"useVisibility");
+		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				"useVisibility");
+		recordStorage.MRV.setDefaultReturnValuesSupplier("read", () -> dataGroupSpy);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+		DataGroupSpy dataGroup = (DataGroupSpy) recordStorage.MCR.getReturnValue("read", 0);
+
+		boolean useVisibility = recordTypeHandler.useVisibility();
+
+		assertEquals(useVisibility, false);
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+	}
+
+	@Test
+	public void testUsePermissionUnit_IfDoNotExistsThenFalse() {
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		boolean usePermissionUnit = recordTypeHandler.usePermissionUnit();
+
+		assertEquals(usePermissionUnit, false);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "usePermissionUnit");
+	}
+
+	@Test
+	public void testUsePermissionUnit_GetValueAsBooleanFromDataGroup() {
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("usePermissionUnit",
+				FALSE);
+		setUpRecordTypeHandlerUsingTypeId(SOME_ID);
+
+		boolean usePermissionUnit = recordTypeHandler.usePermissionUnit();
+
+		assertEquals(usePermissionUnit, false);
+		DataGroupSpy dataGroup = getDataGroupFromStorage();
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "usePermissionUnit");
+		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "usePermissionUnit");
+		dataGroup.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0,
+				Boolean.valueOf(usePermissionUnit).toString());
+	}
 }

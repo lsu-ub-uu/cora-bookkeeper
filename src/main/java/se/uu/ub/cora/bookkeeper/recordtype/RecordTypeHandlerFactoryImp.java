@@ -23,7 +23,6 @@ import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
@@ -32,18 +31,18 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	private RecordStorage recordStorage;
 	private MetadataStorageView metadataStorage;
 
-	/**
-	 * 
-	 * @param dataGroup
-	 * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
-	 */
-	@Deprecated(forRemoval = true)
-	@Override
-	public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
-		ensureRecordStorageIsFetched();
-
-		return RecordTypeHandlerImp.usingRecordStorageAndDataGroup(this, recordStorage, dataGroup);
-	}
+	// /**
+	// *
+	// * @param dataGroup
+	// * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
+	// */
+	// @Deprecated(forRemoval = true)
+	// @Override
+	// public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
+	// ensureRecordStorageIsFetched();
+	//
+	// return RecordTypeHandlerImp.usingRecordStorageAndDataGroup(this, recordStorage, dataGroup);
+	// }
 
 	/**
 	 * 

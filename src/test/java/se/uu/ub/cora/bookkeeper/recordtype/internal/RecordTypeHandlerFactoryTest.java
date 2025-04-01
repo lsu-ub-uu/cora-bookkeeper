@@ -79,12 +79,11 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testRecordStorageLoadedOnceOnFirstCallToFactor() throws Exception {
-		DataGroupSpy dataGroup = createTopDataGroup();
+	public void testRecordStorageLoadedOnceOnFirstCallToFactor() {
 		instanceProvider.MCR.assertMethodNotCalled("getRecordStorage");
 
-		factory.factorUsingDataGroup(dataGroup);
-		factory.factorUsingDataGroup(dataGroup);
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 		factory.factorUsingRecordTypeId("someRecordTypeId1");
 		factory.factorUsingRecordTypeId("someRecordTypeId2");
 		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
@@ -94,22 +93,7 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testFactorUsingDataGroup() {
-		DataGroupSpy dataGroup = createTopDataGroup();
-
-		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factory
-				.factorUsingDataGroup(dataGroup);
-
-		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
-		assertSame(recordTypeHandler.getRecordTypeHandlerFactory(), factory);
-	}
-
-	private DataGroupSpy createTopDataGroup() {
-		return new DataGroupSpy();
-	}
-
-	@Test
-	public void testFactorUsingRecordTypeId() throws Exception {
+	public void testFactorUsingRecordTypeId() {
 		String recordTypeId = "someRecordTypeId";
 		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factory
 				.factorUsingRecordTypeId(recordTypeId);
@@ -120,7 +104,7 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testFactorUsingDataRecordGroupWithValidationType() throws Exception {
+	public void testFactorUsingDataRecordGroupWithValidationType() {
 		String validationTypeId = "someValidationTypeId";
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getValidationType",
@@ -137,8 +121,7 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testFactorUsingDataRecordGroupWithoutValidationTypeSholdThrowError()
-			throws Exception {
+	public void testFactorUsingDataRecordGroupWithoutValidationTypeSholdThrowError() {
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setAlwaysThrowException("getValidationType",
 				new se.uu.ub.cora.data.DataMissingException("someMessage"));
@@ -155,7 +138,7 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testMetadatatorageLoadedOnceOnFirstCallToFactor() throws Exception {
+	public void testMetadatatorageLoadedOnceOnFirstCallToFactor() {
 		metaStorageInstProviderSpy.MCR.assertMethodNotCalled("getStorageView");
 
 		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());

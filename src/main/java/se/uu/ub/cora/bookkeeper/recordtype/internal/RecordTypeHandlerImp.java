@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2019, 2020, 2021 Uppsala University Library
+ * Copyright 2016, 2019, 2020, 2021, 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -44,6 +44,8 @@ import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.RecordStorage;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
+	private static final String RECORD_TYPE = "recordType";
+	private static final String TRUE = "true";
 	private static final String METADATA = "metadata";
 	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
 	private static final String NAME_IN_DATA = "nameInData";
@@ -51,7 +53,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String RECORD_PART_CONSTRAINT = "recordPartConstraint";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
-	private static final String RECORD_TYPE = "recordType";
 	private DataGroup recordType;
 	private String recordTypeId;
 	private RecordStorage recordStorage;
@@ -137,8 +138,19 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean shouldAutoGenerateId() {
-		String userSuppliedId = recordType.getFirstAtomicValueWithNameInData("userSuppliedId");
-		return "false".equals(userSuppliedId);
+		return !getValueOfSettingUsingNameInData("userSuppliedId");
+	}
+
+	private boolean getValueOfSettingUsingNameInData(String nameInData) {
+		return childExistsInRecordType(nameInData) && getBooleanValueFromChild(nameInData);
+	}
+
+	private boolean getBooleanValueFromChild(String nameInData) {
+		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData(nameInData));
+	}
+
+	private boolean childExistsInRecordType(String nameInData) {
+		return recordType.containsChildWithNameInData(nameInData);
 	}
 
 	@Override
@@ -175,7 +187,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public boolean isPublicForRead() {
 		String isPublic = recordType.getFirstAtomicValueWithNameInData("public");
-		return "true".equals(isPublic);
+		return TRUE.equals(isPublic);
 	}
 
 	@Override
@@ -478,8 +490,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean storeInArchive() {
-		String storeInArchive = recordType.getFirstAtomicValueWithNameInData("storeInArchive");
-		return "true".equals(storeInArchive);
+		return getValueOfSettingUsingNameInData("storeInArchive");
 	}
 
 	public RecordStorage onlyForTestGetRecordStorage() {
@@ -568,4 +579,13 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return combineStorageKeys;
 	}
 
+	@Override
+	public boolean useVisibility() {
+		return getValueOfSettingUsingNameInData("useVisibility");
+	}
+
+	@Override
+	public boolean usePermissionUnit() {
+		return getValueOfSettingUsingNameInData("usePermissionUnit");
+	}
 }
