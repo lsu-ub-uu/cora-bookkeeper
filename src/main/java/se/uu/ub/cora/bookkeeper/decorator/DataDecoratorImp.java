@@ -32,7 +32,6 @@ class DataDecoratorImp implements DataDecarator {
 	public void decorateData(String metadataId, DataGroup dataGroup) {
 		var dataChildDecorator = dataDecoratorFactory.factor(metadataId);
 		dataChildDecorator.decorateData(dataGroup);
-
 	}
 
 	DataChildDecoratorFactory onlyForTestGetDataChildDecoratorFactory() {

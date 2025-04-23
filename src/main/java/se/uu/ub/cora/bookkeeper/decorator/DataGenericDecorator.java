@@ -58,4 +58,12 @@ class DataGenericDecorator implements DataChildDecorator {
 	private String attributeNameWithUnderscore(String language) {
 		return "_" + language;
 	}
+
+	public MetadataElement onlyForTestGetMetadataElement() {
+		return metadataElement;
+	}
+
+	public TextHolder onlyForTestGetTextHolder() {
+		return textHolder;
+	}
 }
