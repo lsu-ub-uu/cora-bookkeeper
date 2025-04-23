@@ -1,0 +1,69 @@
+/*
+ * Copyright 2015, 2019, 2025 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.uu.ub.cora.bookkeeper.decorator;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
+import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
+import se.uu.ub.cora.bookkeeper.text.Translation;
+import se.uu.ub.cora.data.spies.DataAtomicSpy;
+
+public class DataGenericDecoratorTest {
+	private DataChildDecorator textDataChildDecorator;
+	private DataAtomicSpy dataTextVariable;
+	private TextHolderSpy textHolder;
+	private MetadataElementSpy metadataElement;
+
+	@BeforeMethod
+	public void beforeMethod() {
+		metadataElement = new MetadataElementSpy();
+
+		textHolder = new TextHolderSpy();
+		textHolder.MRV.setDefaultReturnValuesSupplier("getTextElement", this::createTextElement);
+
+		createTextElement();
+
+		textDataChildDecorator = new DataGenericDecorator(metadataElement, textHolder);
+		dataTextVariable = new DataAtomicSpy();
+	}
+
+	private TextElementSpy createTextElement() {
+		TextElementSpy textElement = new TextElementSpy();
+		Set<Translation> translations = new LinkedHashSet<>();
+		translations.add(new Translation("en", "a text"));
+		translations.add(new Translation("sv", "en text"));
+		textElement.MRV.setDefaultReturnValuesSupplier("getTranslations", () -> translations);
+		return textElement;
+	}
+
+	@Test
+	public void testDecorate() {
+		textDataChildDecorator.decorateData(dataTextVariable);
+
+		textHolder.MCR.assertParameters("getTextElement", 0, "someTextId");
+		dataTextVariable.MCR.assertCalledParameters("addAttributeByIdWithValue", "_sv", "en text");
+		dataTextVariable.MCR.assertCalledParameters("addAttributeByIdWithValue", "_en", "a text");
+	}
+}

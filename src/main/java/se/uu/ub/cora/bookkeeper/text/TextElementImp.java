@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -17,7 +17,11 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.bookkeeper;
+package se.uu.ub.cora.bookkeeper.text;
+
+import java.util.Set;
+
+import se.uu.ub.cora.bookkeeper.TranslationHolder;
 
 /**
  * TextElement holds information about a text and the translation of that text
@@ -27,31 +31,38 @@ package se.uu.ub.cora.bookkeeper;
  * @since 0.1
  *
  */
-public final class TextElement {
+public final class TextElementImp implements TextElement {
 
 	private final String id;
 	private final TranslationHolder translationHolder;
 
-	public static TextElement withIdAndTranslationHolder(String id,
-			TranslationHolder translationHolder) {
-		return new TextElement(id, translationHolder);
+	public static TextElementImp withId(String id) {
+		return new TextElementImp(id);
 	}
 
-	private TextElement(String id, TranslationHolder translationHolder) {
+	private TextElementImp(String id) {
 		this.id = id;
-		this.translationHolder = translationHolder;
+		this.translationHolder = new TranslationHolder();
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	public TranslationHolder getTranslations() {
-		return translationHolder;
+	@Override
+	public Set<Translation> getTranslations() {
+		return translationHolder.getTranslations();
 	}
 
+	@Override
 	public String getTranslationByLanguage(String language) {
 		return translationHolder.getTranslation(language);
+	}
+
+	@Override
+	public void addTranslation(String language, String text) {
+		translationHolder.addTranslation(language, text);
 	}
 
 }

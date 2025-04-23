@@ -26,7 +26,7 @@ public interface MetadataHolder {
 
 	/**
 	 * addMetadataElement adds an element to the internal holder of elements, if the element already
-	 * exists should it be replaced
+	 * exists it should be replaced
 	 * 
 	 * @param metadataElement
 	 *            A MetadataElement to add to the internal holder

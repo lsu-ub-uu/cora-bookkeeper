@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,8 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.bookkeeper.text;
 
-package se.uu.ub.cora.bookkeeper;
+public record Translation(String language, String text) {
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class TextHolder {
-	
-	private Map<String, TextElement>textElements = new HashMap<>();
-	
-	public void addTextElement(TextElement textElement) {
-		textElements.put(textElement.getId(), textElement);
-	}
-
-	public TextElement getTextElement(String textId) {
-		return textElements.get(textId);
-	}
-	
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,11 +19,14 @@
 
 package se.uu.ub.cora.bookkeeper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+
+import se.uu.ub.cora.bookkeeper.text.Translation;
 
 public class TranslationHolder {
-	private Map<String, String> translations = new HashMap<>();
+	private Map<String, String> translations = new LinkedHashMap<>();
 
 	public void addTranslation(String languageId, String text) {
 		translations.put(languageId, text);
@@ -33,4 +36,9 @@ public class TranslationHolder {
 		return translations.get(languageId);
 	}
 
+	public Set<Translation> getTranslations() {
+		return translations.entrySet().stream()
+				.map(entry -> new Translation(entry.getKey(), entry.getValue()))
+				.collect(java.util.stream.Collectors.toSet());
+	}
 }
