@@ -31,8 +31,8 @@ import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.data.spies.DataAtomicSpy;
 
 public class DataGenericDecoratorTest {
-	private DataChildDecorator textDataChildDecorator;
-	private DataAtomicSpy dataTextVariable;
+	private DataChildDecorator decorator;
+	private DataAtomicSpy genericVariable;
 	private TextHolderSpy textHolder;
 	private MetadataElementSpy metadataElement;
 
@@ -45,8 +45,8 @@ public class DataGenericDecoratorTest {
 
 		createTextElement();
 
-		textDataChildDecorator = new DataGenericDecorator(metadataElement, textHolder);
-		dataTextVariable = new DataAtomicSpy();
+		decorator = new DataGenericDecorator(metadataElement, textHolder);
+		genericVariable = new DataAtomicSpy();
 	}
 
 	private TextElementSpy createTextElement() {
@@ -60,10 +60,20 @@ public class DataGenericDecoratorTest {
 
 	@Test
 	public void testDecorate() {
-		textDataChildDecorator.decorateData(dataTextVariable);
+		decorator.decorateData(genericVariable);
 
 		textHolder.MCR.assertParameters("getTextElement", 0, "someTextId");
-		dataTextVariable.MCR.assertCalledParameters("addAttributeByIdWithValue", "_sv", "en text");
-		dataTextVariable.MCR.assertCalledParameters("addAttributeByIdWithValue", "_en", "a text");
+		genericVariable.MCR.assertCalledParameters("addAttributeByIdWithValue", "_sv", "en text");
+		genericVariable.MCR.assertCalledParameters("addAttributeByIdWithValue", "_en", "a text");
+	}
+
+	@Test
+	public void testRunExtraDecorator() {
+		DataChildDecoratorSpy extraDecorator = new DataChildDecoratorSpy();
+		((DataGenericDecorator) decorator).setExtraDecorator(extraDecorator);
+
+		decorator.decorateData(genericVariable);
+
+		extraDecorator.MCR.assertParameters("decorateData", 0, genericVariable);
 	}
 }

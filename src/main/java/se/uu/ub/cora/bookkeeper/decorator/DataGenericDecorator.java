@@ -31,6 +31,7 @@ class DataGenericDecorator implements DataChildDecorator {
 
 	private MetadataElement metadataElement;
 	private TextHolder textHolder;
+	private DataChildDecorator extraDecorator;
 
 	public DataGenericDecorator(MetadataElement metadataElement, TextHolder textHolder) {
 		this.metadataElement = metadataElement;
@@ -39,6 +40,17 @@ class DataGenericDecorator implements DataChildDecorator {
 
 	@Override
 	public void decorateData(DataChild dataChild) {
+		decorateDataChildWithTexts(dataChild);
+		possiblyRunExtraDecorator(dataChild);
+	}
+
+	private void possiblyRunExtraDecorator(DataChild dataChild) {
+		if (null != extraDecorator) {
+			extraDecorator.decorateData(dataChild);
+		}
+	}
+
+	private void decorateDataChildWithTexts(DataChild dataChild) {
 		String textId = metadataElement.getTextId();
 		TextElement textElement = textHolder.getTextElement(textId);
 		Set<Translation> translations = textElement.getTranslations();
@@ -65,5 +77,9 @@ class DataGenericDecorator implements DataChildDecorator {
 
 	public TextHolder onlyForTestGetTextHolder() {
 		return textHolder;
+	}
+
+	public void setExtraDecorator(DataChildDecorator extraChildDecorator) {
+		this.extraDecorator = extraChildDecorator;
 	}
 }
