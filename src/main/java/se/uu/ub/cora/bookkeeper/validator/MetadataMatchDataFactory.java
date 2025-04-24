@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,6 +20,11 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 public interface MetadataMatchDataFactory {
 
+	/**
+	 * factor is a factory method that creates a new instance of MetadataMatchData.
+	 * 
+	 * @return
+	 */
 	MetadataMatchData factor();
 
 }

@@ -32,7 +32,7 @@ public class MatcherFactoryTest {
 	public void testFactor() {
 		DataGroupSpy dataGroupSpy = new DataGroupSpy();
 		MetadataGroupSpy metadataGroupSpy = new MetadataGroupSpy("recordInfoGroup", "recordInfo");
-		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
+		MetadataMatchData dataMatcher = new MetadataMatchDataOldSpy();
 		MatcherFactory factory = new MatcherFactoryImp(dataMatcher);
 
 		GroupMatcher groupMatcher = (GroupMatcher) factory.factor(dataGroupSpy, metadataGroupSpy);
@@ -41,7 +41,7 @@ public class MatcherFactoryTest {
 
 	@Test
 	public void testGetMetadataMatchData() {
-		MetadataMatchData dataMatcher = new MetadataMatchDataSpy();
+		MetadataMatchData dataMatcher = new MetadataMatchDataOldSpy();
 		MatcherFactoryImp factory = new MatcherFactoryImp(dataMatcher);
 		assertSame(factory.onlyForTestGetMetadataMatchData(), dataMatcher);
 	}

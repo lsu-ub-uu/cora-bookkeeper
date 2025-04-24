@@ -20,40 +20,33 @@
 package se.uu.ub.cora.bookkeeper.decorator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderImp;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
-import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
 import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.data.DataChild;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.spies.DataAtomicSpy;
-import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 
 public class DataGroupDecoratorTest {
-	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
-	private DataFactorySpy dataFactorySpy;
-	private MetadataElementSpy metadataElement;
-	private TextHolderSpy textHolder;
 	private DataGroupDecorator dataGroupDecorator;
 	private DataGroupSpy dataGroup;
 	private DataChildDecoratorFactorySpy dataChildDecoratorFactorySpy;
-	private MetadataHolder metadataHolder;
+	private MetadataHolderSpy metadataHolder;
 	private MetadataGroupSpy metadataGroupSpy;
+	private MetadataMatchDataFactorySpy metadataMatchFactory;
+	private List<DataChild> dataGroupGetChildrenList;
+	private List<MetadataChildReference> childReferenceList;
+	private MetadataMatchDataSpy matcher;
 
 	@BeforeMethod
 	public void beforMethod() {
@@ -68,29 +61,29 @@ public class DataGroupDecoratorTest {
 		// recordTypeHolder.put("image", image);
 
 		dataChildDecoratorFactorySpy = new DataChildDecoratorFactorySpy();
+		metadataMatchFactory = new MetadataMatchDataFactorySpy();
 
-		/////////////////////////////
-
-		// metadataHolder = new MetadataHolderSpy();
-		metadataHolder = createOneGroupNoAttributesOneTextChild();
+		metadataHolder = new MetadataHolderSpy();
 		metadataGroupSpy = new MetadataGroupSpy("someId", "someNameInData", "someTextId",
 				"someDefTextId");
-
-		textHolder = new TextHolderSpy();
-		textHolder.MRV.setDefaultReturnValuesSupplier("getTextElement", this::createTextElement);
-
 		createTextElement();
 
 		dataGroupDecorator = new DataGroupDecorator(dataChildDecoratorFactorySpy, metadataHolder,
-				metadataGroupSpy, textHolder);
-		dataGroup = new DataGroupSpy();
-	}
+				metadataGroupSpy, metadataMatchFactory);
 
-	private MetadataHolderImp createOneGroupNoAttributesOneTextChild() {
-		MetadataHolderImp specificMetadataHolder = new MetadataHolderImp();
-		MetadataGroup group = DataCreator.createMetaDataGroup("test", specificMetadataHolder);
-		DataCreator.addOnlyOneTextVarChildReferenceToGroup("text1", group, specificMetadataHolder);
-		return specificMetadataHolder;
+		childReferenceList = new ArrayList<>();
+		// for (var childReference : childReferences) {
+		// childReferenceList.add(childReference);
+		// }
+		metadataGroupSpy.MRV.setDefaultReturnValuesSupplier("getChildReferences",
+				() -> childReferenceList);
+
+		matcher = new MetadataMatchDataSpy();
+		metadataMatchFactory.MRV.setDefaultReturnValuesSupplier("factor", () -> matcher);
+
+		dataGroup = new DataGroupSpy();
+		dataGroupGetChildrenList = new ArrayList<>();
+		dataGroup.MRV.setDefaultReturnValuesSupplier("getChildren", () -> dataGroupGetChildrenList);
 	}
 
 	private TextElementSpy createTextElement() {
@@ -103,36 +96,99 @@ public class DataGroupDecoratorTest {
 	}
 
 	@Test
-	public void testDecorateDataGroup() {
-		dataGroupDecorator.decorateData(dataGroup);
-
-		textHolder.MCR.assertParameters("getTextElement", 0, "someTextId");
-		dataGroup.MCR.assertCalledParameters("addAttributeByIdWithValue", "_sv", "en text");
-		dataGroup.MCR.assertCalledParameters("addAttributeByIdWithValue", "_en", "a text");
-	}
-
-	@Test
-	public void testDecorateChilds() {
-		DataAtomicSpy textVariableChild = new DataAtomicSpy();
-		textVariableChild.MRV.setDefaultReturnValuesSupplier("getNameInData",
-				() -> "text1NameInData");
-		addChildrenToDataGroup(textVariableChild);
-
-		MetadataChildReference childReference1 = MetadataChildReference
-				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadata",
-						"text1Id", 1, 1);
-		addChildReferencesToMetadataGroup(childReference1);
+	public void testDecorateOneChild() {
+		DataAtomicSpy textVariableChild1 = createMatchingDataChildAndMetadata(matcher, "text1Id",
+				"text1NameInData");
 
 		dataGroupDecorator.decorateData(dataGroup);
 
 		metadataGroupSpy.MCR.assertMethodWasCalled("getChildReferences");
-		dataChildDecoratorFactorySpy.MCR.assertNumberOfCallsToMethod("factor", 1);
+		var metadataFromHolder = metadataHolder.MCR
+				.assertCalledParametersReturn("getMetadataElement", "text1Id");
+		matcher.MCR.assertParameters("metadataSpecifiesData", 0, metadataFromHolder,
+				textVariableChild1);
 		var childDecorator = (DataChildDecoratorSpy) dataChildDecoratorFactorySpy.MCR
 				.assertCalledParametersReturn("factor", "text1Id");
-		childDecorator.MCR.assertParameters("decorateData", 0, textVariableChild);
+		childDecorator.MCR.assertParameters("decorateData", 0, textVariableChild1);
 	}
 
-	private void addChildrenToDataGroup(DataAtomicSpy... textVariableChilds) {
+	@Test
+	public void testDecorateThreeDataChildAndFourMetadataChild() {
+		createMetadataChildReference("text4Id");
+		DataAtomicSpy textVariableChild1 = createMatchingDataChildAndMetadata(matcher, "text1Id",
+				"text1NameInData");
+		DataAtomicSpy textVariableChild2 = createMatchingDataChildAndMetadata(matcher, "text2Id",
+				"text2NameInData");
+		DataAtomicSpy textVariableChild3 = createMatchingDataChildAndMetadata(matcher, "text3Id",
+				"text3NameInData");
+
+		dataGroupDecorator.decorateData(dataGroup);
+
+		dataChildDecoratorFactorySpy.MCR.assertNumberOfCallsToMethod("factor", 3);
+		metadataMatchFactory.MCR.assertNumberOfCallsToMethod("factor", 9);
+
+		// DataAtomicSpy dataChild = textVariableChild1;
+		int i = 1;
+		for (var dataChild : dataGroupGetChildrenList) {
+			String metadataId = "text" + i + "Id";
+			assertDataChildDecorated(metadataId, dataChild);
+			i++;
+		}
+		// var childDecorator2 = (DataChildDecoratorSpy) dataChildDecoratorFactorySpy.MCR
+		// .assertCalledParametersReturn("factor", "text2Id");
+		// childDecorator2.MCR.assertCalledParameters("decorateData", textVariableChild2);
+		// var childDecorator3 = (DataChildDecoratorSpy) dataChildDecoratorFactorySpy.MCR
+		// .assertCalledParametersReturn("factor", "text3Id");
+		// childDecorator3.MCR.assertCalledParameters("decorateData", textVariableChild3);
+
+	}
+
+	private void assertDataChildDecorated(String metadataId, DataChild dataChild) {
+		var childDecorator1 = (DataChildDecoratorSpy) dataChildDecoratorFactorySpy.MCR
+				.assertCalledParametersReturn("factor", metadataId);
+		childDecorator1.MCR.assertCalledParameters("decorateData", dataChild);
+	}
+
+	private DataAtomicSpy createMatchingDataChildAndMetadata(MetadataMatchDataSpy matcher,
+			String metadataId, String nameInData) {
+		createMetadataChildReference(metadataId);
+		MetadataElementSpy childElement = setupMetadataHolderWithId(metadataId);
+		DataAtomicSpy textVariableChild = createAtomicWithNameInData(nameInData);
+
+		matcher.MRV.setSpecificReturnValuesSupplier("metadataSpecifiesData",
+				() -> createValidAnswer(), childElement, textVariableChild);
+		return textVariableChild;
+	}
+
+	private MetadataElementSpy setupMetadataHolderWithId(String metadataId) {
+		MetadataElementSpy childElement1 = new MetadataElementSpy();
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				() -> childElement1, metadataId);
+		return childElement1;
+	}
+
+	private ValidationAnswerSpy createValidAnswer() {
+		ValidationAnswerSpy validAnswer = new ValidationAnswerSpy();
+		validAnswer.MRV.setDefaultReturnValuesSupplier("dataIsValid", () -> true);
+		return validAnswer;
+	}
+
+	private DataAtomicSpy createAtomicWithNameInData(String nameInData) {
+		DataAtomicSpy textVariableChild = new DataAtomicSpy();
+		textVariableChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
+		dataGroupGetChildrenList.add(textVariableChild);
+		return textVariableChild;
+	}
+
+	private void createMetadataChildReference(String metadataId) {
+		MetadataChildReference childReference = MetadataChildReference
+				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadata",
+						metadataId, 1, 1);
+		childReferenceList.add(childReference);
+		// return childReference;
+	}
+
+	private void setupGetChildrenToDataGroup(DataAtomicSpy... textVariableChilds) {
 		List<DataChild> dataGroupChildren = new ArrayList<>();
 		for (var textVariableChild : textVariableChilds) {
 			dataGroupChildren.add(textVariableChild);

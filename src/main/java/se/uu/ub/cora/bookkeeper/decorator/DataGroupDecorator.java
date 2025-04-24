@@ -20,18 +20,14 @@
 package se.uu.ub.cora.bookkeeper.decorator;
 
 import java.util.Collection;
-import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.text.TextElement;
-import se.uu.ub.cora.bookkeeper.text.TextHolder;
-import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
@@ -41,54 +37,34 @@ class DataGroupDecorator implements DataChildDecorator {
 	private DataChildDecoratorFactory dataDecoratorFactory;
 	private final MetadataGroup metadataGroup;
 	private MetadataHolder metadataHolder;
-	// protected DataGroup dataGroup;
 	protected ValidationAnswer validationAnswer;
-	private TextHolder textHolder;
+	private MetadataMatchDataFactory metadataMatchFactory;
 
 	DataGroupDecorator(DataChildDecoratorFactory dataDecoratorFactory,
-			MetadataHolder metadataHolder, MetadataGroup metadataGroup, TextHolder textHolder) {
+			MetadataHolder metadataHolder, MetadataGroup metadataGroup,
+			MetadataMatchDataFactory metadataMatchFactory) {
 		this.dataDecoratorFactory = dataDecoratorFactory;
 		this.metadataHolder = metadataHolder;
 		this.metadataGroup = metadataGroup;
-		this.textHolder = textHolder;
+		this.metadataMatchFactory = metadataMatchFactory;
 	}
 
 	@Override
 	public void decorateData(DataChild dataGroup) {
-		decorateGroup(dataGroup);
 		decorateChildren((DataGroup) dataGroup);
-	}
-
-	private void decorateGroup(DataChild dataChild) {
-		String textId = metadataGroup.getTextId();
-		TextElement textElement = textHolder.getTextElement(textId);
-		Set<Translation> translations = textElement.getTranslations();
-		addTranslationsAsAttributes(dataChild, translations);
-	}
-
-	private void addTranslationsAsAttributes(DataChild dataChild, Set<Translation> translations) {
-		translations.forEach(translation -> addAttribute(dataChild, translation));
-	}
-
-	private void addAttribute(DataChild dataChild, Translation translation) {
-		String language = attributeNameWithUnderscore(translation.language());
-		String text = translation.text();
-		dataChild.addAttributeByIdWithValue(language, text);
-	}
-
-	private String attributeNameWithUnderscore(String language) {
-		return "_" + language;
 	}
 
 	private void decorateChildren(DataGroup dataGroup) {
 		// if (!dataGroup.hasChildren()) Do we need to handle it?
 		Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
-		for (MetadataChildReference childReference : childReferences) {
-			String referenceId = childReference.getLinkedRecordId();
-			for (DataChild childData : dataGroup.getChildren()) {
+		for (DataChild childData : dataGroup.getChildren()) {
+			for (MetadataChildReference childReference : childReferences) {
+				String referenceId = childReference.getLinkedRecordId();
 				if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
 					DataChildDecorator decorator = dataDecoratorFactory.factor(referenceId);
 					decorator.decorateData(childData);
+					// TODO: test break
+					break;
 				}
 			}
 		}
@@ -100,8 +76,7 @@ class DataGroupDecorator implements DataChildDecorator {
 			throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
 		}
 		MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp
-				.withMetadataHolder(metadataHolder);
+		MetadataMatchData metadataMatchData = metadataMatchFactory.factor();
 		return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
 	}
 
