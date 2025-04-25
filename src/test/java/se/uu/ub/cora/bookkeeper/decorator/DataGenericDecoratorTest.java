@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
+import static org.testng.Assert.assertSame;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -27,6 +29,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
+import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.data.spies.DataAtomicSpy;
 
@@ -38,14 +41,16 @@ public class DataGenericDecoratorTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
+		textHolder = new TextHolderSpy();
+		TextHolderProvider.onlyForTestSetHolder(textHolder);
+
 		metadataElement = new MetadataElementSpy();
 
-		textHolder = new TextHolderSpy();
 		textHolder.MRV.setDefaultReturnValuesSupplier("getTextElement", this::createTextElement);
 
 		createTextElement();
 
-		decorator = new DataGenericDecorator(metadataElement, textHolder);
+		decorator = new DataGenericDecorator(metadataElement);
 		genericVariable = new DataAtomicSpy();
 	}
 
@@ -75,5 +80,15 @@ public class DataGenericDecoratorTest {
 		decorator.decorateData(genericVariable);
 
 		extraDecorator.MCR.assertParameters("decorateData", 0, genericVariable);
+	}
+
+	@Test
+	public void testonlyForTestGetExtraDecorator() {
+		DataChildDecoratorSpy extraDecoratorIn = new DataChildDecoratorSpy();
+		((DataGenericDecorator) decorator).setExtraDecorator(extraDecoratorIn);
+
+		var extraDecoratorOut = ((DataGenericDecorator) decorator).onlyForTestGetExtraDecorator();
+
+		assertSame(extraDecoratorOut, extraDecoratorIn);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,43 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.decorator;
+package se.uu.ub.cora.bookkeeper.text;
 
-import se.uu.ub.cora.bookkeeper.text.TextElement;
-import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
-import se.uu.ub.cora.bookkeeper.text.TextHolder;
+import se.uu.ub.cora.bookkeeper.decorator.TextHolderSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class TextHolderSpy implements TextHolder {
-
+public class TextHolderPopulatorSpy implements TextHolderPopulator {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public TextHolderSpy() {
+	public TextHolderPopulatorSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getTextElement", TextElementSpy::new);
-		MRV.setDefaultReturnValuesSupplier("containsTextElement", () -> false);
+		MRV.setDefaultReturnValuesSupplier("createAndPopulateTextHolderFromMetadataStorage",
+				TextHolderSpy::new);
 	}
 
 	@Override
-	public void addTextElement(TextElement textElement) {
-		MCR.addCall("textElement", textElement);
-	}
-
-	@Override
-	public TextElement getTextElement(String elementId) {
-		return (TextElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
-	}
-
-	@Override
-	public void deleteTextElement(String elementId) {
-		MCR.addCall("elementId", elementId);
-	}
-
-	@Override
-	public boolean containsTextElement(String elementId) {
-		return (boolean) MCR.addCallAndReturnFromMRV("elementId", elementId);
+	public TextHolder createAndPopulateTextHolderFromMetadataStorage() {
+		return (TextHolder) MCR.addCallAndReturnFromMRV();
 	}
 
 }

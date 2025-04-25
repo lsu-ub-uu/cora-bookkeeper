@@ -19,8 +19,6 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
-import static org.testng.Assert.assertSame;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -30,8 +28,10 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
+import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.data.spies.DataAtomicSpy;
 
@@ -46,12 +46,14 @@ public class DataCollectionVarDecoratorTest {
 
 	@BeforeMethod
 	public void beforMethod() {
-		setUpMetadataMatchFactory();
 		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
+		textHolder = new TextHolderSpy();
+		TextHolderProvider.onlyForTestSetHolder(textHolder);
+		setUpMetadataMatchFactory();
 
 		createItemCollectionAndAddToMetadataHolder("blue", "yellow");
 
-		textHolder = new TextHolderSpy();
 		textHolder.MRV.setSpecificReturnValuesSupplier("getTextElement", this::createTextElement,
 				"yellowTextId");
 
@@ -60,7 +62,7 @@ public class DataCollectionVarDecoratorTest {
 		createCollectionVarMetadata();
 		createDataAtomic("yellow");
 
-		decorator = new DataCollectionVarDecorator(metadataHolder, textHolder, collectionVar);
+		decorator = new DataCollectionVarDecorator(collectionVar);
 	}
 
 	private void createItemCollectionAndAddToMetadataHolder(String... itemValues) {
@@ -122,13 +124,4 @@ public class DataCollectionVarDecoratorTest {
 				"a yellow text");
 	}
 
-	@Test
-	public void testOnlyForTestGetMetadataHolder() {
-		assertSame(decorator.onlyForTestGetMetadataHolder(), metadataHolder);
-	}
-
-	@Test
-	public void testOnlyForTestGetTextHolder() {
-		assertSame(decorator.onlyForTestGetTextHolder(), textHolder);
-	}
 }

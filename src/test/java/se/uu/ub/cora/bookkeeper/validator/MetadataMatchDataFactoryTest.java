@@ -20,17 +20,24 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertSame;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 
 public class MetadataMatchDataFactoryTest {
+	private MetadataHolderSpy metadataHolder;
+
+	@BeforeMethod
+	public void beforMethod() {
+		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
+	}
 
 	@Test
 	public void testFactor() {
-		MetadataHolder metadataHolder = new MetadataHolderSpy();
-		MetadataMatchDataFactory factory = MetadataMatchFactoryImp.usingMetadataHolder(metadataHolder);
+		MetadataMatchDataFactory factory = new MetadataMatchFactoryImp();
 		MetadataMatchDataImp matcher = (MetadataMatchDataImp) factory.factor();
 		assertSame(matcher.onlyForTestGetMetadataHolder(), metadataHolder);
 	}

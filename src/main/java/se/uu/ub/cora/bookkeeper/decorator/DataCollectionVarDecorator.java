@@ -28,8 +28,10 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectionItem;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.ItemCollection;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.text.TextElement;
 import se.uu.ub.cora.bookkeeper.text.TextHolder;
+import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
@@ -39,15 +41,14 @@ class DataCollectionVarDecorator implements DataChildDecorator {
 	private TextHolder textHolder;
 	private CollectionVariable collectionVar;
 
-	public DataCollectionVarDecorator(MetadataHolder metadataHolder, TextHolder textHolder,
-			CollectionVariable collectionVar) {
-		this.metadataHolder = metadataHolder;
-		this.textHolder = textHolder;
+	public DataCollectionVarDecorator(CollectionVariable collectionVar) {
 		this.collectionVar = collectionVar;
 	}
 
 	@Override
 	public void decorateData(DataChild dataChild) {
+		metadataHolder = MetadataHolderProvider.getHolder();
+		textHolder = TextHolderProvider.getHolder();
 		decorateDataAtomic((DataAtomic) dataChild);
 	}
 
@@ -93,13 +94,5 @@ class DataCollectionVarDecorator implements DataChildDecorator {
 
 	private String attributeNameWithPrefix(String language) {
 		return "_value_" + language;
-	}
-
-	MetadataHolder onlyForTestGetMetadataHolder() {
-		return metadataHolder;
-	}
-
-	public Object onlyForTestGetTextHolder() {
-		return textHolder;
 	}
 }

@@ -39,29 +39,29 @@ public interface TextHolder {
 	 * <p>
 	 * if the element does not exist, SHOULD an DataMissingException be thrown
 	 * 
-	 * @param textId
+	 * @param elementId
 	 *            A String with the id of the Text element to get
 	 * @throws DataMissingException
 	 *             if the text does not exist
 	 * @return The requested MetadataElement
 	 */
-	TextElement getTextElement(String textId);
+	TextElement getTextElement(String elementId);
 
 	/**
 	 * deleteTextElement removes the TextElement with the given textId from the holder
 	 * 
-	 * @param textId
+	 * @param elementId
 	 *            A String with the id of the Text element to delete
 	 */
-	void deleteTextElement(String textId);
+	void deleteTextElement(String elementId);
 
 	/**
 	 * containsTextElement checks if the holder contains a text with the given textId
 	 * 
-	 * @param textId
+	 * @param elementId
 	 *            A String with the id of the Text element to check for
 	 * @return A boolean indicating whether the text is in the holder or not.
 	 */
-	boolean containsTextElement(String textId);
+	boolean containsTextElement(String elementId);
 
 }

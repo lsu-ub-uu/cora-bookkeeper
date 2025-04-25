@@ -26,6 +26,7 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
@@ -41,16 +42,15 @@ class DataGroupDecorator implements DataChildDecorator {
 	private MetadataMatchDataFactory metadataMatchFactory;
 
 	DataGroupDecorator(DataChildDecoratorFactory dataDecoratorFactory,
-			MetadataHolder metadataHolder, MetadataGroup metadataGroup,
-			MetadataMatchDataFactory metadataMatchFactory) {
+			MetadataMatchDataFactory metadataMatchFactory, MetadataGroup metadataGroup) {
 		this.dataDecoratorFactory = dataDecoratorFactory;
-		this.metadataHolder = metadataHolder;
-		this.metadataGroup = metadataGroup;
 		this.metadataMatchFactory = metadataMatchFactory;
+		this.metadataGroup = metadataGroup;
 	}
 
 	@Override
 	public void decorateData(DataChild dataGroup) {
+		metadataHolder = MetadataHolderProvider.getHolder();
 		decorateAllChildren((DataGroup) dataGroup);
 	}
 
@@ -70,7 +70,8 @@ class DataGroupDecorator implements DataChildDecorator {
 		}
 	}
 
-	private boolean iterateChildReferencesUntilChildIsMatched(boolean found, Iterator<MetadataChildReference> iterator) {
+	private boolean iterateChildReferencesUntilChildIsMatched(boolean found,
+			Iterator<MetadataChildReference> iterator) {
 		return !found && iterator.hasNext();
 	}
 
@@ -96,8 +97,8 @@ class DataGroupDecorator implements DataChildDecorator {
 		return dataDecoratorFactory;
 	}
 
-	MetadataHolder onlyForTestGetMetadataHolder() {
-		return metadataHolder;
+	MetadataMatchDataFactory onlyForTestGetMetadataMatchFactory() {
+		return metadataMatchFactory;
 	}
 
 	MetadataElement onlyForTestGetMetadataElement() {

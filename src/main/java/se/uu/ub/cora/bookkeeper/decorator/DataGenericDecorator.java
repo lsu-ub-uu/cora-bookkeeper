@@ -24,18 +24,17 @@ import java.util.Set;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.text.TextElement;
 import se.uu.ub.cora.bookkeeper.text.TextHolder;
+import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.text.Translation;
 import se.uu.ub.cora.data.DataChild;
 
 class DataGenericDecorator implements DataChildDecorator {
 
 	private MetadataElement metadataElement;
-	private TextHolder textHolder;
 	private DataChildDecorator extraDecorator;
 
-	public DataGenericDecorator(MetadataElement metadataElement, TextHolder textHolder) {
+	public DataGenericDecorator(MetadataElement metadataElement) {
 		this.metadataElement = metadataElement;
-		this.textHolder = textHolder;
 	}
 
 	@Override
@@ -52,6 +51,7 @@ class DataGenericDecorator implements DataChildDecorator {
 
 	private void decorateDataChildWithTexts(DataChild dataChild) {
 		String textId = metadataElement.getTextId();
+		TextHolder textHolder = TextHolderProvider.getHolder();
 		TextElement textElement = textHolder.getTextElement(textId);
 		Set<Translation> translations = textElement.getTranslations();
 		addTranslationsAsAttributes(dataChild, translations);
@@ -75,11 +75,11 @@ class DataGenericDecorator implements DataChildDecorator {
 		return metadataElement;
 	}
 
-	public TextHolder onlyForTestGetTextHolder() {
-		return textHolder;
-	}
-
 	public void setExtraDecorator(DataChildDecorator extraChildDecorator) {
 		this.extraDecorator = extraChildDecorator;
+	}
+
+	public DataChildDecorator onlyForTestGetExtraDecorator() {
+		return extraDecorator;
 	}
 }

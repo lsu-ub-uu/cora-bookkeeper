@@ -20,8 +20,9 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +31,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
+import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
+import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
+import se.uu.ub.cora.bookkeeper.validator.MetadataMatchFactoryImp;
 import se.uu.ub.cora.bookkeeper.validator.NumberVariableSpy;
 import se.uu.ub.cora.bookkeeper.validator.RecordLinkSpy;
 import se.uu.ub.cora.bookkeeper.validator.TextVariableSpy;
@@ -47,48 +52,57 @@ public class DataChildDecoratorFactoryTest {
 	@BeforeMethod
 	public void setup() {
 		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
 		textHolder = new TextHolderSpy();
-		dataDecoratorFactory = new DataChildDecoratorFactoryImp(recordTypeHolder, metadataHolder,
-				textHolder);
+		TextHolderProvider.onlyForTestSetHolder(textHolder);
+		dataDecoratorFactory = new DataChildDecoratorFactoryImp(recordTypeHolder);
 	}
-
-	// @Test
-	// public void testFactorDataValidatorMetadataGroup() {
-	// String elementId = "metadataGroupId";
-	// MetadataGroupSpy metadataGroup = new MetadataGroupSpy(elementId, "someNameInData");
-	// addMetadataElementSpyToMetadataHolderSpy(elementId, metadataGroup);
-	//
-	// DataGroupValidator validator = (DataGroupValidator) dataDecoratorFactory.factor(elementId);
-	//
-	// assertSame(validator.onlyForTestGetDataElementValidatorFactory(), dataDecoratorFactory);
-	// assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
-	// assertSame(validator.onlyForTestGetMetadataElement(), metadataGroup);
-	// }
 
 	@Test
 	public void testFactorDataValidatorMetadataTextVariable() {
+		String elementId = "textVariableId";
 		TextVariableSpy textVariable = new TextVariableSpy();
-		addMetadataElementSpyToMetadataHolderSpy("textVariableId", textVariable);
+		addMetadataElementSpyToMetadataHolderSpy(elementId, textVariable);
 
-		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor("textVariableId");
+		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor(elementId);
 
-		assertMetadataElementAndTextHolderIsPassed(textVariable, decorator);
-	}
-
-	private void assertMetadataElementAndTextHolderIsPassed(MetadataElement textVariable,
-			DataGenericDecorator decorator) {
 		assertSame(decorator.onlyForTestGetMetadataElement(), textVariable);
-		assertSame(decorator.onlyForTestGetTextHolder(), textHolder);
+		assertNoExtraDecoratorSetUp(decorator);
 	}
 
 	@Test
 	public void testFactorDataValidatorMetadataNumberVariable() {
+		String elementId = "someNumberVariableId";
 		NumberVariableSpy numberVariable = new NumberVariableSpy();
-		addMetadataElementSpyToMetadataHolderSpy("someNumberVariableId", numberVariable);
+		addMetadataElementSpyToMetadataHolderSpy(elementId, numberVariable);
 
-		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor("someNumberVariableId");
+		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor(elementId);
 
-		assertMetadataElementAndTextHolderIsPassed(numberVariable, decorator);
+		assertSame(decorator.onlyForTestGetMetadataElement(), numberVariable);
+		assertNoExtraDecoratorSetUp(decorator);
+	}
+
+	@Test
+	public void testFactorDataValidatorMetadataGroup() {
+		String elementId = "metadataGroupId";
+		MetadataGroupSpy metadataGroup = new MetadataGroupSpy(elementId, "someNameInData");
+		addMetadataElementSpyToMetadataHolderSpy(elementId, metadataGroup);
+
+		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor(elementId);
+
+		assertSame(decorator.onlyForTestGetMetadataElement(), metadataGroup);
+		var extraDecorator = (DataGroupDecorator) decorator.onlyForTestGetExtraDecorator();
+		assertTrue(extraDecorator instanceof DataGroupDecorator);
+		assertSame(extraDecorator.onlyForTestGetMetadataElement(), metadataGroup);
+		assertSame(extraDecorator.onlyForTestGetDataElementValidatorFactory(),
+				dataDecoratorFactory);
+
+		assertTrue(extraDecorator
+				.onlyForTestGetMetadataMatchFactory() instanceof MetadataMatchFactoryImp);
+	}
+
+	private void assertNoExtraDecoratorSetUp(DataGenericDecorator decorator) {
+		assertNull(decorator.onlyForTestGetExtraDecorator());
 	}
 
 	// @Test
@@ -112,7 +126,6 @@ public class DataChildDecoratorFactoryTest {
 
 		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor("recordLinkId");
 
-		assertMetadataElementAndTextHolderIsPassed(recordLink, decorator);
 	}
 
 	// @Test
@@ -136,17 +149,6 @@ public class DataChildDecoratorFactoryTest {
 	@Test(expectedExceptions = DataValidationException.class)
 	public void testNotIdFound() {
 		dataDecoratorFactory.factor("elementNotFound");
-	}
-
-	@Test
-	public void testGetMetadataHolder() {
-		try {
-			dataDecoratorFactory.factor("elementNotFound");
-
-			fail();
-		} catch (Exception e) {
-			assertSame(dataDecoratorFactory.onlyForTestGetMetadataHolder(), metadataHolder);
-		}
 	}
 
 	@Test

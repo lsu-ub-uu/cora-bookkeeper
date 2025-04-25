@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
+import static org.testng.Assert.assertSame;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
@@ -46,15 +49,16 @@ public class DataGroupDecoratorTest {
 
 	@BeforeMethod
 	public void beforMethod() {
+		metadataHolder = new MetadataHolderSpy();
+		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
 		dataChildDecoratorFactorySpy = new DataChildDecoratorFactorySpy();
 		setUpMetadataMatchFactory();
-		metadataHolder = new MetadataHolderSpy();
 		createMetadataGroup();
 
 		createDataGroup();
 
-		dataGroupDecorator = new DataGroupDecorator(dataChildDecoratorFactorySpy, metadataHolder,
-				metadataGroupSpy, metadataMatchFactory);
+		dataGroupDecorator = new DataGroupDecorator(dataChildDecoratorFactorySpy,
+				metadataMatchFactory, metadataGroupSpy);
 	}
 
 	private void setUpMetadataMatchFactory() {
@@ -172,5 +176,21 @@ public class DataGroupDecoratorTest {
 				.withLinkedRecordTypeAndLinkedRecordIdAndRepeatMinAndRepeatMax("metadata",
 						metadataId, 1, 1);
 		childReferenceList.add(childReference);
+	}
+
+	@Test
+	public void testOnlyForTestGetMetadataElement() {
+		assertSame(dataGroupDecorator.onlyForTestGetMetadataElement(), metadataGroupSpy);
+	}
+
+	@Test
+	public void testOnlyForTestGetDataElementValidatorFactory() {
+		assertSame(dataGroupDecorator.onlyForTestGetDataElementValidatorFactory(),
+				dataChildDecoratorFactorySpy);
+	}
+
+	@Test
+	public void testOnlyForTestGetMetadataMatchFactory() {
+		assertSame(dataGroupDecorator.onlyForTestGetMetadataMatchFactory(), metadataMatchFactory);
 	}
 }
