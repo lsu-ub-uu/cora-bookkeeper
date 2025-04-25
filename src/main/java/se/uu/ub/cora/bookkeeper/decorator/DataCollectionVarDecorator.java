@@ -35,7 +35,6 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
 
 class DataCollectionVarDecorator implements DataChildDecorator {
-
 	private MetadataHolder metadataHolder;
 	private TextHolder textHolder;
 	private CollectionVariable collectionVar;
@@ -56,25 +55,25 @@ class DataCollectionVarDecorator implements DataChildDecorator {
 		ItemCollection referredCollection = (ItemCollection) metadataHolder
 				.getMetadataElement(collectionVar.getRefCollectionId());
 
-		referredCollection.getCollectionItemReferences().stream()
-				.map(getCollectionItem())
-				.filter(matchItemValue(atomic)).findFirst()
-				.ifPresent(addValueTextAsAttributeOnDataAtomic(atomic));
+		var streamOfItemReferences = referredCollection.getCollectionItemReferences().stream();
+		var streamOfCollectionItems = streamOfItemReferences.map(getItemFromMetadataHolder());
+		var oFirstMatching = streamOfCollectionItems.filter(matchItemValue(atomic)).findFirst();
+		oFirstMatching.ifPresent(addValueTextAsAttributeOnDataAtomic(atomic));
 	}
 
-	private Function<? super String, ? extends CollectionItem> getCollectionItem() {
+	private Function<String, CollectionItem> getItemFromMetadataHolder() {
 		return ref -> (CollectionItem) metadataHolder.getMetadataElement(ref);
 	}
 
-	private Consumer<? super CollectionItem> addValueTextAsAttributeOnDataAtomic(DataAtomic atomic) {
+	private Predicate<CollectionItem> matchItemValue(DataAtomic atomic) {
+		return colItem -> colItem.getNameInData().equals(atomic.getValue());
+	}
+
+	private Consumer<CollectionItem> addValueTextAsAttributeOnDataAtomic(DataAtomic atomic) {
 		return colItem -> {
 			TextElement textElement = textHolder.getTextElement(colItem.getTextId());
 			decorateAtomicDataWithTexts(atomic, textElement);
 		};
-	}
-
-	private Predicate<? super CollectionItem> matchItemValue(DataAtomic atomic) {
-		return colItem -> colItem.getNameInData().equals(atomic.getValue());
 	}
 
 	private void decorateAtomicDataWithTexts(DataChild dataChild, TextElement textElement) {
@@ -100,4 +99,7 @@ class DataCollectionVarDecorator implements DataChildDecorator {
 		return metadataHolder;
 	}
 
+	public Object onlyForTestGetTextHolder() {
+		return textHolder;
+	}
 }
