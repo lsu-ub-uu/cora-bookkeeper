@@ -26,8 +26,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
-import se.uu.ub.cora.bookkeeper.text.TextHolder;
-import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchFactoryImp;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -35,12 +33,10 @@ class DataChildDecoratorFactoryImp implements DataChildDecoratorFactory {
 
 	private Map<String, DataGroup> recordTypeHolder;
 	private MetadataHolder metadataHolder;
-	private TextHolder textHolder;
 
 	public DataChildDecoratorFactoryImp(Map<String, DataGroup> recordTypeHolder) {
 		this.recordTypeHolder = recordTypeHolder;
 		metadataHolder = MetadataHolderProvider.getHolder();
-		textHolder = TextHolderProvider.getHolder();
 	}
 
 	@Override

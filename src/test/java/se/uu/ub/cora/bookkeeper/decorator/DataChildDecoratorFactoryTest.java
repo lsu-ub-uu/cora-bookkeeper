@@ -34,7 +34,6 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
-import se.uu.ub.cora.bookkeeper.text.TextHolderProvider;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchFactoryImp;
 import se.uu.ub.cora.bookkeeper.validator.NumberVariableSpy;
@@ -47,14 +46,11 @@ public class DataChildDecoratorFactoryTest {
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 	private MetadataHolderSpy metadataHolder;
 	private DataChildDecoratorFactoryImp dataDecoratorFactory;
-	private TextHolderSpy textHolder;
 
 	@BeforeMethod
 	public void setup() {
 		metadataHolder = new MetadataHolderSpy();
 		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
-		textHolder = new TextHolderSpy();
-		TextHolderProvider.onlyForTestSetHolder(textHolder);
 		dataDecoratorFactory = new DataChildDecoratorFactoryImp(recordTypeHolder);
 	}
 
