@@ -28,23 +28,33 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordSpy;
 
 public class DataDecoratorTest {
 	private DataDecoratorImp dataDecorator;
 	private DataGroup dataGroupToDecorate;
 	private DataChildDecoratorFactorySpy decoratorFactory;
+	private DataRecordSpy recordToDecorated;
+	private DataFactorySpy dataFactorySpy;
 
 	@BeforeMethod
 	public void setUp() {
+		dataFactorySpy = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 		decoratorFactory = new DataChildDecoratorFactorySpy();
 		dataDecorator = new DataDecoratorImp(decoratorFactory);
 		dataGroupToDecorate = new DataGroupSpy();
+		recordToDecorated = new DataRecordSpy();
 	}
 
 	@Test
-	public void testCallDecorateData() {
-		dataDecorator.decorateData("someMetadataId", dataGroupToDecorate);
+	public void testCallDecorateGroup() {
+		dataDecorator.decorateDataGroup("someMetadataId", dataGroupToDecorate);
 
 		var dataChildDecorator = (DataChildDecoratorSpy) decoratorFactory.MCR
 				.assertCalledParametersReturn("factor", "someMetadataId");
@@ -57,12 +67,12 @@ public class DataDecoratorTest {
 	}
 
 	@Test
-	public void testDecorateData_GoesWrong() {
+	public void testDecorateDataGroup_GoesWrong() {
 		RuntimeException thrownException = new RuntimeException("someException");
 		decoratorFactory.MRV.setAlwaysThrowException("factor", thrownException);
 
 		try {
-			dataDecorator.decorateData("someMetadataId", dataGroupToDecorate);
+			dataDecorator.decorateDataGroup("someMetadataId", dataGroupToDecorate);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof DataDecaratorException);
@@ -71,4 +81,39 @@ public class DataDecoratorTest {
 			assertEquals(e.getCause(), thrownException);
 		}
 	}
+
+	@Test
+	public void testDecorateRecord_GoesWrong() {
+		RuntimeException thrownException = new RuntimeException("someException");
+		decoratorFactory.MRV.setAlwaysThrowException("factor", thrownException);
+
+		try {
+			dataDecorator.decorateRecord("someMetadataId", recordToDecorated);
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof DataDecaratorException);
+			assertEquals(e.getMessage(),
+					"Failed to decorate record using metadataid: someMetadataId");
+			assertEquals(e.getCause(), thrownException);
+		}
+	}
+
+	@Test
+	public void testCallDecorateRecord() {
+		dataDecorator.decorateRecord("someMetadataId", recordToDecorated);
+		var dataRecordGroup = (DataRecordGroupSpy) recordToDecorated.MCR
+				.getReturnValue("getDataRecordGroup", 0);
+		var dataGroup = (DataGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorGroupFromDataRecordGroup", dataRecordGroup);
+
+		var dataChildDecorator = (DataChildDecoratorSpy) decoratorFactory.MCR
+				.assertCalledParametersReturn("factor", "someMetadataId");
+		dataChildDecorator.MCR.assertParameters("decorateData", 0, dataGroup);
+
+		var decoratedRecordGroup = (DataRecordGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", dataGroup);
+		recordToDecorated.MCR.assertParameters("setDataRecordGroup", 0, decoratedRecordGroup);
+
+	}
+
 }

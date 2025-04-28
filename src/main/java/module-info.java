@@ -12,6 +12,7 @@ module se.uu.ub.cora.bookkeeper {
 	requires transitive se.uu.ub.cora.data;
 	requires se.uu.ub.cora.initialize;
 
+	exports se.uu.ub.cora.bookkeeper.decorator;
 	exports se.uu.ub.cora.bookkeeper.linkcollector;
 	exports se.uu.ub.cora.bookkeeper.metadata;
 	exports se.uu.ub.cora.bookkeeper.text;

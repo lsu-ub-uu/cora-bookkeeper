@@ -19,6 +19,7 @@
 package se.uu.ub.cora.bookkeeper.decorator;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 
 /**
  * DataDecarator defines the methods used for decorating data according to how it is defined in
@@ -38,5 +39,21 @@ public interface DataDecarator {
 	 * @param dataGroup
 	 *            A DataGroup to decorate using the specified metadata
 	 */
-	void decorateData(String metadataGroupId, DataGroup dataGroup);
+	void decorateDataGroup(String metadataGroupId, DataGroup dataGroup);
+
+	/**
+	 * decorateRecord decorates the given DataRecord with texts from the metadata specified by the
+	 * metadataGroupId.
+	 * <p>
+	 * if something in the decoration goes wrong, SHOULD an {@link DataDecaratorException} be thrown
+	 * 
+	 * @param metadataGroupId
+	 *            A String with the id of the metadataGroup to use to decorate
+	 * @param dataRecord
+	 *            A DataRecord to decorate using the specified metadata
+	 * 
+	 * @throws DataDecaratorException
+	 *             if the element does not exist
+	 */
+	void decorateRecord(String metadataGroupId, DataRecord dataRecord);
 }
