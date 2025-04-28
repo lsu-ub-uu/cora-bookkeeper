@@ -28,9 +28,13 @@ public interface DataDecarator {
 	/**
 	 * DecorateData decorates the given DataGroup with texts from the metadata specified by the
 	 * metadataGroupId.
+	 * <p>
+	 * if something in the decoration goes wrong, SHOULD an {@link DataDecaratorException} be thrown
 	 * 
 	 * @param metadataGroupId
 	 *            A String with the id of the metadataGroup to use to decorate
+	 * @throws DataDecaratorException
+	 *             if the element does not exist
 	 * @param dataGroup
 	 *            A DataGroup to decorate using the specified metadata
 	 */

@@ -95,4 +95,8 @@ class DataCollectionVarDecorator implements DataChildDecorator {
 	private String attributeNameWithPrefix(String language) {
 		return "_value_" + language;
 	}
+
+	public Object onlyForTestGetMetadataElement() {
+		return collectionVar;
+	}
 }

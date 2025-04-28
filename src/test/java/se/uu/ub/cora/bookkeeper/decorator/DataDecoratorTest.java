@@ -19,7 +19,10 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -53,4 +56,19 @@ public class DataDecoratorTest {
 		assertSame(dataDecorator.onlyForTestGetDataChildDecoratorFactory(), decoratorFactory);
 	}
 
+	@Test
+	public void testDecorateData_GoesWrong() {
+		RuntimeException thrownException = new RuntimeException("someException");
+		decoratorFactory.MRV.setAlwaysThrowException("factor", thrownException);
+
+		try {
+			dataDecorator.decorateData("someMetadataId", dataGroupToDecorate);
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof DataDecaratorException);
+			assertEquals(e.getMessage(),
+					"Failed to decorate record using metadataid: someMetadataId");
+			assertEquals(e.getCause(), thrownException);
+		}
+	}
 }

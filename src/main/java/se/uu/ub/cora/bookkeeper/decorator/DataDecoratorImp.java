@@ -30,6 +30,15 @@ class DataDecoratorImp implements DataDecarator {
 
 	@Override
 	public void decorateData(String metadataId, DataGroup dataGroup) {
+		try {
+			tryToDecorateData(metadataId, dataGroup);
+		} catch (Exception e) {
+			throw DataDecaratorException.withMessageAndException(
+					"Failed to decorate record using metadataid: " + metadataId, e);
+		}
+	}
+
+	private void tryToDecorateData(String metadataId, DataGroup dataGroup) {
 		var dataChildDecorator = dataDecoratorFactory.factor(metadataId);
 		dataChildDecorator.decorateData(dataGroup);
 	}

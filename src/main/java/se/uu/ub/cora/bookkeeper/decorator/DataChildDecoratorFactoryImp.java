@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.decorator;
 
 import java.util.Map;
 
+import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
@@ -45,31 +46,29 @@ class DataChildDecoratorFactoryImp implements DataChildDecoratorFactory {
 		DataGenericDecorator dataGenericDecorator = new DataGenericDecorator(metadataElement);
 
 		if (metadataElement instanceof MetadataGroup metadataElementGroup) {
-			var metadataMatchFactory = new MetadataMatchFactoryImp();
-			var dataGroupDecorator = new DataGroupDecorator(this, metadataMatchFactory,
-					metadataElementGroup);
-			dataGenericDecorator.setExtraDecorator(dataGroupDecorator);
+			createExtraDecoratorForGroup(dataGenericDecorator, metadataElementGroup);
 		}
+
+		if (metadataElement instanceof CollectionVariable metadataElementCollectionVar) {
+			createExtraDecoratorForCollectionVar(dataGenericDecorator,
+					metadataElementCollectionVar);
+		}
+
 		return dataGenericDecorator;
-		// if (metadataElement instanceof TextVariable metadataElementTextVariable) {
-		// return new DataTextVariableValidator(metadataElementTextVariable);
-		// }
-		// if (metadataElement instanceof NumberVariable metadataElementNumberVariable) {
-		// return new DataNumberVariableValidator(metadataElementNumberVariable);
-		// }
-		// if (metadataElement instanceof CollectionVariable metadataElementCollectionVariable) {
-		// return new DataCollectionVariableValidator(metadataHolder,
-		// metadataElementCollectionVariable);
-		// }
-		// if (metadataElement instanceof RecordLink metadataElementRecordLink) {
-		// return new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-		// metadataElementRecordLink);
-		// }
-		// if (metadataElement instanceof ResourceLink) {
-		// return new DataResourceLinkValidator(metadataHolder);
-		// }
-		// throw DataValidationException
-		// .withMessage("No validator created for element with id: " + elementId);
+	}
+
+	private void createExtraDecoratorForGroup(DataGenericDecorator dataGenericDecorator,
+			MetadataGroup metadataElementGroup) {
+		var metadataMatchFactory = new MetadataMatchFactoryImp();
+		var dataGroupDecorator = new DataGroupDecorator(this, metadataMatchFactory,
+				metadataElementGroup);
+		dataGenericDecorator.setExtraDecorator(dataGroupDecorator);
+	}
+
+	private void createExtraDecoratorForCollectionVar(DataGenericDecorator dataGenericDecorator,
+			CollectionVariable metadataElementCollectionVar) {
+		var dataGroupDecorator = new DataCollectionVarDecorator(metadataElementCollectionVar);
+		dataGenericDecorator.setExtraDecorator(dataGroupDecorator);
 	}
 
 	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {

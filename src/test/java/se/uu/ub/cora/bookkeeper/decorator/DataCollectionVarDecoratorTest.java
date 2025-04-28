@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
+import static org.testng.Assert.assertSame;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -122,6 +124,11 @@ public class DataCollectionVarDecoratorTest {
 				"en gul text");
 		dataAtomic.MCR.assertCalledParameters("addAttributeByIdWithValue", "_value_en",
 				"a yellow text");
+	}
+
+	@Test
+	public void testOnlyForTestGetMetadataElement() {
+		assertSame(decorator.onlyForTestGetMetadataElement(), collectionVar);
 	}
 
 }

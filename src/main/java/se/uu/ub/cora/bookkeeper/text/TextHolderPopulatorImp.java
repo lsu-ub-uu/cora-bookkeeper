@@ -42,5 +42,4 @@ final class TextHolderPopulatorImp implements TextHolderPopulator {
 			textHolder.addTextElement(textElement);
 		}
 	}
-
 }

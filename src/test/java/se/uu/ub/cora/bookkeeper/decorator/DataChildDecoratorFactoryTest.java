@@ -34,10 +34,11 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
 import se.uu.ub.cora.bookkeeper.recordpart.MetadataGroupSpy;
-import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
+import se.uu.ub.cora.bookkeeper.validator.CollectionVariableSpy;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchFactoryImp;
 import se.uu.ub.cora.bookkeeper.validator.NumberVariableSpy;
 import se.uu.ub.cora.bookkeeper.validator.RecordLinkSpy;
+import se.uu.ub.cora.bookkeeper.validator.ResourceLinkSpy;
 import se.uu.ub.cora.bookkeeper.validator.TextVariableSpy;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -79,6 +80,30 @@ public class DataChildDecoratorFactoryTest {
 	}
 
 	@Test
+	public void testFactorDataValidatorMetadataRecordLink() {
+		String elementId = "recordLinkId";
+		RecordLinkSpy recordLink = new RecordLinkSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, recordLink);
+
+		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor(elementId);
+
+		assertSame(decorator.onlyForTestGetMetadataElement(), recordLink);
+		assertNoExtraDecoratorSetUp(decorator);
+	}
+
+	@Test
+	public void testFactorDataValidatorMetadataResourceLink() {
+		String elementId = "resourceLink";
+		ResourceLinkSpy resourceLink = new ResourceLinkSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, resourceLink);
+
+		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor(elementId);
+
+		assertSame(decorator.onlyForTestGetMetadataElement(), resourceLink);
+		assertNoExtraDecoratorSetUp(decorator);
+	}
+
+	@Test
 	public void testFactorDataValidatorMetadataGroup() {
 		String elementId = "metadataGroupId";
 		MetadataGroupSpy metadataGroup = new MetadataGroupSpy(elementId, "someNameInData");
@@ -88,7 +113,6 @@ public class DataChildDecoratorFactoryTest {
 
 		assertSame(decorator.onlyForTestGetMetadataElement(), metadataGroup);
 		var extraDecorator = (DataGroupDecorator) decorator.onlyForTestGetExtraDecorator();
-		assertTrue(extraDecorator instanceof DataGroupDecorator);
 		assertSame(extraDecorator.onlyForTestGetMetadataElement(), metadataGroup);
 		assertSame(extraDecorator.onlyForTestGetDataElementValidatorFactory(),
 				dataDecoratorFactory);
@@ -101,50 +125,23 @@ public class DataChildDecoratorFactoryTest {
 		assertNull(decorator.onlyForTestGetExtraDecorator());
 	}
 
-	// @Test
-	// public void testFactorDataValidatorMetadataCollectionVariable() {
-	// String elementId = "collectionVariableId";
-	// CollectionVariableSpy collectionVariable = new CollectionVariableSpy();
-	// addMetadataElementSpyToMetadataHolderSpy(elementId, collectionVariable);
-	//
-	// DataCollectionVariableValidator validator = (DataCollectionVariableValidator)
-	// dataDecoratorFactory
-	// .factor(elementId);
-	//
-	// assertSame(validator.onlyForTestGetMetadataElement(), collectionVariable);
-	// assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
-	// }
-
 	@Test
-	public void testFactorDataValidatorMetadataRecordLink() {
-		RecordLinkSpy recordLink = new RecordLinkSpy();
-		addMetadataElementSpyToMetadataHolderSpy("recordLinkId", recordLink);
+	public void testFactorDataValidatorMetadataCollectionVariable() {
+		String elementId = "someCollectionVariableId";
+		CollectionVariableSpy collectionVariable = new CollectionVariableSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, collectionVariable);
 
-		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor("recordLinkId");
+		var decorator = (DataGenericDecorator) dataDecoratorFactory.factor(elementId);
 
+		assertSame(decorator.onlyForTestGetMetadataElement(), collectionVariable);
+		var extraDecorator = (DataCollectionVarDecorator) decorator.onlyForTestGetExtraDecorator();
+		assertSame(extraDecorator.onlyForTestGetMetadataElement(), collectionVariable);
 	}
-
-	// @Test
-	// public void testFactorDataValidatorMetadataResourceLink() {
-	// String elementId = "resourceLink";
-	//
-	// addMetadataElementSpyToMetadataHolderSpy(elementId, new ResourceLinkSpy());
-	//
-	// DataResourceLinkValidator validator = (DataResourceLinkValidator) dataDecoratorFactory
-	// .factor(elementId);
-	//
-	// assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
-	// }
 
 	private void addMetadataElementSpyToMetadataHolderSpy(String elementId,
 			MetadataElement metadataElement) {
 		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
 				() -> metadataElement, elementId);
-	}
-
-	@Test(expectedExceptions = DataValidationException.class)
-	public void testNotIdFound() {
-		dataDecoratorFactory.factor("elementNotFound");
 	}
 
 	@Test
