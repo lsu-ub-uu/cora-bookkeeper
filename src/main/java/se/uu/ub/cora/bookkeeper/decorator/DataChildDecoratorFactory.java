@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
-interface DataChildDecoratorFactory {
+public interface DataChildDecoratorFactory {
 
 	/**
 	 * factor factors a DataChildDecorator given the metadataElementId.

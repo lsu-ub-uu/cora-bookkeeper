@@ -20,23 +20,18 @@
 
 package se.uu.ub.cora.bookkeeper.decorator;
 
-import java.util.Map;
-
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchFactoryImp;
-import se.uu.ub.cora.data.DataGroup;
 
-class DataChildDecoratorFactoryImp implements DataChildDecoratorFactory {
+public class DataChildDecoratorFactoryImp implements DataChildDecoratorFactory {
 
-	private Map<String, DataGroup> recordTypeHolder;
 	private MetadataHolder metadataHolder;
 
-	public DataChildDecoratorFactoryImp(Map<String, DataGroup> recordTypeHolder) {
-		this.recordTypeHolder = recordTypeHolder;
+	public DataChildDecoratorFactoryImp() {
 		metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
@@ -71,7 +66,4 @@ class DataChildDecoratorFactoryImp implements DataChildDecoratorFactory {
 		dataGenericDecorator.setExtraDecorator(dataGroupDecorator);
 	}
 
-	Map<String, DataGroup> onlyForTestGetRecordTypeHolder() {
-		return recordTypeHolder;
-	}
 }

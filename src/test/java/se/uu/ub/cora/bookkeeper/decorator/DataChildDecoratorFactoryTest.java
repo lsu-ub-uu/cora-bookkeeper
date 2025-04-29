@@ -52,7 +52,7 @@ public class DataChildDecoratorFactoryTest {
 	public void setup() {
 		metadataHolder = new MetadataHolderSpy();
 		MetadataHolderProvider.onlyForTestSetHolder(metadataHolder);
-		dataDecoratorFactory = new DataChildDecoratorFactoryImp(recordTypeHolder);
+		dataDecoratorFactory = new DataChildDecoratorFactoryImp();
 	}
 
 	@Test
@@ -144,8 +144,4 @@ public class DataChildDecoratorFactoryTest {
 				() -> metadataElement, elementId);
 	}
 
-	@Test
-	public void testGetRecordTypeHolder() {
-		assertSame(dataDecoratorFactory.onlyForTestGetRecordTypeHolder(), recordTypeHolder);
-	}
 }

@@ -21,7 +21,7 @@ package se.uu.ub.cora.bookkeeper.decorator;
 
 import se.uu.ub.cora.data.DataChild;
 
-interface DataChildDecorator {
+public interface DataChildDecorator {
 
 	/**
 	 * decorateData decoartes the given dataChild with the texts fromis correct according to this

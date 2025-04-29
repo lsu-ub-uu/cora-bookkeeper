@@ -23,11 +23,11 @@ import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.DataRecordGroup;
 
-class DataDecoratorImp implements DataDecarator {
+public class DataDecoratorImp implements DataDecarator {
 
 	private DataChildDecoratorFactory dataDecoratorFactory;
 
-	DataDecoratorImp(DataChildDecoratorFactory decoratorFactory) {
+	public DataDecoratorImp(DataChildDecoratorFactory decoratorFactory) {
 		this.dataDecoratorFactory = decoratorFactory;
 	}
 
@@ -50,7 +50,7 @@ class DataDecoratorImp implements DataDecarator {
 		dataChildDecorator.decorateData(dataGroup);
 	}
 
-	DataChildDecoratorFactory onlyForTestGetDataChildDecoratorFactory() {
+	public DataChildDecoratorFactory onlyForTestGetDataChildDecoratorFactory() {
 		return dataDecoratorFactory;
 	}
 
