@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,37 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordpart;
-
-import java.util.ArrayList;
-import java.util.List;
+package se.uu.ub.cora.bookkeeper.decorator;
 
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataFactory;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class MetadataMatchFactorySpy implements MetadataMatchDataFactory {
+public class MetadataMatchDataFactorySpy implements MetadataMatchDataFactory {
 
-	public List<MetadataMatchData> returnedMatchers = new ArrayList<>();
-	public boolean isValid = true;
-	public List<Boolean> isValidList = null;
-	private int noOfCalls = 0;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MetadataMatchDataFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("factor", MetadataMatchDataSpy::new);
+	}
 
 	@Override
 	public MetadataMatchData factor() {
-		MCR.addCall();
-		MetadataMatchDataSpy returnedMatcher = new MetadataMatchDataSpy();
-		if (null == isValidList) {
-			returnedMatcher.isValid = isValid;
-		} else {
-			returnedMatcher.isValid = isValidList.get(noOfCalls);
-		}
-		returnedMatchers.add(returnedMatcher);
-		noOfCalls++;
-		MCR.addReturned(returnedMatcher);
-		return returnedMatcher;
+		return (MetadataMatchData) MCR.addCallAndReturnFromMRV();
 	}
 
 }

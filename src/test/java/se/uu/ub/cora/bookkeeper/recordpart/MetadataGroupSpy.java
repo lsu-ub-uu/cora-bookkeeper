@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,17 +24,32 @@ import java.util.List;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class MetadataGroupSpy extends MetadataGroup {
 
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
 	List<MetadataChildReference> childReferencesToReturn = new ArrayList<>();
+
+	public MetadataGroupSpy() {
+		super("someId", "someNameInData", null, null);
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getChildReferences", () -> childReferencesToReturn);
+	}
 
 	public MetadataGroupSpy(String id, String nameInData) {
 		super(id, nameInData, "", "");
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getChildReferences", () -> childReferencesToReturn);
 	}
 
-	protected MetadataGroupSpy(String id, String nameInData, String textId, String defTextId) {
+	public MetadataGroupSpy(String id, String nameInData, String textId, String defTextId) {
 		super(id, nameInData, textId, defTextId);
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getChildReferences", () -> childReferencesToReturn);
 	}
 
 	public void createChildReference(String linkedRecordType, String linkedRecordId, int repeatMin,
@@ -54,9 +69,11 @@ public class MetadataGroupSpy extends MetadataGroup {
 		childReferencesToReturn.add(childReference);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<MetadataChildReference> getChildReferences() {
-		return childReferencesToReturn;
+		// return childReferencesToReturn;
+		return (List<MetadataChildReference>) MCR.addCallAndReturnFromMRV();
 	}
 
 }

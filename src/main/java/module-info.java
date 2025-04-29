@@ -10,11 +10,12 @@ module se.uu.ub.cora.bookkeeper {
 	// dependency on storage should be removed when recordTypeHandler no longer needs it
 	requires se.uu.ub.cora.storage;
 	requires transitive se.uu.ub.cora.data;
-	// requires transitive se.uu.ub.cora.storage;
 	requires se.uu.ub.cora.initialize;
 
+	exports se.uu.ub.cora.bookkeeper.decorator;
 	exports se.uu.ub.cora.bookkeeper.linkcollector;
 	exports se.uu.ub.cora.bookkeeper.metadata;
+	exports se.uu.ub.cora.bookkeeper.text;
 	exports se.uu.ub.cora.bookkeeper.recordpart;
 	exports se.uu.ub.cora.bookkeeper.storage;
 	exports se.uu.ub.cora.bookkeeper.termcollector;

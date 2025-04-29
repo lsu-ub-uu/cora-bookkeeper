@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,30 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.bookkeeper.text;
 
-package se.uu.ub.cora.bookkeeper;
-
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class TextHolderTest {
+public class TranslationTest {
 	@Test
-	public void testInit() {
-		TextHolder textHolder = new TextHolder();
+	public void testTranslation() {
+		Translation translation = new Translation("en", "Hello");
+		assert translation.language().equals("en");
+		assert translation.text().equals("Hello");
 
-		TranslationHolder translationHolder = new TranslationHolder();
-		translationHolder.addTranslation("sv", "En text på svenska");
-		translationHolder.addTranslation("en", "A text in english");
+		Translation translation2 = new Translation("sv", "Hej");
+		assert translation2.language().equals("sv");
+		assert translation2.text().equals("Hej");
 
-		TextElement textElement = TextElement.withIdAndTranslationHolder("textId",
-				translationHolder);
-
-		textHolder.addTextElement(textElement);
-
-		TextElement textElementOut = textHolder.getTextElement("textId");
-
-		Assert.assertEquals(textElementOut, textElement,
-				"The element should be the same as the one entered");
-
+		assert !translation.equals(translation2);
 	}
+
 }

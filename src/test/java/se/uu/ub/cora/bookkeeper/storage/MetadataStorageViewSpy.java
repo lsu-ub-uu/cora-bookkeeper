@@ -21,12 +21,15 @@ package se.uu.ub.cora.bookkeeper.storage;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
+import se.uu.ub.cora.bookkeeper.text.TextElement;
+import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordGroup;
@@ -50,6 +53,8 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 		MRV.setDefaultReturnValuesSupplier("getValidationType", Optional::empty);
 		MRV.setDefaultReturnValuesSupplier("getValidationTypes", ArrayList<ValidationType>::new);
 		MRV.setDefaultReturnValuesSupplier("getCollectTermHolder", CollectTermHolderSpy::new);
+		MRV.setDefaultReturnValuesSupplier("getTextElements", () -> Collections.EMPTY_LIST);
+		MRV.setDefaultReturnValuesSupplier("getTextElement", TextElementSpy::new);
 	}
 
 	@Override
@@ -95,6 +100,16 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 	@Override
 	public CollectTermHolder getCollectTermHolder() {
 		return (CollectTermHolder) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public Collection<TextElement> getTextElements() {
+		return (Collection<TextElement>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public TextElement getTextElement(String elementId) {
+		return (TextElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
 	}
 
 }

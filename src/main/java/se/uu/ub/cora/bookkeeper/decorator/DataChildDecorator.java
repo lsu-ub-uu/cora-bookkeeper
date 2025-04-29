@@ -1,10 +1,10 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Publiåc License as published by
+ *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
@@ -16,21 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
+package se.uu.ub.cora.bookkeeper.decorator;
 
-public class MetadataMatchFactoryImp implements MetadataMatchDataFactory {
-	private MetadataHolder metadataHolder;
+import se.uu.ub.cora.data.DataChild;
 
-	public MetadataMatchFactoryImp() {
-		this.metadataHolder = MetadataHolderProvider.getHolder();
-	}
+public interface DataChildDecorator {
 
-	@Override
-	public MetadataMatchData factor() {
-		return MetadataMatchDataImp.withMetadataHolder(metadataHolder);
-	}
+	/**
+	 * decorateData decoartes the given dataChild with the texts fromis correct according to this
+	 * validators metadataGroup
+	 *
+	 * @param dataChild
+	 *            A DataChild to decorate
+	 * @return A ValidationAnswer with information if the dataGroup has valid data and if not a list
+	 *         of errors
+	 */
+	void decorateData(DataChild dataChild);
 
 }

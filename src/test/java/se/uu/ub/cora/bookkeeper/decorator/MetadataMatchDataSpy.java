@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,34 +16,30 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordpart;
+package se.uu.ub.cora.bookkeeper.decorator;
 
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class MetadataMatchDataSpy implements MetadataMatchData {
 
-	public MetadataElement metadataElement;
-	public DataChild dataElement;
-	public boolean isValid = true;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MetadataMatchDataSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("metadataSpecifiesData", ValidationAnswerSpy::new);
+	}
 
 	@Override
 	public ValidationAnswer metadataSpecifiesData(MetadataElement metadataElement,
 			DataChild dataElement) {
-		MCR.addCall("metadataElement", metadataElement, "dataElement", dataElement);
-		this.metadataElement = metadataElement;
-		this.dataElement = dataElement;
-		ValidationAnswer validationAnswer = new ValidationAnswer();
-		if (!isValid) {
-			validationAnswer.addErrorMessage("some message");
-		}
-		MCR.addReturned(validationAnswer);
-		return validationAnswer;
+		return (ValidationAnswer) MCR.addCallAndReturnFromMRV("metadataElement", metadataElement,
+				"dataElement", dataElement);
 	}
 
 }

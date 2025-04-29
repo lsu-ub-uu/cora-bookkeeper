@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2025 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,29 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.bookkeeper.decorator;
 
-package se.uu.ub.cora.bookkeeper;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+public class DataChildDecoratorFactorySpy implements DataChildDecoratorFactory {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-import se.uu.ub.cora.bookkeeper.text.Translation;
-
-public class TranslationHolder {
-	private Map<String, String> translations = new LinkedHashMap<>();
-
-	public void addTranslation(String languageId, String text) {
-		translations.put(languageId, text);
+	public DataChildDecoratorFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("factor", DataChildDecoratorSpy::new);
 	}
 
-	public String getTranslation(String languageId) {
-		return translations.get(languageId);
-	}
-
-	public Set<Translation> getTranslations() {
-		return translations.entrySet().stream()
-				.map(entry -> new Translation(entry.getKey(), entry.getValue()))
-				.collect(java.util.stream.Collectors.toSet());
+	@Override
+	public DataChildDecorator factor(String elementId) {
+		return (DataChildDecorator) MCR.addCallAndReturnFromMRV("elementId", elementId);
 	}
 }

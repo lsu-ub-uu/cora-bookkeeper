@@ -36,14 +36,14 @@ import se.uu.ub.cora.data.spies.DataGroupSpy;
 
 public class GroupMatcherTest {
 
-	private MetadataMatchDataSpy dataMatcher;
+	private MetadataMatchDataOldSpy dataMatcher;
 	private GroupMatcher matcher;
 	private DataGroupSpy dataGroupSpy;
 	private MetadataGroupSpy metadataGroupSpy;
 
 	@BeforeMethod
 	public void setUp() {
-		dataMatcher = new MetadataMatchDataSpy();
+		dataMatcher = new MetadataMatchDataOldSpy();
 		dataGroupSpy = new DataGroupSpy();
 		DataGroupSpy child = new DataGroupSpy();
 		dataGroupSpy.MRV.setDefaultReturnValuesSupplier("getAllGroupsWithNameInData",
