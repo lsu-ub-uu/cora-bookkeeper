@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023 Uppsala University Library
+ * Copyright 2020, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -35,6 +35,8 @@ import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.logger.LoggerProvider;
@@ -45,9 +47,9 @@ import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
 public class RecordTypeHandlerFactoryTest {
 
-	private RecordStorageSpy recordStorage;
+	private RecordStorageSpy storageUsingDeprecatedRead;
 	private RecordTypeHandlerFactoryImp factory;
-	private RecordStorageInstanceProviderSpy instanceProvider;
+	private RecordStorageInstanceProviderSpy storageProvider;
 	private MetadataStorageViewSpy metadataStorageViewSpy;
 	private MetadataStorageViewInstanceProviderSpy metaStorageInstProviderSpy;
 
@@ -56,13 +58,13 @@ public class RecordTypeHandlerFactoryTest {
 		LoggerFactorySpy loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 
-		instanceProvider = new RecordStorageInstanceProviderSpy();
-		RecordStorageProvider.onlyForTestSetRecordStorageInstanceProvider(instanceProvider);
+		storageProvider = new RecordStorageInstanceProviderSpy();
+		RecordStorageProvider.onlyForTestSetRecordStorageInstanceProvider(storageProvider);
 
-		recordStorage = new RecordStorageSpy();
-		recordStorage.MRV.setDefaultReturnValuesSupplier("read", DataGroupSpy::new);
-		instanceProvider.MRV.setDefaultReturnValuesSupplier("getRecordStorage",
-				() -> recordStorage);
+		storageUsingDeprecatedRead = new RecordStorageSpy();
+		storageUsingDeprecatedRead.MRV.setDefaultReturnValuesSupplier("read", DataGroupSpy::new);
+		storageProvider.MRV.setDefaultReturnValuesSupplier("getRecordStorage",
+				() -> storageUsingDeprecatedRead);
 
 		metadataStorageViewSpy = new MetadataStorageViewSpy();
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
@@ -79,28 +81,49 @@ public class RecordTypeHandlerFactoryTest {
 	}
 
 	@Test
-	public void testRecordStorageLoadedOnceOnFirstCallToFactor() {
-		instanceProvider.MCR.assertMethodNotCalled("getRecordStorage");
+	public void testRecordStorageLoadedOnceOnFirstCallToFactor1() {
+		setUpStorage();
 
-		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
-		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
+		storageProvider.MCR.assertMethodNotCalled("getRecordStorage");
+
 		factory.factorUsingRecordTypeId("someRecordTypeId1");
 		factory.factorUsingRecordTypeId("someRecordTypeId2");
+		factory.factorUsingRecordTypeId("someRecordTypeId3");
+		factory.factorUsingRecordTypeId("someRecordTypeId4");
+
+		storageProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 1);
+	}
+
+	private RecordStorageSpy setUpStorage() {
+		DataFactorySpy dataFactory = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactory);
+		RecordStorageSpy storage = new RecordStorageSpy();
+		storageProvider.MRV.setDefaultReturnValuesSupplier("getRecordStorage", () -> storage);
+		return storage;
+	}
+
+	@Test
+	public void testRecordStorageLoadedOnceOnFirstCallToFactor2() {
+		storageProvider.MCR.assertMethodNotCalled("getRecordStorage");
+
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
+		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 
-		instanceProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 1);
+		storageProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 1);
 	}
 
 	@Test
 	public void testFactorUsingRecordTypeId() {
+		RecordStorageSpy storage = setUpStorage();
+
 		String recordTypeId = "someRecordTypeId";
 		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factory
 				.factorUsingRecordTypeId(recordTypeId);
 
-		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
+		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storage);
 		assertSame(recordTypeHandler.onlyForTestGetRecordTypeId(), recordTypeId);
-		assertSame(recordTypeHandler.getRecordTypeHandlerFactory(), factory);
 	}
 
 	@Test
@@ -114,10 +137,11 @@ public class RecordTypeHandlerFactoryTest {
 		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factoryInterface
 				.factorUsingDataRecordGroup(dataRecordGroup);
 
-		assertSame(recordTypeHandler.getRecordTypeHandlerFactory(), factory);
-		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), recordStorage);
+		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storageUsingDeprecatedRead);
 		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorageViewSpy);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
+		IdSourceFactory idSourceFactory = recordTypeHandler.onlyForTestGetIdSourceFactory();
+		assertTrue(idSourceFactory instanceof IdSourceFactoryImp);
 	}
 
 	@Test

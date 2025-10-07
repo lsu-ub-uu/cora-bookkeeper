@@ -36,7 +36,7 @@ import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.StorageReadResult;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class RecordTypeHandlerStorageSpy implements RecordStorage {
+public class OldRecordStorageSpy implements RecordStorage {
 	private static final String METADATA = "metadata";
 	public List<String> type;
 	public Collection<List<String>> types = new ArrayList<>();

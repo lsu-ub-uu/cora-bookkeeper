@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023, 2025 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,31 +18,20 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
-import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
-import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
-import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class RecordTypeHandlerFactorySpy implements RecordTypeHandlerFactory {
-
+public class IdSourceFactorySpy implements IdSourceFactory {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public RecordTypeHandlerFactorySpy() {
+	public IdSourceFactorySpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("factorUsingDataRecordGroup", RecordTypeHandlerSpy::new);
-		MRV.setDefaultReturnValuesSupplier("factorUsingRecordTypeId", RecordTypeHandlerSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorTimestampIdSource", IdSourceSpy::new);
 	}
 
 	@Override
-	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
-		return (RecordTypeHandler) MCR.addCallAndReturnFromMRV("recordTypeId", recordTypeId);
+	public IdSource factorTimestampIdSource(String type) {
+		return (IdSource) MCR.addCallAndReturnFromMRV("type", type);
 	}
-
-	@Override
-	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
-		return (RecordTypeHandler) MCR.addCallAndReturnFromMRV("dataRecordGroup", dataRecordGroup);
-	}
-
 }

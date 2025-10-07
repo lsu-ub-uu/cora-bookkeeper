@@ -33,13 +33,14 @@ import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
-import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.Unique;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.RecordStorage;
 
@@ -62,67 +63,40 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private Set<Constraint> writeConstraints = new LinkedHashSet<>();
 	private boolean constraintsForUpdateLoaded = false;
 	private boolean constraintsForCreateLoaded = false;
-	private RecordTypeHandlerFactory recordTypeHandlerFactory;
 	private Set<String> readChildren = new HashSet<>();
 	private MetadataStorageView metadataStorageView;
 	private String validationTypeId;
 	private ValidationType validationType;
 	private CollectTermHolder holder;
+	private IdSourceFactory idSourceFactory;
 
-	RecordTypeHandlerImp() {
-		// only for test
-	}
-
-	/**
-	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
-	 */
-	@Deprecated(forRemoval = true)
-	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
+	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(RecordStorage recordStorage,
 			String recordTypeId) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, recordTypeId);
+		return new RecordTypeHandlerImp(recordStorage, recordTypeId);
 	}
 
-	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, String recordTypeId) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+	private RecordTypeHandlerImp(RecordStorage recordStorage, String recordTypeId) {
 		this.recordStorage = recordStorage;
 		this.recordTypeId = recordTypeId;
-		recordType = recordStorage.read(List.of(RECORD_TYPE), recordTypeId);
-	}
+		DataRecordGroup dataRecordGroup = recordStorage.read(RECORD_TYPE, recordTypeId);
+		recordType = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
 
-	/**
-	 * @Deprecated use usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId instead
-	 */
-	@Deprecated(forRemoval = true)
-	public static RecordTypeHandler usingRecordStorageAndDataGroup(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			DataGroup dataGroup) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage, dataGroup);
-	}
-
-	private RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, DataGroup dataGroup) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
-		this.recordStorage = recordStorage;
-		recordType = dataGroup;
-		recordTypeId = getIdFromMetadatagGroup(dataGroup);
 	}
 
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-			RecordTypeHandlerFactory recordTypeHandlerFactory, RecordStorage recordStorage,
-			MetadataStorageView metadataStorageView, String validationTypeId) {
-		return new RecordTypeHandlerImp(recordTypeHandlerFactory, recordStorage,
-				metadataStorageView, validationTypeId);
+			RecordStorage recordStorage, MetadataStorageView metadataStorageView,
+			String validationTypeId, IdSourceFactory idSourceFactory) {
+		return new RecordTypeHandlerImp(recordStorage, metadataStorageView, validationTypeId,
+				idSourceFactory);
 	}
 
-	public RecordTypeHandlerImp(RecordTypeHandlerFactory recordTypeHandlerFactory,
-			RecordStorage recordStorage, MetadataStorageView metadataStorageView,
-			String validationTypeId) {
-		this.recordTypeHandlerFactory = recordTypeHandlerFactory;
+	private RecordTypeHandlerImp(RecordStorage recordStorage,
+			MetadataStorageView metadataStorageView, String validationTypeId,
+			IdSourceFactory idSourceFactory) {
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = metadataStorageView;
 		this.validationTypeId = validationTypeId;
+		this.idSourceFactory = idSourceFactory;
 		Optional<ValidationType> oValidationType = metadataStorageView
 				.getValidationType(validationTypeId);
 		if (oValidationType.isEmpty()) {
@@ -138,7 +112,23 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean shouldAutoGenerateId() {
-		return !getValueOfSettingUsingNameInData("userSuppliedId");
+		String nameInData = "idSource";
+		return childExistsInRecordType(nameInData) && isAutoGenerated(nameInData);
+	}
+
+	@Override
+	public String getNextId() {
+		IdSource idSource = idSourceFactory.factorTimestampIdSource(getRecordTypeId());
+		return idSource.getId();
+	}
+
+	private boolean isAutoGenerated(String nameInData) {
+		String idSourceValue = recordType.getFirstAtomicValueWithNameInData(nameInData);
+		return idNotUserSupplied(idSourceValue);
+	}
+
+	private boolean idNotUserSupplied(String idSourceValue) {
+		return !idSourceValue.equals("userSupplied");
 	}
 
 	private boolean getValueOfSettingUsingNameInData(String nameInData) {
@@ -484,9 +474,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return !getCreateWriteRecordPartConstraints().isEmpty();
 	}
 
-	public RecordTypeHandlerFactory getRecordTypeHandlerFactory() {
-		return recordTypeHandlerFactory;
-	}
+	// public RecordTypeHandlerFactory getRecordTypeHandlerFactory() {
+	// return recordTypeHandlerFactory;
+	// }
 
 	@Override
 	public boolean storeInArchive() {
@@ -587,5 +577,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	@Override
 	public boolean usePermissionUnit() {
 		return getValueOfSettingUsingNameInData("usePermissionUnit");
+	}
+
+	public IdSourceFactory onlyForTestGetIdSourceFactory() {
+		return idSourceFactory;
 	}
 }
