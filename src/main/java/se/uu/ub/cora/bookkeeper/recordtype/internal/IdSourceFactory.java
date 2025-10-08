@@ -18,6 +18,8 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
+import se.uu.ub.cora.storage.RecordStorage;
+
 public interface IdSourceFactory {
 
 	/**
@@ -30,5 +32,20 @@ public interface IdSourceFactory {
 	 * @return An IdSource that generates ids based on the current timestamp and type.
 	 */
 	IdSource factorTimestampIdSource(String type);
+
+	/**
+	 * Creates an IdSource that generates ids based on a sequence.
+	 * 
+	 * @param storage
+	 *            The RecordStorage to use to store and retrieve the sequence record.
+	 * @param sequenceId
+	 *            The id of the sequence record in the RecordStorage.
+	 * @param definitionId
+	 *            The definition id of the sequence record in the RecordStorage.
+	 * 
+	 * @return An IdSource that generates ids based on a sequence.
+	 */
+
+	IdSource factorSequenceIdSource(RecordStorage storage, String sequenceId, String definitionId);
 
 }

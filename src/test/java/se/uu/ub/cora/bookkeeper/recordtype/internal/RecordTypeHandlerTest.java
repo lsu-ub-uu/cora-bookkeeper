@@ -198,6 +198,22 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
+	public void testGetNextId_Sequence() {
+		setUpRecordTypeHandlerWithMetadataStorage(metadataStorageViewSpy);
+		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("idSource", "sequence");
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		String id = recordTypeHandler.getNextId();
+
+		// TODO: Continue here.
+		idSourceFactory.MCR.assertParameters("factorSequenceIdSource", 0, storage, "dsaf");
+		IdSourceSpy idSource = (IdSourceSpy) idSourceFactory.MCR
+				.assertCalledParametersReturn("factorSequenceIdSource", storage);
+		idSource.MCR.assertMethodWasCalled("getId");
+		idSource.MCR.assertReturn("getId", 0, id);
+	}
+
+	@Test
 	public void testCreateDefinitionId() {
 		setUpRecordTypeHandlerWithMetadataStorage(metadataStorageViewSpy);
 

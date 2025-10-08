@@ -18,28 +18,27 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
-import se.uu.ub.cora.storage.RecordStorage;
+import java.util.Collections;
+import java.util.Set;
+
+import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collected.Link;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class IdSourceFactorySpy implements IdSourceFactory {
+public class DataRecordLinkCollectorSpy implements DataRecordLinkCollector {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public IdSourceFactorySpy() {
+	public DataRecordLinkCollectorSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("factorTimestampIdSource", IdSourceSpy::new);
+		MRV.setDefaultReturnValuesSupplier("collectLinks", Collections::emptySet);
 	}
 
 	@Override
-	public IdSource factorTimestampIdSource(String type) {
-		return (IdSource) MCR.addCallAndReturnFromMRV("type", type);
-	}
-
-	@Override
-	public IdSource factorSequenceIdSource(RecordStorage storage, String sequenceId,
-			String definitionId) {
-		return (IdSource) MCR.addCallAndReturnFromMRV("storage", storage, "sequenceId", sequenceId,
-				"definitionId", definitionId);
+	public Set<Link> collectLinks(String metadataId, DataGroup dataGroup) {
+		return (Set<Link>) MCR.addCallAndReturnFromMRV("metadataId", metadataId, "dataGroup",
+				dataGroup);
 	}
 }

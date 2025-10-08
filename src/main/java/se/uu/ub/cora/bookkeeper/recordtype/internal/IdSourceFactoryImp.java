@@ -18,11 +18,22 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
+import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
+import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
+import se.uu.ub.cora.storage.RecordStorage;
+
 public class IdSourceFactoryImp implements IdSourceFactory {
 
 	@Override
 	public IdSource factorTimestampIdSource(String type) {
 		return new TimeStampIdSource(type);
+	}
+
+	@Override
+	public IdSource factorSequenceIdSource(RecordStorage storage, String sequenceId,
+			String definitionId) {
+		return new SequenceIdSource(storage, sequenceId, definitionId,
+				new DataGroupTermCollectorImp(), new DataRecordLinkCollectorImp());
 	}
 
 }
