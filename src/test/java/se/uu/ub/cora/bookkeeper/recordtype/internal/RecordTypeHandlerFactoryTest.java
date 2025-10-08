@@ -124,6 +124,7 @@ public class RecordTypeHandlerFactoryTest {
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storage);
 		assertSame(recordTypeHandler.onlyForTestGetRecordTypeId(), recordTypeId);
+		assertIdSourceFactoryIsPassed(recordTypeHandler);
 	}
 
 	@Test
@@ -140,6 +141,10 @@ public class RecordTypeHandlerFactoryTest {
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storageUsingDeprecatedRead);
 		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorageViewSpy);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
+		assertIdSourceFactoryIsPassed(recordTypeHandler);
+	}
+
+	private void assertIdSourceFactoryIsPassed(RecordTypeHandlerImp recordTypeHandler) {
 		IdSourceFactory idSourceFactory = recordTypeHandler.onlyForTestGetIdSourceFactory();
 		assertTrue(idSourceFactory instanceof IdSourceFactoryImp);
 	}

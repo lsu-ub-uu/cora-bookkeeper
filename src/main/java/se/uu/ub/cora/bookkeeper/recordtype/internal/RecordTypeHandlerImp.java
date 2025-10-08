@@ -71,16 +71,17 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private IdSourceFactory idSourceFactory;
 
 	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(RecordStorage recordStorage,
-			String recordTypeId) {
-		return new RecordTypeHandlerImp(recordStorage, recordTypeId);
+			String recordTypeId, IdSourceFactory idSourceFactory) {
+		return new RecordTypeHandlerImp(recordStorage, recordTypeId, idSourceFactory);
 	}
 
-	private RecordTypeHandlerImp(RecordStorage recordStorage, String recordTypeId) {
+	private RecordTypeHandlerImp(RecordStorage recordStorage, String recordTypeId,
+			IdSourceFactory idSourceFactory) {
 		this.recordStorage = recordStorage;
 		this.recordTypeId = recordTypeId;
+		this.idSourceFactory = idSourceFactory;
 		DataRecordGroup dataRecordGroup = recordStorage.read(RECORD_TYPE, recordTypeId);
 		recordType = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
-
 	}
 
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(

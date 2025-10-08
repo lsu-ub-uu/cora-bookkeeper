@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
-import se.uu.ub.cora.bookkeeper.recordtype.internal.IdSourceFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.IdSourceFactoryImp;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
@@ -37,7 +36,8 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
 		ensureRecordStorageIsFetched();
 
-		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(recordStorage, recordTypeId);
+		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(recordStorage, recordTypeId,
+				new IdSourceFactoryImp());
 	}
 
 	private void ensureRecordStorageIsFetched() {
@@ -61,10 +61,9 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 		ensureRecordStorageIsFetched();
 		ensureMetadataStorageIsFetched();
 
-		IdSourceFactory idSourceFactory = new IdSourceFactoryImp();
 		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
 				recordStorage, metadataStorage, dataRecordGroup.getValidationType(),
-				idSourceFactory);
+				new IdSourceFactoryImp());
 	}
 
 	private void ensureMetadataStorageIsFetched() {

@@ -1362,11 +1362,18 @@ public class RecordTypeHandlerTest {
 				Boolean.valueOf(usePermissionUnit).toString());
 	}
 
-	// TODO
-	// @Test
-	// public void testUsingRecordStorageAndRecordTypeId() throws Exception {
-	// RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(recordStorage, recordTypeId);
-	// }
+	@Test
+	public void testUsingRecordStorageAndRecordTypeId() {
+		RecordStorageSpy recordStorage = new RecordStorageSpy();
+		var customRecordTypeHandler = (RecordTypeHandlerImp) RecordTypeHandlerImp
+				.usingRecordStorageAndRecordTypeId(recordStorage, RECORD_TYPE_ID, idSourceFactory);
+		var passedIdSourceFactory = customRecordTypeHandler.onlyForTestGetIdSourceFactory();
+
+		var dataRecordGroup = recordStorage.MCR.assertCalledParametersReturn("read", "recordType",
+				RECORD_TYPE_ID);
+		dataFactorySpy.MCR.assertParameters("factorGroupFromDataRecordGroup", 0, dataRecordGroup);
+		assertSame(passedIdSourceFactory, idSourceFactory);
+	}
 
 	@Test
 	public void testOnlyForTests() {
