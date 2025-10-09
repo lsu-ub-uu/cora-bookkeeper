@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023 Uppsala University Library
+ * Copyright 2020, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -31,14 +31,9 @@ public class RecordTypeHandlerFactorySpy implements RecordTypeHandlerFactory {
 
 	public RecordTypeHandlerFactorySpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("factorUsingDataGroup", RecordTypeHandlerSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorUsingDataRecordGroup", RecordTypeHandlerSpy::new);
 		MRV.setDefaultReturnValuesSupplier("factorUsingRecordTypeId", RecordTypeHandlerSpy::new);
 	}
-
-	// @Override
-	// public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
-	// return (RecordTypeHandler) MCR.addCallAndReturnFromMRV("dataGroup", dataGroup);
-	// }
 
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
@@ -47,8 +42,7 @@ public class RecordTypeHandlerFactorySpy implements RecordTypeHandlerFactory {
 
 	@Override
 	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
-		// TODO Auto-generated method stub
-		return null;
+		return (RecordTypeHandler) MCR.addCallAndReturnFromMRV("dataRecordGroup", dataRecordGroup);
 	}
 
 }

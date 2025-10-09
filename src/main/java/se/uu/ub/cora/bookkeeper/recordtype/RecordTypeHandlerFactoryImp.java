@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2025 Uppsala University Library
  * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
@@ -20,6 +20,7 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
+import se.uu.ub.cora.bookkeeper.recordtype.internal.IdSourceFactoryImp;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
@@ -31,29 +32,12 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	private RecordStorage recordStorage;
 	private MetadataStorageView metadataStorage;
 
-	// /**
-	// *
-	// * @param dataGroup
-	// * @Deprecated use {@link #factorUsingDataRecordGroup(DataRecordGroup)} instead
-	// */
-	// @Deprecated(forRemoval = true)
-	// @Override
-	// public RecordTypeHandler factorUsingDataGroup(DataGroup dataGroup) {
-	// ensureRecordStorageIsFetched();
-	//
-	// return RecordTypeHandlerImp.usingRecordStorageAndDataGroup(this, recordStorage, dataGroup);
-	// }
-
-	/**
-	 * 
-	 * @param dataRecordGroup
-	 */
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
 		ensureRecordStorageIsFetched();
 
-		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(this, recordStorage,
-				recordTypeId);
+		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(recordStorage, recordTypeId,
+				new IdSourceFactoryImp());
 	}
 
 	private void ensureRecordStorageIsFetched() {
@@ -78,7 +62,8 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 		ensureMetadataStorageIsFetched();
 
 		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-				this, recordStorage, metadataStorage, dataRecordGroup.getValidationType());
+				recordStorage, metadataStorage, dataRecordGroup.getValidationType(),
+				new IdSourceFactoryImp());
 	}
 
 	private void ensureMetadataStorageIsFetched() {

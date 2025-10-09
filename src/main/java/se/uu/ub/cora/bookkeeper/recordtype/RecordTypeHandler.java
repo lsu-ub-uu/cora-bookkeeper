@@ -214,4 +214,11 @@ public interface RecordTypeHandler {
 	 */
 	boolean usePermissionUnit();
 
+	/**
+	 * getNextId requests the next id from the idSource specified in the recordType.
+	 * 
+	 * @return A String with the next id from the idSource
+	 */
+	String getNextId();
+
 }

@@ -350,4 +350,10 @@ public class DataGroupWrapperImp implements DataGroup, DataGroupWrapper {
 		return dataGroup.hasRepeatId();
 	}
 
+	@Override
+	public <T extends DataChild> List<T> getChildrenOfType(Class<T> type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

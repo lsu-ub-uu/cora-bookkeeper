@@ -300,4 +300,22 @@ public class DataRecordLinkSpy implements DataGroup, DataRecordLink {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public <T extends DataChild> List<T> getChildrenOfType(Class<T> type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLinkedRecord(DataGroup group) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Optional<DataGroup> getLinkedRecord() {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
 }

@@ -19,10 +19,15 @@
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
+import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
+import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
 public class IdSourceFactoryTest {
 
@@ -47,5 +52,30 @@ public class IdSourceFactoryTest {
 
 		String passedType = ((TimeStampIdSource) timestamp).onlyForTestGetType();
 		assertEquals(passedType, TYPE);
+	}
+
+	@Test
+	public void testFactorSequenceIdSource() {
+		IdSource sequence = factory.factorSequenceIdSource(new RecordStorageSpy(), "someSequenceId",
+				"someDefinitionId");
+
+		assertTrue(sequence instanceof SequenceIdSource);
+	}
+
+	@Test
+	public void testFactorSequenceIdSource_passedParameters() {
+		RecordStorageSpy storage = new RecordStorageSpy();
+		IdSource sequence = factory.factorSequenceIdSource(storage, "someSequenceId",
+				"someDefinitionId");
+
+		SequenceIdSource sequenceIdSource = (SequenceIdSource) sequence;
+		assertSame(sequenceIdSource.onlyForTestGetRecordStorage(), storage);
+		assertSame(sequenceIdSource.onlyForTestSequenceId(), "someSequenceId");
+		assertSame(sequenceIdSource.onlyForTestDefinitionId(), "someDefinitionId");
+		assertTrue(
+				sequenceIdSource.onlyForTestTermCollector() instanceof DataGroupTermCollectorImp);
+		assertTrue(
+				sequenceIdSource.onlyForTestLinkCollector() instanceof DataRecordLinkCollectorImp);
+
 	}
 }

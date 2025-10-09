@@ -18,22 +18,29 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
-import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
-import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
 import se.uu.ub.cora.storage.RecordStorage;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class IdSourceFactoryImp implements IdSourceFactory {
+public class IdSourceFactorySpy implements IdSourceFactory {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public IdSourceFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("factorTimestampIdSource", IdSourceSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorSequenceIdSource", IdSourceSpy::new);
+	}
 
 	@Override
 	public IdSource factorTimestampIdSource(String type) {
-		return new TimeStampIdSource(type);
+		return (IdSource) MCR.addCallAndReturnFromMRV("type", type);
 	}
 
 	@Override
 	public IdSource factorSequenceIdSource(RecordStorage storage, String sequenceId,
 			String definitionId) {
-		return new SequenceIdSource(storage, sequenceId, definitionId,
-				new DataGroupTermCollectorImp(), new DataRecordLinkCollectorImp());
+		return (IdSource) MCR.addCallAndReturnFromMRV("storage", storage, "sequenceId", sequenceId,
+				"definitionId", definitionId);
 	}
-
 }
