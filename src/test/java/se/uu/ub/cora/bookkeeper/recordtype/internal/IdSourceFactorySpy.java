@@ -29,6 +29,7 @@ public class IdSourceFactorySpy implements IdSourceFactory {
 	public IdSourceFactorySpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("factorTimestampIdSource", IdSourceSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorSequenceIdSource", IdSourceSpy::new);
 	}
 
 	@Override

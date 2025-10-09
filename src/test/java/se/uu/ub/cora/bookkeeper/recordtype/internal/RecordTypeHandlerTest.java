@@ -151,18 +151,33 @@ public class RecordTypeHandlerTest {
 
 	private void setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue(String nameInData,
 			String value) {
-		DataGroupSpy dataGroupWithAtomic = new DataGroupSpy();
-		dataGroupWithAtomic.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+		DataGroupSpy dataGroup = new DataGroupSpy();
+		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
 				() -> value, nameInData);
-		dataGroupWithAtomic.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
-				() -> true, nameInData);
+		dataGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
+				nameInData);
 		DataGroupSpy recordInfo = new DataGroupSpy();
 		recordInfo.MRV.setDefaultReturnValuesSupplier("getFirstAtomicValueWithNameInData",
 				() -> RECORD_TYPE_ID);
-		dataGroupWithAtomic.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
 				() -> recordInfo, "recordInfo");
+		setSequenceToDataGroup(dataGroup);
+
+		DataRecordLinkSpy definitionLink = new DataRecordLinkSpy();
+		definitionLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
+				() -> "someDefinitionId");
+		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
+				() -> definitionLink, DataRecordLink.class, "metadataId");
+
 		recordStorageUsingDeprecatedRead.MRV.setDefaultReturnValuesSupplier("read",
-				() -> dataGroupWithAtomic);
+				() -> dataGroup);
+	}
+
+	private void setSequenceToDataGroup(DataGroupSpy dataGroup) {
+		DataRecordLinkSpy sequenceLink = new DataRecordLinkSpy();
+		sequenceLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> "sequenceId");
+		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
+				() -> sequenceLink, DataRecordLink.class, "sequence");
 	}
 
 	private DataGroupSpy getDataGroupFromStorage() {
@@ -205,10 +220,9 @@ public class RecordTypeHandlerTest {
 
 		String id = recordTypeHandler.getNextId();
 
-		// TODO: Continue here.
-		idSourceFactory.MCR.assertParameters("factorSequenceIdSource", 0, storage, "dsaf");
-		IdSourceSpy idSource = (IdSourceSpy) idSourceFactory.MCR
-				.assertCalledParametersReturn("factorSequenceIdSource", storage);
+		IdSourceSpy idSource = (IdSourceSpy) idSourceFactory.MCR.assertCalledParametersReturn(
+				"factorSequenceIdSource", recordStorageUsingDeprecatedRead, "sequenceId",
+				"someDefinitionId");
 		idSource.MCR.assertMethodWasCalled("getId");
 		idSource.MCR.assertReturn("getId", 0, id);
 	}
