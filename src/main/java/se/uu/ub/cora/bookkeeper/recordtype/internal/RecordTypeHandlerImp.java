@@ -169,12 +169,12 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return childExistsInRecordType(nameInData) && getBooleanValueFromChild(nameInData);
 	}
 
-	private boolean getBooleanValueFromChild(String nameInData) {
-		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData(nameInData));
-	}
-
 	private boolean childExistsInRecordType(String nameInData) {
 		return recordType.containsChildWithNameInData(nameInData);
+	}
+
+	private boolean getBooleanValueFromChild(String nameInData) {
+		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData(nameInData));
 	}
 
 	@Override
@@ -508,10 +508,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return !getCreateWriteRecordPartConstraints().isEmpty();
 	}
 
-	// public RecordTypeHandlerFactory getRecordTypeHandlerFactory() {
-	// return recordTypeHandlerFactory;
-	// }
-
 	@Override
 	public boolean storeInArchive() {
 		return getValueOfSettingUsingNameInData("storeInArchive");
@@ -605,12 +601,17 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public boolean useVisibility() {
-		return getValueOfSettingUsingNameInData("useVisibility");
+		return getBooleanValueFromChild("useVisibility");
+	}
+
+	@Override
+	public boolean useTrashBin() {
+		return getBooleanValueFromChild("useTrashBin");
 	}
 
 	@Override
 	public boolean usePermissionUnit() {
-		return getValueOfSettingUsingNameInData("usePermissionUnit");
+		return getBooleanValueFromChild("usePermissionUnit");
 	}
 
 	public IdSourceFactory onlyForTestGetIdSourceFactory() {

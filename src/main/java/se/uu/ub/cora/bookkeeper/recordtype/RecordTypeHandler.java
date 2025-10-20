@@ -207,6 +207,14 @@ public interface RecordTypeHandler {
 	boolean useVisibility();
 
 	/**
+	 * useTrashBin returns a boolean indicating if a record type is set to use the paper bin
+	 * functionality or not.
+	 * 
+	 * @return A boolean indicating if paper bin is used or not
+	 */
+	boolean useTrashBin();
+
+	/**
 	 * usePermissionUnit returns a boolean indicating if a record type is set to use the permission
 	 * unit functionality or not.
 	 * 
