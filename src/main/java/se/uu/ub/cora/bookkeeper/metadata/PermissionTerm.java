@@ -21,16 +21,23 @@ package se.uu.ub.cora.bookkeeper.metadata;
 public class PermissionTerm extends CollectTerm {
 	public final String nameInData;
 	public final String permissionKey;
+	public Mode mode;
 
-	public static PermissionTerm usingIdAndNameInDataAndPermissionKey(String id, String nameInData,
-			String permissionKey) {
-		return new PermissionTerm("permission", id, nameInData, permissionKey);
+	public static PermissionTerm usingIdAndNameInDataAndPermissionKeyAndMode(String id,
+			String nameInData, String permissionKey, Mode mode) {
+		return new PermissionTerm("permission", id, nameInData, permissionKey, mode);
 	}
 
-	private PermissionTerm(String type, String id, String nameInData, String permissionKey) {
+	private PermissionTerm(String type, String id, String nameInData, String permissionKey,
+			Mode mode) {
 		super(type, id);
 		this.nameInData = nameInData;
 		this.permissionKey = permissionKey;
+		this.mode = mode;
+	}
+
+	public enum Mode {
+		STANDARD, STATE
 	}
 
 }

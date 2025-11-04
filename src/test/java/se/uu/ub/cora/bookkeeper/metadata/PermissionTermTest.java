@@ -37,13 +37,26 @@ public class PermissionTermTest {
 	}
 
 	@Test
-	public void testCreatePermissionTerm() throws Exception {
-		PermissionTerm storageTerm = PermissionTerm.usingIdAndNameInDataAndPermissionKey("someId",
-				"someNameInData", "somePermissionKey");
+	public void testCreatePermissionTerm_Mode_Standard() {
+		PermissionTerm permissionTerm = PermissionTerm.usingIdAndNameInDataAndPermissionKeyAndMode(
+				"someId", "someNameInData", "somePermissionKey", PermissionTerm.Mode.STANDARD);
 
-		assertEquals(storageTerm.type, "permission");
-		assertEquals(storageTerm.id, "someId");
-		assertEquals(storageTerm.nameInData, "someNameInData");
-		assertEquals(storageTerm.permissionKey, "somePermissionKey");
+		assertEquals(permissionTerm.type, "permission");
+		assertEquals(permissionTerm.id, "someId");
+		assertEquals(permissionTerm.nameInData, "someNameInData");
+		assertEquals(permissionTerm.permissionKey, "somePermissionKey");
+		assertEquals(permissionTerm.mode, PermissionTerm.Mode.STANDARD);
+	}
+
+	@Test
+	public void testCreatePermissionTerm_Mode_State() {
+		PermissionTerm permissionTerm = PermissionTerm.usingIdAndNameInDataAndPermissionKeyAndMode(
+				"someId", "someNameInData", "somePermissionKey", PermissionTerm.Mode.STATE);
+
+		assertEquals(permissionTerm.type, "permission");
+		assertEquals(permissionTerm.id, "someId");
+		assertEquals(permissionTerm.nameInData, "someNameInData");
+		assertEquals(permissionTerm.permissionKey, "somePermissionKey");
+		assertEquals(permissionTerm.mode, PermissionTerm.Mode.STATE);
 	}
 }
