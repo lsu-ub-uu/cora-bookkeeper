@@ -20,7 +20,7 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 
 import static se.uu.ub.cora.bookkeeper.metadata.PermissionTerm.Mode.STATE;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,15 +33,18 @@ import se.uu.ub.cora.data.collected.PermissionTerm;
 public class PermissionTermDataHandlerImp implements PermissionTermDataHandler {
 
 	private CollectTermHolder collectTermHolder;
-	private Map<String, PermissionTerm> previousPermissionsAsMap;
+	private Map<String, List<PermissionTerm>> previousPermissionTermsById;
+	private Map<String, List<PermissionTerm>> currentPermissionTermsById;
 
 	@Override
 	public List<PermissionTerm> getMixedPermissionTermValuesConsideringModeState(
 			List<PermissionTerm> previousPermissions, List<PermissionTerm> currentPermissions) {
 		collectTermHolder = getCollectTermHolder();
-		previousPermissionsAsMap = convertListToMap(previousPermissions);
 
-		return getMixedPermissionTerms(currentPermissions);
+		previousPermissionTermsById = groupById(previousPermissions);
+		currentPermissionTermsById = groupById(currentPermissions);
+
+		return getMixedPermissionTerms();
 	}
 
 	private CollectTermHolder getCollectTermHolder() {
@@ -49,33 +52,39 @@ public class PermissionTermDataHandlerImp implements PermissionTermDataHandler {
 		return storageView.getCollectTermHolder();
 	}
 
-	private Map<String, PermissionTerm> convertListToMap(List<PermissionTerm> list) {
-		return list.stream().collect(Collectors.toMap(PermissionTerm::id, p -> p));
+	private Map<String, List<PermissionTerm>> groupById(List<PermissionTerm> list) {
+		return list.stream().collect(Collectors.groupingBy(PermissionTerm::id));
 	}
 
-	private List<PermissionTerm> getMixedPermissionTerms(List<PermissionTerm> currentPermissions) {
-		List<PermissionTerm> mixedPermissionTerms = new ArrayList<>();
-		for (PermissionTerm permissionTerm : currentPermissions) {
-			mixedPermissionTerms.add(getCorrectPermissionTermAndValue(permissionTerm));
+	private List<PermissionTerm> getMixedPermissionTerms() {
+		return currentPermissionTermsById.entrySet().stream().flatMap(
+				currentPermissionTerm -> getCurrentOrPreviousTermDependingOnPermissionTermMode(
+						currentPermissionTerm).stream())
+				.toList();
+	}
+
+	private List<PermissionTerm> getCurrentOrPreviousTermDependingOnPermissionTermMode(
+			Map.Entry<String, List<PermissionTerm>> currentPermissionTerm) {
+		String id = currentPermissionTerm.getKey();
+		if (isStatePermissionTerm(id)) {
+			return getPreviousPermissionTerms(id);
 		}
-		return mixedPermissionTerms;
+		return currentPermissionTerm.getValue();
+
 	}
 
-	private PermissionTerm getCorrectPermissionTermAndValue(PermissionTerm permissionTerm) {
-		if (isStatePermissionTerm(permissionTerm)) {
-			return getPreviousPermissionTermAndValue(permissionTerm);
+	private List<PermissionTerm> getPreviousPermissionTerms(String id) {
+		if (previousPermissionTermsById.containsKey(id)) {
+			return previousPermissionTermsById.get(id);
 		}
-		return permissionTerm;
+		return Collections.emptyList();
+
 	}
 
-	private boolean isStatePermissionTerm(PermissionTerm permissionTerm) {
+	private boolean isStatePermissionTerm(String id) {
 		var metaPermissionTerm = (se.uu.ub.cora.bookkeeper.metadata.PermissionTerm) collectTermHolder
-				.getCollectTermById(permissionTerm.id());
+				.getCollectTermById(id);
 		return metaPermissionTerm.mode.equals(STATE);
-	}
-
-	private PermissionTerm getPreviousPermissionTermAndValue(PermissionTerm permissionTerm) {
-		return previousPermissionsAsMap.get(permissionTerm.id());
 	}
 
 }

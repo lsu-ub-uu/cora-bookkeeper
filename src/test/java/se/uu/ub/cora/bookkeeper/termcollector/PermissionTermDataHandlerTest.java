@@ -24,8 +24,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -55,8 +53,8 @@ public class PermissionTermDataHandlerTest {
 
 		setUpMetadataStorageForTest();
 
-		currentPermissionTerms = createCurrentPermissionTerms();
 		previousPermissionTerms = createPreviousPermissionTerms();
+		currentPermissionTerms = createCurrentPermissionTerms();
 
 		handler = new PermissionTermDataHandlerImp();
 	}
@@ -73,19 +71,20 @@ public class PermissionTermDataHandlerTest {
 		MetadataStorageProvider.onlyForTestSetMetadataStorageViewInstanceProvider(instanceProvider);
 	}
 
-	private List<PermissionTerm> createCurrentPermissionTerms() {
-		List<PermissionTerm> permissionTerms = new ArrayList<>();
-		permissionTerms.add(new PermissionTerm("id_1", "current_1", "someKey"));
-		permissionTerms.add(new PermissionTerm("id_2", "current_2", "someKey"));
-		permissionTerms.add(new PermissionTerm("id_3", "current_3", "someKey"));
-		return permissionTerms;
-	}
-
 	private List<PermissionTerm> createPreviousPermissionTerms() {
 		List<PermissionTerm> permissionTerms = new ArrayList<>();
 		permissionTerms.add(new PermissionTerm("id_1", "previous_1", "someKey"));
 		permissionTerms.add(new PermissionTerm("id_2", "previous_2", "someKey"));
 		permissionTerms.add(new PermissionTerm("id_3", "previous_3", "someKey"));
+
+		return permissionTerms;
+	}
+
+	private List<PermissionTerm> createCurrentPermissionTerms() {
+		List<PermissionTerm> permissionTerms = new ArrayList<>();
+		permissionTerms.add(new PermissionTerm("id_1", "current_1", "someKey"));
+		permissionTerms.add(new PermissionTerm("id_2", "current_2", "someKey"));
+		permissionTerms.add(new PermissionTerm("id_3", "current_3", "someKey"));
 		return permissionTerms;
 	}
 
@@ -100,62 +99,97 @@ public class PermissionTermDataHandlerTest {
 
 	@Test
 	public void testAllPermissionAreStandard() {
-		var metaPermission1 = createMetadataPermissionTerm("id_1", Mode.STANDARD);
-		var metaPermission2 = createMetadataPermissionTerm("id_2", Mode.STANDARD);
-		var metaPermission3 = createMetadataPermissionTerm("id_3", Mode.STANDARD);
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission1, "id_1");
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission2, "id_2");
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission3, "id_3");
+		createPermissionTermMetadata(MetaPermTerm.standard("id_1"));
+		createPermissionTermMetadata(MetaPermTerm.standard("id_2"));
+		createPermissionTermMetadata(MetaPermTerm.standard("id_3"));
 
 		List<PermissionTerm> statePermissionsValues = handler
 				.getMixedPermissionTermValuesConsideringModeState(previousPermissionTerms,
 						currentPermissionTerms);
 
-		assertCorrectTermAndValueExists(statePermissionsValues, new Pair("id_1", "current_1"),
-				new Pair("id_2", "current_2"), new Pair("id_3", "current_3"));
+		assertCorrectTermAndValueExists(statePermissionsValues,
+				new PermissionTermPair("id_1", "current_1"),
+				new PermissionTermPair("id_2", "current_2"),
+				new PermissionTermPair("id_3", "current_3"));
 	}
 
 	@Test
 	public void testAllPermissionAreState() {
-		var metaPermission1 = createMetadataPermissionTerm("id_1", Mode.STATE);
-		var metaPermission2 = createMetadataPermissionTerm("id_2", Mode.STATE);
-		var metaPermission3 = createMetadataPermissionTerm("id_3", Mode.STATE);
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission1, "id_1");
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission2, "id_2");
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission3, "id_3");
+		createPermissionTermMetadata(MetaPermTerm.state("id_1"));
+		createPermissionTermMetadata(MetaPermTerm.state("id_2"));
+		createPermissionTermMetadata(MetaPermTerm.state("id_3"));
 
 		List<PermissionTerm> statePermissionsValues = handler
 				.getMixedPermissionTermValuesConsideringModeState(previousPermissionTerms,
 						currentPermissionTerms);
 
-		assertCorrectTermAndValueExists(statePermissionsValues, new Pair("id_1", "previous_1"),
-				new Pair("id_2", "previous_2"), new Pair("id_3", "previous_3"));
+		assertCorrectTermAndValueExists(statePermissionsValues,
+				new PermissionTermPair("id_1", "previous_1"),
+				new PermissionTermPair("id_2", "previous_2"),
+				new PermissionTermPair("id_3", "previous_3"));
 	}
 
 	@Test
 	public void testAllPermissionAreMixed() {
-		var metaPermission1 = createMetadataPermissionTerm("id_1", Mode.STANDARD);
-		var metaPermission2 = createMetadataPermissionTerm("id_2", Mode.STATE);
-		var metaPermission3 = createMetadataPermissionTerm("id_3", Mode.STANDARD);
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission1, "id_1");
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission2, "id_2");
-		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
-				() -> metaPermission3, "id_3");
+		createPermissionTermMetadata(MetaPermTerm.standard("id_1"));
+		createPermissionTermMetadata(MetaPermTerm.state("id_2"));
+		createPermissionTermMetadata(MetaPermTerm.standard("id_3"));
 
 		List<PermissionTerm> statePermissionsValues = handler
 				.getMixedPermissionTermValuesConsideringModeState(previousPermissionTerms,
 						currentPermissionTerms);
 
-		assertCorrectTermAndValueExists(statePermissionsValues, new Pair("id_1", "current_1"),
-				new Pair("id_2", "previous_2"), new Pair("id_3", "current_3"));
+		assertCorrectTermAndValueExists(statePermissionsValues,
+				new PermissionTermPair("id_1", "current_1"),
+				new PermissionTermPair("id_2", "previous_2"),
+				new PermissionTermPair("id_3", "current_3"));
+	}
+
+	@Test
+	public void test_PermssionTermWithSameId() {
+		createPermissionTermMetadata(MetaPermTerm.state("id_4"));
+
+		List<PermissionTerm> statePermissionsValues = handler
+				.getMixedPermissionTermValuesConsideringModeState(
+						createPreviousSameIdPermissionTerms(),
+						createCurrentSameIdPermissionTerms());
+
+		assertCorrectTermAndValueExists(statePermissionsValues,
+				new PermissionTermPair("id_4", "previous_4_1"),
+				new PermissionTermPair("id_4", "previous_4_2"),
+				new PermissionTermPair("id_4", "previous_4_3"));
+	}
+
+	private List<PermissionTerm> createPreviousSameIdPermissionTerms() {
+		List<PermissionTerm> permissionTerms = new ArrayList<>();
+		permissionTerms.add(new PermissionTerm("id_4", "previous_4_1", "someKey"));
+		permissionTerms.add(new PermissionTerm("id_4", "previous_4_2", "someKey"));
+		permissionTerms.add(new PermissionTerm("id_4", "previous_4_3", "someKey"));
+		return permissionTerms;
+	}
+
+	private List<PermissionTerm> createCurrentSameIdPermissionTerms() {
+		List<PermissionTerm> permissionTerms = new ArrayList<>();
+		permissionTerms.add(new PermissionTerm("id_4", "current_4_1", "someKey"));
+		permissionTerms.add(new PermissionTerm("id_4", "current_4_2", "someKey"));
+		return permissionTerms;
+	}
+
+	@Test
+	public void test_PermssionTermOnlyExistsInCurrent() {
+		createPermissionTermMetadata(MetaPermTerm.state("id_5"));
+
+		List<PermissionTerm> statePermissionsValues = handler
+				.getMixedPermissionTermValuesConsideringModeState(Collections.emptyList(),
+						createCurrentOnlyExistsInCurrent());
+
+		assertEquals(statePermissionsValues.size(), 0);
+	}
+
+	private List<PermissionTerm> createCurrentOnlyExistsInCurrent() {
+		List<PermissionTerm> permissionTerms = new ArrayList<>();
+		permissionTerms.add(new PermissionTerm("id_5", "current_5", "someKey"));
+		return permissionTerms;
 	}
 
 	private se.uu.ub.cora.bookkeeper.metadata.PermissionTerm createMetadataPermissionTerm(String id,
@@ -166,25 +200,46 @@ public class PermissionTermDataHandlerTest {
 	}
 
 	private void assertCorrectTermAndValueExists(List<PermissionTerm> statePermissionsValues,
-			Pair... expectedIdAndValues) {
-		var permissionTermMap = convertListToMap(statePermissionsValues);
+			PermissionTermPair... expectedIdAndValues) {
+		var permissionTermIdAndValue = convertToListUsingIdAndValueToMap(statePermissionsValues);
 
-		assertEquals(permissionTermMap.size(), 3);
-		assertExpectedPermissionTermsAndValuesExists(permissionTermMap, expectedIdAndValues);
+		assertEquals(permissionTermIdAndValue.size(), 3);
+		assertExpectedPermissionTermsAndValuesExists(permissionTermIdAndValue, expectedIdAndValues);
 	}
 
-	private void assertExpectedPermissionTermsAndValuesExists(Map<String, String> permissionTermMap,
-			Pair... expectedIdAndValues) {
-		for (Pair pair : expectedIdAndValues) {
-			assertTrue(permissionTermMap.containsKey(pair.id()));
-			assertEquals(permissionTermMap.get(pair.id()), pair.value());
+	private void assertExpectedPermissionTermsAndValuesExists(List<String> permissionTermIdAndValue,
+			PermissionTermPair... expectedIdAndValues) {
+		for (PermissionTermPair pair : expectedIdAndValues) {
+			assertTrue(permissionTermIdAndValue.contains(pair.id() + pair.value));
 		}
 	}
 
-	private Map<String, String> convertListToMap(List<PermissionTerm> list) {
-		return list.stream().collect(Collectors.toMap(PermissionTerm::id, PermissionTerm::value));
+	private List<String> convertToListUsingIdAndValueToMap(List<PermissionTerm> list) {
+		return list.stream().map(perm -> perm.id() + perm.value()).toList();
 	}
 
-	record Pair(String id, String value) {
+	record PermissionTermPair(String id, String value) {
 	}
+
+	record MetaPermTerm(String id, Mode mode) {
+		public static MetaPermTerm standard(String id) {
+			return new MetaPermTerm(id, Mode.STANDARD);
+		}
+
+		public static MetaPermTerm state(String id) {
+			return new MetaPermTerm(id, Mode.STATE);
+		}
+	}
+
+	private void createPermissionTermMetadata(MetaPermTerm... metaPermissionTerms) {
+
+		for (MetaPermTerm metaPermissionTerm : metaPermissionTerms) {
+			var metadataPermissionTerm = createMetadataPermissionTerm(metaPermissionTerm.id(),
+					metaPermissionTerm.mode());
+			collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
+					() -> metadataPermissionTerm, metaPermissionTerm.id());
+		}
+
+	}
+
 }
