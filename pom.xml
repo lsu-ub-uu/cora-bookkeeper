@@ -14,11 +14,11 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>3.0.0</version>
+		<version>3.1.0</version>
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
-	<version>11.1-SNAPSHOT</version>
+	<version>11.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Bookkeeper</name>
