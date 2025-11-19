@@ -387,7 +387,8 @@ public class DataGroupTermCollectorTest {
 
 	private void createMetadataPermissionTerm(String id, String nameInData, String permissionKey) {
 		var permissionTerm = se.uu.ub.cora.bookkeeper.metadata.PermissionTerm
-				.usingIdAndNameInDataAndPermissionKey(id, nameInData, permissionKey);
+				.usingIdAndNameInDataAndPermissionKeyAndMode(id, nameInData, permissionKey,
+						se.uu.ub.cora.bookkeeper.metadata.PermissionTerm.Mode.STANDARD);
 		collectTermHolder.MRV.setSpecificReturnValuesSupplier("getCollectTermById",
 				() -> permissionTerm, id);
 	}

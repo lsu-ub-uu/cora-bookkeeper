@@ -72,7 +72,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private Optional<String> extractTypeFromRecord(DataRecordGroup dataRecordGroup) {
 		try {
 			return Optional.of(dataRecordGroup.getType());
-		} catch (Exception e) {
+		} catch (Exception _) {
 			return Optional.empty();
 		}
 	}
@@ -80,7 +80,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private Optional<String> extractIdFromDataRecord(DataRecordGroup dataRecordGroup) {
 		try {
 			return Optional.of(dataRecordGroup.getId());
-		} catch (Exception e) {
+		} catch (Exception _) {
 			return Optional.empty();
 		}
 	}
