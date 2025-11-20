@@ -28,8 +28,8 @@
 		<storage.version>10.0.0</storage.version>
 		<storagespies.version>1.15.0</storagespies.version>
 		<initialize.version>1.7.0</initialize.version>
-		<coradata.version>11.1-SNAPSHOT</coradata.version>
-		<coradata-spies.version>3.1-SNAPSHOT</coradata-spies.version>
+		<coradata.version>11.1.0</coradata.version>
+		<coradata-spies.version>3.1.0</coradata-spies.version>
 		<logger.version>2.10.0</logger.version>
 		<json.version>3.10.0</json.version>
 		<testutils.version>1.14.0</testutils.version>
