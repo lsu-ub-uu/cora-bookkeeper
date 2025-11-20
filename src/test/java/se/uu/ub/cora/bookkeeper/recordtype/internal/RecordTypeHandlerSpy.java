@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -68,6 +68,7 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 		MRV.setDefaultReturnValuesSupplier("isPublicForRead", () -> false);
 		MRV.setDefaultReturnValuesSupplier("storeInArchive", () -> false);
 		MRV.setDefaultReturnValuesSupplier("useVisibility", () -> false);
+		MRV.setDefaultReturnValuesSupplier("useTrashBin", () -> false);
 		MRV.setDefaultReturnValuesSupplier("usePermissionUnit", () -> false);
 		MRV.setDefaultReturnValuesSupplier("getNextId", () -> "someNextId");
 	}
@@ -222,5 +223,10 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	public String getNextId() {
 		return (String) MCR.addCallAndReturnFromMRV();
 
+	}
+
+	@Override
+	public boolean useTrashBin() {
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 }

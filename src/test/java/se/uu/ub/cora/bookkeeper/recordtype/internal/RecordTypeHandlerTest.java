@@ -1313,83 +1313,71 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testUseVisibilityNotSet() {
-		DataGroupSpy dataGroupSpy = new DataGroupSpy();
-		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> false,
-				"useVisibility");
-		recordStorageUsingDeprecatedRead.MRV.setDefaultReturnValuesSupplier("read",
-				() -> dataGroupSpy);
-		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
-
-		boolean useVisibility = recordTypeHandler.useVisibility();
-
-		assertEquals(useVisibility, false);
-	}
-
-	@Test
 	public void testUseVisibilityTrue() {
-		DataGroupSpy dataGroupSpy = new DataGroupSpy();
-		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(TRUE),
-				"useVisibility");
-		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
-				"useVisibility");
-		recordStorageUsingDeprecatedRead.MRV.setDefaultReturnValuesSupplier("read",
-				() -> dataGroupSpy);
-
+		setUpBooleanFieldOnDataGroup("useVisibility", TRUE);
 		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
-		DataGroupSpy dataGroup = (DataGroupSpy) recordStorageUsingDeprecatedRead.MCR
-				.getReturnValue("read", 0);
 
-		boolean useVisibility = recordTypeHandler.useVisibility();
+		boolean value = recordTypeHandler.useVisibility();
 
-		assertEquals(useVisibility, true);
-		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
+		assertEquals(value, true);
 	}
 
 	@Test
 	public void testUseVisibilityFalse() {
+		setUpBooleanFieldOnDataGroup("useVisibility", FALSE);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		boolean value = recordTypeHandler.useVisibility();
+
+		assertEquals(value, false);
+	}
+
+	@Test
+	public void testUseTrashBinFalse() {
+		setUpBooleanFieldOnDataGroup("useTrashBin", FALSE);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		boolean value = recordTypeHandler.useTrashBin();
+
+		assertEquals(value, false);
+	}
+
+	@Test
+	public void testUseTrashBinTrue() {
+		setUpBooleanFieldOnDataGroup("useTrashBin", TRUE);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		boolean value = recordTypeHandler.useTrashBin();
+
+		assertEquals(value, true);
+	}
+
+	@Test
+	public void testUsePermissionUnitTrue() {
+		setUpBooleanFieldOnDataGroup("usePermissionUnit", TRUE);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		boolean value = recordTypeHandler.usePermissionUnit();
+
+		assertEquals(value, true);
+	}
+
+	@Test
+	public void testUsePermissionUnitFalse() {
+		setUpBooleanFieldOnDataGroup("usePermissionUnit", FALSE);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		boolean value = recordTypeHandler.usePermissionUnit();
+
+		assertEquals(value, false);
+	}
+
+	private void setUpBooleanFieldOnDataGroup(String nameInData, String booleanValue) {
 		DataGroupSpy dataGroupSpy = new DataGroupSpy();
-		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(FALSE),
-				"useVisibility");
-		dataGroupSpy.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData", () -> true,
-				"useVisibility");
+		dataGroupSpy.MRV.setReturnValues("getFirstAtomicValueWithNameInData", List.of(booleanValue),
+				nameInData);
 		recordStorageUsingDeprecatedRead.MRV.setDefaultReturnValuesSupplier("read",
 				() -> dataGroupSpy);
-		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
-		DataGroupSpy dataGroup = (DataGroupSpy) recordStorageUsingDeprecatedRead.MCR
-				.getReturnValue("read", 0);
-
-		boolean useVisibility = recordTypeHandler.useVisibility();
-
-		assertEquals(useVisibility, false);
-		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "useVisibility");
-	}
-
-	@Test
-	public void testUsePermissionUnit_IfDoNotExistsThenFalse() {
-		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
-
-		boolean usePermissionUnit = recordTypeHandler.usePermissionUnit();
-
-		assertEquals(usePermissionUnit, false);
-		DataGroupSpy dataGroup = getDataGroupFromStorage();
-		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "usePermissionUnit");
-	}
-
-	@Test
-	public void testUsePermissionUnit_GetValueAsBooleanFromDataGroup() {
-		setupForStorageReadReturnsGroupWithAtomicUsingNameInDataAndValue("usePermissionUnit",
-				FALSE);
-		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
-
-		boolean usePermissionUnit = recordTypeHandler.usePermissionUnit();
-
-		assertEquals(usePermissionUnit, false);
-		DataGroupSpy dataGroup = getDataGroupFromStorage();
-		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "usePermissionUnit");
-		dataGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "usePermissionUnit");
-		dataGroup.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0,
-				Boolean.valueOf(usePermissionUnit).toString());
 	}
 
 	@Test
