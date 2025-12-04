@@ -22,7 +22,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Collections;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
@@ -30,11 +29,10 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.collected.CollectTerms;
-import se.uu.ub.cora.data.collected.Link;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
-import se.uu.ub.cora.storage.RecordConflictException;
+import se.uu.ub.cora.storage.StorageException;
 import se.uu.ub.cora.storage.spies.RecordStorageSpy;
 
 public class SequenceIdSourceTest {
@@ -48,9 +46,11 @@ public class SequenceIdSourceTest {
 	private DataRecordLinkCollectorSpy linkCollector;
 	private DataRecordGroupSpy sequenceRecordGroup;
 	private DataFactorySpy dataFactory;
+	private int supplierCount = 0;
 
 	@BeforeMethod
 	private void beforeMethod() {
+		supplierCount = 0;
 		dataFactory = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactory);
 
@@ -117,8 +117,8 @@ public class SequenceIdSourceTest {
 
 		DataGroupSpy sequenceGroup = (DataGroupSpy) dataFactory.MCR.assertCalledParametersReturn(
 				"factorGroupFromDataRecordGroup", sequenceRecordGroup);
-		var collectedLinks = (Set<Link>) linkCollector.MCR
-				.assertCalledParametersReturn("collectLinks", DEFINITION_ID, sequenceGroup);
+		var collectedLinks = linkCollector.MCR.assertCalledParametersReturn("collectLinks",
+				DEFINITION_ID, sequenceGroup);
 
 		storage.MCR.assertParameters("update", 0, SEQUENCE_TYPE, SEQUENCE_ID, sequenceGroup,
 				collectedTerms.storageTerms, collectedLinks, "someDataDivider");
@@ -137,27 +137,24 @@ public class SequenceIdSourceTest {
 	}
 
 	private void setUpConflictOnUpdate() {
-		Supplier<?> supplierThrowConflictExceptionOnFirstCall = this::throwConflictExceptionOnFirstCall;
+		Supplier<?> supplierThrowStorageExceptionOnFirstCall = this::throwStorageExceptionOnFirstCall;
 
 		// OBS: Since update do not return, it was not possible to link a supplier that returned
 		// different options on each call. We use linkCollector instead even though it is update
-		// that should throw ConflictException
+		// that should throw StoerageException
 		linkCollector.MRV.setDefaultReturnValuesSupplier("collectLinks",
-				supplierThrowConflictExceptionOnFirstCall);
+				supplierThrowStorageExceptionOnFirstCall);
 	}
 
-	int supplierCount = 0;
-
-	private Object throwConflictExceptionOnFirstCall() {
+	private Object throwStorageExceptionOnFirstCall() {
 		supplierCount++;
 		if (supplierCount <= 2) {
-			throw RecordConflictException.withMessage("fromSpy");
+			throw StorageException.withMessage("fromSpy");
 		}
 		return Collections.emptySet();
 	}
 
-	@Test(enabled = false)
-	// Disabled due to being unstable in CI. It works locally.
+	@Test
 	public void testOnConlictRetry_wait() {
 		setUpConflictOnUpdate();
 
@@ -167,6 +164,6 @@ public class SequenceIdSourceTest {
 
 		long elapsedTime = System.currentTimeMillis() - startTime;
 
-		assertTrue(elapsedTime >= 200, "Expected wait of at least 2 x 100 ms");
+		assertTrue(elapsedTime >= 10, "Expected wait of at least 2 x 5 ms: " + elapsedTime);
 	}
 }

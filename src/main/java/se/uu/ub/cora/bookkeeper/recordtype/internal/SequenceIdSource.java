@@ -28,8 +28,8 @@ import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
 import se.uu.ub.cora.data.collected.Link;
-import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordStorage;
+import se.uu.ub.cora.storage.StorageException;
 
 public class SequenceIdSource implements IdSource {
 
@@ -57,8 +57,8 @@ public class SequenceIdSource implements IdSource {
 	private String tryToGetNextIdAndUpdateSequence() {
 		try {
 			return getNextIdAndUpdateSequence();
-		} catch (RecordConflictException e) {
-			wait(100);
+		} catch (StorageException _) {
+			wait(5);
 			return tryToGetNextIdAndUpdateSequence();
 		}
 	}
@@ -66,7 +66,7 @@ public class SequenceIdSource implements IdSource {
 	private void wait(int milliseconds) {
 		try {
 			Thread.sleep(milliseconds);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException _) {
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -79,11 +79,8 @@ public class SequenceIdSource implements IdSource {
 		return nextIdAsString;
 	}
 
-	private void updateSequenceRecordGroup(DataRecordGroup dataRecordGroup, String nextIdAsString) {
-		DataAtomic newCurrentNumber = DataProvider
-				.createAtomicUsingNameInDataAndValue(CURRENT_NUMBER, nextIdAsString);
-		dataRecordGroup.removeFirstChildWithNameInData(CURRENT_NUMBER);
-		dataRecordGroup.addChild(newCurrentNumber);
+	private DataRecordGroup readSequence() {
+		return storage.read("sequence", sequenceId);
 	}
 
 	private String incrementNumber(DataRecordGroup dataRecordGroup) {
@@ -92,10 +89,11 @@ public class SequenceIdSource implements IdSource {
 		return String.valueOf(currentNumberAsLong + 1);
 	}
 
-	private DataRecordGroup readSequence() {
-		DataRecordGroup dataRecordGroup = storage.read("sequence", sequenceId);
-		dataRecordGroup.getFirstAtomicValueWithNameInData(CURRENT_NUMBER);
-		return dataRecordGroup;
+	private void updateSequenceRecordGroup(DataRecordGroup dataRecordGroup, String nextIdAsString) {
+		DataAtomic newCurrentNumber = DataProvider
+				.createAtomicUsingNameInDataAndValue(CURRENT_NUMBER, nextIdAsString);
+		dataRecordGroup.removeFirstChildWithNameInData(CURRENT_NUMBER);
+		dataRecordGroup.addChild(newCurrentNumber);
 	}
 
 	private void updateSequence(DataRecordGroup dataRecordGroup) {
