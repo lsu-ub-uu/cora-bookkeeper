@@ -123,7 +123,6 @@ public class RecordTypeHandlerFactoryTest {
 				.factorUsingRecordTypeId(recordTypeId);
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storage);
-		assertSame(recordTypeHandler.onlyForTestGetRecordTypeId(), recordTypeId);
 		assertIdSourceFactoryIsPassed(recordTypeHandler);
 	}
 
@@ -139,7 +138,6 @@ public class RecordTypeHandlerFactoryTest {
 				.factorUsingDataRecordGroup(dataRecordGroup);
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storageUsingDeprecatedRead);
-		assertSame(recordTypeHandler.onlyForTestGetMetadataStorage(), metadataStorageViewSpy);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
 		assertIdSourceFactoryIsPassed(recordTypeHandler);
 	}

@@ -194,9 +194,9 @@ public interface RecordTypeHandler {
 	 * getUniqueDefinitions returns a List of all unique definitions for the recordType. If no
 	 * unique definitions exsists is an empty list returned.
 	 * 
-	 * @return A List of {@link Unique} as set up in the recordType.
+	 * @return A List of {@link UniqueStorageKeys} as set up in the recordType.
 	 */
-	List<Unique> getUniqueDefinitions();
+	List<UniqueStorageKeys> getUniqueDefinitions();
 
 	/**
 	 * usesVisibility returns a boolean indicating if a record type is set to use the visibility

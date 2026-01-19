@@ -27,6 +27,7 @@ import java.util.Optional;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.spy.MetadataElementSpy;
+import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
 import se.uu.ub.cora.bookkeeper.text.TextElement;
 import se.uu.ub.cora.bookkeeper.text.TextElementSpy;
@@ -43,11 +44,16 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 	public MethodReturnValues MRV = new MethodReturnValues();
 
 	public MetadataStorageViewSpy() {
+		RecordType recordType = new RecordType("someId", "someDefinitionId", Optional.empty(),
+				"someIdSource", Optional.empty(), Collections.emptyList(), false, false, false,
+				false, false);
+
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getMetadataElements", ArrayList<DataRecordGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getMetadataElement", MetadataElementSpy::new);
 		MRV.setDefaultReturnValuesSupplier("getPresentationElements", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getTexts", ArrayList<DataGroup>::new);
+		MRV.setDefaultReturnValuesSupplier("getRecordType", () -> recordType);
 		MRV.setDefaultReturnValuesSupplier("getRecordTypes", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getCollectTerms", ArrayList<DataGroup>::new);
 		MRV.setDefaultReturnValuesSupplier("getValidationType", Optional::empty);
@@ -110,6 +116,11 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 	@Override
 	public TextElement getTextElement(String elementId) {
 		return (TextElement) MCR.addCallAndReturnFromMRV("elementId", elementId);
+	}
+
+	@Override
+	public RecordType getRecordType(String id) {
+		return (RecordType) MCR.addCallAndReturnFromMRV("id", id);
 	}
 
 }

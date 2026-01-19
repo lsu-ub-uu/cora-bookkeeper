@@ -36,8 +36,11 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
 		ensureRecordStorageIsFetched();
 
-		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(recordStorage, recordTypeId,
+		return RecordTypeHandlerImp.usingRecordStorage(null, recordStorage,
 				new IdSourceFactoryImp());
+		// return RecordTypeHandlerImp.usingRecordStorage(getRecordType(recordTypeId),
+		// recordStorage,
+		// new IdSourceFactoryImp());
 	}
 
 	private void ensureRecordStorageIsFetched() {
@@ -61,9 +64,11 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 		ensureRecordStorageIsFetched();
 		ensureMetadataStorageIsFetched();
 
-		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-				recordStorage, metadataStorage, dataRecordGroup.getValidationType(),
-				new IdSourceFactoryImp());
+		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(null,
+				recordStorage, dataRecordGroup.getValidationType(), new IdSourceFactoryImp());
+		// return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
+		// getRecordType(id), recordStorage, dataRecordGroup.getValidationType(),
+		// new IdSourceFactoryImp());
 	}
 
 	private void ensureMetadataStorageIsFetched() {
@@ -71,5 +76,9 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 			metadataStorage = MetadataStorageProvider.getStorageView();
 		}
 	}
+
+	// private RecordType getRecordType(String id) {
+	// return metadataStorage.getRecordType(id);
+	// }
 
 }
