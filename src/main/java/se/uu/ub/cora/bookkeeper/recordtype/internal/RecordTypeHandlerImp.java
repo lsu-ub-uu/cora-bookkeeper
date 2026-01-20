@@ -54,7 +54,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private RecordType recordType;
-	// private String recordTypeId;
 	private RecordStorage recordStorage;
 	private DataGroup metadataGroup;
 	private Set<Constraint> readWriteConstraints = new LinkedHashSet<>();

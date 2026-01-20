@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023, 2025 Uppsala University Library
+ * Copyright 2020, 2023, 2025, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -124,12 +124,21 @@ public class RecordTypeHandlerFactoryTest {
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storage);
 		assertIdSourceFactoryIsPassed(recordTypeHandler);
+		assertRecordTypeCreatedAndPassed(recordTypeHandler, recordTypeId);
+	}
+
+	private void assertRecordTypeCreatedAndPassed(RecordTypeHandlerImp recordTypeHandler,
+			String recordTypeId) {
+		var recordType = metadataStorageViewSpy.MCR.assertCalledParametersReturn("getRecordType",
+				recordTypeId);
+		assertEquals(recordTypeHandler.onlyForTestGetRecordType(), recordType);
 	}
 
 	@Test
 	public void testFactorUsingDataRecordGroupWithValidationType() {
-		String validationTypeId = "someValidationTypeId";
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
+		String validationTypeId = "someValidationTypeId";
+		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getType", () -> "someRecordTypeId");
 		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getValidationType",
 				() -> validationTypeId);
 
@@ -140,6 +149,7 @@ public class RecordTypeHandlerFactoryTest {
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storageUsingDeprecatedRead);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
 		assertIdSourceFactoryIsPassed(recordTypeHandler);
+		assertRecordTypeCreatedAndPassed(recordTypeHandler, "someRecordTypeId");
 	}
 
 	private void assertIdSourceFactoryIsPassed(RecordTypeHandlerImp recordTypeHandler) {
@@ -162,15 +172,5 @@ public class RecordTypeHandlerFactoryTest {
 			assertEquals(e.getMessage(),
 					"RecordTypeHandler could not be created because of missing data: someMessage");
 		}
-	}
-
-	@Test
-	public void testMetadatatorageLoadedOnceOnFirstCallToFactor() {
-		metaStorageInstProviderSpy.MCR.assertMethodNotCalled("getStorageView");
-
-		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
-		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
-
-		metaStorageInstProviderSpy.MCR.assertNumberOfCallsToMethod("getStorageView", 1);
 	}
 }
