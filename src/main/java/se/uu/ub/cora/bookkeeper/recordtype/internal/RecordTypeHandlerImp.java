@@ -54,7 +54,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private RecordType recordType;
-	// private String recordTypeId;
 	private RecordStorage recordStorage;
 	private DataGroup metadataGroup;
 	private Set<Constraint> readWriteConstraints = new LinkedHashSet<>();
@@ -125,6 +124,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private String getNextIdUsingTimestamp() {
+		// IdSource idSource = idSourceFactory.factorIdSource(recordType);
 		IdSource idSource = idSourceFactory.factorTimestampIdSource(getRecordTypeId());
 		return idSource.getId();
 	}
