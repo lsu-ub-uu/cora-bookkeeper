@@ -21,15 +21,15 @@ package se.uu.ub.cora.bookkeeper.storage;
 import se.uu.ub.cora.initialize.SelectOrder;
 
 /**
- * AppTokenStorageViewInstanceProvider is used to provide storage for AppToken
+ * MetadataStorageViewInstanceProvider is used to provide Metadata storage.
  */
 public interface MetadataStorageViewInstanceProvider extends SelectOrder {
 
 	/**
-	 * getStorageView should be implemented in such a way that it returns an AppTokenStorage that
-	 * can be used by AppTokenVerifier
+	 * getStorageView should be implemented in such a way that it returns an
+	 * {@link MetadataStorageView}.
 	 * 
-	 * @return An AppTokenStorageView that gives access to storage for the implementing
+	 * @return An MetadataStorageView that gives access to Metadata storage for the implementing
 	 *         AppTokenStorage
 	 */
 	MetadataStorageView getStorageView();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordtype.internal;
+package se.uu.ub.cora.bookkeeper.idsource;
 
-public class TimeStampIdSource implements IdSource {
+import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
+import se.uu.ub.cora.initialize.SelectType;
 
-	private String type;
+public interface IdSourceInstanceProvider extends SelectType {
 
-	public TimeStampIdSource(String type) {
-		this.type = type;
-	}
+	/**
+	 * getIdSource should be implemented in such a way that it returns an IdSource of the requested
+	 * type.
+	 * 
+	 * @param recordType
+	 *            A {@link RecordType} record containing information information of a record type
+	 *            which is required in order to create the IdSources
+	 * 
+	 * @return An IdSource of the requested type.
+	 */
+	IdSource getIdSource(RecordType recordType);
 
-	@Override
-	public synchronized String getId() {
-		return type + ":" + System.nanoTime();
-	}
-
-	public String onlyForTestGetType() {
-		return type;
-	}
 }

@@ -35,6 +35,9 @@ import java.util.function.Supplier;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.idsource.IdSourceInstanceProvider;
+import se.uu.ub.cora.bookkeeper.idsource.IdSourceInstanceProviderSpy;
+import se.uu.ub.cora.bookkeeper.idsource.internal.IdSourceProvider;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
@@ -53,6 +56,7 @@ import se.uu.ub.cora.data.spies.DataChildFilterSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
+import se.uu.ub.cora.initialize.spies.InitializedTypesSpy;
 import se.uu.ub.cora.logger.LoggerFactory;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
@@ -67,25 +71,44 @@ public class RecordTypeHandlerTest {
 	private RecordStorageSpy recordStorageUsingDeprecatedRead;
 	private OldRecordStorageSpy storage;
 	private MetadataStorageViewSpy metadataStorageViewSpy;
-	private IdSourceFactorySpy idSourceFactory;
 	private RecordType recordType;
+	private InitializedTypesSpy<IdSourceInstanceProvider> initializedTypes;
+	private IdSourceSpy idSource;
 
 	@BeforeMethod
 	public void setUp() {
-		LoggerFactory loggerSpy = new LoggerFactorySpy();
-		LoggerProvider.setLoggerFactory(loggerSpy);
-
-		dataFactorySpy = new DataFactorySpy();
-		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+		setUpLoggerProvider();
+		setUpDataFactoryProvider();
+		setUpMetadataStorageProvider();
+		setUpIdSourceProvider();
 
 		recordStorageUsingDeprecatedRead = new RecordStorageSpy();
 		recordStorageUsingDeprecatedRead.MRV.setDefaultReturnValuesSupplier("read",
 				DataGroupSpy::new);
 
-		setUpMetadataStorageProvider();
-
-		idSourceFactory = new IdSourceFactorySpy();
 		createRecordType();
+	}
+
+	private void setUpLoggerProvider() {
+		LoggerFactory loggerSpy = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerSpy);
+	}
+
+	private void setUpDataFactoryProvider() {
+		dataFactorySpy = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+	}
+
+	private void setUpIdSourceProvider() {
+		initializedTypes = new InitializedTypesSpy<IdSourceInstanceProvider>();
+
+		idSource = new IdSourceSpy();
+		IdSourceInstanceProviderSpy idSourceInstanceProvider = new IdSourceInstanceProviderSpy();
+		idSourceInstanceProvider.MRV.setDefaultReturnValuesSupplier("getIdSource", () -> idSource);
+
+		initializedTypes.MRV.setDefaultReturnValuesSupplier("getImplementationByType",
+				() -> idSourceInstanceProvider);
+		IdSourceProvider.onlyForTestSetInitializedTypes(initializedTypes);
 	}
 
 	private void setUpMetadataStorageProvider() {
@@ -218,8 +241,7 @@ public class RecordTypeHandlerTest {
 
 	private void setUpRecordTypeHandlerWithValidationType() {
 		recordTypeHandler = RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
-				recordType, recordStorageUsingDeprecatedRead, "someValidationTypeId",
-				idSourceFactory);
+				recordType, recordStorageUsingDeprecatedRead, "someValidationTypeId");
 	}
 
 	private DataGroupSpy createTopDataGroupWithId(String id) {
@@ -237,8 +259,7 @@ public class RecordTypeHandlerTest {
 				() -> Optional.of(new ValidationType(recordTypeId, "someCreateDefinitionId",
 						"someUpdateDefinitionId")));
 		recordTypeHandler = RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
-				recordType, recordStorageUsingDeprecatedRead, "someValidationTypeId",
-				idSourceFactory);
+				recordType, recordStorageUsingDeprecatedRead, "someValidationTypeId");
 	}
 
 	@Test
@@ -262,29 +283,14 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
-	public void testGetNextId_Timestamp() {
-		createRecordTypeIdSource("timestamp");
+	public void testGetNextId() {
+		createRecordTypeIdSource("someType");
 		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
 
 		String id = recordTypeHandler.getNextId();
 
-		IdSourceSpy idSource = (IdSourceSpy) idSourceFactory.MCR
-				.assertCalledParametersReturn("factorTimestampIdSource", RECORD_TYPE_ID);
-		idSource.MCR.assertMethodWasCalled("getId");
-		idSource.MCR.assertReturn("getId", 0, id);
-	}
-
-	@Test
-	public void testGetNextId_Sequence() {
-		createRecordTypeIdSource("sequence");
-		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
-
-		String id = recordTypeHandler.getNextId();
-
-		IdSourceSpy idSource = (IdSourceSpy) idSourceFactory.MCR.assertCalledParametersReturn(
-				"factorSequenceIdSource", recordStorageUsingDeprecatedRead, "sequenceId",
-				"someDefinitionId");
-		idSource.MCR.assertMethodWasCalled("getId");
+		initializedTypes.MCR.assertCalledParametersReturn("getImplementationByType",
+				recordType.idSource());
 		idSource.MCR.assertReturn("getId", 0, id);
 	}
 
@@ -462,7 +468,7 @@ public class RecordTypeHandlerTest {
 				() -> Optional
 						.of(new ValidationType(recordTypeId, recordTypeId + "New", recordTypeId)));
 		recordTypeHandler = RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
-				recordType, storage, "someValidationTypeId", idSourceFactory);
+				recordType, storage, "someValidationTypeId");
 		return storage;
 	}
 
@@ -1290,6 +1296,5 @@ public class RecordTypeHandlerTest {
 
 		RecordTypeHandlerImp recordTypeHandlerImp = (RecordTypeHandlerImp) recordTypeHandler;
 		assertEquals(recordTypeHandlerImp.onlyForTestGetRecordType(), recordType);
-		assertEquals(recordTypeHandlerImp.onlyForTestGetIdSourceFactory(), idSourceFactory);
 	}
 }

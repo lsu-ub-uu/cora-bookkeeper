@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.idsource.IdSource;
+import se.uu.ub.cora.bookkeeper.idsource.internal.IdSourceProvider;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
@@ -66,34 +68,28 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private String validationTypeId;
 	private ValidationType validationType;
 	private CollectTermHolder holder;
-	private IdSourceFactory idSourceFactory;
 
 	public static RecordTypeHandler usingRecordStorage(RecordType recordType,
-			RecordStorage recordStorage, IdSourceFactory idSourceFactory) {
-		return new RecordTypeHandlerImp(recordType, recordStorage, idSourceFactory);
+			RecordStorage recordStorage) {
+		return new RecordTypeHandlerImp(recordType, recordStorage);
 	}
 
-	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage,
-			IdSourceFactory idSourceFactory) {
+	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage) {
 		this.recordType = recordType;
 		this.recordStorage = recordStorage;
-		this.idSourceFactory = idSourceFactory;
 	}
 
 	public static RecordTypeHandler usingHandlerFactoryRecordStorageValidationTypeId(
-			RecordType recordType, RecordStorage recordStorage, String validationTypeId,
-			IdSourceFactory idSourceFactory) {
-		return new RecordTypeHandlerImp(recordType, recordStorage, validationTypeId,
-				idSourceFactory);
+			RecordType recordType, RecordStorage recordStorage, String validationTypeId) {
+		return new RecordTypeHandlerImp(recordType, recordStorage, validationTypeId);
 	}
 
 	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage,
-			String validationTypeId, IdSourceFactory idSourceFactory) {
+			String validationTypeId) {
 		this.recordType = recordType;
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = MetadataStorageProvider.getStorageView();
 		this.validationTypeId = validationTypeId;
-		this.idSourceFactory = idSourceFactory;
 		Optional<ValidationType> oValidationType = metadataStorageView
 				.getValidationType(validationTypeId);
 		if (oValidationType.isEmpty()) {
@@ -112,28 +108,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public String getNextId() {
-		if (timeStampIdSoure()) {
-			return getNextIdUsingTimestamp();
-		}
-		return getNextIdUsingSequence();
-	}
-
-	private boolean timeStampIdSoure() {
-		String idSource = recordType.idSource();
-		return "timestamp".equals(idSource);
-	}
-
-	private String getNextIdUsingTimestamp() {
-		// IdSource idSource = idSourceFactory.factorIdSource(recordType);
-		IdSource idSource = idSourceFactory.factorTimestampIdSource(getRecordTypeId());
-		return idSource.getId();
-	}
-
-	private String getNextIdUsingSequence() {
-		String sequenceId = recordType.sequenceId().get();
-		String definitionId = recordType.definitionId();
-		IdSource idSource = idSourceFactory.factorSequenceIdSource(recordStorage, sequenceId,
-				definitionId);
+		IdSource idSource = IdSourceProvider.getIdSource(recordType);
 		return idSource.getId();
 	}
 
@@ -532,10 +507,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	public RecordType onlyForTestGetRecordType() {
 		return recordType;
-	}
-
-	public IdSourceFactory onlyForTestGetIdSourceFactory() {
-		return idSourceFactory;
 	}
 
 	public RecordStorage onlyForTestGetRecordStorage() {
