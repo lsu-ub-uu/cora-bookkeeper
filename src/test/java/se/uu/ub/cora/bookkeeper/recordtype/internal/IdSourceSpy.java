@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype.internal;
 
+import se.uu.ub.cora.bookkeeper.idsource.IdSource;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 

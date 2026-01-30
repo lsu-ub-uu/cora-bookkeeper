@@ -28,6 +28,8 @@ import java.util.Optional;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.idsource.IdSourceInstanceProvider;
+import se.uu.ub.cora.bookkeeper.idsource.internal.IdSourceProvider;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactoryImp;
@@ -39,6 +41,7 @@ import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
+import se.uu.ub.cora.initialize.spies.InitializedTypesSpy;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.storage.RecordStorageProvider;
@@ -52,6 +55,7 @@ public class RecordTypeHandlerFactoryTest {
 	private RecordStorageInstanceProviderSpy storageProvider;
 	private MetadataStorageViewSpy metadataStorageViewSpy;
 	private MetadataStorageViewInstanceProviderSpy metaStorageInstProviderSpy;
+	private InitializedTypesSpy<IdSourceInstanceProvider> initializedTypes;
 
 	@BeforeMethod
 	private void beforeMethod() {
@@ -77,6 +81,9 @@ public class RecordTypeHandlerFactoryTest {
 		MetadataStorageProvider
 				.onlyForTestSetMetadataStorageViewInstanceProvider(metaStorageInstProviderSpy);
 
+		initializedTypes = new InitializedTypesSpy<IdSourceInstanceProvider>();
+		IdSourceProvider.onlyForTestSetInitializedTypes(initializedTypes);
+
 		factory = new RecordTypeHandlerFactoryImp();
 	}
 
@@ -91,7 +98,7 @@ public class RecordTypeHandlerFactoryTest {
 		factory.factorUsingRecordTypeId("someRecordTypeId3");
 		factory.factorUsingRecordTypeId("someRecordTypeId4");
 
-		storageProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 1);
+		storageProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 4);
 	}
 
 	private RecordStorageSpy setUpStorage() {
@@ -111,7 +118,7 @@ public class RecordTypeHandlerFactoryTest {
 		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 		factory.factorUsingDataRecordGroup(new DataRecordGroupSpy());
 
-		storageProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 1);
+		storageProvider.MCR.assertNumberOfCallsToMethod("getRecordStorage", 4);
 	}
 
 	@Test
@@ -123,7 +130,6 @@ public class RecordTypeHandlerFactoryTest {
 				.factorUsingRecordTypeId(recordTypeId);
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storage);
-		assertIdSourceFactoryIsPassed(recordTypeHandler);
 		assertRecordTypeCreatedAndPassed(recordTypeHandler, recordTypeId);
 	}
 
@@ -148,13 +154,7 @@ public class RecordTypeHandlerFactoryTest {
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storageUsingDeprecatedRead);
 		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
-		assertIdSourceFactoryIsPassed(recordTypeHandler);
 		assertRecordTypeCreatedAndPassed(recordTypeHandler, "someRecordTypeId");
-	}
-
-	private void assertIdSourceFactoryIsPassed(RecordTypeHandlerImp recordTypeHandler) {
-		IdSourceFactory idSourceFactory = recordTypeHandler.onlyForTestGetIdSourceFactory();
-		assertTrue(idSourceFactory instanceof IdSourceFactoryImp);
 	}
 
 	@Test

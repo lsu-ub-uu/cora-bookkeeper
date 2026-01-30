@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
-import se.uu.ub.cora.bookkeeper.recordtype.internal.IdSourceFactoryImp;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
@@ -29,25 +28,14 @@ import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 
 public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
-	private RecordStorage recordStorage;
-	private MetadataStorageView metadataStorage;
 
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
-		ensureStoragesAreFetched();
+		RecordStorage recordStorage = RecordStorageProvider.getRecordStorage();
+		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
 		RecordType recordType = metadataStorage.getRecordType(recordTypeId);
 
-		return RecordTypeHandlerImp.usingRecordStorage(recordType, recordStorage,
-				new IdSourceFactoryImp());
-	}
-
-	private void ensureStoragesAreFetched() {
-		if (recordStorage == null) {
-			recordStorage = RecordStorageProvider.getRecordStorage();
-		}
-		if (metadataStorage == null) {
-			metadataStorage = MetadataStorageProvider.getStorageView();
-		}
+		return RecordTypeHandlerImp.usingRecordStorage(recordType, recordStorage);
 	}
 
 	@Override
@@ -62,10 +50,11 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	}
 
 	private RecordTypeHandler tryToFactorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
-		ensureStoragesAreFetched();
+		RecordStorage recordStorage = RecordStorageProvider.getRecordStorage();
+		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
 		RecordType recordType = metadataStorage.getRecordType(dataRecordGroup.getType());
 
 		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(recordType,
-				recordStorage, dataRecordGroup.getValidationType(), new IdSourceFactoryImp());
+				recordStorage, dataRecordGroup.getValidationType());
 	}
 }
