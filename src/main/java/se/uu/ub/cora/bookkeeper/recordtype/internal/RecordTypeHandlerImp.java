@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2019, 2020, 2021, 2024, 2025 Uppsala University Library
+ * Copyright 2016, 2019, 2020, 2021, 2024, 2025, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -27,27 +27,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.idsource.IdSource;
+import se.uu.ub.cora.bookkeeper.idsource.internal.IdSourceProvider;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
+import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
-import se.uu.ub.cora.bookkeeper.recordtype.Unique;
+import se.uu.ub.cora.bookkeeper.recordtype.UniqueIds;
+import se.uu.ub.cora.bookkeeper.recordtype.UniqueStorageKeys;
+import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
 import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.DataRecordGroup;
-import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.storage.RecordStorage;
 
 public class RecordTypeHandlerImp implements RecordTypeHandler {
-	private static final String ID_SOURCE = "idSource";
 	private static final String RECORD_TYPE = "recordType";
-	private static final String TRUE = "true";
 	private static final String METADATA = "metadata";
 	private static final String REPEAT_MAX_WHEN_NOT_REPEATABLE = "1";
 	private static final String NAME_IN_DATA = "nameInData";
@@ -55,8 +55,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private static final String RECORD_PART_CONSTRAINT = "recordPartConstraint";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
-	private DataGroup recordType;
-	private String recordTypeId;
+	private RecordType recordType;
 	private RecordStorage recordStorage;
 	private DataGroup metadataGroup;
 	private Set<Constraint> readWriteConstraints = new LinkedHashSet<>();
@@ -69,36 +68,28 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private String validationTypeId;
 	private ValidationType validationType;
 	private CollectTermHolder holder;
-	private IdSourceFactory idSourceFactory;
 
-	public static RecordTypeHandler usingRecordStorageAndRecordTypeId(RecordStorage recordStorage,
-			String recordTypeId, IdSourceFactory idSourceFactory) {
-		return new RecordTypeHandlerImp(recordStorage, recordTypeId, idSourceFactory);
+	public static RecordTypeHandler usingRecordStorage(RecordType recordType,
+			RecordStorage recordStorage) {
+		return new RecordTypeHandlerImp(recordType, recordStorage);
 	}
 
-	private RecordTypeHandlerImp(RecordStorage recordStorage, String recordTypeId,
-			IdSourceFactory idSourceFactory) {
+	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage) {
+		this.recordType = recordType;
 		this.recordStorage = recordStorage;
-		this.recordTypeId = recordTypeId;
-		this.idSourceFactory = idSourceFactory;
-		DataRecordGroup dataRecordGroup = recordStorage.read(RECORD_TYPE, recordTypeId);
-		recordType = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
 	}
 
-	public static RecordTypeHandler usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-			RecordStorage recordStorage, MetadataStorageView metadataStorageView,
-			String validationTypeId, IdSourceFactory idSourceFactory) {
-		return new RecordTypeHandlerImp(recordStorage, metadataStorageView, validationTypeId,
-				idSourceFactory);
+	public static RecordTypeHandler usingHandlerFactoryRecordStorageValidationTypeId(
+			RecordType recordType, RecordStorage recordStorage, String validationTypeId) {
+		return new RecordTypeHandlerImp(recordType, recordStorage, validationTypeId);
 	}
 
-	private RecordTypeHandlerImp(RecordStorage recordStorage,
-			MetadataStorageView metadataStorageView, String validationTypeId,
-			IdSourceFactory idSourceFactory) {
+	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage,
+			String validationTypeId) {
+		this.recordType = recordType;
 		this.recordStorage = recordStorage;
-		this.metadataStorageView = metadataStorageView;
+		this.metadataStorageView = MetadataStorageProvider.getStorageView();
 		this.validationTypeId = validationTypeId;
-		this.idSourceFactory = idSourceFactory;
 		Optional<ValidationType> oValidationType = metadataStorageView
 				.getValidationType(validationTypeId);
 		if (oValidationType.isEmpty()) {
@@ -107,74 +98,18 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		}
 
 		validationType = oValidationType.get();
-		recordType = recordStorage.read(List.of(RECORD_TYPE),
-				validationType.validatesRecordTypeId());
-		recordTypeId = getIdFromMetadatagGroup(recordType);
 	}
 
 	@Override
 	public boolean shouldAutoGenerateId() {
-		String nameInData = ID_SOURCE;
-		return childExistsInRecordType(nameInData) && isAutoGenerated(nameInData);
+		String idSource = recordType.idSource();
+		return !idSource.equals("userSupplied");
 	}
 
 	@Override
 	public String getNextId() {
-		if (timeStampIdSoure()) {
-			return getNextIdUsingTimestamp();
-		}
-		// SPIKE STARTS
-		return getNextIdUsingSequence();
-	}
-
-	private boolean timeStampIdSoure() {
-		return ("timestamp").equals(recordType.getFirstAtomicValueWithNameInData(ID_SOURCE));
-	}
-
-	private String getNextIdUsingTimestamp() {
-		IdSource idSource = idSourceFactory.factorTimestampIdSource(getRecordTypeId());
+		IdSource idSource = IdSourceProvider.getIdSource(recordType);
 		return idSource.getId();
-	}
-
-	private String getNextIdUsingSequence() {
-		String sequenceId = getSequenceId();
-		String definitionId = getDefinitionIdUsingRecordLink();
-		IdSource idSource = idSourceFactory.factorSequenceIdSource(recordStorage, sequenceId,
-				definitionId);
-		return idSource.getId();
-	}
-
-	private String getDefinitionIdUsingRecordLink() {
-		DataRecordLink definitionLink = recordType.getFirstChildOfTypeAndName(DataRecordLink.class,
-				"metadataId");
-		return definitionLink.getLinkedRecordId();
-	}
-
-	private String getSequenceId() {
-		DataRecordLink sequenceLink = recordType.getFirstChildOfTypeAndName(DataRecordLink.class,
-				"sequence");
-		return sequenceLink.getLinkedRecordId();
-	}
-
-	private boolean isAutoGenerated(String nameInData) {
-		String idSourceValue = recordType.getFirstAtomicValueWithNameInData(nameInData);
-		return idNotUserSupplied(idSourceValue);
-	}
-
-	private boolean idNotUserSupplied(String idSourceValue) {
-		return !idSourceValue.equals("userSupplied");
-	}
-
-	private boolean getValueOfSettingUsingNameInData(String nameInData) {
-		return childExistsInRecordType(nameInData) && getBooleanValueFromChild(nameInData);
-	}
-
-	private boolean childExistsInRecordType(String nameInData) {
-		return recordType.containsChildWithNameInData(nameInData);
-	}
-
-	private boolean getBooleanValueFromChild(String nameInData) {
-		return Boolean.parseBoolean(recordType.getFirstAtomicValueWithNameInData(nameInData));
 	}
 
 	@Override
@@ -203,15 +138,37 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	@Override
 	public String getDefinitionId() {
-		DataRecordLink metadataLink = (DataRecordLink) recordType
-				.getFirstChildWithNameInData("metadataId");
-		return metadataLink.getLinkedRecordId();
+		return recordType.definitionId();
 	}
 
 	@Override
 	public boolean isPublicForRead() {
-		String isPublic = recordType.getFirstAtomicValueWithNameInData("public");
-		return TRUE.equals(isPublic);
+		return recordType.isPublic();
+	}
+
+	@Override
+	public String getRecordTypeId() {
+		return recordType.id();
+	}
+
+	@Override
+	public boolean useVisibility() {
+		return recordType.useVisibility();
+	}
+
+	@Override
+	public boolean useTrashBin() {
+		return recordType.useTrashBin();
+	}
+
+	@Override
+	public boolean usePermissionUnit() {
+		return recordType.usePermissionUnit();
+	}
+
+	@Override
+	public boolean storeInArchive() {
+		return recordType.storeInArchive();
 	}
 
 	@Override
@@ -432,37 +389,26 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
-	public String getRecordTypeId() {
-		return recordTypeId;
-	}
-
-	@Override
 	public boolean representsTheRecordTypeDefiningSearches() {
-		String id = extractIdFromRecordInfo();
+		String id = recordType.id();
 		return SEARCH.equals(id);
-	}
-
-	private String extractIdFromRecordInfo() {
-		DataGroup recordInfo = recordType.getFirstGroupWithNameInData("recordInfo");
-		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
 	@Override
 	public boolean representsTheRecordTypeDefiningRecordTypes() {
-		String id = extractIdFromRecordInfo();
+		String id = recordType.id();
 		return RECORD_TYPE.equals(id);
 	}
 
 	@Override
 	public boolean hasLinkedSearch() {
-		return recordType.containsChildWithNameInData(SEARCH);
+		return recordType.searchId().isPresent();
 	}
 
 	@Override
 	public String getSearchId() {
 		throwErrorIfNoSearch();
-		DataRecordLink searchLink = (DataRecordLink) recordType.getFirstChildWithNameInData(SEARCH);
-		return searchLink.getLinkedRecordId();
+		return recordType.searchId().get();
 	}
 
 	private void throwErrorIfNoSearch() {
@@ -509,43 +455,20 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
-	public boolean storeInArchive() {
-		return getValueOfSettingUsingNameInData("storeInArchive");
-	}
-
-	public RecordStorage onlyForTestGetRecordStorage() {
-		return recordStorage;
-	}
-
-	public String onlyForTestGetRecordTypeId() {
-		return recordTypeId;
-	}
-
-	public MetadataStorageView onlyForTestGetMetadataStorage() {
-		return metadataStorageView;
-	}
-
-	public String onlyForTestGetValidationTypeId() {
-		return validationTypeId;
-	}
-
-	@Override
-	public List<Unique> getUniqueDefinitions() {
-		if (uniqueDefinitionDoNotExistsInRecordType()) {
+	public List<UniqueStorageKeys> getUniqueDefinitions() {
+		if (empuniqueDefinitionNotPresent()) {
 			return Collections.emptyList();
 		}
 		return getUniquesFromRecordType();
 	}
 
-	private boolean uniqueDefinitionDoNotExistsInRecordType() {
-		return !recordType.containsChildWithNameInData("unique");
+	private boolean empuniqueDefinitionNotPresent() {
+		return recordType.uniqueIds().isEmpty();
 	}
 
-	private List<Unique> getUniquesFromRecordType() {
+	private List<UniqueStorageKeys> getUniquesFromRecordType() {
 		ensureCollectTermHolderIsPopulatedFromStorage();
-		List<DataGroup> allUniqueDefinitions = recordType.getChildrenOfTypeAndName(DataGroup.class,
-				"unique");
-		return convertUniqueDataGroupsToUniques(allUniqueDefinitions);
+		return convertUniqueDataGroupsToUniques();
 	}
 
 	private void ensureCollectTermHolderIsPopulatedFromStorage() {
@@ -554,67 +477,43 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		}
 	}
 
-	private List<Unique> convertUniqueDataGroupsToUniques(List<DataGroup> allUniqueDefinitions) {
-		List<Unique> list = new ArrayList<>();
-		for (DataGroup uniqueDG : allUniqueDefinitions) {
-			list.add(convertDataGroupToUnique(uniqueDG));
+	private List<UniqueStorageKeys> convertUniqueDataGroupsToUniques() {
+		List<UniqueStorageKeys> list = new ArrayList<>();
+		for (UniqueIds uniqueIds : recordType.uniqueIds()) {
+			list.add(convertDataGroupToUnique(uniqueIds));
 		}
 		return list;
 	}
 
-	private Unique convertDataGroupToUnique(DataGroup uniqueDG) {
-		String uniqueTermStorageKey = getUniqueTermStorageKey(uniqueDG);
-		Set<String> combineStorageKeys = getCombineTermStorageKeys(uniqueDG);
-		return new Unique(uniqueTermStorageKey, combineStorageKeys);
+	private UniqueStorageKeys convertDataGroupToUnique(UniqueIds uniqueIds) {
+		String uniqueTermStorageKey = getUniqueTermStorageKeyForId(uniqueIds.uniqueId());
+		Set<String> combineStorageKeys = getCombineTermStorageKeys(uniqueIds);
+		return new UniqueStorageKeys(uniqueTermStorageKey, combineStorageKeys);
 	}
 
-	private String getUniqueTermStorageKey(DataGroup uniqueDG) {
-		DataRecordLink uniqueTermLink = uniqueDG.getFirstChildOfTypeAndName(DataRecordLink.class,
-				"uniqueTerm");
-		return getStorageKeyForLink(uniqueTermLink);
-	}
-
-	private String getStorageKeyForLink(DataRecordLink collectTermLink) {
-		String collectTermLinkId = collectTermLink.getLinkedRecordId();
-		return getStorageKeyUsingCollectTermId(collectTermLinkId);
-	}
-
-	private String getStorageKeyUsingCollectTermId(String collectTermId) {
-		StorageTerm storageTerm = (StorageTerm) holder.getCollectTermById(collectTermId);
-		return storageTerm.storageKey;
-	}
-
-	private Set<String> getCombineTermStorageKeys(DataGroup uniqueDG) {
-		List<DataRecordLink> combineTermLinks = uniqueDG
-				.getChildrenOfTypeAndName(DataRecordLink.class, "combineTerm");
-		return getCombineStorageKeysFromLinks(combineTermLinks);
-	}
-
-	private Set<String> getCombineStorageKeysFromLinks(List<DataRecordLink> combineTermLinks) {
+	private Set<String> getCombineTermStorageKeys(UniqueIds uniqueIds) {
 		Set<String> combineStorageKeys = new LinkedHashSet<>();
-		for (DataRecordLink dataRecordLink : combineTermLinks) {
-			String storageKeyForLink = getStorageKeyForLink(dataRecordLink);
+		for (String combineTerm : uniqueIds.combineTermId()) {
+			String storageKeyForLink = getUniqueTermStorageKeyForId(combineTerm);
 			combineStorageKeys.add(storageKeyForLink);
 		}
 		return combineStorageKeys;
 	}
 
-	@Override
-	public boolean useVisibility() {
-		return getBooleanValueFromChild("useVisibility");
+	private String getUniqueTermStorageKeyForId(String id) {
+		StorageTerm storageTerm = (StorageTerm) holder.getCollectTermById(id);
+		return storageTerm.storageKey;
 	}
 
-	@Override
-	public boolean useTrashBin() {
-		return getBooleanValueFromChild("useTrashBin");
+	public RecordType onlyForTestGetRecordType() {
+		return recordType;
 	}
 
-	@Override
-	public boolean usePermissionUnit() {
-		return getBooleanValueFromChild("usePermissionUnit");
+	public RecordStorage onlyForTestGetRecordStorage() {
+		return recordStorage;
 	}
 
-	public IdSourceFactory onlyForTestGetIdSourceFactory() {
-		return idSourceFactory;
+	public String onlyForTestGetValidationTypeId() {
+		return validationTypeId;
 	}
 }

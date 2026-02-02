@@ -22,7 +22,7 @@ import se.uu.ub.cora.initialize.ModuleInitializer;
 import se.uu.ub.cora.initialize.ModuleInitializerImp;
 
 /**
- * MetadataStorageProvider provides view access to User data stored in storage.
+ * MetadataStorageProvider provides view access to the systems metadata stored in storage.
  */
 public class MetadataStorageProvider {
 
@@ -38,8 +38,8 @@ public class MetadataStorageProvider {
 	 * getStorageView returns a new MetadataStorageView that can be used by anything that needs
 	 * access metadata data.
 	 * <p>
-	 * <i>Code using the returned MetadataStorageView instance MUST consider the returned instance as
-	 * NOT thread safe.</i>
+	 * <i>Code using the returned MetadataStorageView instance MUST consider the returned instance
+	 * as NOT thread safe.</i>
 	 * 
 	 * @return A MetadataStorageView that gives access to storage for metadata
 	 */
@@ -65,17 +65,17 @@ public class MetadataStorageProvider {
 	}
 
 	/**
-	 * onlyForTestSetMetadataStorageViewInstanceProvider sets a MetadataStorageViewInstanceProvider that
-	 * will be used to return instances for the {@link #getStorageView()} method. This possibility
-	 * to set a MetadataStorageViewInstanceProvider is provided to enable testing of getting a record
-	 * storage in other classes and is not intented to be used in production.
+	 * onlyForTestSetMetadataStorageViewInstanceProvider sets a MetadataStorageViewInstanceProvider
+	 * that will be used to return instances for the {@link #getStorageView()} method. This
+	 * possibility to set a MetadataStorageViewInstanceProvider is provided to enable testing of
+	 * getting a record storage in other classes and is not intented to be used in production.
 	 * <p>
 	 * The MetadataStorageViewInstanceProvider to use in production should be provided through an
 	 * implementation of {@link MetadataStorageViewInstanceProvider} in a seperate java module.
 	 * 
 	 * @param instanceProvider
-	 *            A MetadataStorageViewInstanceProvider to use to return MetadataStorageView instances for
-	 *            testing
+	 *            A MetadataStorageViewInstanceProvider to use to return MetadataStorageView
+	 *            instances for testing
 	 */
 	public static void onlyForTestSetMetadataStorageViewInstanceProvider(
 			MetadataStorageViewInstanceProvider instanceProvider) {

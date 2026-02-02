@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,31 +16,31 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordtype.internal;
+package se.uu.ub.cora.bookkeeper.idsource;
 
-import se.uu.ub.cora.storage.RecordStorage;
+import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
+import se.uu.ub.cora.bookkeeper.recordtype.internal.IdSourceSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class IdSourceFactorySpy implements IdSourceFactory {
+public class IdSourceInstanceProviderSpy implements IdSourceInstanceProvider {
+
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public IdSourceFactorySpy() {
+	public IdSourceInstanceProviderSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("factorTimestampIdSource", IdSourceSpy::new);
-		MRV.setDefaultReturnValuesSupplier("factorSequenceIdSource", IdSourceSpy::new);
+		MRV.setDefaultReturnValuesSupplier("getTypeToSelectImplementionsBy", () -> "someType");
+		MRV.setDefaultReturnValuesSupplier("getIdSource", IdSourceSpy::new);
 	}
 
 	@Override
-	public IdSource factorTimestampIdSource(String type) {
-		return (IdSource) MCR.addCallAndReturnFromMRV("type", type);
+	public String getTypeToSelectImplementionsBy() {
+		return (String) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
-	public IdSource factorSequenceIdSource(RecordStorage storage, String sequenceId,
-			String definitionId) {
-		return (IdSource) MCR.addCallAndReturnFromMRV("storage", storage, "sequenceId", sequenceId,
-				"definitionId", definitionId);
+	public IdSource getIdSource(RecordType recordType) {
+		return (IdSource) MCR.addCallAndReturnFromMRV();
 	}
 }

@@ -26,6 +26,7 @@ import java.util.Optional;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
+import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
 import se.uu.ub.cora.bookkeeper.text.TextElement;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
@@ -127,6 +128,20 @@ public interface MetadataStorageView {
 	TextElement getTextElement(String elementId);
 
 	/**
+	 * getRecordType returns a record RecordType of {@link RecordType}.
+	 * </p>
+	 * If no elements exist MUST a {@link MetadataStorageViewException} be thrown, indicating that
+	 * the requested element can not be read.
+	 * <p>
+	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
+	 * thrown, indicating that the requested elements can not be read.
+	 * </p>
+	 * 
+	 * @return
+	 */
+	RecordType getRecordType(String id);
+
+	/**
 	 * getRecordTypes returns a Collection of {@link DataGroup} with all recordType elements that
 	 * exists in storage.
 	 * </p>
@@ -135,6 +150,9 @@ public interface MetadataStorageView {
 	 * If a problem occurs while reading from storage MUST a {@link MetadataStorageViewException} be
 	 * thrown, indicating that the requested elements can not be read.
 	 * </p>
+	 * 
+	 * @param id
+	 *            A String with the id of the recordType
 	 * 
 	 * @return
 	 */

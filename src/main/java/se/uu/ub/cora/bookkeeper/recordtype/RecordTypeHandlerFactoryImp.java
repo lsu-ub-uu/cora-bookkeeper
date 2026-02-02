@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2025 Uppsala University Library
+ * Copyright 2020, 2025, 2026 Uppsala University Library
  * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.recordtype;
 
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
-import se.uu.ub.cora.bookkeeper.recordtype.internal.IdSourceFactoryImp;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
@@ -29,21 +28,14 @@ import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 
 public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
-	private RecordStorage recordStorage;
-	private MetadataStorageView metadataStorage;
 
 	@Override
 	public RecordTypeHandler factorUsingRecordTypeId(String recordTypeId) {
-		ensureRecordStorageIsFetched();
+		RecordStorage recordStorage = RecordStorageProvider.getRecordStorage();
+		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
+		RecordType recordType = metadataStorage.getRecordType(recordTypeId);
 
-		return RecordTypeHandlerImp.usingRecordStorageAndRecordTypeId(recordStorage, recordTypeId,
-				new IdSourceFactoryImp());
-	}
-
-	private void ensureRecordStorageIsFetched() {
-		if (recordStorage == null) {
-			recordStorage = RecordStorageProvider.getRecordStorage();
-		}
+		return RecordTypeHandlerImp.usingRecordStorage(recordType, recordStorage);
 	}
 
 	@Override
@@ -58,18 +50,11 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	}
 
 	private RecordTypeHandler tryToFactorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
-		ensureRecordStorageIsFetched();
-		ensureMetadataStorageIsFetched();
+		RecordStorage recordStorage = RecordStorageProvider.getRecordStorage();
+		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
+		RecordType recordType = metadataStorage.getRecordType(dataRecordGroup.getType());
 
-		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageMetadataStorageValidationTypeId(
-				recordStorage, metadataStorage, dataRecordGroup.getValidationType(),
-				new IdSourceFactoryImp());
+		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(recordType,
+				recordStorage, dataRecordGroup.getValidationType());
 	}
-
-	private void ensureMetadataStorageIsFetched() {
-		if (metadataStorage == null) {
-			metadataStorage = MetadataStorageProvider.getStorageView();
-		}
-	}
-
 }

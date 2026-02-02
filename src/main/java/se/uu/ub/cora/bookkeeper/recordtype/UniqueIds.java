@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,18 +20,6 @@ package se.uu.ub.cora.bookkeeper.recordtype;
 
 import java.util.Set;
 
-/**
- * Unique record defines a unique rule in a record. It has two parts, the uniqueTermStorageKey and
- * the combineTermStorageKeys.
- * 
- * @param uniqueTermStorageKey
- *            is the storageKey associated with the storageTerm definied in the uniqueTerm of the
- *            rule.
- * 
- * @param combineTermStorageKeys
- *            is a set with all the storageKeys associated with the storageTerm definied in the
- *            combineTerm of the rule.
- */
-public record Unique(String uniqueTermStorageKey, Set<String> combineTermStorageKeys) {
+public record UniqueIds(String uniqueId, Set<String> combineTermId) {
 
 }

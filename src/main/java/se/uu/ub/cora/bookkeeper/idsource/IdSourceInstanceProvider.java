@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,15 +16,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordtype.internal;
+package se.uu.ub.cora.bookkeeper.idsource;
 
-public interface IdSource {
+import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
+import se.uu.ub.cora.initialize.SelectType;
+
+public interface IdSourceInstanceProvider extends SelectType {
 
 	/**
-	 * creates and Id using the type of the idSource.
+	 * getIdSource should be implemented in such a way that it returns an IdSource of the requested
+	 * type.
 	 * 
-	 * @return A String with a newly created id.
+	 * @param recordType
+	 *            A {@link RecordType} record containing information information of a record type
+	 *            which is required in order to create the IdSources
+	 * 
+	 * @return An IdSource of the requested type.
 	 */
-	public String getId();
+	IdSource getIdSource(RecordType recordType);
 
 }

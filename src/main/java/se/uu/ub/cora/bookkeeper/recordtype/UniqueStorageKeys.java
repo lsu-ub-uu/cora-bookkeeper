@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,23 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordtype.internal;
+package se.uu.ub.cora.bookkeeper.recordtype;
 
-import se.uu.ub.cora.bookkeeper.idsource.IdSource;
-import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
-import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+import java.util.Set;
 
-public class IdSourceSpy implements IdSource {
-	public MethodCallRecorder MCR = new MethodCallRecorder();
-	public MethodReturnValues MRV = new MethodReturnValues();
+/**
+ * Unique record defines a unique rule in a record. It has two parts, the uniqueTermStorageKey and
+ * the combineTermStorageKeys.
+ * 
+ * @param uniqueTermStorageKey
+ *            is the storageKey associated with the storageTerm definied in the uniqueTerm of the
+ *            rule.
+ * 
+ * @param combineTermStorageKeys
+ *            is a set with all the storageKeys associated with the storageTerm definied in the
+ *            combineTerm of the rule.
+ */
+public record UniqueStorageKeys(String uniqueTermStorageKey, Set<String> combineTermStorageKeys) {
 
-	public IdSourceSpy() {
-		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
-	}
-
-	@Override
-	public String getId() {
-		return (String) MCR.addCallAndReturnFromMRV();
-	}
 }

@@ -16,24 +16,15 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordtype.internal;
+package se.uu.ub.cora.bookkeeper.idsource;
 
-import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
-import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
-import se.uu.ub.cora.storage.RecordStorage;
+public interface IdSource {
 
-public class IdSourceFactoryImp implements IdSourceFactory {
-
-	@Override
-	public IdSource factorTimestampIdSource(String type) {
-		return new TimeStampIdSource(type);
-	}
-
-	@Override
-	public IdSource factorSequenceIdSource(RecordStorage storage, String sequenceId,
-			String definitionId) {
-		return new SequenceIdSource(storage, sequenceId, definitionId,
-				new DataGroupTermCollectorImp(), new DataRecordLinkCollectorImp());
-	}
+	/**
+	 * creates and Id using the type of the idSource.
+	 * 
+	 * @return A String with a newly created id.
+	 */
+	public String getId();
 
 }

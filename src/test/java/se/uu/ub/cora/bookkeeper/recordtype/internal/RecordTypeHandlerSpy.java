@@ -25,7 +25,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
-import se.uu.ub.cora.bookkeeper.recordtype.Unique;
+import se.uu.ub.cora.bookkeeper.recordtype.UniqueStorageKeys;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
@@ -205,8 +205,8 @@ public class RecordTypeHandlerSpy implements RecordTypeHandler {
 	}
 
 	@Override
-	public List<Unique> getUniqueDefinitions() {
-		return (List<Unique>) MCR.addCallAndReturnFromMRV();
+	public List<UniqueStorageKeys> getUniqueDefinitions() {
+		return (List<UniqueStorageKeys>) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override

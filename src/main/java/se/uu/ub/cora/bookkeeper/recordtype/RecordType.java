@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.recordtype.internal;
+package se.uu.ub.cora.bookkeeper.recordtype;
 
-public class TimeStampIdSource implements IdSource {
+import java.util.Collection;
+import java.util.Optional;
 
-	private String type;
+public record RecordType(String id, String definitionId, Optional<String> searchId, String idSource,
+		Optional<String> sequenceId, Collection<UniqueIds> uniqueIds, boolean isPublic,
+		boolean usePermissionUnit, boolean useVisibility, boolean useTrashBin,
+		boolean storeInArchive) {
 
-	public TimeStampIdSource(String type) {
-		this.type = type;
-	}
-
-	@Override
-	public synchronized String getId() {
-		return type + ":" + System.nanoTime();
-	}
-
-	public String onlyForTestGetType() {
-		return type;
-	}
 }
