@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>3.1.0</version>
+		<version>3.2.0</version>
 	</parent>
 
 	<artifactId>bookkeeper</artifactId>
@@ -27,8 +27,8 @@
 		<!--dependency on storage should be removed when recordTypeHandler no longer needs it-->
 		<storage.version>10.0.0</storage.version>
 		<storagespies.version>1.15.0</storagespies.version>
-		<initialize.version>1.8-SNAPSHOT</initialize.version>
-		<initialize-spies.version>1.7-SNAPSHOT</initialize-spies.version>
+		<initialize.version>1.8.0</initialize.version>
+		<initialize-spies.version>1.7.0</initialize-spies.version>
 		<coradata.version>11.1.0</coradata.version>
 		<coradata-spies.version>3.1.0</coradata-spies.version>
 		<logger.version>2.10.0</logger.version>
