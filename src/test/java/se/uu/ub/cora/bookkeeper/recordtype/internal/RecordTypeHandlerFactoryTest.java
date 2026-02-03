@@ -153,8 +153,28 @@ public class RecordTypeHandlerFactoryTest {
 				.factorUsingDataRecordGroup(dataRecordGroup);
 
 		assertSame(recordTypeHandler.onlyForTestGetRecordStorage(), storageUsingDeprecatedRead);
-		assertSame(recordTypeHandler.onlyForTestGetValidationTypeId(), validationTypeId);
+		Optional<ValidationType> validationType = (Optional<ValidationType>) metadataStorageViewSpy.MCR
+				.assertCalledParametersReturn("getValidationType", validationTypeId);
+		assertSame(recordTypeHandler.onlyForTestGetValidationType(), validationType.get());
 		assertRecordTypeCreatedAndPassed(recordTypeHandler, "someRecordTypeId");
+	}
+
+	@Test
+	public void testFactorUsingDataRecordGroupWithoutTypeShouldUseValidationTypeToGetRecordType() {
+		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
+		String validationTypeId = "someValidationTypeId";
+		dataRecordGroup.MRV.setAlwaysThrowException("getType",
+				new se.uu.ub.cora.data.DataMissingException("any"));
+		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getValidationType",
+				() -> validationTypeId);
+
+		RecordTypeHandlerFactory factoryInterface = factory;
+		RecordTypeHandlerImp recordTypeHandler = (RecordTypeHandlerImp) factoryInterface
+				.factorUsingDataRecordGroup(dataRecordGroup);
+
+		var recordType = metadataStorageViewSpy.MCR.assertCalledParametersReturn("getRecordType",
+				"someTypeToValidate");
+		assertSame(recordTypeHandler.onlyForTestGetRecordType(), recordType);
 	}
 
 	@Test
@@ -171,6 +191,23 @@ public class RecordTypeHandlerFactoryTest {
 			assertTrue(e instanceof DataMissingException);
 			assertEquals(e.getMessage(),
 					"RecordTypeHandler could not be created because of missing data: someMessage");
+		}
+	}
+
+	@Test
+	public void testFactorUsingDataRecordGroupValidationTypeNotFoundInMetadataStorageSholdThrowError() {
+		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
+				Optional::empty);
+		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
+
+		RecordTypeHandlerFactory factoryInterface = factory;
+		try {
+			factoryInterface.factorUsingDataRecordGroup(dataRecordGroup);
+			fail("an exception should have been thrown");
+		} catch (Exception e) {
+			assertTrue(e instanceof DataMissingException);
+			assertEquals(e.getMessage(),
+					"RecordTypeHandler could not be created because of missing data: No value present");
 		}
 	}
 }

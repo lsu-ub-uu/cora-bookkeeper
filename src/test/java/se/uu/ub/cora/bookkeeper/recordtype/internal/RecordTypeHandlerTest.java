@@ -48,7 +48,6 @@ import se.uu.ub.cora.bookkeeper.recordtype.UniqueStorageKeys;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
-import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
@@ -72,6 +71,7 @@ public class RecordTypeHandlerTest {
 	private OldRecordStorageSpy storage;
 	private MetadataStorageViewSpy metadataStorageViewSpy;
 	private RecordType recordType;
+	private ValidationType validationType;
 	private InitializedTypesSpy<IdSourceInstanceProvider> initializedTypes;
 	private IdSourceSpy idSource;
 
@@ -87,6 +87,7 @@ public class RecordTypeHandlerTest {
 				DataGroupSpy::new);
 
 		createRecordType();
+		createValidationType();
 	}
 
 	private void setUpLoggerProvider() {
@@ -113,9 +114,9 @@ public class RecordTypeHandlerTest {
 
 	private void setUpMetadataStorageProvider() {
 		metadataStorageViewSpy = new MetadataStorageViewSpy();
-		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
-				() -> Optional.of(new ValidationType("someTypeToValidate", "someCreateDefinitionId",
-						"someUpdateDefinitionId")));
+		// metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
+		// () -> Optional.of(new ValidationType("someTypeToValidate", "someCreateDefinitionId",
+		// "someUpdateDefinitionId")));
 
 		MetadataStorageViewInstanceProviderSpy metadataStorageProviderSpy = new MetadataStorageViewInstanceProviderSpy();
 		metadataStorageProviderSpy.MRV.setDefaultReturnValuesSupplier("getStorageView",
@@ -134,6 +135,12 @@ public class RecordTypeHandlerTest {
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
 				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+	}
+
+	private void createValidationType() {
+		validationType = new ValidationType(RECORD_TYPE_ID, "someCreateDefinitionId",
+				"someUpdateDefinitionId");
+		// recordTypeId, recordTypeId + "New", recordTypeId
 	}
 
 	private void createRecordTypeId(String id) {
@@ -230,18 +237,9 @@ public class RecordTypeHandlerTest {
 				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
 	}
 
-	@Test(expectedExceptions = DataValidationException.class, expectedExceptionsMessageRegExp = ""
-			+ "ValidationType with id: someValidationTypeId, does not exist.")
-	public void testInitWithValidationTypeNotFoundThrowsValidationException() {
-		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
-				Optional::empty);
-
-		setUpRecordTypeHandlerWithValidationType();
-	}
-
 	private void setUpRecordTypeHandlerWithValidationType() {
-		recordTypeHandler = RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
-				recordType, recordStorageUsingDeprecatedRead, "someValidationTypeId");
+		recordTypeHandler = RecordTypeHandlerImp.usingRecordTypeValidationTypeAndRecordStorage(
+				recordType, validationType, recordStorageUsingDeprecatedRead);
 	}
 
 	private DataGroupSpy createTopDataGroupWithId(String id) {
@@ -258,8 +256,8 @@ public class RecordTypeHandlerTest {
 		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
 				() -> Optional.of(new ValidationType(recordTypeId, "someCreateDefinitionId",
 						"someUpdateDefinitionId")));
-		recordTypeHandler = RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
-				recordType, recordStorageUsingDeprecatedRead, "someValidationTypeId");
+		recordTypeHandler = RecordTypeHandlerImp.usingRecordTypeValidationTypeAndRecordStorage(
+				recordType, validationType, recordStorageUsingDeprecatedRead);
 	}
 
 	@Test
@@ -464,11 +462,13 @@ public class RecordTypeHandlerTest {
 				recordType.useTrashBin(), recordType.storeInArchive());
 
 		storage = new OldRecordStorageSpy();
-		metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
-				() -> Optional
-						.of(new ValidationType(recordTypeId, recordTypeId + "New", recordTypeId)));
-		recordTypeHandler = RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(
-				recordType, storage, "someValidationTypeId");
+		// metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",
+		// () -> Optional
+		// .of(new ValidationType(recordTypeId, recordTypeId + "New", recordTypeId)));
+		validationType = new ValidationType(recordTypeId, recordTypeId + "New", recordTypeId);
+
+		recordTypeHandler = RecordTypeHandlerImp
+				.usingRecordTypeValidationTypeAndRecordStorage(recordType, validationType, storage);
 		return storage;
 	}
 

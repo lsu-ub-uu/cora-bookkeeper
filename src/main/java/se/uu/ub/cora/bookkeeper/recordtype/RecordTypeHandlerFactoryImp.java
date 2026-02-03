@@ -19,10 +19,13 @@
  */
 package se.uu.ub.cora.bookkeeper.recordtype;
 
+import java.util.NoSuchElementException;
+
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
@@ -42,7 +45,7 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
 		try {
 			return tryToFactorUsingDataRecordGroup(dataRecordGroup);
-		} catch (se.uu.ub.cora.data.DataMissingException e) {
+		} catch (se.uu.ub.cora.data.DataMissingException | NoSuchElementException e) {
 			throw new DataMissingException(
 					"RecordTypeHandler could not be created because of missing data: "
 							+ e.getMessage());
@@ -52,9 +55,23 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	private RecordTypeHandler tryToFactorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
 		RecordStorage recordStorage = RecordStorageProvider.getRecordStorage();
 		MetadataStorageView metadataStorage = MetadataStorageProvider.getStorageView();
-		RecordType recordType = metadataStorage.getRecordType(dataRecordGroup.getType());
+		String validationTypeId = dataRecordGroup.getValidationType();
+		ValidationType validationType = metadataStorage.getValidationType(validationTypeId).get();
+		String type = getTypeFromDataRecordGroupOrValidationType(dataRecordGroup, validationType);
+		RecordType recordType = metadataStorage.getRecordType(type);
 
-		return RecordTypeHandlerImp.usingHandlerFactoryRecordStorageValidationTypeId(recordType,
-				recordStorage, dataRecordGroup.getValidationType());
+		return RecordTypeHandlerImp.usingRecordTypeValidationTypeAndRecordStorage(recordType,
+				validationType, recordStorage);
 	}
+
+	private String getTypeFromDataRecordGroupOrValidationType(DataRecordGroup dataRecordGroup, ValidationType validationType) {
+		String type;
+		try {
+			type = dataRecordGroup.getType();
+		} catch (Exception _) {
+			type = validationType.validatesRecordTypeId();
+		}
+		return type;
+	}
+
 }

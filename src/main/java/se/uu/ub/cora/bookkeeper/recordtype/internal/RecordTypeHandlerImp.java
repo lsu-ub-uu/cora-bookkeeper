@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.idsource.IdSource;
@@ -40,7 +39,6 @@ import se.uu.ub.cora.bookkeeper.recordtype.UniqueIds;
 import se.uu.ub.cora.bookkeeper.recordtype.UniqueStorageKeys;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
-import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
@@ -79,25 +77,17 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		this.recordStorage = recordStorage;
 	}
 
-	public static RecordTypeHandler usingHandlerFactoryRecordStorageValidationTypeId(
-			RecordType recordType, RecordStorage recordStorage, String validationTypeId) {
-		return new RecordTypeHandlerImp(recordType, recordStorage, validationTypeId);
+	public static RecordTypeHandler usingRecordTypeValidationTypeAndRecordStorage(
+			RecordType recordType, ValidationType validationType, RecordStorage recordStorage) {
+		return new RecordTypeHandlerImp(recordType, validationType, recordStorage);
 	}
 
-	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage,
-			String validationTypeId) {
+	private RecordTypeHandlerImp(RecordType recordType, ValidationType validationType,
+			RecordStorage recordStorage) {
 		this.recordType = recordType;
+		this.validationType = validationType;
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = MetadataStorageProvider.getStorageView();
-		this.validationTypeId = validationTypeId;
-		Optional<ValidationType> oValidationType = metadataStorageView
-				.getValidationType(validationTypeId);
-		if (oValidationType.isEmpty()) {
-			throw DataValidationException.withMessage(
-					"ValidationType with id: " + validationTypeId + ", does not exist.");
-		}
-
-		validationType = oValidationType.get();
 	}
 
 	@Override
@@ -513,7 +503,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		return recordStorage;
 	}
 
-	public String onlyForTestGetValidationTypeId() {
-		return validationTypeId;
+	public ValidationType onlyForTestGetValidationType() {
+		return validationType;
 	}
 }
