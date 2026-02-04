@@ -21,11 +21,12 @@ package se.uu.ub.cora.bookkeeper.recordtype;
 
 import java.util.NoSuchElementException;
 
-import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.internal.RecordTypeHandlerImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
+import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.RecordStorageProvider;
@@ -45,9 +46,9 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 	public RecordTypeHandler factorUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
 		try {
 			return tryToFactorUsingDataRecordGroup(dataRecordGroup);
-		} catch (se.uu.ub.cora.data.DataMissingException | NoSuchElementException e) {
-			throw new DataMissingException(
-					"RecordTypeHandler could not be created because of missing data: "
+		} catch (DataMissingException | NoSuchElementException e) {
+			throw DataValidationException
+					.withMessage("RecordTypeHandler could not be created because of missing data: "
 							+ e.getMessage());
 		}
 	}
@@ -64,7 +65,8 @@ public class RecordTypeHandlerFactoryImp implements RecordTypeHandlerFactory {
 				validationType, recordStorage);
 	}
 
-	private String getTypeFromDataRecordGroupOrValidationType(DataRecordGroup dataRecordGroup, ValidationType validationType) {
+	private String getTypeFromDataRecordGroupOrValidationType(DataRecordGroup dataRecordGroup,
+			ValidationType validationType) {
 		String type;
 		try {
 			type = dataRecordGroup.getType();

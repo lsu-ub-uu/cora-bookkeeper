@@ -30,13 +30,14 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.idsource.IdSourceInstanceProvider;
 import se.uu.ub.cora.bookkeeper.idsource.internal.IdSourceProvider;
-import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactory;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandlerFactoryImp;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
+import se.uu.ub.cora.bookkeeper.validator.DataValidationException;
 import se.uu.ub.cora.bookkeeper.validator.ValidationType;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
@@ -163,8 +164,7 @@ public class RecordTypeHandlerFactoryTest {
 	public void testFactorUsingDataRecordGroupWithoutTypeShouldUseValidationTypeToGetRecordType() {
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
 		String validationTypeId = "someValidationTypeId";
-		dataRecordGroup.MRV.setAlwaysThrowException("getType",
-				new se.uu.ub.cora.data.DataMissingException("any"));
+		dataRecordGroup.MRV.setAlwaysThrowException("getType", new DataMissingException("any"));
 		dataRecordGroup.MRV.setDefaultReturnValuesSupplier("getValidationType",
 				() -> validationTypeId);
 
@@ -181,14 +181,14 @@ public class RecordTypeHandlerFactoryTest {
 	public void testFactorUsingDataRecordGroupWithoutValidationTypeSholdThrowError() {
 		DataRecordGroupSpy dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setAlwaysThrowException("getValidationType",
-				new se.uu.ub.cora.data.DataMissingException("someMessage"));
+				new DataMissingException("someMessage"));
 
 		RecordTypeHandlerFactory factoryInterface = factory;
 		try {
 			factoryInterface.factorUsingDataRecordGroup(dataRecordGroup);
 			fail("an exception should have been thrown");
 		} catch (Exception e) {
-			assertTrue(e instanceof DataMissingException);
+			assertTrue(e instanceof DataValidationException);
 			assertEquals(e.getMessage(),
 					"RecordTypeHandler could not be created because of missing data: someMessage");
 		}
@@ -205,7 +205,7 @@ public class RecordTypeHandlerFactoryTest {
 			factoryInterface.factorUsingDataRecordGroup(dataRecordGroup);
 			fail("an exception should have been thrown");
 		} catch (Exception e) {
-			assertTrue(e instanceof DataMissingException);
+			assertTrue(e instanceof DataValidationException);
 			assertEquals(e.getMessage(),
 					"RecordTypeHandler could not be created because of missing data: No value present");
 		}
