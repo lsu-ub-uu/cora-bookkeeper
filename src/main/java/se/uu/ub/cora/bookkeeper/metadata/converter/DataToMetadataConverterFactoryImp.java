@@ -62,6 +62,9 @@ public final class DataToMetadataConverterFactoryImp implements DataToMetadataCo
 		if ("recordLink".equals(type)) {
 			return DataToRecordLinkConverter.fromDataRecordGroup(data);
 		}
+		if ("anyTypeRecordLink".equals(type)) {
+			return DataToAnyTypeRecordLinkConverter.fromDataRecordGroup(data);
+		}
 		if ("resourceLink".equals(type)) {
 			return DataToResourceLinkConverter.fromDataRecordGroup(data);
 		}

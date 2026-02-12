@@ -113,6 +113,13 @@ public class DataToMetadataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorAnyTypeRecordLink() {
+		DataToMetadataConverter converter = createConverterForType("anyTypeRecordLink");
+
+		assertTrue(converter instanceof DataToAnyTypeRecordLinkConverter);
+	}
+
+	@Test
 	public void testFactorResourceLink() {
 		DataToMetadataConverter converter = createConverterForType("resourceLink");
 

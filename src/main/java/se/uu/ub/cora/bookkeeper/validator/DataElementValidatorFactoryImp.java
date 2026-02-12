@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.validator;
 
 import java.util.Map;
 
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -62,6 +63,10 @@ class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 		}
 		if (metadataElement instanceof RecordLink metadataElementRecordLink) {
 			return new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
+					metadataElementRecordLink);
+		}
+		if (metadataElement instanceof AnyTypeRecordLink metadataElementRecordLink) {
+			return new DataAnyTypeRecordLinkValidator(recordTypeHolder, metadataHolder,
 					metadataElementRecordLink);
 		}
 		if (metadataElement instanceof ResourceLink) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,11 +19,11 @@
 
 package se.uu.ub.cora.bookkeeper.validator;
 
-import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 
-public class RecordLinkSpy extends RecordLink {
+public class AnyTypeRecordLinkSpy extends AnyTypeRecordLink {
 
-	public RecordLinkSpy() {
-		super(null, null, null, null, null);
+	public AnyTypeRecordLinkSpy() {
+		super(null, null, null, null);
 	}
 }

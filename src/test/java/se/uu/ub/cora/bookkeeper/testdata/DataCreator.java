@@ -146,7 +146,6 @@ public class DataCreator {
 			collection.addItemReference("choice1Id");
 			collection.addItemReference("choice2Id");
 		}
-
 	}
 
 	public static DataGroup createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId(

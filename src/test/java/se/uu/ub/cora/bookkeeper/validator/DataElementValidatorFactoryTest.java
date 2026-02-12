@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2023 Uppsala University Library
+ * Copyright 2015, 2017, 2023, 2026 Uppsala University Library
  * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
@@ -104,6 +104,20 @@ public class DataElementValidatorFactoryTest {
 		addMetadataElementSpyToMetadataHolderSpy(elementId, recordLink);
 
 		DataRecordLinkValidator validator = (DataRecordLinkValidator) dataValidatorFactory
+				.factor(elementId);
+
+		assertSame(validator.onlyForTestGetMetadataElement(), recordLink);
+		assertSame(validator.onlyForTestGetRecordTypeHolder(), recordTypeHolder);
+		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
+	}
+
+	@Test
+	public void testFactorDataValidatorMetadataAnyTypeRecordLink() {
+		String elementId = "anyTypeRecordLinkId";
+		AnyTypeRecordLinkSpy recordLink = new AnyTypeRecordLinkSpy();
+		addMetadataElementSpyToMetadataHolderSpy(elementId, recordLink);
+
+		DataAnyTypeRecordLinkValidator validator = (DataAnyTypeRecordLinkValidator) dataValidatorFactory
 				.factor(elementId);
 
 		assertSame(validator.onlyForTestGetMetadataElement(), recordLink);
