@@ -50,7 +50,6 @@ class DataAnyTypeRecordLinkValidator implements DataElementValidator {
 		validationAnswer = new ValidationAnswer();
 		dataRecordLink = (DataGroup) dataElement;
 		validateNameInData();
-		// OBS: Do we need to check if the recordType exists in the system?
 		validateRecordType();
 		validateRecordId();
 		return validationAnswer;
@@ -77,38 +76,6 @@ class DataAnyTypeRecordLinkValidator implements DataElementValidator {
 	private boolean recordTypeIsEmpty() {
 		return !dataRecordLink.containsChildWithNameInData(LINKED_RECORD_TYPE)
 				|| dataRecordLink.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE).isEmpty();
-	}
-
-	private boolean recordTypeChildOfRecordTypeSpecifiedInMetadata(String linkedRecordType) {
-		if (recordTypeExistsAndHasParent(linkedRecordType)) {
-			return parentMatchesRecordTypeSpecifiedInMetadata(linkedRecordType);
-		}
-		return false;
-	}
-
-	private boolean parentMatchesRecordTypeSpecifiedInMetadata(String linkedRecordType) {
-		DataGroup recordType = recordTypeHolder.get(linkedRecordType);
-		String parentId = extractParentId(recordType);
-
-		return recordTypeChildOfRecordTypeSpecifiedInMetadata(parentId);
-	}
-
-	private boolean recordTypeExistsAndHasParent(String linkedRecordType) {
-		return recordTypeExist(linkedRecordType) && recordTypeHasParent(linkedRecordType);
-	}
-
-	private boolean recordTypeExist(String linkedRecordType) {
-		return recordTypeHolder.containsKey(linkedRecordType);
-	}
-
-	private boolean recordTypeHasParent(String linkedRecordType) {
-		DataGroup recordType = recordTypeHolder.get(linkedRecordType);
-		return recordType.containsChildWithNameInData("parentId");
-	}
-
-	private String extractParentId(DataGroup recordType) {
-		DataGroup parentGroup = (DataGroup) recordType.getFirstChildWithNameInData("parentId");
-		return parentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 	private void validateRecordId() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -310,7 +310,8 @@ public class DataRecordLinkValidatorTest {
 	public void testValidateNoRecordId() {
 		DataGroup dataRecordLink = new DataGroupOldSpy("nameInData");
 
-		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType", "myLinkedRecordType");
+		DataAtomic linkedRecordType = new DataAtomicOldSpy("linkedRecordType",
+				"myLinkedRecordType");
 		dataRecordLink.addChild(linkedRecordType);
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);

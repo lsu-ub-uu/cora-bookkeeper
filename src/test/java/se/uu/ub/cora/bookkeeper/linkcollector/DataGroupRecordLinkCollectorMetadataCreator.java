@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019, 2025 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2025, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,6 +21,7 @@ package se.uu.ub.cora.bookkeeper.linkcollector;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectionVariable;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -50,6 +51,17 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 		RecordLink recordLink = RecordLink
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id + "Link",
 						id + "Link", id + "LinkTextId", id + "LinkDefTextId", "linkedRecordType");
+		metadataHolder.addMetadataElement(recordLink);
+
+		addChildReferenceParentIdChildRecordTypeIdMinMax(id + "Group", "metadataGroup", id + "Link",
+				1, 15);
+	}
+
+	void addMetadataForOneGroupWithOneAnyTypeLink(String id) {
+		addMetadataForOneGroupWithNoLink(id);
+
+		AnyTypeRecordLink recordLink = AnyTypeRecordLink.withIdAndNameInDataAndTextIdAndDefTextId(
+				id + "Link", id + "Link", id + "LinkTextId", id + "LinkDefTextId");
 		metadataHolder.addMetadataElement(recordLink);
 
 		addChildReferenceParentIdChildRecordTypeIdMinMax(id + "Group", "metadataGroup", id + "Link",
@@ -102,6 +114,13 @@ public class DataGroupRecordLinkCollectorMetadataCreator {
 	void addMetadataForOneGroupInGroupWithOneLink() {
 		addMetadataForOneGroupWithNoLink("top");
 		addMetadataForOneGroupWithOneLink("test");
+		addChildReferenceParentIdChildRecordTypeIdMinMax("topGroup", "metadataGroup", "testGroup",
+				1, 1);
+	}
+
+	void addMetadataForOneGroupInGroupWithOneAnyTypeLink() {
+		addMetadataForOneGroupWithNoLink("top");
+		addMetadataForOneGroupWithOneAnyTypeLink("test");
 		addChildReferenceParentIdChildRecordTypeIdMinMax("topGroup", "metadataGroup", "testGroup",
 				1, 1);
 	}

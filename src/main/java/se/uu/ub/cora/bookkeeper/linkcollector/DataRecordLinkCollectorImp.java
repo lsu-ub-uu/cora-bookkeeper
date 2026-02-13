@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019, 2025 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2025, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -85,11 +86,16 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 	}
 
 	private boolean metadataElementConcernsLinks(MetadataElement childMetadataElement) {
-		return isRecordLink(childMetadataElement) || isMetadataGroup(childMetadataElement);
+		return isRecordLink(childMetadataElement) || isAnyTypeRecordLink(childMetadataElement)
+				|| isMetadataGroup(childMetadataElement);
 	}
 
 	private boolean isRecordLink(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof RecordLink;
+	}
+
+	private boolean isAnyTypeRecordLink(MetadataElement childMetadataElement) {
+		return childMetadataElement instanceof AnyTypeRecordLink;
 	}
 
 	private boolean isMetadataGroup(MetadataElement childMetadataElement) {
@@ -121,8 +127,7 @@ public class DataRecordLinkCollectorImp implements DataRecordLinkCollector {
 
 	private void createLinkOrParseChildGroup(MetadataElement childMetadataElement,
 			DataChild childDataElement) {
-
-		if (isRecordLink(childMetadataElement)) {
+		if (isRecordLink(childMetadataElement) || isAnyTypeRecordLink(childMetadataElement)) {
 			createRecordToRecordLink((DataGroup) childDataElement);
 		} else {
 			collectLinksFromSubGroup(childMetadataElement, (DataGroup) childDataElement);

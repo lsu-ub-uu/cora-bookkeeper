@@ -35,6 +35,7 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.collected.Link;
+import se.uu.ub.cora.data.spies.DataAtomicSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
@@ -106,6 +107,20 @@ public class DataRecordLinkCollectorTest {
 		DataAtomic linkedRecordId = new DataAtomicOldSpy("linkedRecordId", "someRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 		return dataRecordLink;
+	}
+
+	@Test
+	public void testOneGroupWithOneAnyTypeLink() {
+		dataGroupRecordLinkCollectorMetadataCreator
+				.addMetadataForOneGroupWithOneAnyTypeLink("test");
+		DataGroup dataGroup = createDataGroupWithOneLink();
+
+		Set<Link> linkSet = linkCollector.collectLinks("testGroup", dataGroup);
+
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
 	}
 
 	@Test
@@ -199,8 +214,22 @@ public class DataRecordLinkCollectorTest {
 	}
 
 	@Test
+	public void testOneGroupInGroupWithOneAnyTypeLink() {
+		dataGroupRecordLinkCollectorMetadataCreator
+				.addMetadataForOneGroupInGroupWithOneAnyTypeLink();
+		DataGroup topDataGroup = createGroupInGroupWithOneLink();
+
+		Set<Link> linkSet = linkCollector.collectLinks("topGroup", topDataGroup);
+
+		assertEquals(linkSet.size(), 1);
+		Link link = (Link) linkSet.toArray()[0];
+		assertEquals(link.type(), "someRecordType");
+		assertEquals(link.id(), "someRecordId");
+	}
+
+	@Test
 	public void testOneGroupInGroupInGroupWithOneLink() {
-		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "attrValue");
 		dataFactory.MRV.setDefaultReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy);
