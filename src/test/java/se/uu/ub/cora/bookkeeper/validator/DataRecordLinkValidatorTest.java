@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -162,106 +163,6 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testValidateRecordTypeIsChildOfAbstractMetadataRecordType() {
-		DataGroup image = new DataGroupOldSpy("image");
-		DataGroup parentId = new DataGroupOldSpy("parentId");
-		image.addChild(parentId);
-		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
-		recordTypeHolder.put("image", image);
-
-		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-
-		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-				myBinaryLink);
-
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
-						"image001");
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 0);
-		assertTrue(validationAnswer.dataIsValid());
-	}
-
-	@Test
-	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeOtherParentId() {
-		String incorrectParentId = "NOTBinary";
-		DataGroup image = new DataGroupOldSpy("image");
-		DataGroup parentId = new DataGroupOldSpy("parentId");
-		image.addChild(parentId);
-		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", incorrectParentId));
-		recordTypeHolder.put("image", image);
-
-		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-
-		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-				myBinaryLink);
-
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
-						"image001");
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertTrue(validationAnswer.dataIsInvalid());
-	}
-
-	@Test
-	public void testValidateRecordTypeIsNOTChildOfAbstractMetadataRecordTypeNoParent() {
-		DataGroup image = new DataGroupOldSpy("image");
-		recordTypeHolder.put("image", image);
-
-		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-
-		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-				myBinaryLink);
-
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "image",
-						"image001");
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertTrue(validationAnswer.dataIsInvalid());
-	}
-
-	private RecordLink createAndAddBinaryToMetadataHolder(MetadataHolder abstractMetadataHolder) {
-		RecordLink myBinaryLink = RecordLink
-				.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id", "binary",
-						"textId", "defTextId", "binary");
-		abstractMetadataHolder.addMetadataElement(myBinaryLink);
-		return myBinaryLink;
-	}
-
-	@Test
-	public void testValidateRecordTypeIsGrandChildOfAbstractMetadataRecordType() {
-		DataGroup image = new DataGroupOldSpy("image");
-		DataGroup parentId = new DataGroupOldSpy("parentId");
-		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
-		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
-		image.addChild(parentId);
-		recordTypeHolder.put("image", image);
-
-		DataGroup stillImage = new DataGroupOldSpy("stillImage");
-		DataGroup stillImageParent = new DataGroupOldSpy("parentId");
-		stillImageParent.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
-		stillImageParent.addChild(new DataAtomicOldSpy("linkedRecordId", "image"));
-		stillImage.addChild(stillImageParent);
-		recordTypeHolder.put("stillImage", stillImage);
-
-		RecordLink myBinaryLink = createAndAddBinaryToMetadataHolder(metadataHolder);
-
-		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder,
-				myBinaryLink);
-
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("binary", "stillImage",
-						"stillImage001");
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 0);
-		assertTrue(validationAnswer.dataIsValid());
-	}
-
-	@Test
 	public void testValidateEmptyNameInData() {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("", "linkedRecordType",
@@ -342,8 +243,16 @@ public class DataRecordLinkValidatorTest {
 						"linkedRecordType", "myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
+
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"DataRecordLink with nameInData:nameInData should have a linkedRepeatId");
 		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	private void assertErrorMessageExists(ValidationAnswer validationAnswer, String errorMessage) {
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertTrue(errorMessages.contains(errorMessage));
 	}
 
 	@Test
@@ -402,6 +311,8 @@ public class DataRecordLinkValidatorTest {
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"DataRecordLink with nameInData:nameInData should not have a linkedPath");
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 

@@ -87,50 +87,11 @@ class DataRecordLinkValidator implements DataElementValidator {
 	private boolean incomingRecordTypeNotSameAsOrChildOfTypeSpecifiedInMetadata() {
 		String linkedRecordType = dataRecordLink
 				.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
-		if (matchesRecordTypeInLink(linkedRecordType)) {
-			return false;
-		}
-
-		return !recordTypeChildOfRecordTypeSpecifiedInMetadata(linkedRecordType);
+		return !matchesRecordTypeInLink(linkedRecordType);
 	}
 
 	private boolean matchesRecordTypeInLink(String parentId) {
 		return parentId.equals(recordLink.getLinkedRecordType());
-	}
-
-	private boolean recordTypeChildOfRecordTypeSpecifiedInMetadata(String linkedRecordType) {
-		if (recordTypeExistsAndHasParent(linkedRecordType)) {
-			return parentMatchesRecordTypeSpecifiedInMetadata(linkedRecordType);
-		}
-		return false;
-	}
-
-	private boolean parentMatchesRecordTypeSpecifiedInMetadata(String linkedRecordType) {
-		DataGroup recordType = recordTypeHolder.get(linkedRecordType);
-		String parentId = extractParentId(recordType);
-
-		if (matchesRecordTypeInLink(parentId)) {
-			return true;
-		}
-		return recordTypeChildOfRecordTypeSpecifiedInMetadata(parentId);
-	}
-
-	private boolean recordTypeExistsAndHasParent(String linkedRecordType) {
-		return recordTypeExist(linkedRecordType) && recordTypeHasParent(linkedRecordType);
-	}
-
-	private boolean recordTypeExist(String linkedRecordType) {
-		return recordTypeHolder.containsKey(linkedRecordType);
-	}
-
-	private boolean recordTypeHasParent(String linkedRecordType) {
-		DataGroup recordType = recordTypeHolder.get(linkedRecordType);
-		return recordType.containsChildWithNameInData("parentId");
-	}
-
-	private String extractParentId(DataGroup recordType) {
-		DataGroup parentGroup = (DataGroup) recordType.getFirstChildWithNameInData("parentId");
-		return parentGroup.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 	private void validateRecordId() {
