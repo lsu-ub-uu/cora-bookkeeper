@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -177,7 +178,14 @@ public class DataAnyTypeRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
 
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"DataGroup should have name(nameInData): nameInData it does not.");
 		assertTrue(validationAnswer.dataIsInvalid());
+	}
+
+	private void assertErrorMessageExists(ValidationAnswer validationAnswer, String errorMessage) {
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertTrue(errorMessages.contains(errorMessage));
 	}
 
 	@Test
@@ -188,6 +196,8 @@ public class DataAnyTypeRecordLinkValidatorTest {
 
 		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"DataRecordLink with nameInData:nameInData must have an nonempty recordType as child.");
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -201,6 +211,8 @@ public class DataAnyTypeRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
 
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"DataRecordLink with nameInData:nameInData must have an nonempty recordType as child.");
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -213,6 +225,8 @@ public class DataAnyTypeRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
 
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"TextVariable with nameInData:linkedRecordId is NOT valid, regular expression((^[0-9A-Za-z:-_]{2,50}$)) does not match:");
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
@@ -227,6 +241,8 @@ public class DataAnyTypeRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
 
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertErrorMessageExists(validationAnswer,
+				"DataRecordLink with nameInData:nameInData must have an nonempty recordId as child.");
 		assertTrue(validationAnswer.dataIsInvalid());
 	}
 }
