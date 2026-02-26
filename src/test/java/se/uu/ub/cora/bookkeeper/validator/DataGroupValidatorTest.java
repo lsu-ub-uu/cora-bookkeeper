@@ -47,6 +47,7 @@ import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.spies.DataAtomicSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 
 public class DataGroupValidatorTest {
@@ -64,6 +65,18 @@ public class DataGroupValidatorTest {
 		parentId.addChild(new DataAtomicOldSpy("linkedRecordType", "recordType"));
 		parentId.addChild(new DataAtomicOldSpy("linkedRecordId", "binary"));
 		recordTypeHolder.put("image", image);
+	}
+
+	@Test
+	public void testNotDataGroup() {
+		DataElementValidator dataElementValidator = createOneGroupWithNoAttributesOneTextChildReturnDataElementValidator();
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateData(new DataAtomicSpy());
+		assertEquals(validationAnswer.getErrorMessages().size(), 1);
+		assertFalse(validationAnswer.dataIsValid());
+		Iterator<String> iterator = validationAnswer.getErrorMessages().iterator();
+		assertEquals(iterator.next(), "Data for MetadataGroup with nameInData: testGroupNameInData"
+				+ ", is not a DataGroup.");
 	}
 
 	@Test

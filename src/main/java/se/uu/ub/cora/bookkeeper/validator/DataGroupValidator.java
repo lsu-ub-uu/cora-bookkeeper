@@ -49,10 +49,31 @@ class DataGroupValidator implements DataElementValidator {
 		this.metadataGroup = metadataGroup;
 	}
 
+	// TODO: clone method validateData to validateDataTopLevel and then remove
+	// validateNameInDataAndAttributes from validateData
+
 	@Override
 	public ValidationAnswer validateData(DataChild dataGroup) {
-		this.dataGroup = (DataGroup) dataGroup;
+		if (isNotDataGroup(dataGroup)) {
+			return createValidationAnswerWithErrorForNotDataGroup();
+		}
+		return validateDataGroup(dataGroup);
+	}
+
+	private boolean isNotDataGroup(DataChild dataGroup) {
+		return !(dataGroup instanceof DataGroup);
+	}
+
+	private ValidationAnswer createValidationAnswerWithErrorForNotDataGroup() {
+		ValidationAnswer validationAnswerForNotADataGroup = new ValidationAnswer();
+		validationAnswerForNotADataGroup.addErrorMessage("Data for MetadataGroup with nameInData: "
+				+ metadataGroup.getNameInData() + ", is not a DataGroup.");
+		return validationAnswerForNotADataGroup;
+	}
+
+	private ValidationAnswer validateDataGroup(DataChild dataGroup) {
 		validationAnswer = new ValidationAnswer();
+		this.dataGroup = (DataGroup) dataGroup;
 		validateNameInDataAndAttributes(dataGroup);
 		validateChildren();
 		return validationAnswer;
