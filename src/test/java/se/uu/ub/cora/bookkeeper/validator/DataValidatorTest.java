@@ -49,12 +49,12 @@ public class DataValidatorTest {
 	private static final String SOME_RECORD_TYPE_WITH_LINKS = "someRecordTypeWithLinks";
 	private DataValidatorImp dataValidator;
 	private DataGroup dataGroupToValidate;
-	private DataElementValidatorFactorySpy validatorFactory;
+	private DataElementValidatorFactoryOldSpy validatorFactory;
 	private Map<String, DataGroup> recordTypeHolder = new HashMap<>();
 
 	@BeforeMethod
 	public void setUp() {
-		validatorFactory = new DataElementValidatorFactorySpy();
+		validatorFactory = new DataElementValidatorFactoryOldSpy();
 		addRecordTypesToHolder();
 		dataValidator = new DataValidatorImp(validatorFactory, recordTypeHolder);
 		dataGroupToValidate = new DataGroupSpy();
