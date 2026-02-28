@@ -19,15 +19,37 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class DataElementValidatorSpy implements DataElementValidator {
+public class DataElementValidatorSpy extends DataGroupValidator implements DataElementValidator {
+
+	DataElementValidatorSpy() {
+		super(null, null, null, null, null);
+		// TODO Auto-generated constructor stub
+	}
 
 	public DataChild dataElement;
 	public int numOfInvalidMessages = 0;
 	public ValidationAnswer validationAnswer;
 
 	MethodCallRecorder MCR = new MethodCallRecorder();
+
+	@Override
+	public ValidationAnswer validateTopDataGroup(DataGroup dataElement) {
+		MCR.addCall("dataElement", dataElement);
+
+		this.dataElement = dataElement;
+
+		validationAnswer = new ValidationAnswer();
+		for (int i = 0; i < numOfInvalidMessages; i++) {
+			validationAnswer.addErrorMessage("an errorMessageFromSpy " + i);
+
+		}
+
+		MCR.addReturned(validationAnswer);
+		return validationAnswer;
+	}
 
 	@Override
 	public ValidationAnswer validateData(DataChild dataElement) {

@@ -181,10 +181,10 @@ public class DataValidatorTest {
 		DataElementValidatorSpy validatorSpy = (DataElementValidatorSpy) validatorFactory.MCR
 				.getReturnValue("factor", 0);
 
-		validatorSpy.MCR.assertParameters("validateData", 0, filterDataGroup);
+		validatorSpy.MCR.assertParameters("validateTopDataGroup", 0, filterDataGroup);
 
 		ValidationAnswer validationAnswerFromValidator = (ValidationAnswer) validatorSpy.MCR
-				.getReturnValue("validateData", 0);
+				.getReturnValue("validateTopDataGroup", 0);
 		assertEquals(validationAnswer, validationAnswerFromValidator);
 	}
 

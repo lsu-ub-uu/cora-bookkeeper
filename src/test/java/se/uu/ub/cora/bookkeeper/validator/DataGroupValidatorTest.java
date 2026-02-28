@@ -65,7 +65,7 @@ public class DataGroupValidatorTest {
 	private DataFilterCreatorSpy dataFilterCreator;
 	private List<List<DataChildSpy>> dataChildSpys;
 	private int callNo;
-	private DataChildSpy dataChildSpy_1;
+	private DataChildSpy dataChildSpy1;
 
 	@BeforeMethod
 	public void setUp() {
@@ -155,7 +155,6 @@ public class DataGroupValidatorTest {
 		ValidationAnswer validationAnswer = dataElementValidator.validateData(topDataGroup);
 
 		assertDataIsInvalidWithErrorFromMetadataMatch(validationAnswer,
-				"metadataMatch does not match",
 				"DataGroup topLevelGroupNameInData should have children, it does not.");
 	}
 
@@ -191,6 +190,10 @@ public class DataGroupValidatorTest {
 				topDataGroup);
 		assertTrue(validationAnswer.dataIsValid());
 
+		assertTopLevelChildren();
+	}
+
+	private void assertTopLevelChildren() {
 		var metadataElementChild1 = metadataHolder.MCR
 				.assertCalledParametersReturn("getMetadataElement", "child1");
 		var filter = dataFilterCreator.MCR.assertCalledParametersReturn(
@@ -198,7 +201,18 @@ public class DataGroupValidatorTest {
 		topDataGroup.MCR.assertParameters("getAllChildrenMatchingFilter", 0, filter);
 		DataElementValidatorSpy child1Validator = (DataElementValidatorSpy) dataElementValidatorFactory.MCR
 				.assertCalledParametersReturn("factor", "child1");
-		child1Validator.MCR.assertParameters("validateData", 0, dataChildSpy_1);
+		child1Validator.MCR.assertParameters("validateData", 0, dataChildSpy1);
+	}
+
+	@Test
+	public void testTopLevelChildrenValidateData() {
+		setUpTopLevelWithChildren();
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateData(topDataGroup);
+
+		assertTrue(validationAnswer.dataIsValid());
+
+		assertTopLevelChildren();
 	}
 
 	private void setUpTopLevelWithChildren() {
@@ -216,12 +230,12 @@ public class DataGroupValidatorTest {
 
 	private Object getAllChildrenMatchingFilter() {
 		if (callNo == 0) {
-			dataChildSpy_1 = new DataChildSpy();
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("getNameInData",
+			dataChildSpy1 = new DataChildSpy();
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("getNameInData",
 					() -> "childTopGroup");
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
 			callNo++;
-			return List.of(dataChildSpy_1);
+			return List.of(dataChildSpy1);
 		}
 		return Collections.emptyList();
 	}
@@ -243,6 +257,10 @@ public class DataGroupValidatorTest {
 
 		metadataMatchData.MCR.assertCalledParameters("metadataSpecifiesData", metadataGroup,
 				topDataGroup);
+		assertTopLevelChildrenErrors(validationAnswer);
+	}
+
+	private void assertTopLevelChildrenErrors(ValidationAnswer validationAnswer) {
 		assertFalse(validationAnswer.dataIsValid());
 
 		Collection<String> errorMessages = validationAnswer.getErrorMessages();
@@ -262,7 +280,24 @@ public class DataGroupValidatorTest {
 				"Repeatable child someNameInData3 in group topLevelGroupNameInData must have unique repeatId: someRepeatId");
 		assertEquals(errorIterator.next(),
 				"Repeatable child someNameInData4 in group topLevelGroupNameInData must have non empty repeatId");
+	}
 
+	@Test
+	public void testTopLevelChildrenErrorsValidateData() {
+		setUpTopLevelWithChildrenForError();
+
+		MetadataElementSpy metadataElementSpy = new MetadataElementSpy();
+		metadataElementSpy.MRV.setDefaultReturnValuesSupplier("getAttributeReferences",
+				() -> List.of("child2ColVar"));
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				() -> metadataElementSpy, "child2");
+
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				CollectionVariableSpy::new, "child2ColVar");
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateData(topDataGroup);
+
+		assertTopLevelChildrenErrors(validationAnswer);
 	}
 
 	private void setUpTopLevelWithChildrenForError() {
@@ -282,16 +317,16 @@ public class DataGroupValidatorTest {
 
 	private Object getAllChildrenMatchingFilterError() {
 		if (callNo == 0) {
-			dataChildSpy_1 = new DataChildSpy();
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("getNameInData",
+			dataChildSpy1 = new DataChildSpy();
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("getNameInData",
 					() -> "someNameInData");
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "someRepeatId");
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "someRepeatId");
 			callNo++;
 			DataChildSpy dataChild2 = new DataChildSpy();
 			dataChild2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "someNameInData2");
 			dataChild2.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
-			List<DataChildSpy> list = List.of(dataChildSpy_1, dataChild2);
+			List<DataChildSpy> list = List.of(dataChildSpy1, dataChild2);
 			dataChildSpys.add(list);
 			return list;
 		}
@@ -334,18 +369,37 @@ public class DataGroupValidatorTest {
 
 		DataElementValidatorSpy child1Validator = (DataElementValidatorSpy) dataElementValidatorFactory.MCR
 				.assertCalledParametersReturn("factor", "child1");
-		child1Validator.MCR.assertParameters("validateData", 0, dataChildSpy_1);
+		child1Validator.MCR.assertParameters("validateData", 0, dataChildSpy1);
 
+		assertTopLevelChildrenWithSubErrorsAndUnspecifiedChildren(validationAnswer);
+	}
+
+	private void assertTopLevelChildrenWithSubErrorsAndUnspecifiedChildren(
+			ValidationAnswer validationAnswer) {
 		assertFalse(validationAnswer.dataIsValid());
 
 		Collection<String> errorMessages = validationAnswer.getErrorMessages();
-		assertEquals(errorMessages.size(), 3);
+		assertEquals(errorMessages.size(), 4);
 		Iterator<String> errorIterator = errorMessages.iterator();
 		assertEquals(errorIterator.next(), "an errorMessageFromSpy 0");
 		assertEquals(errorIterator.next(), "an errorMessageFromSpy 1");
 		assertEquals(errorIterator.next(), "Could not find metadata for child with nameInData: "
 				+ "extraNameInData and attributes: extra1:eValue1, extra2:eValue2");
+		assertEquals(errorIterator.next(),
+				"Could not find metadata for child with nameInData: " + "extraNameInData2");
+	}
 
+	@Test
+	public void testTopLevelChildrenWithSubErrorsAndUnspecifiedChildrenValidateData() {
+		setUpTopLevelWithChildrenForSubError();
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateData(topDataGroup);
+
+		DataElementValidatorSpy child1Validator = (DataElementValidatorSpy) dataElementValidatorFactory.MCR
+				.assertCalledParametersReturn("factor", "child1");
+		child1Validator.MCR.assertParameters("validateData", 0, dataChildSpy1);
+
+		assertTopLevelChildrenWithSubErrorsAndUnspecifiedChildren(validationAnswer);
 	}
 
 	private void setUpTopLevelWithChildrenForSubError() {
@@ -361,7 +415,7 @@ public class DataGroupValidatorTest {
 
 		topDataGroup.MRV.setDefaultReturnValuesSupplier("getAllChildrenMatchingFilter",
 				this::getAllChildrenMatchingFilterSubError);
-		dataChildSpy_1 = new DataChildSpy();
+		dataChildSpy1 = new DataChildSpy();
 
 		DataChildSpy extraChild = new DataChildSpy();
 		extraChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "extraNameInData");
@@ -371,17 +425,95 @@ public class DataGroupValidatorTest {
 		extraChild.MRV.setDefaultReturnValuesSupplier("getAttributes",
 				() -> List.of(extraAttribute1, extraAttribute2));
 
+		DataChildSpy extraChild2 = new DataChildSpy();
+		extraChild2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "extraNameInData2");
+		extraChild2.MRV.setDefaultReturnValuesSupplier("hasAttributes", () -> false);
+
 		topDataGroup.MRV.setDefaultReturnValuesSupplier("getChildren",
-				() -> List.of(dataChildSpy_1, extraChild));
+				() -> List.of(dataChildSpy1, extraChild, extraChild2));
 	}
 
 	private Object getAllChildrenMatchingFilterSubError() {
 		if (callNo == 0) {
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("getNameInData",
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("getNameInData",
 					() -> "someNameInData");
-			dataChildSpy_1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
 			callNo++;
-			List<DataChildSpy> list = List.of(dataChildSpy_1);
+			List<DataChildSpy> list = List.of(dataChildSpy1);
+			dataChildSpys.add(list);
+			return list;
+		}
+		return Collections.emptyList();
+	}
+
+	@Test
+	public void testTopLevelChildrenWithNotEnoughChildrenNoAttributes() {
+		setUpTopLevelForNotEnoughChildrenNoAttributes();
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateTopDataGroup(topDataGroup);
+
+		assertTopLevelChildrenWithNotEnoughChildrenNoAttributes(validationAnswer);
+	}
+
+	private void assertTopLevelChildrenWithNotEnoughChildrenNoAttributes(
+			ValidationAnswer validationAnswer) {
+		DataElementValidatorSpy child1Validator = (DataElementValidatorSpy) dataElementValidatorFactory.MCR
+				.assertCalledParametersReturn("factor", "child1");
+		child1Validator.MCR.assertParameters("validateData", 0, dataChildSpy1);
+
+		assertFalse(validationAnswer.dataIsValid());
+
+		Collection<String> errorMessages = validationAnswer.getErrorMessages();
+		assertEquals(errorMessages.size(), 3);
+		Iterator<String> errorIterator = errorMessages.iterator();
+		assertEquals(errorIterator.next(), "an errorMessageFromSpy 0");
+		assertEquals(errorIterator.next(), "an errorMessageFromSpy 1");
+		assertEquals(errorIterator.next(), "Did not find enough data children with referenceId: "
+				+ "child1(with nameInData:someNameInData).");
+	}
+
+	@Test
+	public void testTopLevelChildrenWithNotEnoughChildrenNoAttributesValidateData() {
+		setUpTopLevelForNotEnoughChildrenNoAttributes();
+
+		ValidationAnswer validationAnswer = dataElementValidator.validateData(topDataGroup);
+
+		assertTopLevelChildrenWithNotEnoughChildrenNoAttributes(validationAnswer);
+	}
+
+	private void setUpTopLevelForNotEnoughChildrenNoAttributes() {
+		MetadataElementSpy metadataElementSpy = new MetadataElementSpy();
+		metadataElementSpy.MRV.setDefaultReturnValuesSupplier("getAttributeReferences",
+				() -> List.of());
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement",
+				() -> metadataElementSpy, "child1");
+
+		DataElementValidatorSpy childOneValidator = new DataElementValidatorSpy();
+		childOneValidator.numOfInvalidMessages = 2;
+		dataElementValidatorFactory.MRV.setSpecificReturnValuesSupplier("factor",
+				() -> childOneValidator, "child1");
+		//
+		MetadataChildReference metadataChildReference1 = new MetadataChildReference("someType",
+				"child1", 2, 2);
+		metadataGroup.MRV.setDefaultReturnValuesSupplier("getChildReferences",
+				() -> List.of(metadataChildReference1));
+
+		topDataGroup.MRV.setDefaultReturnValuesSupplier("getAllChildrenMatchingFilter",
+				this::getNotEnoughChildrenMatchingFilterSubError);
+		dataChildSpy1 = new DataChildSpy();
+
+		topDataGroup.MRV.setDefaultReturnValuesSupplier("getChildren",
+				() -> List.of(dataChildSpy1));
+	}
+
+	private Object getNotEnoughChildrenMatchingFilterSubError() {
+		if (callNo == 0) {
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("getNameInData",
+					() -> "someNameInData");
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
+			dataChildSpy1.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "someRepeatId");
+			callNo++;
+			List<DataChildSpy> list = List.of(dataChildSpy1);
 			dataChildSpys.add(list);
 			return list;
 		}
