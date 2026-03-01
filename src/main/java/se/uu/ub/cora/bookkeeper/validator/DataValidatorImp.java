@@ -48,7 +48,6 @@ class DataValidatorImp implements DataValidator {
 	private ValidationAnswer tryToValidateData(String metadataId, DataGroup dataGroup) {
 		DataGroupValidator elementValidator = (DataGroupValidator) dataValidatorFactory
 				.factor(metadataId);
-		// return elementValidator.validateData(dataGroup);
 		return elementValidator.validateTopDataGroup(dataGroup);
 	}
 

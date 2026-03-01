@@ -66,8 +66,6 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateNameInDataAndAttributes(DataGroup dataGroup) {
-		// MetadataMatchData metadataMatchData = MetadataMatchDataImp
-		// .withMetadataHolder(metadataHolder);
 		var localValidationAnswer = metadataMatchData.metadataSpecifiesData(metadataGroup,
 				dataGroup);
 		addMessagesFromAnswerToTotalValidationAnswer(localValidationAnswer);
@@ -96,7 +94,6 @@ class DataGroupValidator implements DataElementValidator {
 
 	private ValidationAnswer validateDataGroup(DataChild dataGroup) {
 		this.dataGroup = (DataGroup) dataGroup;
-		// validateNameInDataAndAttributes(dataGroup);
 		validateChildren();
 		return validationAnswer;
 	}
@@ -131,7 +128,6 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private int validateAndCountChildrenWithReferenceId(String referenceId, boolean mayBeRepeated) {
-		// int childrenFound = 0;
 		Set<String> repeatIds = new HashSet<>();
 
 		MetadataElement metadataElement = metadataHolder.getMetadataElement(referenceId);
@@ -142,23 +138,10 @@ class DataGroupValidator implements DataElementValidator {
 		List<DataChild> allChildrenMatchingFilter = dataGroup.getAllChildrenMatchingFilter(filter);
 		for (DataChild childData : allChildrenMatchingFilter) {
 			everyChildMatchingAFilter.add(childData);
-			// // childrenFound++;
 			validateRepeatId(mayBeRepeated, repeatIds, childData);
 			validateChildElementData(referenceId, childData);
 		}
 		return allChildrenMatchingFilter.size();
-
-		// OLD way
-		///
-		// for (DataChild childData : dataGroup.getChildren()) {
-		//
-		// if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
-		// childrenFound++;
-		// validateRepeatId(mayBeRepeated, repeatIds, childData);
-		// validateChildElementData(referenceId, childData);
-		// }
-		// }
-		// return childrenFound;
 	}
 
 	private void validateRepeatId(boolean mayBeRepeated, Set<String> repeatIds,
@@ -236,20 +219,7 @@ class DataGroupValidator implements DataElementValidator {
 		return " and attributes: " + joiner.toString();
 	}
 
-	// private boolean isChildDataSpecifiedByChildReferenceId(DataChild childData,
-	// String referenceId) {
-	// if (!metadataHolder.containsElement(referenceId)) {
-	// throw DataValidationException.withMessage(referenceId + " not found in metadataHolder");
-	// }
-	// MetadataElement childElement = metadataHolder.getMetadataElement(referenceId);
-	// MetadataMatchData metadataMatchData = MetadataMatchDataImp
-	// .withMetadataHolder(metadataHolder);
-	// return metadataMatchData.metadataSpecifiesData(childElement, childData).dataIsValid();
-	// }
-
 	private void validateNoRepeatId(DataChild childData) {
-		// String repeatId = childData.getRepeatId();
-		// if (repeatId != null) {
 		if (childData.hasRepeatId()) {
 			validationAnswer.addErrorMessage(
 					createIdentifiedErrorMessage(childData) + " can not have a repeatId");
@@ -267,7 +237,6 @@ class DataGroupValidator implements DataElementValidator {
 	}
 
 	private void validateDataContainsNoUnspecifiedChildren() {
-		// everyChildMatchingAFilter
 		List<DataChild> children = dataGroup.getChildren();
 		if (everyChildMatchingAFilter.size() != children.size()) {
 			for (DataChild dataChild : children) {
@@ -278,27 +247,8 @@ class DataGroupValidator implements DataElementValidator {
 
 				}
 			}
-
 		}
-		// for (DataChild childData : dataGroup.getChildren()) {
-		// if (!isChildDataSpecifiedInMetadataGroup(childData)) {
-		// validationAnswer
-		// .addErrorMessage("Could not find metadata for child with nameInData: "
-		// + childData.getNameInData() + getAttributesText(childData));
-		// }
-		// }
 	}
-
-	// private boolean isChildDataSpecifiedInMetadataGroup(DataChild childData) {
-	// Collection<MetadataChildReference> childReferences = metadataGroup.getChildReferences();
-	// for (MetadataChildReference childReference : childReferences) {
-	// String referenceId = childReference.getLinkedRecordId();
-	// if (isChildDataSpecifiedByChildReferenceId(childData, referenceId)) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
 
 	private String getAttributesText(DataChild childData) {
 		if (childData.hasAttributes()) {
