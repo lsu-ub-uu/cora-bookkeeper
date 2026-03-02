@@ -238,16 +238,35 @@ class DataGroupValidator implements DataElementValidator {
 
 	private void validateDataContainsNoUnspecifiedChildren() {
 		List<DataChild> children = dataGroup.getChildren();
-		if (everyChildMatchingAFilter.size() != children.size()) {
-			for (DataChild dataChild : children) {
-				if (!everyChildMatchingAFilter.contains(dataChild)) {
-					validationAnswer
-							.addErrorMessage("Could not find metadata for child with nameInData: "
-									+ dataChild.getNameInData() + getAttributesText(dataChild));
-
-				}
-			}
+		if (hasUnspecifiedDataChildren(children)) {
+			addInfoAboutUnspecifiedChildrenToValidationAnswer(children);
 		}
+	}
+
+	private boolean hasUnspecifiedDataChildren(List<DataChild> children) {
+		return everyChildMatchingAFilter.size() != children.size();
+	}
+
+	private void addInfoAboutUnspecifiedChildrenToValidationAnswer(List<DataChild> children) {
+		for (DataChild dataChild : children) {
+			possiblyAddInfoAboutUnspecifiedChildToValidationAnswer(dataChild);
+		}
+	}
+
+	private void possiblyAddInfoAboutUnspecifiedChildToValidationAnswer(DataChild dataChild) {
+		if (childIsUnspecified(dataChild)) {
+			addInfoAboutUnspecifiedChildToValidationAnswer(dataChild);
+
+		}
+	}
+
+	private boolean childIsUnspecified(DataChild dataChild) {
+		return !everyChildMatchingAFilter.contains(dataChild);
+	}
+
+	private void addInfoAboutUnspecifiedChildToValidationAnswer(DataChild dataChild) {
+		validationAnswer.addErrorMessage("Could not find metadata for child with nameInData: "
+				+ dataChild.getNameInData() + getAttributesText(dataChild));
 	}
 
 	private String getAttributesText(DataChild childData) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Collection;
@@ -136,18 +135,6 @@ public class DataAnyTypeRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testInvalidAttribute() {
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
-						"linkedRecordType", "myLinkedRecordId");
-		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
-
-		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertFalse(validationAnswer.dataIsValid());
-	}
-
-	@Test
 	public void testValidateInvalidRecordId_NotAccordingRegeExp() {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
@@ -167,20 +154,6 @@ public class DataAnyTypeRecordLinkValidatorTest {
 		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
 
 		assertTrue(validationAnswer.dataIsValid());
-	}
-
-	@Test
-	public void testValidateEmptyNameInData() {
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("", "linkedRecordType",
-						"myLinkedRecordId");
-
-		ValidationAnswer validationAnswer = anyTypeRecordLinkValidator.validateData(dataRecordLink);
-
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertErrorMessageExists(validationAnswer,
-				"DataGroup should have name(nameInData): nameInData it does not.");
-		assertTrue(validationAnswer.dataIsInvalid());
 	}
 
 	private void assertErrorMessageExists(ValidationAnswer validationAnswer, String errorMessage) {

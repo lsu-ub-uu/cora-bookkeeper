@@ -22,6 +22,7 @@ package se.uu.ub.cora.bookkeeper.termcollector;
 import java.util.List;
 import java.util.Optional;
 
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTerm;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
@@ -118,33 +119,32 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		for (MetadataChildReference metadataChildReference : metadataChildReferences) {
 			collectDataForMetadataChildIfItHasAtLeastOneCollectTerm(metadataChildReference,
 					dataGroup);
-			recurseAndCollectTermsFromChildsGroupChildren(dataGroup, metadataChildReference);
 		}
 	}
 
-	private void recurseAndCollectTermsFromChildsGroupChildren(DataGroup dataGroup,
-			MetadataChildReference metadataChildReference) {
-		String referenceId = metadataChildReference.getLinkedRecordId();
-		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
-		if (isMetadataGroup(childMetadataElement)) {
-			recurseAndCollectTermFromChildsGroupChildren(dataGroup, childMetadataElement);
-		}
-	}
+	// private void recurseAndCollectTermFromChildsGroupChildren(DataGroup dataGroup,
+	// MetadataElement childMetadataElement) {
+	// String childMetadataGroupId = childMetadataElement.getId();
+	// for (DataChild childDataElement : dataGroup.getChildren()) {
+	// possiblyCollectTerms(childMetadataElement, childMetadataGroupId, childDataElement);
+	// }
+	//
+	// // DataChildFilter filter = dataFilterCreator
+	// // .createDataChildFilterFromMetadata(childMetadataElement);
+	// //
+	// // List<DataChild> allChildrenMatchingFilter =
+	// // dataGroup.getAllChildrenMatchingFilter(filter);
+	// // for (DataChild childData : allChildrenMatchingFilter) {
+	// // collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childData);
+	// // }
+	// }
 
-	private void recurseAndCollectTermFromChildsGroupChildren(DataGroup dataGroup,
-			MetadataElement childMetadataElement) {
-		String childMetadataGroupId = childMetadataElement.getId();
-		for (DataChild childDataElement : dataGroup.getChildren()) {
-			possiblyCollectTerms(childMetadataElement, childMetadataGroupId, childDataElement);
-		}
-	}
-
-	private void possiblyCollectTerms(MetadataElement childMetadataElement,
-			String childMetadataGroupId, DataChild childDataElement) {
-		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childDataElement);
-		}
-	}
+	// private void possiblyCollectTerms(MetadataElement childMetadataElement,
+	// String childMetadataGroupId, DataChild childDataElement) {
+	// if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
+	// collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childDataElement);
+	// }
+	// }
 
 	private boolean isMetadataGroup(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof MetadataGroup;
@@ -152,8 +152,12 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
 	private void collectDataForMetadataChildIfItHasAtLeastOneCollectTerm(
 			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
-		if (childReferenceHasCollectTerms(metadataChildReference)) {
-			collectTermsFromDataGroupUsingMetadataChild(metadataChildReference, dataGroup);
+		String referenceId = metadataChildReference.getLinkedRecordId();
+		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
+		if (childReferenceHasCollectTerms(metadataChildReference)
+				|| isMetadataGroup(childMetadataElement)) {
+			collectTermsFromDataGroupChildren(metadataChildReference, childMetadataElement,
+					metadataChildReference.getCollectTerms(), dataGroup);
 		}
 	}
 
@@ -161,39 +165,62 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		return !metadataChildReference.getCollectTerms().isEmpty();
 	}
 
-	private void collectTermsFromDataGroupUsingMetadataChild(
-			MetadataChildReference metadataChildReference, DataGroup dataGroup) {
-		String referenceId = metadataChildReference.getLinkedRecordId();
-		MetadataElement childMetadataElement = metadataHolder.getMetadataElement(referenceId);
-		collectTermsFromDataGroupChildren(childMetadataElement,
-				metadataChildReference.getCollectTerms(), dataGroup);
-	}
-
-	private void collectTermsFromDataGroupChildren(MetadataElement childMetadataElement,
+	private void collectTermsFromDataGroupChildren(MetadataChildReference metadataChildReference,
+			MetadataElement childMetadataElement,
 			List<CollectTermLink> collectTermsForChildReference, DataGroup dataGroup) {
+		// TODO: get correct children
 		for (DataChild childDataElement : dataGroup.getChildren()) {
-			collectTermsFromDataGroupChild(childMetadataElement, childDataElement,
-					collectTermsForChildReference);
+			collectTermsFromDataGroupChild(metadataChildReference, childMetadataElement,
+					childDataElement, collectTermsForChildReference);
 		}
+		// DataChildFilter filter = dataFilterCreator
+		// .createDataChildFilterFromMetadata(childMetadataElement);
+		//
+		// List<DataChild> allChildrenMatchingFilter =
+		// dataGroup.getAllChildrenMatchingFilter(filter);
+		// for (DataChild childData : allChildrenMatchingFilter) {
+		// if (childReferenceHasCollectTerms(metadataChildReference)) {
+		// collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, dataGroup,
+		// collectTermsForChildReference);
+		// }
+		// if (isMetadataGroup(childMetadataElement)) {
+		// String childMetadataGroupId = childMetadataElement.getId();
+		// collectTermsFromDataUsingMetadata(childMetadataGroupId, dataGroup);
+		// }
+		// }
+
 	}
 
-	private void collectTermsFromDataGroupChild(MetadataElement childMetadataElement,
-			DataChild childDataElement, List<CollectTermLink> collectTermsForChildReference) {
+	private void collectTermsFromDataGroupChild(MetadataChildReference metadataChildReference,
+			MetadataElement childMetadataElement, DataChild childDataElement,
+			List<CollectTermLink> collectTermsForChildReference) {
 		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, childDataElement,
-					collectTermsForChildReference);
+			if (childReferenceHasCollectTerms(metadataChildReference)) {
+				collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement,
+						childDataElement, collectTermsForChildReference);
+			}
+			if (isMetadataGroup(childMetadataElement)) {
+				String childMetadataGroupId = childMetadataElement.getId();
+				collectTermsFromDataUsingMetadata(childMetadataGroupId,
+						(DataGroup) childDataElement);
+			}
 		}
 	}
 
 	private void collectTermsFromDataGroupChildMatchingMetadata(
 			MetadataElement childMetadataElement, DataChild childDataElement,
 			List<CollectTermLink> collectTermsForChildReference) {
-		if (childMetadataElement instanceof RecordLink) {
+		if (isLink(childMetadataElement)) {
 			createCollectTermsForRecordLink((DataRecordLink) childDataElement,
 					collectTermsForChildReference);
 		} else {
 			possiblyCreateCollectedTerms(childDataElement, collectTermsForChildReference);
 		}
+	}
+
+	private boolean isLink(MetadataElement childMetadataElement) {
+		return childMetadataElement instanceof RecordLink
+				|| childMetadataElement instanceof AnyTypeRecordLink;
 	}
 
 	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,

@@ -32,6 +32,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
 import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
@@ -252,8 +253,8 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testTermCollectorOneIndexTermsLink() {
-		addLinkToOtherBook();
+	public void testTermCollectorOneIndexTerms_RecordLink() {
+		addRecordLinkToOtherBook();
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -265,8 +266,8 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testTermCollectorTwoIndexTermsSameLink() {
-		addLinkToOtherBook();
+	public void testTermCollectorTwoIndexTermsSameLink_RecordLink() {
+		addRecordLinkToOtherBook();
 
 		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
 				basicDataRecordGroup);
@@ -278,6 +279,35 @@ public class DataGroupTermCollectorTest {
 				"indexTypeId", "otherBookIndexTerm");
 		assertIndexTerm(indexTerms.get(1), "otherBookSecondIndexTerm", "book_someOtherBookId",
 				"indexTypeId", "otherBookSecondIndexTerm");
+	}
+
+	@Test
+	public void testTermCollectorOneIndexTerms_AnyTypeRecordLink() {
+		addAnyTypeRecordLinkToOtherBook();
+
+		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
+
+		assertSizesPSI(collectedData, 0, 0, 1);
+
+		List<IndexTerm> indexTerms = collectedData.indexTerms;
+		assertIndexTerm(indexTerms.get(0), "otherIndexTerm", "book_someOtherBookId", "indexTypeId",
+				"otherIndexTerm");
+	}
+
+	@Test
+	public void testTermCollectorTwoIndexTermsSameLink_AnyTypeRecordLink() {
+		addAnyTypeRecordLinkToOtherBook();
+
+		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
+				basicDataRecordGroup);
+
+		assertSizesPSI(collectedData, 0, 0, 2);
+
+		List<IndexTerm> indexTerms = collectedData.indexTerms;
+		assertIndexTerm(indexTerms.get(0), "otherIndexTerm", "book_someOtherBookId", "indexTypeId",
+				"otherIndexTerm");
+		assertIndexTerm(indexTerms.get(1), "otherSecondIndexTerm", "book_someOtherBookId",
+				"indexTypeId", "otherSecondIndexTerm");
 	}
 
 	@Test
@@ -326,8 +356,8 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testTermCollectorTwoStorageTermsSameLink() {
-		addLinkToOtherBook();
+	public void testTermCollectorTwoStorageTermsSameLink_RecordLink() {
+		addRecordLinkToOtherBook();
 
 		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
 				basicDataRecordGroup);
@@ -343,6 +373,24 @@ public class DataGroupTermCollectorTest {
 				"STORAGEKEY_otherBookSecondStorageTerm");
 	}
 
+	@Test
+	public void testTermCollectorTwoStorageTermsSameLink_AnyTypeRecordLink() {
+		addAnyTypeRecordLinkToOtherBook();
+
+		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
+				basicDataRecordGroup);
+
+		assertSizesPSI(collectedData, 0, 2, 0);
+
+		Set<StorageTerm> storageTerms = collectedData.storageTerms;
+		StorageTerm storageTerm0 = (StorageTerm) storageTerms.toArray()[0];
+		StorageTerm storageTerm1 = (StorageTerm) storageTerms.toArray()[1];
+		assertStorageTerm(storageTerm0, "otherStorageTerm", "book_someOtherBookId",
+				"STORAGEKEY_otherStorageTerm");
+		assertStorageTerm(storageTerm1, "otherSecondStorageTerm", "book_someOtherBookId",
+				"STORAGEKEY_otherSecondStorageTerm");
+	}
+
 	private DataRecordGroupSpy createBookWithNoTitle() {
 		DataRecordGroupSpy book = new DataRecordGroupSpy();
 		createRecordInfo(book);
@@ -354,9 +402,19 @@ public class DataGroupTermCollectorTest {
 		book.MRV.setDefaultReturnValuesSupplier("getId", () -> "book1");
 	}
 
-	private void addLinkToOtherBook() {
+	private void addRecordLinkToOtherBook() {
 		DataRecordLinkSpy otherBookLink = new DataRecordLinkSpy();
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "otherBook");
+		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordType", () -> "book");
+		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
+				() -> "someOtherBookId");
+
+		addChildrenToDataRecordGroup(otherBookLink);
+	}
+
+	private void addAnyTypeRecordLinkToOtherBook() {
+		DataRecordLinkSpy otherBookLink = new DataRecordLinkSpy();
+		otherBookLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "other");
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordType", () -> "book");
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
 				() -> "someOtherBookId");
@@ -375,6 +433,8 @@ public class DataGroupTermCollectorTest {
 		createMetadataStorageTerm("otherBookStorageTerm", "STORAGEKEY_otherBookStorageTerm");
 		createMetadataStorageTerm("otherBookSecondStorageTerm",
 				"STORAGEKEY_otherBookSecondStorageTerm");
+		createMetadataStorageTerm("otherStorageTerm", "STORAGEKEY_otherStorageTerm");
+		createMetadataStorageTerm("otherSecondStorageTerm", "STORAGEKEY_otherSecondStorageTerm");
 
 		createMetadataIndexTerm("titleIndexTerm", "title", "indexTypeString");
 		createMetadataIndexTerm("titleSecondIndexTerm", "title", "indexTypeString");
@@ -383,6 +443,8 @@ public class DataGroupTermCollectorTest {
 		createMetadataIndexTerm("textIndexTerm", "text", "indexTypeString");
 		createMetadataIndexTerm("otherBookIndexTerm", "otherBook", "indexTypeId");
 		createMetadataIndexTerm("otherBookSecondIndexTerm", "otherBook", "indexTypeId");
+		createMetadataIndexTerm("otherIndexTerm", "other", "indexTypeId");
+		createMetadataIndexTerm("otherSecondIndexTerm", "other", "indexTypeId");
 	}
 
 	private void createMetadataPermissionTerm(String id, String nameInData, String permissionKey) {
@@ -412,6 +474,7 @@ public class DataGroupTermCollectorTest {
 		createTextVariable("bookTitleTextVar", "bookTitle");
 		createTextVariable("bookSubTitleTextVar", "bookSubTitle");
 		createRecordLink("otherBookLink", "otherBook", "book");
+		createAnyTypeRecordLink("otherLink", "other");
 		MetadataGroup personRoleGroup = createMetadataGroup("personRoleGroup", "personRole");
 		createTextVariable("nameTextVar", "name");
 
@@ -433,6 +496,9 @@ public class DataGroupTermCollectorTest {
 
 		var otherBookChildReference = addChildReference(bookMetadataGroup, "otherBookLink");
 		addIndexTermToChildReference(otherBookChildReference, "otherBookIndexTerm");
+
+		var otherChildReference = addChildReference(bookMetadataGroup, "otherLink");
+		addIndexTermToChildReference(otherChildReference, "otherIndexTerm");
 	}
 
 	private void createBookWithMoreCollectTerms() {
@@ -448,6 +514,10 @@ public class DataGroupTermCollectorTest {
 				"otherBookLink");
 		addIndexTermToChildReference(otherBookChildReference, "otherBookIndexTerm");
 		addIndexTermToChildReference(otherBookChildReference, "otherBookSecondIndexTerm");
+
+		var otherChildReference = addChildReference(bookWithMoreCollectTermsGroup, "otherLink");
+		addIndexTermToChildReference(otherChildReference, "otherIndexTerm");
+		addIndexTermToChildReference(otherChildReference, "otherSecondIndexTerm");
 	}
 
 	private void createBookWithStorageCollectTerms() {
@@ -463,6 +533,10 @@ public class DataGroupTermCollectorTest {
 				"otherBookLink");
 		addStorageTermToChildReference(otherBookChildReference, "otherBookStorageTerm");
 		addStorageTermToChildReference(otherBookChildReference, "otherBookSecondStorageTerm");
+
+		var otherChildReference = addChildReference(bookWithMoreCollectTermsGroup, "otherLink");
+		addStorageTermToChildReference(otherChildReference, "otherStorageTerm");
+		addStorageTermToChildReference(otherChildReference, "otherSecondStorageTerm");
 	}
 
 	private void addPermissionTermToChildReference(MetadataChildReference childReference,
@@ -494,6 +568,12 @@ public class DataGroupTermCollectorTest {
 	private void createRecordLink(String id, String nameInData, String linkedRecordType) {
 		RecordLink link = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType(id,
 				nameInData, "text", "defText", linkedRecordType);
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> link, id);
+	}
+
+	private void createAnyTypeRecordLink(String id, String nameInData) {
+		AnyTypeRecordLink link = AnyTypeRecordLink.withIdAndNameInDataAndTextIdAndDefTextId(id,
+				nameInData, "text", "defText");
 		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> link, id);
 	}
 
