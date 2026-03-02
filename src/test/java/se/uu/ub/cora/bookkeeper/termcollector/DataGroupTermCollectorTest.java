@@ -31,10 +31,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
 import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
@@ -44,14 +44,16 @@ import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
+import se.uu.ub.cora.bookkeeper.termcollector.internal.DataGroupTermCollectorImp;
+import se.uu.ub.cora.bookkeeper.validator.DataFilterCreatorSpy;
 import se.uu.ub.cora.data.DataChild;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
 import se.uu.ub.cora.data.collected.IndexTerm;
 import se.uu.ub.cora.data.collected.PermissionTerm;
 import se.uu.ub.cora.data.collected.StorageTerm;
+import se.uu.ub.cora.data.spies.DataChildFilterSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
@@ -68,6 +70,7 @@ public class DataGroupTermCollectorTest {
 	private DataFactorySpy dataFactorySpy;
 	private MetadataHolderSpy metadataHolder;
 	private CollectTermHolderSpy collectTermHolder;
+	private DataFilterCreatorSpy dataFilterCreator;
 
 	@BeforeMethod
 	public void setUp() {
@@ -75,7 +78,9 @@ public class DataGroupTermCollectorTest {
 
 		setUpMetadataStorageForTest();
 
-		collector = new DataGroupTermCollectorImp();
+		dataFilterCreator = new DataFilterCreatorSpy();
+
+		collector = DataGroupTermCollectorImp.usingDataFilterCreator(dataFilterCreator);
 		basicDataRecordGroup = createBookWithNoTitle();
 
 		createCollectTerms();
@@ -154,7 +159,8 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testIndexTermCollectorOneCollectedTermAtomicValue() {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child1);
+		// addChildrenToDataRecordGroup(child1);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -166,11 +172,20 @@ public class DataGroupTermCollectorTest {
 				"titleIndexTerm");
 	}
 
-	private void addChildrenToDataRecordGroup(DataChild... children) {
+	private void addChildrenToAllChildrenMatchingUsingMetadataElement(Duple... duples) {
 		DataGroupSpy dataGroup = new DataGroupSpy();
 		dataFactorySpy.MRV.setDefaultReturnValuesSupplier("factorGroupFromDataRecordGroup",
 				() -> dataGroup);
-		dataGroup.MRV.setDefaultReturnValuesSupplier("getChildren", () -> Arrays.asList(children));
+
+		for (Duple duple : duples) {
+			DataChildFilterSpy filter = new DataChildFilterSpy();
+			dataFilterCreator.MRV.setSpecificReturnValuesSupplier(
+					"createDataChildFilterFromMetadata", () -> filter,
+					metadataHolder.getMetadataElement(duple.metadataId()));
+
+			dataGroup.MRV.setSpecificReturnValuesSupplier("getAllChildrenMatchingFilter",
+					() -> Arrays.asList(duple.childs()), filter);
+		}
 	}
 
 	private void assertIndexTerm(IndexTerm indexTerm, String id, String value, String indexType,
@@ -184,7 +199,8 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testIndexTermCollectorTwoCollectedTermSameAtomicValue() {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child1);
+		// addChildrenToDataRecordGroup(child1);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1));
 
 		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
 				basicDataRecordGroup);
@@ -203,7 +219,8 @@ public class DataGroupTermCollectorTest {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
 		DataAtomicOldSpy child2 = new DataAtomicOldSpy("bookSubTitle", "Some subtitle", "0");
 		DataAtomicOldSpy child3 = new DataAtomicOldSpy("bookSubTitle", "Some other subtitle", "1");
-		addChildrenToDataRecordGroup(child1, child2, child3);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1),
+				new Duple("bookSubTitleTextVar", child2, child3));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -222,11 +239,19 @@ public class DataGroupTermCollectorTest {
 	public void testPermissionTermCollectorOnePermissionAndThreeIndexTermAtomicValues() {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
 		DataAtomicOldSpy child2 = new DataAtomicOldSpy("bookSubTitle", "Some subtitle");
-		DataGroup personRole = new DataGroupOldSpy("personRole");
-		personRole.addChild(new DataAtomicOldSpy("name", "Kalle Kula"));
-		personRole.setRepeatId("0");
+		DataGroupSpy personRole2 = new DataGroupSpy();
 
-		addChildrenToDataRecordGroup(child1, child2, personRole);
+		MetadataElement metadataElement = metadataHolder.getMetadataElement("nameTextVar");
+		DataChildFilterSpy personFilter = new DataChildFilterSpy();
+		dataFilterCreator.MRV.setSpecificReturnValuesSupplier("createDataChildFilterFromMetadata",
+				() -> personFilter, metadataElement);
+
+		personRole2.MRV.setSpecificReturnValuesSupplier("getAllChildrenMatchingFilter",
+				() -> Arrays.asList(new DataAtomicOldSpy("name", "Kalle Kula")), personFilter);
+
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1),
+				new Duple("bookSubTitleTextVar", child2),
+				new Duple("personRoleGroup", personRole2));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -313,7 +338,7 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
 		DataAtomicOldSpy child = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child));
 
 		CollectTerms collectedData1 = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -331,7 +356,7 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testStorageTermCollectorTwoCollectedTermSameAtomicValue() {
 		DataAtomicOldSpy child = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child));
 
 		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
 				basicDataRecordGroup);
@@ -409,7 +434,9 @@ public class DataGroupTermCollectorTest {
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
 				() -> "someOtherBookId");
 
-		addChildrenToDataRecordGroup(otherBookLink);
+		// addChildrenToDataRecordGroup(otherBookLink);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(
+				new Duple("otherBookLink", otherBookLink));
 	}
 
 	private void addAnyTypeRecordLinkToOtherBook() {
@@ -419,7 +446,8 @@ public class DataGroupTermCollectorTest {
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
 				() -> "someOtherBookId");
 
-		addChildrenToDataRecordGroup(otherBookLink);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("otherLink", otherBookLink));
+		// addChildrenToDataRecordGroup(otherBookLink);
 	}
 
 	private void createCollectTerms() {
@@ -591,5 +619,9 @@ public class DataGroupTermCollectorTest {
 						"titleText", "titleDefText", ".+");
 		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> titleTextVar,
 				id);
+	}
+
+	record Duple(String metadataId, DataChild... childs) {
+
 	}
 }

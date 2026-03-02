@@ -17,7 +17,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.bookkeeper.termcollector;
+package se.uu.ub.cora.bookkeeper.termcollector.internal;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,11 +34,11 @@ import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.RecordLink;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageView;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchData;
-import se.uu.ub.cora.bookkeeper.validator.MetadataMatchDataImp;
-import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
+import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
+import se.uu.ub.cora.bookkeeper.validator.DataFilterCreator;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecordGroup;
@@ -50,10 +50,20 @@ import se.uu.ub.cora.data.collected.StorageTerm;
 
 public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 
+	public static DataGroupTermCollectorImp usingDataFilterCreator(
+			DataFilterCreator dataFilterCreator) {
+		return new DataGroupTermCollectorImp(dataFilterCreator);
+	}
+
 	private MetadataHolder metadataHolder;
 	private CollectTermHolder collectTermHolder;
 
 	private CollectTerms collectTerms;
+	private DataFilterCreator dataFilterCreator;
+
+	private DataGroupTermCollectorImp(DataFilterCreator dataFilterCreator) {
+		this.dataFilterCreator = dataFilterCreator;
+	}
 
 	@Override
 	public CollectTerms collectTerms(String metadataGroupId, DataRecordGroup dataRecordGroup) {
@@ -93,7 +103,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 			populateCollectTermHolderFromMetadataStorage();
 		}
 		DataGroup dataGroup = DataProvider.createGroupFromRecordGroup(dataRecordGroup);
-		collectTermsFromDataUsingMetadata(metadataGroupId, dataGroup);
+		collectTermsForNextLevelDataGroup(metadataGroupId, dataGroup);
 	}
 
 	private void populateCollectTermHolderFromMetadataStorage() {
@@ -102,7 +112,7 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 		collectTermHolder = metadataStorage.getCollectTermHolder();
 	}
 
-	private void collectTermsFromDataUsingMetadata(String metadataGroupId, DataGroup dataGroup) {
+	private void collectTermsForNextLevelDataGroup(String metadataGroupId, DataGroup dataGroup) {
 		List<MetadataChildReference> metadataChildReferences = getMetadataGroupChildReferences(
 				metadataGroupId);
 		collectTermsFromDataUsingMetadataChildren(metadataChildReferences, dataGroup);
@@ -121,30 +131,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 					dataGroup);
 		}
 	}
-
-	// private void recurseAndCollectTermFromChildsGroupChildren(DataGroup dataGroup,
-	// MetadataElement childMetadataElement) {
-	// String childMetadataGroupId = childMetadataElement.getId();
-	// for (DataChild childDataElement : dataGroup.getChildren()) {
-	// possiblyCollectTerms(childMetadataElement, childMetadataGroupId, childDataElement);
-	// }
-	//
-	// // DataChildFilter filter = dataFilterCreator
-	// // .createDataChildFilterFromMetadata(childMetadataElement);
-	// //
-	// // List<DataChild> allChildrenMatchingFilter =
-	// // dataGroup.getAllChildrenMatchingFilter(filter);
-	// // for (DataChild childData : allChildrenMatchingFilter) {
-	// // collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childData);
-	// // }
-	// }
-
-	// private void possiblyCollectTerms(MetadataElement childMetadataElement,
-	// String childMetadataGroupId, DataChild childDataElement) {
-	// if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-	// collectTermsFromDataUsingMetadata(childMetadataGroupId, (DataGroup) childDataElement);
-	// }
-	// }
 
 	private boolean isMetadataGroup(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof MetadataGroup;
@@ -168,48 +154,39 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private void collectTermsFromDataGroupChildren(MetadataChildReference metadataChildReference,
 			MetadataElement childMetadataElement,
 			List<CollectTermLink> collectTermsForChildReference, DataGroup dataGroup) {
-		// TODO: get correct children
-		for (DataChild childDataElement : dataGroup.getChildren()) {
-			collectTermsFromDataGroupChild(metadataChildReference, childMetadataElement,
-					childDataElement, collectTermsForChildReference);
-		}
-		// DataChildFilter filter = dataFilterCreator
-		// .createDataChildFilterFromMetadata(childMetadataElement);
-		//
-		// List<DataChild> allChildrenMatchingFilter =
-		// dataGroup.getAllChildrenMatchingFilter(filter);
-		// for (DataChild childData : allChildrenMatchingFilter) {
-		// if (childReferenceHasCollectTerms(metadataChildReference)) {
-		// collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement, dataGroup,
-		// collectTermsForChildReference);
-		// }
-		// if (isMetadataGroup(childMetadataElement)) {
-		// String childMetadataGroupId = childMetadataElement.getId();
-		// collectTermsFromDataUsingMetadata(childMetadataGroupId, dataGroup);
-		// }
-		// }
+		DataChildFilter filter = dataFilterCreator
+				.createDataChildFilterFromMetadata(childMetadataElement);
 
+		List<DataChild> allChildrenMatchingFilter = dataGroup.getAllChildrenMatchingFilter(filter);
+		collectTermsForChildren(metadataChildReference, childMetadataElement,
+				collectTermsForChildReference, allChildrenMatchingFilter);
 	}
 
-	private void collectTermsFromDataGroupChild(MetadataChildReference metadataChildReference,
-			MetadataElement childMetadataElement, DataChild childDataElement,
-			List<CollectTermLink> collectTermsForChildReference) {
-		if (childMetadataSpecifiesChildData(childMetadataElement, childDataElement)) {
-			if (childReferenceHasCollectTerms(metadataChildReference)) {
-				collectTermsFromDataGroupChildMatchingMetadata(childMetadataElement,
-						childDataElement, collectTermsForChildReference);
-			}
-			if (isMetadataGroup(childMetadataElement)) {
-				String childMetadataGroupId = childMetadataElement.getId();
-				collectTermsFromDataUsingMetadata(childMetadataGroupId,
-						(DataGroup) childDataElement);
-			}
+	private void collectTermsForChildren(MetadataChildReference metadataChildReference,
+			MetadataElement childMetadataElement,
+			List<CollectTermLink> collectTermsForChildReference,
+			List<DataChild> allChildrenMatchingFilter) {
+		for (DataChild dataChild : allChildrenMatchingFilter) {
+			possiblyCollectTermsForChild(metadataChildReference, childMetadataElement,
+					collectTermsForChildReference, dataChild);
 		}
 	}
 
-	private void collectTermsFromDataGroupChildMatchingMetadata(
-			MetadataElement childMetadataElement, DataChild childDataElement,
-			List<CollectTermLink> collectTermsForChildReference) {
+	private void possiblyCollectTermsForChild(MetadataChildReference metadataChildReference,
+			MetadataElement childMetadataElement,
+			List<CollectTermLink> collectTermsForChildReference, DataChild dataChild) {
+		if (childReferenceHasCollectTerms(metadataChildReference)) {
+			collectTermsFromDataChild(childMetadataElement, dataChild,
+					collectTermsForChildReference);
+		}
+		if (isMetadataGroup(childMetadataElement)) {
+			String childMetadataGroupId = childMetadataElement.getId();
+			collectTermsForNextLevelDataGroup(childMetadataGroupId, (DataGroup) dataChild);
+		}
+	}
+
+	private void collectTermsFromDataChild(MetadataElement childMetadataElement,
+			DataChild childDataElement, List<CollectTermLink> collectTermsForChildReference) {
 		if (isLink(childMetadataElement)) {
 			createCollectTermsForRecordLink((DataRecordLink) childDataElement,
 					collectTermsForChildReference);
@@ -221,15 +198,6 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private boolean isLink(MetadataElement childMetadataElement) {
 		return childMetadataElement instanceof RecordLink
 				|| childMetadataElement instanceof AnyTypeRecordLink;
-	}
-
-	private boolean childMetadataSpecifiesChildData(MetadataElement childMetadataElement,
-			DataChild dataElement) {
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp
-				.withMetadataHolder(metadataHolder);
-		ValidationAnswer validationAnswer = metadataMatchData
-				.metadataSpecifiesData(childMetadataElement, dataElement);
-		return validationAnswer.dataIsValid();
 	}
 
 	private void createCollectTermsForRecordLink(DataRecordLink childDataElement,
@@ -299,6 +267,10 @@ public class DataGroupTermCollectorImp implements DataGroupTermCollector {
 	private IndexTerm buildIndexTerm(se.uu.ub.cora.bookkeeper.metadata.IndexTerm term,
 			String value) {
 		return new IndexTerm(term.id, value, term.indexFieldName, term.indexType);
+	}
+
+	public DataFilterCreator onlyForTestGetDataFilterCreator() {
+		return dataFilterCreator;
 	}
 
 }
