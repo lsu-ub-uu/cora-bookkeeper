@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2019, 2026 Uppsala University Library
  * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
@@ -49,7 +49,13 @@ class DataElementValidatorFactoryImp implements DataElementValidatorFactory {
 		MetadataElement metadataElement = metadataHolder.getMetadataElement(elementId);
 
 		if (metadataElement instanceof MetadataGroup metadataElementGroup) {
-			return new DataGroupValidator(this, metadataHolder, metadataElementGroup);
+			MetadataMatchData metadataMatchData = MetadataMatchDataImp
+					.withMetadataHolder(metadataHolder);
+			DataFilterCreator dataFilterCreator = DataFilterCreatorImp
+					.usingMetadataHolder(metadataHolder);
+			return new DataGroupValidator(metadataMatchData, dataFilterCreator, this,
+					metadataHolder, metadataElementGroup);
+
 		}
 		if (metadataElement instanceof TextVariable metadataElementTextVariable) {
 			return new DataTextVariableValidator(metadataElementTextVariable);

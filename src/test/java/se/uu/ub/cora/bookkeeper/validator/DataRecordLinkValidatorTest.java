@@ -20,7 +20,6 @@
 package se.uu.ub.cora.bookkeeper.validator;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Collection;
@@ -43,6 +42,7 @@ import se.uu.ub.cora.bookkeeper.testdata.DataCreator;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.spies.DataAtomicSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 
 public class DataRecordLinkValidatorTest {
@@ -57,7 +57,7 @@ public class DataRecordLinkValidatorTest {
 	public void setUp() {
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
-		//
+
 		dataLink = RecordLink.withIdAndNameInDataAndTextIdAndDefTextIdAndLinkedRecordType("id",
 				"nameInData", "textId", "defTextId", "linkedRecordType");
 		metadataHolder.addMetadataElement(dataLink);
@@ -66,14 +66,12 @@ public class DataRecordLinkValidatorTest {
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
 						"linkedRecordIdTextVar", "linkedRecordId", "linkedRecordIdTextVarText",
 						"linkedRecordIdTextVarDefText", "(^[0-9A-Za-z:-_]{2,50}$)");
-
 		metadataHolder.addMetadataElement(linkedRecordIdTextVar);
 
 		TextVariable linkedRepeatIdTextVar = TextVariable
 				.withIdAndNameInDataAndTextIdAndDefTextIdAndRegularExpression(
 						"linkedRepeatIdTextVar", "linkedRepeatId", "linkedRepeatIdTextVarText",
 						"linkedRepeatIdTextVarDefText", "(^[0-9A-Za-z:-_]{1,50}$)");
-
 		metadataHolder.addMetadataElement(linkedRepeatIdTextVar);
 
 		dataLinkValidator = new DataRecordLinkValidator(recordTypeHolder, metadataHolder, dataLink);
@@ -90,7 +88,7 @@ public class DataRecordLinkValidatorTest {
 
 	@Test
 	public void testValidateOneAttribute() {
-		se.uu.ub.cora.data.spies.DataAtomicSpy dataAtomicSpy = new se.uu.ub.cora.data.spies.DataAtomicSpy();
+		DataAtomicSpy dataAtomicSpy = new DataAtomicSpy();
 		dataAtomicSpy.MRV.setDefaultReturnValuesSupplier("getValue", () -> "choice1NameInData");
 		dataFactorySpy.MRV.setDefaultReturnValuesSupplier("factorAtomicUsingNameInDataAndValue",
 				() -> dataAtomicSpy);
@@ -131,18 +129,6 @@ public class DataRecordLinkValidatorTest {
 	}
 
 	@Test
-	public void testInvalidAttribute() {
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
-						"linkedRecordType", "myLinkedRecordId");
-		dataRecordLink.addAttributeByIdWithValue("col1NameInData", "choice1NameInData_NOT_VALID");
-
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertFalse(validationAnswer.dataIsValid());
-	}
-
-	@Test
 	public void testValidateInvalidRecordId() {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
@@ -156,17 +142,6 @@ public class DataRecordLinkValidatorTest {
 		DataGroup dataRecordLink = DataCreator
 				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("nameInData",
 						"notMyRecordType", "myLinkedRecordId");
-
-		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
-		assertEquals(validationAnswer.getErrorMessages().size(), 1);
-		assertTrue(validationAnswer.dataIsInvalid());
-	}
-
-	@Test
-	public void testValidateEmptyNameInData() {
-		DataGroup dataRecordLink = DataCreator
-				.createRecordLinkGroupWithNameInDataAndRecordTypeAndRecordId("", "linkedRecordType",
-						"myLinkedRecordId");
 
 		ValidationAnswer validationAnswer = dataLinkValidator.validateData(dataRecordLink);
 		assertEquals(validationAnswer.getErrorMessages().size(), 1);

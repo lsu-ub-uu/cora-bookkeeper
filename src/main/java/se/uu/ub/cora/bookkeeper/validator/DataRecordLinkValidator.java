@@ -50,23 +50,11 @@ class DataRecordLinkValidator implements DataElementValidator {
 	public ValidationAnswer validateData(DataChild dataElement) {
 		validationAnswer = new ValidationAnswer();
 		dataRecordLink = (DataGroup) dataElement;
-		validateNameInData();
 		validateRecordType();
 		validateRecordId();
 		validateNoLinkedPath();
 		validateLinkedRepeatId();
 		return validationAnswer;
-	}
-
-	private void validateNameInData() {
-		MetadataMatchData metadataMatchData = MetadataMatchDataImp
-				.withMetadataHolder(metadataHolder);
-		ValidationAnswer va = metadataMatchData.metadataSpecifiesData(recordLink, dataRecordLink);
-		addMessagesFromAnswerToTotalValidationAnswer(va);
-	}
-
-	private void addMessagesFromAnswerToTotalValidationAnswer(ValidationAnswer aValidationAnswer) {
-		validationAnswer.addErrorMessages(aValidationAnswer.getErrorMessages());
 	}
 
 	private void validateRecordType() {

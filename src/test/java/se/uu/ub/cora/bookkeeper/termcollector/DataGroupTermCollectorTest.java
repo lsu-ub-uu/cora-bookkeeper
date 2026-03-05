@@ -31,9 +31,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.DataAtomicOldSpy;
-import se.uu.ub.cora.bookkeeper.DataGroupOldSpy;
+import se.uu.ub.cora.bookkeeper.metadata.AnyTypeRecordLink;
 import se.uu.ub.cora.bookkeeper.metadata.CollectTermLink;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataChildReference;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataElement;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataGroup;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderSpy;
@@ -43,14 +44,16 @@ import se.uu.ub.cora.bookkeeper.recordtype.internal.CollectTermHolderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageProvider;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewInstanceProviderSpy;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorageViewSpy;
+import se.uu.ub.cora.bookkeeper.termcollector.internal.DataGroupTermCollectorImp;
+import se.uu.ub.cora.bookkeeper.validator.DataFilterCreatorSpy;
 import se.uu.ub.cora.data.DataChild;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.collected.CollectTerms;
 import se.uu.ub.cora.data.collected.IndexTerm;
 import se.uu.ub.cora.data.collected.PermissionTerm;
 import se.uu.ub.cora.data.collected.StorageTerm;
+import se.uu.ub.cora.data.spies.DataChildFilterSpy;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
@@ -67,6 +70,7 @@ public class DataGroupTermCollectorTest {
 	private DataFactorySpy dataFactorySpy;
 	private MetadataHolderSpy metadataHolder;
 	private CollectTermHolderSpy collectTermHolder;
+	private DataFilterCreatorSpy dataFilterCreator;
 
 	@BeforeMethod
 	public void setUp() {
@@ -74,7 +78,9 @@ public class DataGroupTermCollectorTest {
 
 		setUpMetadataStorageForTest();
 
-		collector = new DataGroupTermCollectorImp();
+		dataFilterCreator = new DataFilterCreatorSpy();
+
+		collector = DataGroupTermCollectorImp.usingDataFilterCreator(dataFilterCreator);
 		basicDataRecordGroup = createBookWithNoTitle();
 
 		createCollectTerms();
@@ -153,7 +159,8 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testIndexTermCollectorOneCollectedTermAtomicValue() {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child1);
+		// addChildrenToDataRecordGroup(child1);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -165,11 +172,20 @@ public class DataGroupTermCollectorTest {
 				"titleIndexTerm");
 	}
 
-	private void addChildrenToDataRecordGroup(DataChild... children) {
+	private void addChildrenToAllChildrenMatchingUsingMetadataElement(Duple... duples) {
 		DataGroupSpy dataGroup = new DataGroupSpy();
 		dataFactorySpy.MRV.setDefaultReturnValuesSupplier("factorGroupFromDataRecordGroup",
 				() -> dataGroup);
-		dataGroup.MRV.setDefaultReturnValuesSupplier("getChildren", () -> Arrays.asList(children));
+
+		for (Duple duple : duples) {
+			DataChildFilterSpy filter = new DataChildFilterSpy();
+			dataFilterCreator.MRV.setSpecificReturnValuesSupplier(
+					"createDataChildFilterFromMetadata", () -> filter,
+					metadataHolder.getMetadataElement(duple.metadataId()));
+
+			dataGroup.MRV.setSpecificReturnValuesSupplier("getAllChildrenMatchingFilter",
+					() -> Arrays.asList(duple.childs()), filter);
+		}
 	}
 
 	private void assertIndexTerm(IndexTerm indexTerm, String id, String value, String indexType,
@@ -183,7 +199,8 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testIndexTermCollectorTwoCollectedTermSameAtomicValue() {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child1);
+		// addChildrenToDataRecordGroup(child1);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1));
 
 		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
 				basicDataRecordGroup);
@@ -202,7 +219,8 @@ public class DataGroupTermCollectorTest {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
 		DataAtomicOldSpy child2 = new DataAtomicOldSpy("bookSubTitle", "Some subtitle", "0");
 		DataAtomicOldSpy child3 = new DataAtomicOldSpy("bookSubTitle", "Some other subtitle", "1");
-		addChildrenToDataRecordGroup(child1, child2, child3);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1),
+				new Duple("bookSubTitleTextVar", child2, child3));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -221,11 +239,19 @@ public class DataGroupTermCollectorTest {
 	public void testPermissionTermCollectorOnePermissionAndThreeIndexTermAtomicValues() {
 		DataAtomicOldSpy child1 = new DataAtomicOldSpy("bookTitle", "Some title");
 		DataAtomicOldSpy child2 = new DataAtomicOldSpy("bookSubTitle", "Some subtitle");
-		DataGroup personRole = new DataGroupOldSpy("personRole");
-		personRole.addChild(new DataAtomicOldSpy("name", "Kalle Kula"));
-		personRole.setRepeatId("0");
+		DataGroupSpy personRole2 = new DataGroupSpy();
 
-		addChildrenToDataRecordGroup(child1, child2, personRole);
+		MetadataElement metadataElement = metadataHolder.getMetadataElement("nameTextVar");
+		DataChildFilterSpy personFilter = new DataChildFilterSpy();
+		dataFilterCreator.MRV.setSpecificReturnValuesSupplier("createDataChildFilterFromMetadata",
+				() -> personFilter, metadataElement);
+
+		personRole2.MRV.setSpecificReturnValuesSupplier("getAllChildrenMatchingFilter",
+				() -> Arrays.asList(new DataAtomicOldSpy("name", "Kalle Kula")), personFilter);
+
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child1),
+				new Duple("bookSubTitleTextVar", child2),
+				new Duple("personRoleGroup", personRole2));
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -252,8 +278,8 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testTermCollectorOneIndexTermsLink() {
-		addLinkToOtherBook();
+	public void testTermCollectorOneIndexTerms_RecordLink() {
+		addRecordLinkToOtherBook();
 
 		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -265,8 +291,8 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testTermCollectorTwoIndexTermsSameLink() {
-		addLinkToOtherBook();
+	public void testTermCollectorTwoIndexTermsSameLink_RecordLink() {
+		addRecordLinkToOtherBook();
 
 		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
 				basicDataRecordGroup);
@@ -281,9 +307,38 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
+	public void testTermCollectorOneIndexTerms_AnyTypeRecordLink() {
+		addAnyTypeRecordLinkToOtherBook();
+
+		CollectTerms collectedData = collector.collectTerms("bookGroup", basicDataRecordGroup);
+
+		assertSizesPSI(collectedData, 0, 0, 1);
+
+		List<IndexTerm> indexTerms = collectedData.indexTerms;
+		assertIndexTerm(indexTerms.get(0), "otherIndexTerm", "book_someOtherBookId", "indexTypeId",
+				"otherIndexTerm");
+	}
+
+	@Test
+	public void testTermCollectorTwoIndexTermsSameLink_AnyTypeRecordLink() {
+		addAnyTypeRecordLinkToOtherBook();
+
+		CollectTerms collectedData = collector.collectTerms("bookWithMoreCollectTermsGroup",
+				basicDataRecordGroup);
+
+		assertSizesPSI(collectedData, 0, 0, 2);
+
+		List<IndexTerm> indexTerms = collectedData.indexTerms;
+		assertIndexTerm(indexTerms.get(0), "otherIndexTerm", "book_someOtherBookId", "indexTypeId",
+				"otherIndexTerm");
+		assertIndexTerm(indexTerms.get(1), "otherSecondIndexTerm", "book_someOtherBookId",
+				"indexTypeId", "otherSecondIndexTerm");
+	}
+
+	@Test
 	public void testCollectTermsCalledTwiceReturnsTheSameResult() {
 		DataAtomicOldSpy child = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child));
 
 		CollectTerms collectedData1 = collector.collectTerms("bookGroup", basicDataRecordGroup);
 
@@ -301,7 +356,7 @@ public class DataGroupTermCollectorTest {
 	@Test
 	public void testStorageTermCollectorTwoCollectedTermSameAtomicValue() {
 		DataAtomicOldSpy child = new DataAtomicOldSpy("bookTitle", "Some title");
-		addChildrenToDataRecordGroup(child);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("bookTitleTextVar", child));
 
 		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
 				basicDataRecordGroup);
@@ -326,8 +381,8 @@ public class DataGroupTermCollectorTest {
 	}
 
 	@Test
-	public void testTermCollectorTwoStorageTermsSameLink() {
-		addLinkToOtherBook();
+	public void testTermCollectorTwoStorageTermsSameLink_RecordLink() {
+		addRecordLinkToOtherBook();
 
 		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
 				basicDataRecordGroup);
@@ -343,6 +398,24 @@ public class DataGroupTermCollectorTest {
 				"STORAGEKEY_otherBookSecondStorageTerm");
 	}
 
+	@Test
+	public void testTermCollectorTwoStorageTermsSameLink_AnyTypeRecordLink() {
+		addAnyTypeRecordLinkToOtherBook();
+
+		CollectTerms collectedData = collector.collectTerms("bookWithStorageCollectTermsGroup",
+				basicDataRecordGroup);
+
+		assertSizesPSI(collectedData, 0, 2, 0);
+
+		Set<StorageTerm> storageTerms = collectedData.storageTerms;
+		StorageTerm storageTerm0 = (StorageTerm) storageTerms.toArray()[0];
+		StorageTerm storageTerm1 = (StorageTerm) storageTerms.toArray()[1];
+		assertStorageTerm(storageTerm0, "otherStorageTerm", "book_someOtherBookId",
+				"STORAGEKEY_otherStorageTerm");
+		assertStorageTerm(storageTerm1, "otherSecondStorageTerm", "book_someOtherBookId",
+				"STORAGEKEY_otherSecondStorageTerm");
+	}
+
 	private DataRecordGroupSpy createBookWithNoTitle() {
 		DataRecordGroupSpy book = new DataRecordGroupSpy();
 		createRecordInfo(book);
@@ -354,14 +427,27 @@ public class DataGroupTermCollectorTest {
 		book.MRV.setDefaultReturnValuesSupplier("getId", () -> "book1");
 	}
 
-	private void addLinkToOtherBook() {
+	private void addRecordLinkToOtherBook() {
 		DataRecordLinkSpy otherBookLink = new DataRecordLinkSpy();
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "otherBook");
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordType", () -> "book");
 		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
 				() -> "someOtherBookId");
 
-		addChildrenToDataRecordGroup(otherBookLink);
+		// addChildrenToDataRecordGroup(otherBookLink);
+		addChildrenToAllChildrenMatchingUsingMetadataElement(
+				new Duple("otherBookLink", otherBookLink));
+	}
+
+	private void addAnyTypeRecordLinkToOtherBook() {
+		DataRecordLinkSpy otherBookLink = new DataRecordLinkSpy();
+		otherBookLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "other");
+		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordType", () -> "book");
+		otherBookLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId",
+				() -> "someOtherBookId");
+
+		addChildrenToAllChildrenMatchingUsingMetadataElement(new Duple("otherLink", otherBookLink));
+		// addChildrenToDataRecordGroup(otherBookLink);
 	}
 
 	private void createCollectTerms() {
@@ -375,6 +461,8 @@ public class DataGroupTermCollectorTest {
 		createMetadataStorageTerm("otherBookStorageTerm", "STORAGEKEY_otherBookStorageTerm");
 		createMetadataStorageTerm("otherBookSecondStorageTerm",
 				"STORAGEKEY_otherBookSecondStorageTerm");
+		createMetadataStorageTerm("otherStorageTerm", "STORAGEKEY_otherStorageTerm");
+		createMetadataStorageTerm("otherSecondStorageTerm", "STORAGEKEY_otherSecondStorageTerm");
 
 		createMetadataIndexTerm("titleIndexTerm", "title", "indexTypeString");
 		createMetadataIndexTerm("titleSecondIndexTerm", "title", "indexTypeString");
@@ -383,6 +471,8 @@ public class DataGroupTermCollectorTest {
 		createMetadataIndexTerm("textIndexTerm", "text", "indexTypeString");
 		createMetadataIndexTerm("otherBookIndexTerm", "otherBook", "indexTypeId");
 		createMetadataIndexTerm("otherBookSecondIndexTerm", "otherBook", "indexTypeId");
+		createMetadataIndexTerm("otherIndexTerm", "other", "indexTypeId");
+		createMetadataIndexTerm("otherSecondIndexTerm", "other", "indexTypeId");
 	}
 
 	private void createMetadataPermissionTerm(String id, String nameInData, String permissionKey) {
@@ -412,6 +502,7 @@ public class DataGroupTermCollectorTest {
 		createTextVariable("bookTitleTextVar", "bookTitle");
 		createTextVariable("bookSubTitleTextVar", "bookSubTitle");
 		createRecordLink("otherBookLink", "otherBook", "book");
+		createAnyTypeRecordLink("otherLink", "other");
 		MetadataGroup personRoleGroup = createMetadataGroup("personRoleGroup", "personRole");
 		createTextVariable("nameTextVar", "name");
 
@@ -433,6 +524,9 @@ public class DataGroupTermCollectorTest {
 
 		var otherBookChildReference = addChildReference(bookMetadataGroup, "otherBookLink");
 		addIndexTermToChildReference(otherBookChildReference, "otherBookIndexTerm");
+
+		var otherChildReference = addChildReference(bookMetadataGroup, "otherLink");
+		addIndexTermToChildReference(otherChildReference, "otherIndexTerm");
 	}
 
 	private void createBookWithMoreCollectTerms() {
@@ -448,6 +542,10 @@ public class DataGroupTermCollectorTest {
 				"otherBookLink");
 		addIndexTermToChildReference(otherBookChildReference, "otherBookIndexTerm");
 		addIndexTermToChildReference(otherBookChildReference, "otherBookSecondIndexTerm");
+
+		var otherChildReference = addChildReference(bookWithMoreCollectTermsGroup, "otherLink");
+		addIndexTermToChildReference(otherChildReference, "otherIndexTerm");
+		addIndexTermToChildReference(otherChildReference, "otherSecondIndexTerm");
 	}
 
 	private void createBookWithStorageCollectTerms() {
@@ -463,6 +561,10 @@ public class DataGroupTermCollectorTest {
 				"otherBookLink");
 		addStorageTermToChildReference(otherBookChildReference, "otherBookStorageTerm");
 		addStorageTermToChildReference(otherBookChildReference, "otherBookSecondStorageTerm");
+
+		var otherChildReference = addChildReference(bookWithMoreCollectTermsGroup, "otherLink");
+		addStorageTermToChildReference(otherChildReference, "otherStorageTerm");
+		addStorageTermToChildReference(otherChildReference, "otherSecondStorageTerm");
 	}
 
 	private void addPermissionTermToChildReference(MetadataChildReference childReference,
@@ -497,6 +599,12 @@ public class DataGroupTermCollectorTest {
 		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> link, id);
 	}
 
+	private void createAnyTypeRecordLink(String id, String nameInData) {
+		AnyTypeRecordLink link = AnyTypeRecordLink.withIdAndNameInDataAndTextIdAndDefTextId(id,
+				nameInData, "text", "defText");
+		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> link, id);
+	}
+
 	private MetadataGroup createMetadataGroup(String id, String nameInData) {
 		MetadataGroup bookMetadataGroup = MetadataGroup.withIdAndNameInDataAndTextIdAndDefTextId(id,
 				nameInData, "bookText", "bookDefText");
@@ -511,5 +619,9 @@ public class DataGroupTermCollectorTest {
 						"titleText", "titleDefText", ".+");
 		metadataHolder.MRV.setSpecificReturnValuesSupplier("getMetadataElement", () -> titleTextVar,
 				id);
+	}
+
+	record Duple(String metadataId, DataChild... childs) {
+
 	}
 }

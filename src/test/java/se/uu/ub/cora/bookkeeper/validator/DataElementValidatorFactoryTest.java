@@ -55,6 +55,14 @@ public class DataElementValidatorFactoryTest {
 
 		DataGroupValidator validator = (DataGroupValidator) dataValidatorFactory.factor(elementId);
 
+		MetadataMatchDataImp metadataMatch = (MetadataMatchDataImp) validator
+				.onlyForTestGetMetadataMatch();
+		assertSame(metadataMatch.onlyForTestGetMetadataHolder(), metadataHolder);
+
+		DataFilterCreatorImp dataFilterCreator = (DataFilterCreatorImp) validator
+				.onlyForTestGetDataFilterCreator();
+		assertSame(dataFilterCreator.onlyForTestGetMetadataHolder(), metadataHolder);
+
 		assertSame(validator.onlyForTestGetDataElementValidatorFactory(), dataValidatorFactory);
 		assertSame(validator.onlyForTestGetMetadataHolder(), metadataHolder);
 		assertSame(validator.onlyForTestGetMetadataElement(), metadataGroup);
