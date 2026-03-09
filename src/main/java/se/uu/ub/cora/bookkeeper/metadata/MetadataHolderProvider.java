@@ -33,12 +33,12 @@ public class MetadataHolderProvider {
 
 	public static MetadataHolder getHolder() {
 		synchronized (MetadataHolderProvider.class) {
-			startMetadtaHolderIfNotStarted();
+			startMetadataHolderIfNotStarted();
 			return metadataHolder;
 		}
 	}
 
-	private static void startMetadtaHolderIfNotStarted() {
+	private static void startMetadataHolderIfNotStarted() {
 		if (metadataHolder == null) {
 			if (metadataHolderPopulator == null) {
 				metadataHolderPopulator = new MetadataHolderPopulatorImp();

@@ -32,6 +32,8 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
+import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
@@ -63,9 +65,9 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private boolean constraintsForCreateLoaded = false;
 	private Set<String> readChildren = new HashSet<>();
 	private MetadataStorageView metadataStorageView;
-	private String validationTypeId;
 	private ValidationType validationType;
-	private CollectTermHolder holder;
+	private CollectTermHolder collectTermHolder;
+	private MetadataHolder metadataHolder;
 
 	public static RecordTypeHandler usingRecordStorage(RecordType recordType,
 			RecordStorage recordStorage) {
@@ -75,6 +77,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage) {
 		this.recordType = recordType;
 		this.recordStorage = recordStorage;
+		metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
 	public static RecordTypeHandler usingRecordTypeValidationTypeAndRecordStorage(
@@ -88,6 +91,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		this.validationType = validationType;
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = MetadataStorageProvider.getStorageView();
+		metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
 	@Override
@@ -162,6 +166,11 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	@Override
+	public boolean useHostRecord() {
+		return recordType.useHostRecord();
+	}
+
+	@Override
 	public Set<Constraint> getReadRecordPartConstraints() {
 		if (constraintsForUpdateNotLoaded()) {
 			collectAllConstraintsForUpdate();
@@ -175,7 +184,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 
 	private void collectAllConstraintsForUpdate() {
 		constraintsForUpdateLoaded = true;
-		List<DataGroup> allChildReferences = getAllChildReferences(getMetadataGroup());
+		readMetadataGroupFromStorage();
+		List<DataGroup> allChildReferences = getAllChildReferences(metadataGroup);
 		Set<Constraint> collectedConstraints = new LinkedHashSet<>();
 		collectConstraintsForChildReferences(allChildReferences, collectedConstraints);
 		for (Constraint constraint : collectedConstraints) {
@@ -184,11 +194,11 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		}
 	}
 
-	private DataGroup getMetadataGroup() {
+	private void readMetadataGroupFromStorage() {
 		if (metadataGroup == null) {
 			metadataGroup = recordStorage.read(List.of(METADATA), getDefinitionId());
+
 		}
-		return metadataGroup;
 	}
 
 	private void collectConstraintsForChildReferences(List<DataGroup> allChildReferences,
@@ -462,8 +472,8 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private void ensureCollectTermHolderIsPopulatedFromStorage() {
-		if (holder == null) {
-			holder = metadataStorageView.getCollectTermHolder();
+		if (collectTermHolder == null) {
+			collectTermHolder = metadataStorageView.getCollectTermHolder();
 		}
 	}
 
@@ -491,7 +501,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	}
 
 	private String getUniqueTermStorageKeyForId(String id) {
-		StorageTerm storageTerm = (StorageTerm) holder.getCollectTermById(id);
+		StorageTerm storageTerm = (StorageTerm) collectTermHolder.getCollectTermById(id);
 		return storageTerm.storageKey;
 	}
 

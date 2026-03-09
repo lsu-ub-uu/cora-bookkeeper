@@ -223,6 +223,14 @@ public interface RecordTypeHandler {
 	boolean usePermissionUnit();
 
 	/**
+	 * useHostRecord returns a boolean indicating if a record type is set to use host record
+	 * functionality or not.
+	 * 
+	 * @return A boolean indicating if host record is used or not
+	 */
+	boolean useHostRecord();
+
+	/**
 	 * getNextId requests the next id from the idSource specified in the recordType.
 	 * 
 	 * @return A String with the next id from the idSource

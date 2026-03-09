@@ -46,7 +46,7 @@ public class MetadataStorageViewSpy implements MetadataStorageView {
 	public MetadataStorageViewSpy() {
 		RecordType recordType = new RecordType("someId", "someDefinitionId", Optional.empty(),
 				"someIdSource", Optional.empty(), Collections.emptyList(), false, false, false,
-				false, false);
+				false, false, false);
 
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getMetadataElements", ArrayList<DataRecordGroup>::new);

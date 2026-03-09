@@ -68,9 +68,10 @@ public class IdSourceProviderTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType("someRecordTypeId", "someDefinitionId", Optional.empty(),
 				idSource, Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void setupModuleInstanceProviderToReturnAppTokenStorageViewFactorySpy() {

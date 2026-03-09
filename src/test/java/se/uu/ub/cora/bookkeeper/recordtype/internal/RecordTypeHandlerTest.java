@@ -132,9 +132,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createValidationType() {
@@ -149,9 +150,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(id, "someDefinitionId", Optional.empty(), "userSupplied",
 				Optional.of("sequenceId"), Collections.emptyList(), isPublic, usePermissionUnit,
-				useVisibility, useTrashBin, storeInArchive);
+				useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeIdSource(String idSource) {
@@ -160,9 +162,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(), idSource,
 				Optional.of("sequenceId"), Collections.emptyList(), isPublic, usePermissionUnit,
-				useVisibility, useTrashBin, storeInArchive);
+				useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeUniqueIds(Collection<UniqueIds> uniqueIds) {
@@ -171,9 +174,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), uniqueIds, isPublic, usePermissionUnit,
-				useVisibility, useTrashBin, storeInArchive);
+				useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeSearchId(Optional<String> searchId) {
@@ -182,9 +186,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", searchId, "userSupplied",
 				Optional.of("sequenceId"), Collections.emptyList(), isPublic, usePermissionUnit,
-				useVisibility, useTrashBin, storeInArchive);
+				useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeIsPublic(boolean isPublic) {
@@ -192,9 +197,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeUsePermissionUnit(boolean usePermissionUnit) {
@@ -202,9 +208,10 @@ public class RecordTypeHandlerTest {
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeUseVisibility(boolean useVisibility) {
@@ -212,9 +219,10 @@ public class RecordTypeHandlerTest {
 		boolean usePermissionUnit = true;
 		boolean useTrashBin = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeUseTrashBin(boolean useTrashBin) {
@@ -222,9 +230,10 @@ public class RecordTypeHandlerTest {
 		boolean usePermissionUnit = true;
 		boolean useVisibility = true;
 		boolean storeInArchive = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void createRecordTypeStoreInArchive(boolean storeInArchive) {
@@ -232,9 +241,21 @@ public class RecordTypeHandlerTest {
 		boolean usePermissionUnit = true;
 		boolean useVisibility = true;
 		boolean useTrashBin = true;
+		boolean useHostRecord = false;
 		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
 				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
-				usePermissionUnit, useVisibility, useTrashBin, storeInArchive);
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
+	}
+
+	private void createRecordTypeUseHostRecord(boolean useHostRecord) {
+		boolean isPublic = true;
+		boolean usePermissionUnit = true;
+		boolean useVisibility = true;
+		boolean useTrashBin = true;
+		boolean storeInArchive = false;
+		recordType = new RecordType(RECORD_TYPE_ID, "someDefinitionId", Optional.empty(),
+				"userSupplied", Optional.of("sequenceId"), Collections.emptyList(), isPublic,
+				usePermissionUnit, useVisibility, useTrashBin, storeInArchive, useHostRecord);
 	}
 
 	private void setUpRecordTypeHandlerWithValidationType() {
@@ -424,6 +445,22 @@ public class RecordTypeHandlerTest {
 	}
 
 	@Test
+	public void testShouldUseHostRecord() {
+		createRecordTypeUseHostRecord(true);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		assertEquals(recordTypeHandler.useHostRecord(), true);
+	}
+
+	@Test
+	public void testShouldNotUseHostRecordTrue() {
+		createRecordTypeUseHostRecord(false);
+		setUpRecordTypeHandlerUsingTypeId(RECORD_TYPE_ID);
+
+		assertEquals(recordTypeHandler.useHostRecord(), false);
+	}
+
+	@Test
 	public void testGetRecordPartReadConstraintsNOReadConstraint() {
 		OldRecordStorageSpy storageSpy = setUpHandlerWithStorageSpyUsingTypeId("organisation");
 
@@ -459,7 +496,7 @@ public class RecordTypeHandlerTest {
 		recordType = new RecordType(RECORD_TYPE_ID, recordTypeId, Optional.empty(),
 				recordType.idSource(), recordType.sequenceId(), Collections.emptyList(),
 				recordType.isPublic(), recordType.usePermissionUnit(), recordType.useVisibility(),
-				recordType.useTrashBin(), recordType.storeInArchive());
+				recordType.useTrashBin(), recordType.storeInArchive(), recordType.useHostRecord());
 
 		storage = new OldRecordStorageSpy();
 		// metadataStorageViewSpy.MRV.setDefaultReturnValuesSupplier("getValidationType",

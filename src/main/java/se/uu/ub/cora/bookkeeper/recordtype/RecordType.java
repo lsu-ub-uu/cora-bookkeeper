@@ -24,6 +24,5 @@ import java.util.Optional;
 public record RecordType(String id, String definitionId, Optional<String> searchId, String idSource,
 		Optional<String> sequenceId, Collection<UniqueIds> uniqueIds, boolean isPublic,
 		boolean usePermissionUnit, boolean useVisibility, boolean useTrashBin,
-		boolean storeInArchive) {
-
+		boolean storeInArchive, boolean useHostRecord) {
 }
