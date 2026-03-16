@@ -65,7 +65,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private MetadataStorageView metadataStorageView;
 	private ValidationType validationType;
 	private CollectTermHolder collectTermHolder;
-	// private MetadataHolder metadataHolder;
 
 	public static RecordTypeHandler usingRecordStorage(RecordType recordType,
 			RecordStorage recordStorage) {
@@ -75,7 +74,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage) {
 		this.recordType = recordType;
 		this.recordStorage = recordStorage;
-		// metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
 	public static RecordTypeHandler usingRecordTypeValidationTypeAndRecordStorage(
@@ -89,7 +87,6 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		this.validationType = validationType;
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = MetadataStorageProvider.getStorageView();
-		// metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
 	@Override
