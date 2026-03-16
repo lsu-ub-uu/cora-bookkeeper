@@ -32,8 +32,6 @@ import se.uu.ub.cora.bookkeeper.metadata.CollectTermHolder;
 import se.uu.ub.cora.bookkeeper.metadata.Constraint;
 import se.uu.ub.cora.bookkeeper.metadata.ConstraintType;
 import se.uu.ub.cora.bookkeeper.metadata.DataMissingException;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolder;
-import se.uu.ub.cora.bookkeeper.metadata.MetadataHolderProvider;
 import se.uu.ub.cora.bookkeeper.metadata.StorageTerm;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordType;
 import se.uu.ub.cora.bookkeeper.recordtype.RecordTypeHandler;
@@ -67,7 +65,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private MetadataStorageView metadataStorageView;
 	private ValidationType validationType;
 	private CollectTermHolder collectTermHolder;
-	private MetadataHolder metadataHolder;
+	// private MetadataHolder metadataHolder;
 
 	public static RecordTypeHandler usingRecordStorage(RecordType recordType,
 			RecordStorage recordStorage) {
@@ -77,7 +75,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 	private RecordTypeHandlerImp(RecordType recordType, RecordStorage recordStorage) {
 		this.recordType = recordType;
 		this.recordStorage = recordStorage;
-		metadataHolder = MetadataHolderProvider.getHolder();
+		// metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
 	public static RecordTypeHandler usingRecordTypeValidationTypeAndRecordStorage(
@@ -91,7 +89,7 @@ public class RecordTypeHandlerImp implements RecordTypeHandler {
 		this.validationType = validationType;
 		this.recordStorage = recordStorage;
 		this.metadataStorageView = MetadataStorageProvider.getStorageView();
-		metadataHolder = MetadataHolderProvider.getHolder();
+		// metadataHolder = MetadataHolderProvider.getHolder();
 	}
 
 	@Override
